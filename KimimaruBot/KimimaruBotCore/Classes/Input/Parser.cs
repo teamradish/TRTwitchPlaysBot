@@ -374,7 +374,7 @@ namespace KimimaruBot
 
             //Returns list containing: [Valid, input_sequence]
             //Or: [Invalid, input that it failed on]
-            public List<object> Parse(string message)
+            public (bool, List<Input>, bool, int) Parse(string message)
             {
                 bool contains_start_input = false;
                 message = message.Replace(" ", string.Empty).ToLower();
@@ -396,7 +396,7 @@ namespace KimimaruBot
                      */
 
                     if (string.IsNullOrEmpty(current_input.error) == false)
-                        return new List<object>() { false, current_input };
+                        return (false, new List<Input>() { current_input }, false, subduration_max);
 
                     message = message.Substring(current_input.length);
                     input_subsequence.Add(current_input);
@@ -421,7 +421,7 @@ namespace KimimaruBot
                              */
 
                             if (string.IsNullOrEmpty(current_input.error) == false)
-                                return new List<object>() { false, current_input };
+                                return (false, new List<Input>() { current_input }, false, subduration_max);
 
                             message = message.Substring(current_input.length);
                             input_sequence.Add(current_input);
@@ -439,13 +439,13 @@ namespace KimimaruBot
                     if (duration_counter > DURATION_MAX)
                     {
                         current_input.error = "ERR_DURATION_MAX";
-                        return new List<object>() { false, current_input };
+                        return (false, new List<Input>() { current_input }, false, subduration_max);
                     }
 
                     input_sequence.AddRange(input_subsequence);
                 }
 
-                return new List<object>() { true, input_sequence, contains_start_input, duration_counter };
+                return (true, input_sequence, contains_start_input, duration_counter);
             }
         }
     }

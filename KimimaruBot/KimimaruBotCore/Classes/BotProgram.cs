@@ -255,25 +255,38 @@ namespace KimimaruBot
             }
             else
             {
-                Parser.Input input = new Parser.Input();
-                string parse_message = input.expandify(input.populate_macros(e.ChatMessage.Message));
-                List<object> obj = input.Parse(parse_message);
-                if ((bool)obj[0] == false)
+                try
                 {
-                    //BotProgram.QueueMessage($"Invalid input: {input.error}");
-                }
-                else
-                {
-                    BotProgram.QueueMessage("Valid input!");
-                    string thing = "Valid input(s): ";
-                    
-                    for (int i = 0; i < ((List<Parser.Input>)obj[1]).Count; i++)
+                    Parser.Input input = new Parser.Input();
+                    string parse_message = input.expandify(input.populate_macros(e.ChatMessage.Message));
+                    (bool valid, List<Parser.Input> inputList, bool containsStartInput, int durationCounter)
+                        parsedData = input.Parse(parse_message);
+
+                    if (parsedData.valid == false)
                     {
-                        Parser.Input thing2 = ((List<Parser.Input>)obj[1])[i];
-                    
-                        thing += thing2.ToString() + "\n";
+                        if (string.IsNullOrEmpty(input.error) == false)
+                            BotProgram.QueueMessage($"Invalid input: {input.error}");
                     }
-                    Console.WriteLine(thing);
+                    else
+                    {
+                        BotProgram.QueueMessage("Valid input!");
+                        string thing = "Valid input(s): ";
+
+                        for (int i = 0; i < parsedData.inputList.Count; i++)
+                        {
+                            Parser.Input thing2 = parsedData.inputList[i];
+
+                            thing += thing2.ToString() + "\n";
+                        }
+                        Console.WriteLine(thing);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    //Kimimaru: Sanitize parsing exceptions for now
+                    //Most of these are currently caused by differences in how C# and Python handle slicing strings (Substring() vs string[:])
+                    //One example that throws this that shouldn't is "#mash(w234"
+                    //BotProgram.QueueMessage($"ERROR: {exception.Message}");
                 }
             }
         }
