@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>KimimaruBot</AssemblyName>
+    <RootNamespace>KimimaruBot</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Classes\Input\Controller.py" />
+    <None Remove="Classes\Input\Parser.py" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Classes\Input\Controller.py" />
+    <Content Include="Classes\Input\Parser.py" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CoreCLR-NCalc" Version="2.2.51" />
+    <PackageReference Include="TwitchLib" Version="3.0.1" />
+  </ItemGroup>
+
+</Project>

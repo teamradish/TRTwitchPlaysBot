@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6C395512-D1DC-4A4A-A016-19B2E46C0CEE}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>KimimaruBot</RootNamespace>
+    <AssemblyName>KimimaruBot</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="crypto">
+      <HintPath>C:\Users\Thomas\.nuget\packages\portable.bouncycastle-signed\1.7.0.2\lib\portable-net45+dnxcore50+wp80+win+wpa81+MonoTouch10+MonoAndroid10+xamarinmac20+xamarinios10\crypto.dll</HintPath>
+    </Reference>
+    <Reference Include="NCalc, Version=1.3.8.0, Culture=neutral, PublicKeyToken=973cde3f1cafed03, processorArchitecture=MSIL">
+      <HintPath>..\packages\ncalc.1.3.8\lib\NCalc.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="SuperSocket.ClientEngine">
+      <HintPath>C:\Users\Thomas\.nuget\packages\supersocket.clientengine.core\0.8.0.13\lib\net45\SuperSocket.ClientEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="TwitchLib, Version=1.6.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Users\Thomas\.nuget\packages\twitchlib\1.6.1\lib\net452\TwitchLib.dll</HintPath>
+    </Reference>
+    <Reference Include="WebSocket4Net">
+      <HintPath>C:\Users\Thomas\.nuget\packages\websocket4net\0.15.0\lib\net45\WebSocket4Net.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Classes\Commands\AcceptCommand.cs" />
+    <Compile Include="Classes\Commands\AddMemeCommand.cs" />
+    <Compile Include="Classes\Commands\AverageCreditsCommand.cs" />
+    <Compile Include="Classes\Commands\BaseCommand.cs" />
+    <Compile Include="Classes\BotProgram.cs" />
+    <Compile Include="Classes\CommandHandler.cs" />
+    <Compile Include="Classes\Commands\BetCommand.cs" />
+    <Compile Include="Classes\Commands\CalculateCommand.cs" />
+    <Compile Include="Classes\Commands\CrashBotCommand.cs" />
+    <Compile Include="Classes\Commands\CreditsCommand.cs" />
+    <Compile Include="Classes\Commands\DenyCommand.cs" />
+    <Compile Include="Classes\Commands\DuelCommand.cs" />
+    <Compile Include="Classes\Commands\FeedCommand.cs" />
+    <Compile Include="Classes\Commands\GroupDuelCommand.cs" />
+    <Compile Include="Classes\Commands\HelpCommand.cs" />
+    <Compile Include="Classes\Commands\HighestCreditsCommand.cs" />
+    <Compile Include="Classes\Commands\HighestJumpRopeCommand.cs" />
+    <Compile Include="Classes\Commands\HighFiveCommand.cs" />
+    <Compile Include="Classes\Commands\InspirationCommand.cs" />
+    <Compile Include="Classes\Commands\JumpRopeCommand.cs" />
+    <Compile Include="Classes\Commands\MedianCreditsCommand.cs" />
+    <Compile Include="Classes\Commands\MemesCommand.cs" />
+    <Compile Include="Classes\Commands\RandNumCommand.cs" />
+    <Compile Include="Classes\Commands\RemoveMemeCommand.cs" />
+    <Compile Include="Classes\Commands\SayCommand.cs" />
+    <Compile Include="Classes\Commands\ScheduleCommand.cs" />
+    <Compile Include="Classes\Commands\OutGroupDuelCommand.cs" />
+    <Compile Include="Classes\Commands\SuggestionsCommand.cs" />
+    <Compile Include="Classes\Commands\TransferCommand.cs" />
+    <Compile Include="Classes\CrashHandler.cs" />
+    <Compile Include="Classes\Debug.cs" />
+    <Compile Include="Classes\Extensions.cs" />
+    <Compile Include="Classes\Globals.cs" />
+    <Compile Include="Classes\Input\Controller.cs" />
+    <Compile Include="Classes\Input\Parser.cs" />
+    <Compile Include="Classes\Routines\BaseRoutine.cs" />
+    <Compile Include="Classes\Routines\CreditsGiveRoutine.cs" />
+    <Compile Include="Classes\Routines\GroupDuelRoutine.cs" />
+    <Compile Include="Classes\Routines\PeriodicMessageRoutine.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Classes\Input\Controller.py" />
+    <Content Include="Classes\Input\Parser.py" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
