@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace KimimaruBot
@@ -24,7 +25,7 @@ namespace KimimaruBot
             {
                 string time = GetFileFriendlyTimeStamp();
 
-                string path = $"{System.IO.Directory.GetCurrentDirectory()}\\{GetAssemblyName()} {GetBuildNumber()} Crash Log - {time}.txt";
+                string path = Path.Combine(Environment.CurrentDirectory, $"{GetAssemblyName()} {GetBuildNumber()} Crash Log - {time}.txt");
 
                 return path;
             }

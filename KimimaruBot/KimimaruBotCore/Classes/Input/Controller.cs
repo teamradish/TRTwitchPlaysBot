@@ -6,12 +6,14 @@ using System.Text;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using vJoyInterfaceWrap;
+using static vJoyInterfaceWrap.vJoy;
 
 namespace KimimaruBot
 {
     public static class ControllerVars
     {
-        public static Dictionary<string, int> INPUTS = new Dictionary<string, int>() {
+        public static Dictionary<string, uint> INPUTS = new Dictionary<string, uint>() {
             { "left", 0 }, { "c", 0 },
             { "right", 1 }, { "z", 1 },
             { "up", 2 }, { "tleft", 2 },
@@ -92,12 +94,14 @@ namespace KimimaruBot
 
     public class Controller
     {
-        public int id;
+        public uint id;
         public Dictionary<string, bool> buttons = null;
+        public vJoy joystick = new vJoy();
+        public JoystickState jsState = default;
         private bool paused;
         private int thread_count;
 
-        public Controller(int id = 0)
+        public Controller(uint id)
         {
             this.id = id;
             this.buttons = new Dictionary<string, bool>() {
@@ -243,6 +247,11 @@ namespace KimimaruBot
                     //this.hold_digital_duration(val, duration);
                     ;
             }
+        }
+
+        public void hold_digital_indefinite(string val = "")
+        {
+
         }
     }
 }

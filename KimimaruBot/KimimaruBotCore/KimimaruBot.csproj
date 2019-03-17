@@ -8,6 +8,10 @@
     <RootNamespace>KimimaruBot</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="Classes\Input\Controller.py" />
     <None Remove="Classes\Input\Parser.py" />
@@ -21,6 +25,18 @@
   <ItemGroup>
     <PackageReference Include="CoreCLR-NCalc" Version="2.2.51" />
     <PackageReference Include="TwitchLib" Version="3.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="vJoyInterfaceWrap">
+      <HintPath>C:\Users\Thomas\Desktop\SDK\SDK\c#\x64\vJoyInterfaceWrap.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="vJoyInterface.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -116,6 +116,10 @@ namespace KimimaruBot
 
             AddRoutine(new PeriodicMessageRoutine());
             AddRoutine(new CreditsGiveRoutine());
+
+            //Initialize controller input
+            VJoyController.Initialize();
+            VJoyController.CheckButtonCount(1);
         }
 
         public void Run()
