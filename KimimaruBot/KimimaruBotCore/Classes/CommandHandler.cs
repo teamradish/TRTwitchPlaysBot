@@ -59,6 +59,7 @@ namespace KimimaruBot
             CommandDict.Add("groupduel", new GroupDuelCommand());
             CommandDict.Add("outgroupduel", new OutGroupDuelCommand());
             CommandDict.Add("crashbot", new CrashBotCommand());
+            CommandDict.Add("console", new ConsoleCommand());
 
             foreach (KeyValuePair<string, BaseCommand> command in CommandDict)
             {

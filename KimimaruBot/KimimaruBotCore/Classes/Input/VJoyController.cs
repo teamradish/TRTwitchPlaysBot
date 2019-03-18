@@ -6,7 +6,7 @@ using static vJoyInterfaceWrap.vJoy;
 
 namespace KimimaruBot
 {
-    public class VJoyController
+    public class VJoyController : IDisposable
     {
         /// <summary>
         /// Minimum acceptable vJoy device ID.
@@ -18,11 +18,22 @@ namespace KimimaruBot
         /// </summary>
         public const uint MAX_VJOY_DEVICE_ID = 16;
 
+        /// <summary>
+        /// Tells whether the vJoy instance is initialized.
+        /// </summary>
         public static bool Initialized => (VJoyInstance != null);
 
         public static vJoy VJoyInstance { get; private set; } = null;
         public static VJoyController Joystick { get; private set; } = null;
 
+        /// <summary>
+        /// Holds the button states for the controller, updated by the bot. true means pressed, and false means released.
+        /// </summary>
+        public readonly Dictionary<string, bool> ButtonStates = new Dictionary<string, bool>();
+
+        /// <summary>
+        /// The ID of the controller.
+        /// </summary>
         public uint ControllerID { get; private set; } = 0;
 
         public VJoyController(in uint controllerID)
@@ -30,18 +41,60 @@ namespace KimimaruBot
             ControllerID = controllerID;
         }
 
+        public void Dispose()
+        {
+            if (Initialized == false)
+                return;
+
+            VJoyInstance.RelinquishVJD(ControllerID);
+        }
+
+        public void Reset()
+        {
+            if (Initialized == false)
+                return;
+
+            string[] keys = new string[ButtonStates.Keys.Count];
+            ButtonStates.Keys.CopyTo(keys, 0);
+            for (int i = 0; i < keys.Length; i++)
+            {
+                ButtonStates[keys[i]] = false;
+            }
+
+            VJoyInstance.ResetVJD(ControllerID);
+        }
+
+        public void SetButtons(InputGlobals.InputConsoles console)
+        {
+            ButtonStates.Clear();
+
+            string[] inputs = InputGlobals.GetValidInputs(console);
+            for (int i = 0; i < inputs.Length; i++)
+            {
+                ButtonStates.Add(inputs[i], false);
+            }
+
+            Console.WriteLine($"Set controller {ControllerID} buttons to {console}");
+
+            //Reset the controller when we set buttons
+            //If we switch to a different console, this will clear all other inputs, including ones not supported by this console
+            Reset();
+        }
+
         public static void Initialize()
         {
             if (Initialized == true) return;
 
             VJoyInstance = new vJoy();
-            Joystick = new VJoyController(1);
 
             if (VJoyInstance.vJoyEnabled() == false)
             {
                 Console.WriteLine("vJoy driver not enabled!");
                 return;
             }
+
+            Joystick = new VJoyController(1);
+            Joystick.SetButtons(InputGlobals.CurrentConsole);
 
             string vendor = VJoyInstance.GetvJoyManufacturerString();
             string product = VJoyInstance.GetvJoyProductString();
@@ -63,11 +116,25 @@ namespace KimimaruBot
                     if (acquire == false) goto default;
 
                     Console.WriteLine($"Acquired vJoy device ID {Joystick.ControllerID}!");
+
+                    //Reset the joystick
+                    Joystick.Reset();
                     break;
                 default:
                     Console.WriteLine($"Unable to acquire vJoy device ID {Joystick.ControllerID}");
                     break;
             }
+        }
+
+        public static void CleanUp()
+        {
+            if (Initialized == false)
+            {
+                Console.WriteLine("Not initialized; cannot clean up");
+                return;
+            }
+
+            Joystick?.Dispose();
         }
 
         public static void CheckDeviceIDState(in uint deviceID)

@@ -83,6 +83,9 @@ namespace KimimaruBot
             ClientMessages.Clear();
             Client.Disconnect();
 
+            //Clean up the device when the driver is finished
+            VJoyController.CleanUp();
+
             instance = null;
         }
 
@@ -262,9 +265,9 @@ namespace KimimaruBot
                 try
                 {
                     Parser.Input input = new Parser.Input();
-                    string parse_message = input.expandify(input.populate_macros(e.ChatMessage.Message));
+                    string parse_message = Parser.expandify(Parser.populate_macros(e.ChatMessage.Message));
                     (bool valid, List<Parser.Input> inputList, bool containsStartInput, int durationCounter)
-                        parsedData = input.Parse(parse_message);
+                        parsedData = Parser.Parse(parse_message);
 
                     if (parsedData.valid == false)
                     {
