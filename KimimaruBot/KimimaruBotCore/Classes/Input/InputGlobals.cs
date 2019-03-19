@@ -29,7 +29,7 @@ namespace KimimaruBot
         /// <summary>
         /// The current console inputs are being sent for.
         /// </summary>
-        public static InputConsoles CurrentConsole = InputConsoles.SNES;
+        public static InputConsoles CurrentConsole = InputConsoles.GC;
 
         //SNES
         private static readonly string[] SNESInputs = new string[14]
@@ -107,6 +107,56 @@ namespace KimimaruBot
         }
 
         #region Input Definitions
+
+        public static Dictionary<string, uint> INPUTS = new Dictionary<string, uint>()
+        {
+            { "a", 1 },
+            { "b", 2 },
+            { "l", 3 },
+            { "r", 4 },
+            { "x", 5 },
+            { "y", 6 },
+            { "start", 7 },
+            { "dup", 8 },
+            { "ddown", 9 },
+            { "dleft", 10 },
+            { "dright", 11 },
+            { "z", 12 },
+        };
+        /*public static Dictionary<string, uint> INPUTS = new Dictionary<string, uint>() {
+            { "left", 0 }, { "c", 0 },
+            { "right", 1 }, { "z", 1 },
+            { "up", 2 }, { "tleft", 2 },
+            { "down", 3 }, { "tright", 3 },
+            { "a", 4 },
+            { "b", 5 },
+            { "l", 6 }, { "one", 6 },
+            { "r", 7 }, { "two", 7 },
+            { "select", 8 }, { "minus", 8 },
+            { "start", 9 }, { "plus", 9 },
+            { "cleft", 10 }, { "pleft", 10 },
+            { "cright", 11 }, { "pright", 11 },
+            { "cup", 12 }, { "pup", 12 },
+            { "cdown", 13 }, { "pdown", 13 },
+            { "dleft", 14 },
+            { "dright", 15 },
+            { "dup", 16 },
+            { "ddown", 17 },
+            { "SAVESTATE1", 18 }, { "tforward", 18 },
+            { "SAVESTATE2", 19 }, { "tback", 19 },
+            { "SAVESTATE3", 20 },
+            { "SAVESTATE4", 21 },
+            { "SAVESTATE5", 22 },
+            { "SAVESTATE6", 23 },
+            { "LOADSTATE1", 24 },
+            { "LOADSTATE2", 25 },
+            { "LOADSTATE3", 26 },
+            { "LOADSTATE4", 27 },
+            { "LOADSTATE5", 28 },
+            { "LOADSTATE6", 29 },
+            { "x", 30 }, { "shake", 30 },
+            { "y", 31 }, { "point", 31 },
+        };*/
 
         #endregion
     }

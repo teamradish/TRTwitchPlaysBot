@@ -1,5 +1,5 @@
 {
-  "kimimaru4000": 15100,
+  "kimimaru4000": 15700,
   "kimimarubot": 100,
   "silver_ninja_guy": 4700,
   "mokmoon123": 19382,

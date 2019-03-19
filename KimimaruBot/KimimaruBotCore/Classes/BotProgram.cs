@@ -289,6 +289,8 @@ namespace KimimaruBot
                             }
                         }
                         Console.WriteLine(thing);
+
+                        InputHandler.CarryOutInput(parsedData.inputList);
                     }
                 }
                 catch (Exception exception)

@@ -36,6 +36,8 @@ namespace KimimaruBot
         /// </summary>
         public uint ControllerID { get; private set; } = 0;
 
+        //private JoystickState JSState = default(JoystickState);
+
         public VJoyController(in uint controllerID)
         {
             ControllerID = controllerID;
@@ -46,6 +48,7 @@ namespace KimimaruBot
             if (Initialized == false)
                 return;
 
+            Reset();
             VJoyInstance.RelinquishVJD(ControllerID);
         }
 
@@ -62,6 +65,37 @@ namespace KimimaruBot
             }
 
             VJoyInstance.ResetVJD(ControllerID);
+        }
+
+        public void PressAxis(HID_USAGES axis, in bool min, in int percent)
+        {
+            long val = 0L;
+            if (min)
+            {
+                VJoyInstance.GetVJDAxisMin(ControllerID, axis, ref val);
+                VJoyInstance.SetAxis((int)(val * (percent / 100f)), ControllerID, axis);
+            }
+            else
+            {
+                VJoyInstance.GetVJDAxisMax(ControllerID, axis, ref val);
+                VJoyInstance.SetAxis((int)(val * (percent / 100f)), ControllerID, axis);
+            }
+        }
+
+        public void PressButton(in string buttonName)
+        {
+            if (ButtonStates[buttonName] == true) return;
+
+            ButtonStates[buttonName] = true;
+            VJoyInstance.SetBtn(true, ControllerID, InputGlobals.INPUTS[buttonName]);
+        }
+
+        public void ReleaseButton(in string buttonName)
+        {
+            if (ButtonStates[buttonName] == false) return;
+
+            ButtonStates[buttonName] = false;
+            VJoyInstance.SetBtn(false, ControllerID, InputGlobals.INPUTS[buttonName]);
         }
 
         public void SetButtons(InputGlobals.InputConsoles console)
