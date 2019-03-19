@@ -266,7 +266,7 @@ namespace KimimaruBot
                 {
                     Parser.Input input = new Parser.Input();
                     string parse_message = Parser.expandify(Parser.populate_macros(e.ChatMessage.Message));
-                    (bool valid, List<Parser.Input> inputList, bool containsStartInput, int durationCounter)
+                    (bool valid, List<List<Parser.Input>> inputList, bool containsStartInput, int durationCounter)
                         parsedData = Parser.Parse(parse_message);
 
                     if (parsedData.valid == false)
@@ -281,9 +281,12 @@ namespace KimimaruBot
 
                         for (int i = 0; i < parsedData.inputList.Count; i++)
                         {
-                            Parser.Input thing2 = parsedData.inputList[i];
+                            for (int j = 0; j < parsedData.inputList[i].Count; j++)
+                            {
+                                Parser.Input thing2 = parsedData.inputList[i][j];
 
-                            thing += thing2.ToString() + "\n";
+                                thing += thing2.ToString() + "\n";
+                            }
                         }
                         Console.WriteLine(thing);
                     }

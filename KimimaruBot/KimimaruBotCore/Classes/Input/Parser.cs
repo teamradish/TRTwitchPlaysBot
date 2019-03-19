@@ -295,12 +295,12 @@ namespace KimimaruBot
 
         //Returns list containing: [Valid, input_sequence]
         //Or: [Invalid, input that it failed on]
-        public static (bool, List<Input>, bool, int) Parse(string message)
+        public static (bool, List<List<Input>>, bool, int) Parse(string message)
         {
             bool contains_start_input = false;
             message = message.Replace(" ", string.Empty).ToLower();
             List<Input> input_subsequence = new List<Input>();
-            List<Input> input_sequence = new List<Input>();
+            List<List<Input>> input_sequence = new List<List<Input>>();
             int duration_counter = 0;
 
             message = populate_synonyms(message);
@@ -317,7 +317,7 @@ namespace KimimaruBot
                  */
 
                 if (string.IsNullOrEmpty(current_input.error) == false)
-                    return (false, new List<Input>() { current_input }, false, subduration_max);
+                    return (false, new List<List<Input>>() { new List<Input>() { current_input } }, false, subduration_max);
 
                 message = message.Substring(current_input.length);
                 input_subsequence.Add(current_input);
@@ -342,10 +342,10 @@ namespace KimimaruBot
                          */
 
                         if (string.IsNullOrEmpty(current_input.error) == false)
-                            return (false, new List<Input>() { current_input }, false, subduration_max);
+                            return (false, new List<List<Input>>() { new List<Input>() { current_input }  }, false, subduration_max);
 
                         message = message.Substring(current_input.length);
-                        input_sequence.Add(current_input);
+                        input_subsequence.Add(current_input);
 
                         if (current_input.duration > subduration_max)
                             subduration_max = current_input.duration;
@@ -360,10 +360,10 @@ namespace KimimaruBot
                 if (duration_counter > InputGlobals.DURATION_MAX)
                 {
                     current_input.error = "ERR_DURATION_MAX";
-                    return (false, new List<Input>() { current_input }, false, subduration_max);
+                    return (false, new List<List<Input>>() { new List<Input>() { current_input }  }, false, subduration_max);
                 }
 
-                input_sequence.AddRange(input_subsequence);
+                input_sequence.Add(input_subsequence);
             }
 
             return (true, input_sequence, contains_start_input, duration_counter);
