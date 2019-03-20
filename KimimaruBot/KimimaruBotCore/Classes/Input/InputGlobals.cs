@@ -106,57 +106,83 @@ namespace KimimaruBot
             }
         }
 
+        public static bool IsAxis(in Parser.Input input)
+        {
+            if ((input.name == "l" || input.name == "r") && input.percent < 100) return true;
+
+            return (InputAxes.ContainsKey(input.name) == true);
+        }
+
+        public static bool IsWait(in Parser.Input input) => (input.name == "#" || input.name == ".");
+
+        public static bool IsButton(in Parser.Input input)
+        {
+            if ((input.name == "l" || input.name == "r") && input.percent != 100)
+                return false;
+
+            return (IsAxis(input) == false && IsWait(input) == false);
+        }
+
+        public static bool IsMinAxis(in string input)
+        {
+            return (input == "left" || input == "up" || input == "cleft" || input == "cup");
+        }
+
+        public static bool IsAbsoluteAxis(in Parser.Input input)
+        {
+            return ((input.name == "l" || input.name == "r") && input.percent != 100);
+        }
+
         #region Input Definitions
 
-        public static Dictionary<string, uint> INPUTS = new Dictionary<string, uint>()
-        {
-            { "a", 1 },
-            { "b", 2 },
-            { "l", 3 },
-            { "r", 4 },
-            { "x", 5 },
-            { "y", 6 },
-            { "start", 7 },
-            { "dup", 8 },
-            { "ddown", 9 },
-            { "dleft", 10 },
-            { "dright", 11 },
-            { "z", 12 },
+        public static readonly Dictionary<string, uint> InputMap = new Dictionary<string, uint>() {
+            { "left", 1 }, { "c", 1 },
+            { "right", 2 }, { "z", 2 },
+            { "up", 3 }, { "tleft", 3 },
+            { "down", 4 }, { "tright", 4 },
+            { "a", 5 },
+            { "b", 6 },
+            { "l", 7 }, { "one", 7 },
+            { "r", 8 }, { "two", 8 },
+            { "select", 9 }, { "minus", 9 },
+            { "start", 10 }, { "plus", 10 },
+            { "cleft", 11 }, { "pleft", 11 },
+            { "cright", 12 }, { "pright", 12 },
+            { "cup", 13 }, { "pup", 13 },
+            { "cdown", 14 }, { "pdown", 14 },
+            { "dleft", 15 },
+            { "dright", 16 },
+            { "dup", 17 },
+            { "ddown", 18 },
+            { "SAVESTATE1", 19 }, { "tforward", 19 },
+            { "SAVESTATE2", 20 }, { "tback", 20 },
+            { "SAVESTATE3", 21 },
+            { "SAVESTATE4", 22 },
+            { "SAVESTATE5", 23 },
+            { "SAVESTATE6", 24 },
+            { "LOADSTATE1", 25 },
+            { "LOADSTATE2", 26 },
+            { "LOADSTATE3", 27 },
+            { "LOADSTATE4", 28 },
+            { "LOADSTATE5", 29 },
+            { "LOADSTATE6", 30 },
+            { "x", 31 }, { "shake", 31 },
+            { "y", 32 }, { "point", 32 },
         };
-        /*public static Dictionary<string, uint> INPUTS = new Dictionary<string, uint>() {
-            { "left", 0 }, { "c", 0 },
-            { "right", 1 }, { "z", 1 },
-            { "up", 2 }, { "tleft", 2 },
-            { "down", 3 }, { "tright", 3 },
-            { "a", 4 },
-            { "b", 5 },
-            { "l", 6 }, { "one", 6 },
-            { "r", 7 }, { "two", 7 },
-            { "select", 8 }, { "minus", 8 },
-            { "start", 9 }, { "plus", 9 },
-            { "cleft", 10 }, { "pleft", 10 },
-            { "cright", 11 }, { "pright", 11 },
-            { "cup", 12 }, { "pup", 12 },
-            { "cdown", 13 }, { "pdown", 13 },
-            { "dleft", 14 },
-            { "dright", 15 },
-            { "dup", 16 },
-            { "ddown", 17 },
-            { "SAVESTATE1", 18 }, { "tforward", 18 },
-            { "SAVESTATE2", 19 }, { "tback", 19 },
-            { "SAVESTATE3", 20 },
-            { "SAVESTATE4", 21 },
-            { "SAVESTATE5", 22 },
-            { "SAVESTATE6", 23 },
-            { "LOADSTATE1", 24 },
-            { "LOADSTATE2", 25 },
-            { "LOADSTATE3", 26 },
-            { "LOADSTATE4", 27 },
-            { "LOADSTATE5", 28 },
-            { "LOADSTATE6", 29 },
-            { "x", 30 }, { "shake", 30 },
-            { "y", 31 }, { "point", 31 },
-        };*/
+
+        public static readonly Dictionary<string, HID_USAGES> InputAxes = new Dictionary<string, HID_USAGES>()
+        {
+            { "left", HID_USAGES.HID_USAGE_X },
+            { "right", HID_USAGES.HID_USAGE_X },
+            { "up", HID_USAGES.HID_USAGE_Y },
+            { "down", HID_USAGES.HID_USAGE_Y },
+            { "cleft", HID_USAGES.HID_USAGE_RX },
+            { "cright", HID_USAGES.HID_USAGE_RX },
+            { "cup", HID_USAGES.HID_USAGE_RY },
+            { "cdown", HID_USAGES.HID_USAGE_RY },
+            { "l", HID_USAGES.HID_USAGE_RZ },
+            { "r", HID_USAGES.HID_USAGE_Z }
+        };
 
         #endregion
     }

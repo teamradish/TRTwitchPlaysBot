@@ -36,7 +36,7 @@ namespace KimimaruBot
         /// </summary>
         public uint ControllerID { get; private set; } = 0;
 
-        //private JoystickState JSState = default(JoystickState);
+        private Dictionary<HID_USAGES, (long AxisMin, long AxisMax)> MinMaxAxes = new Dictionary<HID_USAGES, (long, long)>();
 
         public VJoyController(in uint controllerID)
         {
@@ -50,6 +50,26 @@ namespace KimimaruBot
 
             Reset();
             VJoyInstance.RelinquishVJD(ControllerID);
+        }
+
+        public void Init()
+        {
+            Joystick.SetButtons(InputGlobals.CurrentConsole);
+
+            HID_USAGES[] axes = EnumUtility.GetValues<HID_USAGES>.EnumValues;
+
+            for (int i = 0; i < axes.Length; i++)
+            {
+                if (VJoyInstance.GetVJDAxisExist(ControllerID, axes[i]))
+                {
+                    long min = 0L;
+                    long max = 0L;
+                    VJoyInstance.GetVJDAxisMin(ControllerID, axes[i], ref min);
+                    VJoyInstance.GetVJDAxisMax(ControllerID, axes[i], ref max);
+
+                    MinMaxAxes.Add(axes[i], (min, max));
+                }
+            }
         }
 
         public void Reset()
@@ -67,19 +87,55 @@ namespace KimimaruBot
             VJoyInstance.ResetVJD(ControllerID);
         }
 
-        public void PressAxis(HID_USAGES axis, in bool min, in int percent)
+        public void PressAxis(in HID_USAGES axis, in bool min, in int percent)
         {
-            long val = 0L;
+            if (MinMaxAxes.TryGetValue(axis, out (long, long) axisVals) == false)
+            {
+                return;
+            }
+
+            long mid = (axisVals.Item2 - axisVals.Item1) / 2;
+
             if (min)
             {
-                VJoyInstance.GetVJDAxisMin(ControllerID, axis, ref val);
-                VJoyInstance.SetAxis((int)(val * (percent / 100f)), ControllerID, axis);
+                VJoyInstance.SetAxis((int)(mid - ((percent / 100f) * mid)), ControllerID, axis);
             }
             else
             {
-                VJoyInstance.GetVJDAxisMax(ControllerID, axis, ref val);
-                VJoyInstance.SetAxis((int)(val * (percent / 100f)), ControllerID, axis);
+                //Mid + ((percent / 100) * Mid)
+
+                VJoyInstance.SetAxis((int)(mid + ((percent / 100f) * mid)), ControllerID, axis);
             }
+        }
+
+        public void PressAbsoluteAxis(in HID_USAGES axis, in int percent)
+        {
+            if (MinMaxAxes.TryGetValue(axis, out (long, long) axisVals) == false)
+            {
+                return;
+            }
+
+            VJoyInstance.SetAxis((int)(axisVals.Item2 * (percent / 100f)), ControllerID, axis);
+        }
+
+        public void ReleaseAbsoluteAxis(in HID_USAGES axis)
+        {
+            if (MinMaxAxes.ContainsKey(axis) == false)
+            {
+                return;
+            }
+
+            VJoyInstance.SetAxis(0, ControllerID, axis);
+        }
+
+        public void ReleaseAxis(in HID_USAGES axis)
+        {
+            if (MinMaxAxes.TryGetValue(axis, out (long, long) axisVals) == false)
+            {
+                return;
+            }
+
+            VJoyInstance.SetAxis((int)((axisVals.Item2 - axisVals.Item1) / 2), ControllerID, axis);
         }
 
         public void PressButton(in string buttonName)
@@ -87,7 +143,7 @@ namespace KimimaruBot
             if (ButtonStates[buttonName] == true) return;
 
             ButtonStates[buttonName] = true;
-            VJoyInstance.SetBtn(true, ControllerID, InputGlobals.INPUTS[buttonName]);
+            VJoyInstance.SetBtn(true, ControllerID, InputGlobals.InputMap[buttonName]);
         }
 
         public void ReleaseButton(in string buttonName)
@@ -95,7 +151,7 @@ namespace KimimaruBot
             if (ButtonStates[buttonName] == false) return;
 
             ButtonStates[buttonName] = false;
-            VJoyInstance.SetBtn(false, ControllerID, InputGlobals.INPUTS[buttonName]);
+            VJoyInstance.SetBtn(false, ControllerID, InputGlobals.InputMap[buttonName]);
         }
 
         public void SetButtons(InputGlobals.InputConsoles console)
@@ -128,7 +184,6 @@ namespace KimimaruBot
             }
 
             Joystick = new VJoyController(1);
-            Joystick.SetButtons(InputGlobals.CurrentConsole);
 
             string vendor = VJoyInstance.GetvJoyManufacturerString();
             string product = VJoyInstance.GetvJoyProductString();
@@ -150,6 +205,9 @@ namespace KimimaruBot
                     if (acquire == false) goto default;
 
                     Console.WriteLine($"Acquired vJoy device ID {Joystick.ControllerID}!");
+
+                    //Initialize the joystick
+                    Joystick.Init();
 
                     //Reset the joystick
                     Joystick.Reset();
