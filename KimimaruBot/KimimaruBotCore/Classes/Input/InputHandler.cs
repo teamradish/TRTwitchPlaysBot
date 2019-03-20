@@ -11,6 +11,31 @@ namespace KimimaruBot
     /// </summary>
     public static class InputHandler
     {
+        /// <summary>
+        /// The current number of running input sequences.
+        /// </summary>
+        public static int CurrentRunningInputs => RunningInputThreads;
+
+        /// <summary>
+        /// The current number of running input threads.
+        /// </summary>
+        private static volatile int RunningInputThreads = 0;
+
+        /// <summary>
+        /// Whether inputs are being stopped.
+        /// </summary>
+        public static bool StopRunningInputs { get; private set; } = false;
+
+        public static void CancelRunningInputs()
+        {
+            StopRunningInputs = true;
+        }
+
+        public static void ResumeRunningInputs()
+        {
+            StopRunningInputs = false;
+        }
+
         public static void CarryOutInput(List<List<Parser.Input>> inputList)
         {
             /*Kimimaru: We're using a thread pool for efficiency
@@ -28,6 +53,9 @@ namespace KimimaruBot
 
         private static void InputThread(object obj)
         {
+            //Increment running threads
+            Interlocked.Increment(ref RunningInputThreads);
+
             List<List<Parser.Input>> inputList = (List<List<Parser.Input>>)obj;
 
             Stopwatch sw = new Stopwatch();
@@ -60,6 +88,12 @@ namespace KimimaruBot
 
                 while (indices.Count > 0)
                 {
+                    //End the input prematurely
+                    if (StopRunningInputs == true)
+                    {
+                        goto End;
+                    }
+
                     //Release buttons when we should
                     for (int j = indices.Count - 1; j >= 0; j--)
                     {
@@ -88,6 +122,10 @@ namespace KimimaruBot
                     VJoyController.Joystick.ReleaseInput(inputs[j]);
                 }
             }
+
+            End:
+
+            Interlocked.Decrement(ref RunningInputThreads);
         }
     }
 }

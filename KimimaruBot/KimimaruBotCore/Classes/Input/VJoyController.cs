@@ -84,7 +84,19 @@ namespace KimimaruBot
                 ButtonStates[keys[i]] = false;
             }
 
-            VJoyInstance.ResetVJD(ControllerID);
+            VJoyInstance.ResetButtons(ControllerID);
+
+            foreach (KeyValuePair<HID_USAGES, (long, long)> val in MinMaxAxes)
+            {
+                if (val.Key == HID_USAGES.HID_USAGE_RZ || val.Key == HID_USAGES.HID_USAGE_Z)
+                {
+                    ReleaseAbsoluteAxis(val.Key);
+                }
+                else
+                {
+                    ReleaseAxis(val.Key);
+                }
+            }
         }
 
         public void PressInput(in Parser.Input input)
