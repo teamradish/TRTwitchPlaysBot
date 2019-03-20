@@ -89,13 +89,13 @@ namespace KimimaruBot
 
         public void PressInput(in Parser.Input input)
         {
-            if (InputGlobals.IsAxis(input) == true)
-            {
-                PressAxis(InputGlobals.InputAxes[input.name], InputGlobals.IsMinAxis(input.name), input.percent);
-            }
-            else if (InputGlobals.IsAbsoluteAxis(input) == true)
+            if (InputGlobals.IsAbsoluteAxis(input) == true)
             {
                 PressAbsoluteAxis(InputGlobals.InputAxes[input.name], input.percent);
+            }
+            else if (InputGlobals.IsAxis(input) == true)
+            {
+                PressAxis(InputGlobals.InputAxes[input.name], InputGlobals.IsMinAxis(input.name), input.percent);
             }
             else if (InputGlobals.IsButton(input) == true)
             {
@@ -105,13 +105,13 @@ namespace KimimaruBot
 
         public void ReleaseInput(in Parser.Input input)
         {
-            if (InputGlobals.IsAxis(input) == true)
-            {
-                ReleaseAxis(InputGlobals.InputAxes[input.name]);
-            }
-            else if (InputGlobals.IsAbsoluteAxis(input) == true)
+            if (InputGlobals.IsAbsoluteAxis(input) == true)
             {
                 ReleaseAbsoluteAxis(InputGlobals.InputAxes[input.name]);
+            }
+            else if (InputGlobals.IsAxis(input) == true)
+            {
+                ReleaseAxis(InputGlobals.InputAxes[input.name]);
             }
             else if (InputGlobals.IsButton(input) == true)
             {

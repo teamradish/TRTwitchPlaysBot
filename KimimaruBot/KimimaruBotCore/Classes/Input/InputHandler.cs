@@ -13,10 +13,17 @@ namespace KimimaruBot
     {
         public static void CarryOutInput(List<List<Parser.Input>> inputList)
         {
-            Thread thread = new Thread(InputThread);
-            thread.Start(inputList);
+            /*Kimimaru: We're using a thread pool for efficiency
+             * Though very unlikely, there's a chance the input won't execute right away if it has to wait for a thread to be available
+             * However, there are often plenty of available threads, so this shouldn't be an issue since we use only one thread per input string
+             * Uncomment the following lines to see how many threads are supported in the pool on your machine */
+            //ThreadPool.GetMinThreads(out int workermin, out int completionmin);
+            //ThreadPool.GetMaxThreads(out int workerthreads, out int completionPortThreads);
+            //Console.WriteLine($"Min workers: {workermin} Max workers: {workerthreads} Min async IO threads: {completionmin} Max async IO threads: {completionPortThreads}");
 
-            //Next step; store threads so we can stop all ongoing inputs immediately
+            ThreadPool.QueueUserWorkItem(new WaitCallback(InputThread), inputList);
+
+            //Next step; set a bool that's checked in the input threads to stop all ongoing inputs immediately
         }
 
         private static void InputThread(object obj)
@@ -31,8 +38,6 @@ namespace KimimaruBot
             {
                 List<Parser.Input> inputs = inputList[i];
 
-                int maxDur = -1;
-
                 indices.Clear();
 
                 //Press all buttons unless it's a release input
@@ -40,11 +45,6 @@ namespace KimimaruBot
                 {
                     indices.Add(j);
                     Parser.Input input = inputs[j];
-
-                    if (input.duration > maxDur)
-                    {
-                        maxDur = input.duration;
-                    }
 
                     if (input.release == true)
                     {

@@ -108,7 +108,10 @@ namespace KimimaruBot
 
         public static bool IsAxis(in Parser.Input input)
         {
-            if ((input.name == "l" || input.name == "r") && input.percent < 100) return true;
+            if (input.name == "l" || input.name == "r")
+            {
+                return (input.percent < 100);
+            }
 
             return (InputAxes.ContainsKey(input.name) == true);
         }
@@ -117,8 +120,10 @@ namespace KimimaruBot
 
         public static bool IsButton(in Parser.Input input)
         {
-            if ((input.name == "l" || input.name == "r") && input.percent != 100)
-                return false;
+            if (input.name == "l" || input.name == "r")
+            {
+                return (input.percent == 100);
+            }
 
             return (IsAxis(input) == false && IsWait(input) == false);
         }
