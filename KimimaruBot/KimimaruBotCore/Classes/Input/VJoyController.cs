@@ -87,6 +87,38 @@ namespace KimimaruBot
             VJoyInstance.ResetVJD(ControllerID);
         }
 
+        public void PressInput(in Parser.Input input)
+        {
+            if (InputGlobals.IsAxis(input) == true)
+            {
+                PressAxis(InputGlobals.InputAxes[input.name], InputGlobals.IsMinAxis(input.name), input.percent);
+            }
+            else if (InputGlobals.IsAbsoluteAxis(input) == true)
+            {
+                PressAbsoluteAxis(InputGlobals.InputAxes[input.name], input.percent);
+            }
+            else if (InputGlobals.IsButton(input) == true)
+            {
+                PressButton(input.name);
+            }
+        }
+
+        public void ReleaseInput(in Parser.Input input)
+        {
+            if (InputGlobals.IsAxis(input) == true)
+            {
+                ReleaseAxis(InputGlobals.InputAxes[input.name]);
+            }
+            else if (InputGlobals.IsAbsoluteAxis(input) == true)
+            {
+                ReleaseAbsoluteAxis(InputGlobals.InputAxes[input.name]);
+            }
+            else if (InputGlobals.IsButton(input) == true)
+            {
+                ReleaseButton(input.name);
+            }
+        }
+
         public void PressAxis(in HID_USAGES axis, in bool min, in int percent)
         {
             if (MinMaxAxes.TryGetValue(axis, out (long, long) axisVals) == false)

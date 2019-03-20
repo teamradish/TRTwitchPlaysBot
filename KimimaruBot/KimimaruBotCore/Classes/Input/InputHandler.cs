@@ -13,68 +13,80 @@ namespace KimimaruBot
     {
         public static void CarryOutInput(List<List<Parser.Input>> inputList)
         {
-            for (int i = 0; i < inputList.Count; i++)
-            {
-                for (int j = 0; j < inputList[i].Count; j++)
-                {
-                    Thread thread = new Thread(InefficientInputs);
-                    thread.Start(inputList[i][j]);
-                }
-            }
+            Thread thread = new Thread(InputThread);
+            thread.Start(inputList);
+
+            //Next step; store threads so we can stop all ongoing inputs immediately
         }
 
         private static void InputThread(object obj)
         {
             List<List<Parser.Input>> inputList = (List<List<Parser.Input>>)obj;
 
+            Stopwatch sw = new Stopwatch();
+
+            List<int> indices = new List<int>(16);
+
             for (int i = 0; i < inputList.Count; i++)
             {
                 List<Parser.Input> inputs = inputList[i];
-                
+
+                int maxDur = -1;
+
+                indices.Clear();
+
+                //Press all buttons unless it's a release input
+                for (int j = 0; j < inputs.Count; j++)
+                {
+                    indices.Add(j);
+                    Parser.Input input = inputs[j];
+
+                    if (input.duration > maxDur)
+                    {
+                        maxDur = input.duration;
+                    }
+
+                    if (input.release == true)
+                    {
+                        VJoyController.Joystick.ReleaseInput(input);
+                    }
+                    else
+                    {
+                        VJoyController.Joystick.PressInput(input);
+                    }
+                }
+
+                sw.Start();
+
+                while (indices.Count > 0)
+                {
+                    //Release buttons when we should
+                    for (int j = indices.Count - 1; j >= 0; j--)
+                    {
+                        Parser.Input input = inputs[indices[j]];
+
+                        if (sw.ElapsedMilliseconds < input.duration) continue;
+
+                        if (input.hold == false)
+                        {
+                            VJoyController.Joystick.ReleaseInput(input);
+                        }
+
+                        indices.RemoveAt(j);
+                    }
+                }
+
+                sw.Reset();
             }
 
-            Stopwatch sw = Stopwatch.StartNew();
-        }
-
-        private static void InefficientInputs(object obj)
-        {
-            Parser.Input input = (Parser.Input)obj;
-
-            int dur = input.duration;
-
-            if (InputGlobals.IsAxis(input) == true)
+            //At the end of it all, release every input
+            for (int i = 0; i < inputList.Count; i++)
             {
-                VJoyController.Joystick.PressAxis(InputGlobals.InputAxes[input.name], InputGlobals.IsMinAxis(input.name), input.percent);
-            }
-            else if (InputGlobals.IsAbsoluteAxis(input) == true)
-            {
-                VJoyController.Joystick.PressAbsoluteAxis(InputGlobals.InputAxes[input.name], input.percent);
-            }
-            else if (InputGlobals.IsButton(input) == true)
-            {
-                VJoyController.Joystick.PressButton(input.name);
-            }
-
-            Stopwatch sw = Stopwatch.StartNew();
-
-            while (sw.ElapsedMilliseconds < dur)
-            {
-
-            }
-
-            sw.Stop();
-
-            if (InputGlobals.IsAxis(input) == true)
-            {
-                VJoyController.Joystick.ReleaseAxis(InputGlobals.InputAxes[input.name]);
-            }
-            else if (InputGlobals.IsAbsoluteAxis(input) == true)
-            {
-                VJoyController.Joystick.ReleaseAbsoluteAxis(InputGlobals.InputAxes[input.name]);
-            }
-            else if (InputGlobals.IsButton(input) == true)
-            {
-                VJoyController.Joystick.ReleaseButton(input.name);
+                List<Parser.Input> inputs = inputList[i];
+                for (int j = 0; j < inputs.Count; j++)
+                {
+                    VJoyController.Joystick.ReleaseInput(inputs[j]);
+                }
             }
         }
     }
