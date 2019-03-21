@@ -70,18 +70,28 @@ namespace KimimaruBot
             Stopwatch sw = new Stopwatch();
 
             List<int> indices = new List<int>(16);
+            int nonWaits = 0;
 
             for (int i = 0; i < inputList.Count; i++)
             {
                 List<Parser.Input> inputs = inputList[i];
 
                 indices.Clear();
+                nonWaits = 0;
 
                 //Press all buttons unless it's a release input
                 for (int j = 0; j < inputs.Count; j++)
                 {
                     indices.Add(j);
                     Parser.Input input = inputs[j];
+
+                    //Don't do anything for a wait input
+                    if (InputGlobals.IsWait(input) == true)
+                    {
+                        continue;
+                    }
+
+                    nonWaits++;
 
                     if (input.release == true)
                     {
@@ -93,7 +103,11 @@ namespace KimimaruBot
                     }
                 }
 
-                VJoyController.Joystick.UpdateJoystickEfficient();
+                //Update the controller if there are non-wait inputs
+                if (nonWaits > 0)
+                {
+                    VJoyController.Joystick.UpdateJoystickEfficient();
+                }
 
                 sw.Start();
 
@@ -110,9 +124,13 @@ namespace KimimaruBot
                     {
                         Parser.Input input = inputs[indices[j]];
 
-                        if (sw.ElapsedMilliseconds < input.duration) continue;
+                        if (sw.ElapsedMilliseconds < input.duration)
+                        {
+                            continue;
+                        }
 
-                        if (input.hold == false)
+                        //Release if the input isn't a hold and isn't a wait input
+                        if (input.hold == false && InputGlobals.IsWait(input) == false)
                         {
                             VJoyController.Joystick.ReleaseInput(input);
 
