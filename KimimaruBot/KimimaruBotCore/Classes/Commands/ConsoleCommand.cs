@@ -36,14 +36,27 @@ namespace KimimaruBot
 
             if (console == InputGlobals.CurrentConsole)
             {
-                BotProgram.QueueMessage($"The current console is already {InputGlobals.CurrentConsole}");
+                BotProgram.QueueMessage($"The current console is already {InputGlobals.CurrentConsole}!");
                 return;
             }
 
+            //First stop all inputs completely while changing consoles - we don't want data from other inputs remaining
+            InputHandler.CancelRunningInputs();
+
+            //Wait until no inputs are running
+            while (InputHandler.CurrentRunningInputs > 0)
+            {
+
+            }
+
+            //Set console and buttons
             InputGlobals.CurrentConsole = console;
             VJoyController.Joystick.SetButtons(InputGlobals.CurrentConsole);
 
-            BotProgram.QueueMessage($"Set console to {InputGlobals.CurrentConsole}!");
+            //Resume inputs
+            InputHandler.ResumeRunningInputs();
+
+            BotProgram.QueueMessage($"Set console to {InputGlobals.CurrentConsole} and reset all inputs!");
         }
 
         private string GetValidConsoleStr()

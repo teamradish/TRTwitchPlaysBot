@@ -45,7 +45,7 @@ namespace KimimaruBot
         {
             "left", "right", "up", "down",
             "dleft", "dright", "dup", "ddown",
-            "cleft,", "cright", "cup", "cdown",
+            "cleft", "cright", "cup", "cdown",
             "a", "b", "l", "r", "z",
             "start",
             "#", "."
@@ -56,7 +56,7 @@ namespace KimimaruBot
         {
             "left", "right", "up", "down",
             "dleft", "dright", "dup", "ddown",
-            "cleft,", "cright", "cup", "cdown",
+            "cleft", "cright", "cup", "cdown",
             "a", "b", "l", "r", "x", "y", "z",
             "start",
             "#", "."
@@ -67,7 +67,7 @@ namespace KimimaruBot
         {
             "left", "right", "up", "down",
             "pleft", "pright", "pup", "pdown",
-            "tleft,", "tright", "tup", "tdown",
+            "tleft", "tright", "tup", "tdown",
             "a", "b", "one", "two", "minus", "plus",
             "c", "z",
             "shake", "point",
@@ -106,11 +106,18 @@ namespace KimimaruBot
             }
         }
 
+        /* Kimimaru: NOTE - It might be better to refactor these to be in separate classes unique to each controller
+         * This way, for instance, if you call IsAbsoluteAxis on a GC controller, it'll return true if L or R aren't fully pressed, but on any
+         * other console it'll return false
+         * 
+         * This also makes extending them to other consoles easier
+         * */
+
         public static bool IsAxis(in Parser.Input input)
         {
             if (input.name == "l" || input.name == "r")
             {
-                return (input.percent < 100);
+                return (CurrentConsole == InputConsoles.GC && input.percent < 100);
             }
 
             return (InputAxes.ContainsKey(input.name) == true);
@@ -120,7 +127,7 @@ namespace KimimaruBot
 
         public static bool IsButton(in Parser.Input input)
         {
-            if (input.name == "l" || input.name == "r")
+            if (CurrentConsole == InputConsoles.GC && (input.name == "l" || input.name == "r"))
             {
                 return (input.percent == 100);
             }
@@ -135,7 +142,7 @@ namespace KimimaruBot
 
         public static bool IsAbsoluteAxis(in Parser.Input input)
         {
-            return ((input.name == "l" || input.name == "r") && input.percent != 100);
+            return (CurrentConsole == InputConsoles.GC && ((input.name == "l" || input.name == "r") && input.percent != 100));
         }
 
         #region Input Definitions

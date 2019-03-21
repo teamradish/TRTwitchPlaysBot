@@ -9,9 +9,25 @@ namespace KimimaruBot
     public class VJoyController : IDisposable
     {
         /// <summary>
-        /// Whether we're using vJoy's robust, but less efficient, implementation or not.
+        /// The method of feeding inputs to the device.
         /// </summary>
-        public static bool UseRobustImplementation = true;
+        public enum DeviceFeedMethod
+        {
+            /// <summary>
+            /// Less efficient but easier to work with.
+            /// </summary>
+            Robust,
+
+            /// <summary>
+            /// More efficient, as it updates the driver less frequently, but harder to work with.
+            /// </summary>
+            Efficient
+        }
+
+        /// <summary>
+        /// The method of feeding inputs to the vJoy driver.
+        /// </summary>
+        public static DeviceFeedMethod InputFeedMethod = DeviceFeedMethod.Efficient;
 
         /// <summary>
         /// Minimum acceptable vJoy device ID.
@@ -94,7 +110,14 @@ namespace KimimaruBot
                 ButtonStates[keys[i]] = false;
             }
 
-            VJoyInstance.ResetButtons(ControllerID);
+            if (InputFeedMethod == DeviceFeedMethod.Robust)
+            {
+                VJoyInstance.ResetButtons(ControllerID);
+            }
+            else
+            {
+                JSState.Buttons = JSState.ButtonsEx1 = JSState.ButtonsEx2 = JSState.ButtonsEx3 = 0;
+            }
 
             foreach (KeyValuePair<HID_USAGES, (long, long)> val in MinMaxAxes)
             {
@@ -151,16 +174,24 @@ namespace KimimaruBot
             }
 
             long mid = (axisVals.Item2 - axisVals.Item1) / 2;
+            int val = 0;
 
             if (min)
             {
-                VJoyInstance.SetAxis((int)(mid - ((percent / 100f) * mid)), ControllerID, axis);
+                val = (int)(mid - ((percent / 100f) * mid));
             }
             else
             {
-                //Mid + ((percent / 100) * Mid)
+                val = (int)(mid + ((percent / 100f) * mid));
+            }
 
-                VJoyInstance.SetAxis((int)(mid + ((percent / 100f) * mid)), ControllerID, axis);
+            if (InputFeedMethod == DeviceFeedMethod.Robust)
+            {
+                VJoyInstance.SetAxis(val, ControllerID, axis);
+            }
+            else
+            {
+                SetAxisEfficient(axis, val);
             }
         }
 
@@ -171,7 +202,16 @@ namespace KimimaruBot
                 return;
             }
 
-            VJoyInstance.SetAxis((int)(axisVals.Item2 * (percent / 100f)), ControllerID, axis);
+            int val = (int)(axisVals.Item2 * (percent / 100f));
+
+            if (InputFeedMethod == DeviceFeedMethod.Robust)
+            {
+                VJoyInstance.SetAxis(val, ControllerID, axis);
+            }
+            else
+            {
+                SetAxisEfficient(axis, val);
+            }
         }
 
         public void ReleaseAbsoluteAxis(in HID_USAGES axis)
@@ -181,7 +221,14 @@ namespace KimimaruBot
                 return;
             }
 
-            VJoyInstance.SetAxis(0, ControllerID, axis);
+            if (InputFeedMethod == DeviceFeedMethod.Robust)
+            {
+                VJoyInstance.SetAxis(0, ControllerID, axis);
+            }
+            else
+            {
+                SetAxisEfficient(axis, 0);
+            }
         }
 
         public void ReleaseAxis(in HID_USAGES axis)
@@ -191,7 +238,15 @@ namespace KimimaruBot
                 return;
             }
 
-            VJoyInstance.SetAxis((int)((axisVals.Item2 - axisVals.Item1) / 2), ControllerID, axis);
+            int val = (int)((axisVals.Item2 - axisVals.Item1) / 2);
+            if (InputFeedMethod == DeviceFeedMethod.Robust)
+            {
+                VJoyInstance.SetAxis(val, ControllerID, axis);
+            }
+            else
+            {
+                SetAxisEfficient(axis, val);
+            }
         }
 
         public void PressButton(in string buttonName)
@@ -199,7 +254,15 @@ namespace KimimaruBot
             if (ButtonStates[buttonName] == true) return;
 
             ButtonStates[buttonName] = true;
-            VJoyInstance.SetBtn(true, ControllerID, InputGlobals.InputMap[buttonName]);
+
+            if (InputFeedMethod == DeviceFeedMethod.Robust)
+            {
+                VJoyInstance.SetBtn(true, ControllerID, InputGlobals.InputMap[buttonName]);
+            }
+            else
+            {
+                JSState.Buttons |= (uint)(1 << ((int)InputGlobals.InputMap[buttonName] - 1));
+            }
         }
 
         public void ReleaseButton(in string buttonName)
@@ -207,7 +270,15 @@ namespace KimimaruBot
             if (ButtonStates[buttonName] == false) return;
 
             ButtonStates[buttonName] = false;
-            VJoyInstance.SetBtn(false, ControllerID, InputGlobals.InputMap[buttonName]);
+
+            if (InputFeedMethod == DeviceFeedMethod.Robust)
+            {
+                VJoyInstance.SetBtn(false, ControllerID, InputGlobals.InputMap[buttonName]);
+            }
+            else
+            {
+                JSState.Buttons &= ~(uint)(1 << ((int)InputGlobals.InputMap[buttonName] - 1));
+            }
         }
 
         public void SetButtons(InputGlobals.InputConsoles console)
@@ -227,12 +298,25 @@ namespace KimimaruBot
             Reset();
         }
 
+        private void SetAxisEfficient(in HID_USAGES axis, in int value)
+        {
+            switch (axis)
+            {
+                case HID_USAGES.HID_USAGE_X: JSState.AxisX = value; break;
+                case HID_USAGES.HID_USAGE_Y: JSState.AxisY = value; break;
+                case HID_USAGES.HID_USAGE_Z: JSState.AxisZ = value; break;
+                case HID_USAGES.HID_USAGE_RX: JSState.AxisXRot = value; break;
+                case HID_USAGES.HID_USAGE_RY: JSState.AxisYRot = value; break;
+                case HID_USAGES.HID_USAGE_RZ: JSState.AxisZRot = value; break;
+            }
+        }
+
         /// <summary>
-        /// Updates the joystick when using the efficient implementation.
+        /// Updates the joystick when using the <see cref="DeviceFeedMethod.Efficient"/> method of feeding input.
         /// </summary>
         public void UpdateJoystickEfficient()
         {
-            if (UseRobustImplementation == false)
+            if (InputFeedMethod == DeviceFeedMethod.Efficient)
             {
                 VJoyInstance.UpdateVJD(ControllerID, ref JSState);
             }
