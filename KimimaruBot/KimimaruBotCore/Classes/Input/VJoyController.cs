@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using vJoyInterfaceWrap;
+using System.Runtime.CompilerServices;
 using static vJoyInterfaceWrap.vJoy;
 
 namespace KimimaruBot
@@ -134,6 +135,7 @@ namespace KimimaruBot
             UpdateJoystickEfficient();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PressInput(in Parser.Input input)
         {
             if (InputGlobals.IsAbsoluteAxis(input) == true)
@@ -150,6 +152,7 @@ namespace KimimaruBot
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReleaseInput(in Parser.Input input)
         {
             if (InputGlobals.IsAbsoluteAxis(input) == true)
@@ -166,6 +169,7 @@ namespace KimimaruBot
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PressAxis(in HID_USAGES axis, in bool min, in int percent)
         {
             if (MinMaxAxes.TryGetValue(axis, out (long, long) axisVals) == false)
@@ -195,6 +199,7 @@ namespace KimimaruBot
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PressAbsoluteAxis(in HID_USAGES axis, in int percent)
         {
             if (MinMaxAxes.TryGetValue(axis, out (long, long) axisVals) == false)
@@ -214,6 +219,7 @@ namespace KimimaruBot
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReleaseAbsoluteAxis(in HID_USAGES axis)
         {
             if (MinMaxAxes.ContainsKey(axis) == false)
@@ -231,6 +237,7 @@ namespace KimimaruBot
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReleaseAxis(in HID_USAGES axis)
         {
             if (MinMaxAxes.TryGetValue(axis, out (long, long) axisVals) == false)
@@ -249,6 +256,7 @@ namespace KimimaruBot
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PressButton(in string buttonName)
         {
             if (ButtonStates[buttonName] == true) return;
@@ -265,6 +273,7 @@ namespace KimimaruBot
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReleaseButton(in string buttonName)
         {
             if (ButtonStates[buttonName] == false) return;
@@ -298,6 +307,7 @@ namespace KimimaruBot
             Reset();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void SetAxisEfficient(in HID_USAGES axis, in int value)
         {
             switch (axis)
@@ -314,6 +324,7 @@ namespace KimimaruBot
         /// <summary>
         /// Updates the joystick when using the <see cref="DeviceFeedMethod.Efficient"/> method of feeding input.
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void UpdateJoystickEfficient()
         {
             if (InputFeedMethod == DeviceFeedMethod.Efficient)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Runtime.CompilerServices;
 
 namespace KimimaruBot
 {
@@ -113,6 +114,7 @@ namespace KimimaruBot
          * This also makes extending them to other consoles easier
          * */
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsAxis(in Parser.Input input)
         {
             if (input.name == "l" || input.name == "r")
@@ -123,8 +125,10 @@ namespace KimimaruBot
             return (InputAxes.ContainsKey(input.name) == true);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsWait(in Parser.Input input) => (input.name == "#" || input.name == ".");
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsButton(in Parser.Input input)
         {
             if (CurrentConsole == InputConsoles.GC && (input.name == "l" || input.name == "r"))
@@ -135,11 +139,13 @@ namespace KimimaruBot
             return (IsAxis(input) == false && IsWait(input) == false);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMinAxis(in string input)
         {
             return (input == "left" || input == "up" || input == "cleft" || input == "cup");
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsAbsoluteAxis(in Parser.Input input)
         {
             return (CurrentConsole == InputConsoles.GC && ((input.name == "l" || input.name == "r") && input.percent != 100));
