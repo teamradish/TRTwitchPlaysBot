@@ -26,16 +26,27 @@ namespace KimimaruBot
         /// </summary>
         public static bool StopRunningInputs { get; private set; } = false;
 
+        /// <summary>
+        /// Cancels all currently running inputs.
+        /// After calling this, all inputs are officially cancelled when <see cref="CurrentRunningInputs"/> is 0.
+        /// </summary>
         public static void CancelRunningInputs()
         {
             StopRunningInputs = true;
         }
 
+        /// <summary>
+        /// Allows new inputs to be processed.
+        /// </summary>
         public static void ResumeRunningInputs()
         {
             StopRunningInputs = false;
         }
 
+        /// <summary>
+        /// Carries out a set of inputs.
+        /// </summary>
+        /// <param name="inputList">A list of lists of inputs to execute.</param>
         public static void CarryOutInput(List<List<Parser.Input>> inputList)
         {
             /*Kimimaru: We're using a thread pool for efficiency
@@ -46,12 +57,10 @@ namespace KimimaruBot
             //ThreadPool.GetMaxThreads(out int workerthreads, out int completionPortThreads);
             //Console.WriteLine($"Min workers: {workermin} Max workers: {workerthreads} Min async IO threads: {completionmin} Max async IO threads: {completionPortThreads}");
 
-            ThreadPool.QueueUserWorkItem(new WaitCallback(InputThread), inputList);
-
-            //Next step; set a bool that's checked in the input threads to stop all ongoing inputs immediately
+            ThreadPool.QueueUserWorkItem(new WaitCallback(ExecuteInput), inputList);
         }
 
-        private static void InputThread(object obj)
+        private static void ExecuteInput(object obj)
         {
             //Increment running threads
             Interlocked.Increment(ref RunningInputThreads);
@@ -84,6 +93,8 @@ namespace KimimaruBot
                     }
                 }
 
+                VJoyController.Joystick.UpdateJoystickEfficient();
+
                 sw.Start();
 
                 while (indices.Count > 0)
@@ -104,6 +115,8 @@ namespace KimimaruBot
                         if (input.hold == false)
                         {
                             VJoyController.Joystick.ReleaseInput(input);
+
+                            VJoyController.Joystick.UpdateJoystickEfficient();
                         }
 
                         indices.RemoveAt(j);
@@ -112,6 +125,9 @@ namespace KimimaruBot
 
                 sw.Reset();
             }
+
+            //End label to skip to if we should cancel early
+            End:
 
             //At the end of it all, release every input
             for (int i = 0; i < inputList.Count; i++)
@@ -123,8 +139,9 @@ namespace KimimaruBot
                 }
             }
 
-            End:
+            VJoyController.Joystick.UpdateJoystickEfficient();
 
+            //Decrement running threads
             Interlocked.Decrement(ref RunningInputThreads);
         }
     }

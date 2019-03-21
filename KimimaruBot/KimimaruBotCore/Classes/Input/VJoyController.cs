@@ -9,6 +9,11 @@ namespace KimimaruBot
     public class VJoyController : IDisposable
     {
         /// <summary>
+        /// Whether we're using vJoy's robust, but less efficient, implementation or not.
+        /// </summary>
+        public static bool UseRobustImplementation = true;
+
+        /// <summary>
         /// Minimum acceptable vJoy device ID.
         /// </summary>
         public const uint MIN_VJOY_DEVICE_ID = 1;
@@ -35,6 +40,11 @@ namespace KimimaruBot
         /// The ID of the controller.
         /// </summary>
         public uint ControllerID { get; private set; } = 0;
+
+        /// <summary>
+        /// The JoystickState of the controller, used in the Efficient implementation.
+        /// </summary>
+        private JoystickState JSState = default;
 
         private Dictionary<HID_USAGES, (long AxisMin, long AxisMax)> MinMaxAxes = new Dictionary<HID_USAGES, (long, long)>();
 
@@ -97,6 +107,8 @@ namespace KimimaruBot
                     ReleaseAxis(val.Key);
                 }
             }
+
+            UpdateJoystickEfficient();
         }
 
         public void PressInput(in Parser.Input input)
@@ -213,6 +225,17 @@ namespace KimimaruBot
             //Reset the controller when we set buttons
             //If we switch to a different console, this will clear all other inputs, including ones not supported by this console
             Reset();
+        }
+
+        /// <summary>
+        /// Updates the joystick when using the efficient implementation.
+        /// </summary>
+        public void UpdateJoystickEfficient()
+        {
+            if (UseRobustImplementation == false)
+            {
+                VJoyInstance.UpdateVJD(ControllerID, ref JSState);
+            }
         }
 
         public static void Initialize()

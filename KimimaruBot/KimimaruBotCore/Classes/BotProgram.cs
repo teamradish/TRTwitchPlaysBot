@@ -238,7 +238,7 @@ namespace KimimaruBot
 
         private void OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
-            QueueMessage($"{LoginInformation.BotName} has connected :D ! Use {Globals.CommandIdentifier}help to display a list of commands!");
+            QueueMessage($"{LoginInformation.BotName} has connected :D ! Use {Globals.CommandIdentifier}help to display a list of commands! Input parser by Jdog, aka TwitchPlays_Everything, converted & modified by Kimimaru");
 
             TryReconnect = false;
 
@@ -262,36 +262,14 @@ namespace KimimaruBot
             }
             else
             {
+                (bool valid, List<List<Parser.Input>> inputList, bool containsStartInput, int durationCounter)
+                        parsedData = default;
+
                 try
                 {
-                    Parser.Input input = new Parser.Input();
                     string parse_message = Parser.expandify(Parser.populate_macros(e.ChatMessage.Message));
-                    (bool valid, List<List<Parser.Input>> inputList, bool containsStartInput, int durationCounter)
-                        parsedData = Parser.Parse(parse_message);
 
-                    if (parsedData.valid == false)
-                    {
-                        if (string.IsNullOrEmpty(input.error) == false)
-                            BotProgram.QueueMessage($"Invalid input: {input.error}");
-                    }
-                    else
-                    {
-                        BotProgram.QueueMessage("Valid input!");
-                        string thing = "Valid input(s): ";
-
-                        for (int i = 0; i < parsedData.inputList.Count; i++)
-                        {
-                            for (int j = 0; j < parsedData.inputList[i].Count; j++)
-                            {
-                                Parser.Input thing2 = parsedData.inputList[i][j];
-
-                                thing += thing2.ToString() + "\n";
-                            }
-                        }
-                        Console.WriteLine(thing);
-
-                        InputHandler.CarryOutInput(parsedData.inputList);
-                    }
+                    parsedData = Parser.Parse(parse_message);
                 }
                 catch (Exception exception)
                 {
@@ -299,6 +277,34 @@ namespace KimimaruBot
                     //Most of these are currently caused by differences in how C# and Python handle slicing strings (Substring() vs string[:])
                     //One example that throws this that shouldn't is "#mash(w234"
                     //BotProgram.QueueMessage($"ERROR: {exception.Message}");
+
+                    return;
+                }
+
+                if (parsedData.valid == false)
+                {
+                    //Kimimaru: Currently this shows this for commands - keep commented until we find a better way to differentiate them
+                    //Parser.Input input = parsedData.inputList[0][0];
+                    //if (string.IsNullOrEmpty(input.error) == false)
+                    //    BotProgram.QueueMessage($"Invalid input: {input.error}");
+                }
+                else
+                {
+                    InputHandler.CarryOutInput(parsedData.inputList);
+
+                    //BotProgram.QueueMessage("Valid input!");
+                    //string thing = "Valid input(s): ";
+                    //
+                    //for (int i = 0; i < parsedData.inputList.Count; i++)
+                    //{
+                    //    for (int j = 0; j < parsedData.inputList[i].Count; j++)
+                    //    {
+                    //        Parser.Input thing2 = parsedData.inputList[i][j];
+                    //
+                    //        thing += thing2.ToString() + "\n";
+                    //    }
+                    //}
+                    //Console.WriteLine(thing);
                 }
             }
         }

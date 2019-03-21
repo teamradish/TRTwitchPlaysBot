@@ -20,9 +20,7 @@ namespace KimimaruBot
                 
             }
 
-            //Reset the controller
-            VJoyController.Joystick.Reset();
-
+            //Resume inputs
             InputHandler.ResumeRunningInputs();
 
             BotProgram.QueueMessage("Stopped all running inputs!");
