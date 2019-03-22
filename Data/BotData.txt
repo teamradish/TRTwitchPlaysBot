@@ -4,9 +4,9 @@
   "Users": {
     "kimimaru4000": {
       "Level": 0,
-      "Credits": 100,
-      "TotalMessages": 45,
-      "ValidInputs": 1,
+      "Credits": 200,
+      "TotalMessages": 109,
+      "ValidInputs": 60,
       "Silenced": false,
       "Team": 0,
       "Subscriber": 0,

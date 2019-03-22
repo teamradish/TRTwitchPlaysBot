@@ -256,13 +256,29 @@ namespace KimimaruBot
 
             ButtonStates[buttonName] = true;
 
+            uint buttonVal = InputGlobals.InputMap[buttonName];
+
             if (InputFeedMethod == DeviceFeedMethod.Robust)
             {
-                VJoyInstance.SetBtn(true, ControllerID, InputGlobals.InputMap[buttonName]);
+                VJoyInstance.SetBtn(true, ControllerID, buttonVal);
             }
             else
             {
-                JSState.Buttons |= (uint)(1 << ((int)InputGlobals.InputMap[buttonName] - 1));
+                //Kimimaru: Handle button counts greater than 32
+                //Each buttons value contains 32 bits, so choose the appropriate one based on the value of the button pressed
+                //Note that not all emulators (such as Dolphin) support more than 32 buttons
+                int buttonDiv = ((int)buttonVal - 1);
+                int divVal = buttonDiv / 32;
+                int realVal = buttonDiv - (32 * divVal);
+                uint addition = (uint)(1 << realVal);
+
+                switch (divVal)
+                {
+                    case 0: JSState.Buttons |= addition; break;
+                    case 1: JSState.ButtonsEx1 |= addition; break;
+                    case 2: JSState.ButtonsEx2 |= addition; break;
+                    case 3: JSState.ButtonsEx3 |= addition; break;
+                }
             }
         }
 
@@ -272,13 +288,29 @@ namespace KimimaruBot
 
             ButtonStates[buttonName] = false;
 
+            uint buttonVal = InputGlobals.InputMap[buttonName];
+
             if (InputFeedMethod == DeviceFeedMethod.Robust)
             {
-                VJoyInstance.SetBtn(false, ControllerID, InputGlobals.InputMap[buttonName]);
+                VJoyInstance.SetBtn(false, ControllerID, buttonVal);
             }
             else
             {
-                JSState.Buttons &= ~(uint)(1 << ((int)InputGlobals.InputMap[buttonName] - 1));
+                //Kimimaru: Handle button counts greater than 32
+                //Each buttons value contains 32 bits, so choose the appropriate one based on the value of the button pressed
+                //Note that not all emulators (such as Dolphin) support more than 32 buttons
+                int buttonDiv = ((int)buttonVal - 1);
+                int divVal = buttonDiv / 32;
+                int realVal = buttonDiv - (32 * divVal);
+                uint inverse = ~(uint)(1 << realVal);
+
+                switch (divVal)
+                {
+                    case 0: JSState.Buttons &= inverse; break;
+                    case 1: JSState.ButtonsEx1 &= inverse; break;
+                    case 2: JSState.ButtonsEx2 &= inverse; break;
+                    case 3: JSState.ButtonsEx3 &= inverse; break;
+                }
             }
         }
 
