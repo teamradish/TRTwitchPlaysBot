@@ -25,10 +25,10 @@ namespace KimimaruBot
             }
 
             string meme = args[0].ToLower();
-            if (MemesCommand.Memes.ContainsKey(meme) == true)
+            if (BotProgram.BotData.Memes.ContainsKey(meme) == true)
             {
-                MemesCommand.Memes.Remove(meme);
-                MemesCommand.SaveMemesDict();
+                BotProgram.BotData.Memes.Remove(meme);
+                BotProgram.SaveBotData();
                 MemesCommand.CacheMemesString();
             }
         }

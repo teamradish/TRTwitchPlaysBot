@@ -43,10 +43,11 @@ namespace KimimaruBot
                 string[] talkedNames = UsersTalked.Keys.ToArray();
                 for (int i = 0; i < talkedNames.Length; i++)
                 {
-                    CreditsCommand.UserCredits[talkedNames[i]] += BotProgram.BotSettings.CreditsAmount;
+                    User user = BotProgram.GetOrAddUser(talkedNames[i]);
+                    user.Credits += BotProgram.BotSettings.CreditsAmount;
                 }
 
-                CreditsCommand.SaveDict();
+                BotProgram.SaveBotData();
                 UsersTalked.Clear();
 
                 CurCreditsTime = currentTime;
@@ -60,8 +61,10 @@ namespace KimimaruBot
             //Check if the user talked before
             if (UsersTalked.ContainsKey(nameToLower) == false)
             {
+                User user = BotProgram.GetUser(nameToLower);
+
                 //If so, check if they're in the credits database and add them for gaining credits
-                if (CreditsCommand.UserCredits.ContainsKey(nameToLower) == true)
+                if (user != null)
                 {
                     UsersTalked.Add(nameToLower, true);
                 }

@@ -114,7 +114,6 @@ namespace KimimaruBot
          * This also makes extending them to other consoles easier
          * */
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsAxis(in Parser.Input input)
         {
             if (input.name == "l" || input.name == "r")
@@ -128,7 +127,6 @@ namespace KimimaruBot
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsWait(in Parser.Input input) => (input.name == "#" || input.name == ".");
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsButton(in Parser.Input input)
         {
             if (CurrentConsole == InputConsoles.GC && (input.name == "l" || input.name == "r"))

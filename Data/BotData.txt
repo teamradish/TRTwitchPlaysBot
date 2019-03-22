@@ -1,0 +1,21 @@
+{
+  "Macros": {},
+  "Memes": {},
+  "Users": {
+    "kimimaru4000": {
+      "Level": 0,
+      "Credits": 100,
+      "TotalMessages": 45,
+      "ValidInputs": 1,
+      "Silenced": false,
+      "Team": 0,
+      "Subscriber": 0,
+      "BetCounter": 0
+    }
+  },
+  "Logs": [],
+  "JRData": {
+    "User": "kimimaru4000",
+    "Streak": 10
+  }
+}

@@ -19,10 +19,13 @@ namespace KimimaruBot
 {
     public sealed class BotProgram : IDisposable
     {
+        private static object LockObj = new object();
+
         private static BotProgram instance = null;
 
         private LoginInfo LoginInformation = null;
         public static Settings BotSettings = null;
+        public static BotData BotData { get; private set; } = null;
 
         private TwitchClient Client;
         private ConnectionCredentials Credentials = null;
@@ -31,8 +34,6 @@ namespace KimimaruBot
         private CommandHandler CommandHandler = null;
 
         private bool TryReconnect = false;
-
-        private Dictionary<string, bool> UsersTalked = new Dictionary<string, bool>();
 
         private DateTime CurQueueTime;
 
@@ -96,6 +97,15 @@ namespace KimimaruBot
 
             string settingsText = File.ReadAllText(Globals.GetDataFilePath("Settings.txt"));
             BotSettings = JsonConvert.DeserializeObject<Settings>(settingsText);
+
+            string dataText = File.ReadAllText(Globals.GetDataFilePath("BotData.txt"));
+            BotData = JsonConvert.DeserializeObject<BotData>(dataText);
+
+            if (BotData == null)
+            {
+                BotData = new BotData();
+                SaveBotData();
+            }
 
             Credentials = new ConnectionCredentials(LoginInformation.BotName, LoginInformation.Password);
 
@@ -255,10 +265,14 @@ namespace KimimaruBot
 
         private void OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
+            User userData = GetOrAddUser(e.ChatMessage.Username, false);
+
+            userData.TotalMessages++;
+
             string possibleMeme = e.ChatMessage.Message.ToLower();
-            if (MemesCommand.Memes.ContainsKey(possibleMeme) == true)
+            if (BotProgram.BotData.Memes.TryGetValue(possibleMeme, out string meme) == true)
             {
-                BotProgram.QueueMessage(MemesCommand.Memes[possibleMeme]);
+                BotProgram.QueueMessage(meme);
             }
             else
             {
@@ -277,20 +291,34 @@ namespace KimimaruBot
                     //Most of these are currently caused by differences in how C# and Python handle slicing strings (Substring() vs string[:])
                     //One example that throws this that shouldn't is "#mash(w234"
                     //BotProgram.QueueMessage($"ERROR: {exception.Message}");
-
-                    return;
+                    parsedData.valid = false;
                 }
 
                 if (parsedData.valid == false)
                 {
-                    //Kimimaru: Currently this shows this for commands - keep commented until we find a better way to differentiate them
+                    //Kimimaru: Currently this also shows this for commands - keep commented until we find a better way to differentiate them
                     //Parser.Input input = parsedData.inputList[0][0];
                     //if (string.IsNullOrEmpty(input.error) == false)
                     //    BotProgram.QueueMessage($"Invalid input: {input.error}");
                 }
                 else
                 {
-                    InputHandler.CarryOutInput(parsedData.inputList);
+                    //Ignore if user is silenced
+                    if (userData.Silenced == true)
+                    {
+                        return;
+                    }
+
+                    if (InputHandler.StopRunningInputs == false)
+                    {
+                        userData.ValidInputs++;
+
+                        InputHandler.CarryOutInput(parsedData.inputList);
+                    }
+                    else
+                    {
+                        QueueMessage("New inputs cannot be processed until all other inputs have stopped.");
+                    }
 
                     //BotProgram.QueueMessage("Valid input!");
                     //string thing = "Valid input(s): ";
@@ -307,6 +335,9 @@ namespace KimimaruBot
                     //Console.WriteLine(thing);
                 }
             }
+
+            //Kimimaru: For testing this will work, but we shouldn't save after each message
+            SaveBotData();
         }
 
         private void OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
@@ -332,6 +363,69 @@ namespace KimimaruBot
         private void OnDisconnected(object sender, OnDisconnectedEventArgs e)
         {
             Console.WriteLine("Disconnected!");
+        }
+
+        public static User GetUser(string username, bool isLower = true)
+        {
+            if (isLower == false)
+            {
+                username = username.ToLower();
+            }
+
+            User userData = null;
+
+            BotData.Users.TryGetValue(username, out userData);
+
+            return userData;
+        }
+
+        /// <summary>
+        /// Gets a user object by username and adds the user object if the username isn't found.
+        /// </summary>
+        /// <param name="username">The name of the user.</param>
+        /// <param name="isLower">Whether the username is all lower-case or not.
+        /// If false, will make the username lowercase before checking the name.</param>
+        /// <returns>A User object associated with <paramref name="username"/>.</returns>
+        public static User GetOrAddUser(string username, bool isLower = true)
+        {
+            string origName = username;
+            if (isLower == false)
+            {
+                username = username.ToLower();
+            }
+
+            User userData = null;
+
+            //Check to add a user that doesn't exist
+            if (BotData.Users.TryGetValue(username, out userData) == false)
+            {
+                userData = new User();
+                BotData.Users.Add(username, userData);
+
+                BotProgram.QueueMessage($"{origName} added to database!");
+            }
+
+            return userData;
+        }
+
+        public static void SaveBotData()
+        {
+            //Make sure more than one thread doesn't try to save at the same time to prevent potential loss of data
+            lock (LockObj)
+            {
+                string text = JsonConvert.SerializeObject(BotData, Formatting.Indented);
+                if (string.IsNullOrEmpty(text) == false)
+                {
+                    try
+                    {
+                        File.WriteAllText(Globals.GetDataFilePath("BotData.txt"), text);
+                    }
+                    catch (Exception e)
+                    {
+                        QueueMessage($"CRITICAL - Unable to save bot data: {e.Message}");
+                    }
+                }
+            }
         }
 
         #endregion

@@ -13,9 +13,6 @@ namespace KimimaruBot
     {
         public const int CHAR_LIMIT = 500;
 
-        public static Dictionary<string, string> Memes = new Dictionary<string, string>();
-        public static readonly string MemesFilePath = Globals.GetDataFilePath("Memes.txt");
-
         private static List<string> MemesCache = new List<string>();
 
         public MemesCommand()
@@ -25,16 +22,7 @@ namespace KimimaruBot
 
         public override void Initialize(CommandHandler commandHandler)
         {
-            string text = File.ReadAllText(MemesFilePath);
-            Memes = JsonConvert.DeserializeObject<Dictionary<string, string>>(text);
-
             CacheMemesString();
-        }
-
-        public static void SaveMemesDict()
-        {
-            string JSON = JsonConvert.SerializeObject(Memes, Formatting.Indented);
-            File.WriteAllText(MemesFilePath, JSON);
         }
 
         public static void CacheMemesString()
@@ -44,7 +32,7 @@ namespace KimimaruBot
             string curString = string.Empty;
 
             //List all memes
-            string[] memes = Memes.Keys.ToArray();
+            string[] memes = BotProgram.BotData.Memes.Keys.ToArray();
 
             for (int i = 0; i < memes.Length; i++)
             {
@@ -80,7 +68,7 @@ namespace KimimaruBot
 
             for (int i = 0; i < MemesCache.Count; i++)
             {
-                string message = (i == 0) ? "Here are the list of memes: " : string.Empty;
+                string message = (i == 0) ? "Here is the list of memes: " : string.Empty;
                 message += MemesCache[i];
                 BotProgram.QueueMessage(message);
             }

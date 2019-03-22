@@ -37,13 +37,9 @@ namespace KimimaruBot
                 string name = e.Command.ChatMessage.DisplayName;
                 string nameToLower = name.ToLower();
 
-                if (CreditsCommand.UserCredits.ContainsKey(nameToLower) == false)
-                {
-                    CreditsCommand.UserCredits.Add(nameToLower, 0);
-                    CreditsCommand.SaveDict();
-                }
+                User user = BotProgram.GetOrAddUser(nameToLower);
 
-                long credits = CreditsCommand.UserCredits[nameToLower];
+                long credits = user.Credits;
 
                 if (creditBet > credits)
                 {
@@ -67,8 +63,8 @@ namespace KimimaruBot
 
                     BotProgram.QueueMessage(message);
 
-                    CreditsCommand.UserCredits[nameToLower] = credits;
-                    CreditsCommand.SaveDict();
+                    user.Credits = credits;
+                    BotProgram.SaveBotData();
                 }
             }
             else

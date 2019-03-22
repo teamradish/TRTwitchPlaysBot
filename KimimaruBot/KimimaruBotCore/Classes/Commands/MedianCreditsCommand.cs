@@ -9,16 +9,31 @@ namespace KimimaruBot
 {
     public sealed class MedianCreditsCommand : BaseCommand
     {
+        private Comparison<(string, long)> CreditsCompare = null;
+
         public MedianCreditsCommand()
         {
 
         }
 
+        public override void Initialize(CommandHandler commandHandler)
+        {
+            base.Initialize(commandHandler);
+
+            //Set here to reduce garbage since it normally creates a new delegate instance each time you pass in the method name directly
+            CreditsCompare = CompareKeyVal;
+        }
+
         public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
         {
-            List<KeyValuePair<string, long>> allCredits = CreditsCommand.UserCredits.ToList();
+            List<(string, long)> allCredits = new List<(string, long)>(BotProgram.BotData.Users.Count);
 
-            allCredits.Sort(CompareKeyVal);
+            foreach (var kvPair in BotProgram.BotData.Users)
+            {
+                allCredits.Add((kvPair.Key, kvPair.Value.Credits));
+            }
+
+            allCredits.Sort(CreditsCompare);
 
             int medianIndex = allCredits.Count / 2;
 
@@ -28,15 +43,15 @@ namespace KimimaruBot
             }
             else
             {
-                long median = allCredits[medianIndex].Value;
+                long median = allCredits[medianIndex].Item2;
 
                 BotProgram.QueueMessage($"The median number of credits in the database is {median}!");
             }
         }
 
-        private int CompareKeyVal(KeyValuePair<string, long> val1, KeyValuePair<string, long> val2)
+        private int CompareKeyVal((string, long) val1, (string, long) val2)
         {
-            return val1.Value.CompareTo(val2.Value);
+            return val1.Item2.CompareTo(val2.Item2);
         }
     }
 }

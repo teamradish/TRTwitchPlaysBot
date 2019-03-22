@@ -16,16 +16,16 @@ namespace KimimaruBot
 
         public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
         {
-            long[] vals = CreditsCommand.UserCredits.Values.ToArray();
+            User[] users = BotProgram.BotData.Users.Values.ToArray();
 
             long average = 0L;
 
-            for (int i = 0; i < vals.Length; i++)
+            for (int i = 0; i < users.Length; i++)
             {
-                average += vals[i];
+                average += users[i].Credits;
             }
 
-            average /= vals.Length;
+            average /= users.Length;
 
             BotProgram.QueueMessage($"The average number of credits in the database is {average}!");
         }

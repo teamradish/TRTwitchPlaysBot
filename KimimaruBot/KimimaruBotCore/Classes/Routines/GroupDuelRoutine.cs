@@ -73,7 +73,7 @@ namespace KimimaruBot
                     if (cur.Key == winner.Key) continue;
 
                     //If they don't have enough credits, disqualify them
-                    if (CreditsCommand.UserCredits[cur.Key] < cur.Value)
+                    if (BotProgram.BotData.Users[cur.Key].Credits < cur.Value)
                     {
                         invalid += cur.Key + ", ";
 
@@ -83,7 +83,7 @@ namespace KimimaruBot
                     else
                     {
                         //Subtract credits for those who do have enough, and add their bet to the total the winner earns
-                        CreditsCommand.UserCredits[cur.Key] -= cur.Value;
+                        BotProgram.BotData.Users[cur.Key].Credits -= cur.Value;
                         total += cur.Value;
                     }
                 }
@@ -100,8 +100,8 @@ namespace KimimaruBot
                 if (total > 0)
                 {
                     //Add credits to the winner
-                    CreditsCommand.UserCredits[winner.Key] += total;
-                    CreditsCommand.SaveDict();
+                    BotProgram.BotData.Users[winner.Key].Credits += total;
+                    BotProgram.SaveBotData();
 
                     BotProgram.QueueMessage($"{winner.Key} won the group duel and {total} credit(s) :D! Nice!");
 

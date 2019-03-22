@@ -37,13 +37,10 @@ namespace KimimaruBot
             }
 
             //If the user transferring points isn't in the database, add them
-            if (CreditsCommand.UserCredits.ContainsKey(giverToLower) == false)
-            {
-                CreditsCommand.UserCredits.Add(giverToLower, 0);
-                CreditsCommand.SaveDict();
-            }
+            User giverUser = BotProgram.GetOrAddUser(giverToLower);
+            User receiverUser = BotProgram.GetUser(receiverToLower);
 
-            if (CreditsCommand.UserCredits.ContainsKey(receiverToLower) == false)
+            if (receiverUser == null)
             {
                 BotProgram.QueueMessage($"{receiver} is not in the database!");
                 return;
@@ -57,15 +54,15 @@ namespace KimimaruBot
                 return;
             }
 
-            if (CreditsCommand.UserCredits[giverToLower] < transferAmount)
+            if (giverUser.Credits < transferAmount)
             {
                 BotProgram.QueueMessage("The transfer amount is greater than your credits!");
                 return;
             }
 
-            CreditsCommand.UserCredits[giverToLower] -= transferAmount;
-            CreditsCommand.UserCredits[receiverToLower] += transferAmount;
-            CreditsCommand.SaveDict();
+            giverUser.Credits -= transferAmount;
+            receiverUser.Credits += transferAmount;
+            BotProgram.SaveBotData();
 
             BotProgram.QueueMessage($"{giver} has transferred {transferAmount} points to {receiver} :D !");
         }

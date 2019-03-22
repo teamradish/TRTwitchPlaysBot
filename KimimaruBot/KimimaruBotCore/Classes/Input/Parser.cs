@@ -114,7 +114,7 @@ namespace KimimaruBot
 
                     string longest = string.Empty;
                     int end = 0;
-                    foreach (string macro in MACROS.Keys)
+                    foreach (string macro in BotProgram.BotData.Macros.Keys)
                     {
                         if (macro_name_generic.Contains(macro) == true)
                         {
@@ -147,7 +147,7 @@ namespace KimimaruBot
                     foreach (var current in subs)
                     {
                         if (prev != def) str += message.Substring(prev.Item2.Item2, current.Item2.Item1 - prev.Item2.Item2);
-                        str += Parser.populate_variables(MACROS[current.Item1], current.Item3);
+                        str += Parser.populate_variables(BotProgram.BotData.Macros[current.Item1], current.Item3);
                         prev = current;
                     }
                     //str += message.Substring(clamp(prev.Item2.Item2, 0, message.Length));

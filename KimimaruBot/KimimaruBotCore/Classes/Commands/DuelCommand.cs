@@ -40,13 +40,11 @@ namespace KimimaruBot
             }
 
             //If the user dueling isn't in the database, add them
-            if (CreditsCommand.UserCredits.ContainsKey(duelerToLower) == false)
-            {
-                CreditsCommand.UserCredits.Add(duelerToLower, 0);
-                CreditsCommand.SaveDict();
-            }
+            User duelerUser = BotProgram.GetOrAddUser(duelerToLower);
 
-            if (CreditsCommand.UserCredits.ContainsKey(usertoLower) == false)
+            User cmdUser = BotProgram.GetUser(usertoLower);
+
+            if (cmdUser == null)
             {
                 BotProgram.QueueMessage($"{user} is not in the database!");
                 return;
@@ -76,7 +74,7 @@ namespace KimimaruBot
                 return;
             }
 
-            if (CreditsCommand.UserCredits[duelerToLower] < betAmount || CreditsCommand.UserCredits[usertoLower] < betAmount)
+            if (duelerUser.Credits < betAmount || cmdUser.Credits < betAmount)
             {
                 BotProgram.QueueMessage("Either you or the one you're dueling does not have enough credits for this duel!");
                 return;

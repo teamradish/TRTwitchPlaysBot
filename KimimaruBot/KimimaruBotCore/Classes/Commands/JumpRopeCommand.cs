@@ -16,16 +16,9 @@ namespace KimimaruBot
         public int JumpRopeCount = 0;
         public int RandJumpRopeChance = 5;
 
-        public JumpRopeStreak JRStreak = null;
-
         public JumpRopeCommand()
         {
             RandJumpRopeChance = Rand.Next(4, 9);
-        }
-
-        public override void Initialize(CommandHandler commandHandler)
-        {
-            JRStreak = JsonConvert.DeserializeObject<JumpRopeStreak>(File.ReadAllText(Globals.GetDataFilePath("JumpRopeStreak.txt")));
         }
 
         public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
@@ -42,11 +35,11 @@ namespace KimimaruBot
 
             if (randNum == 0 && JumpRopeCount > 0)
             {
-                if (JumpRopeCount > JRStreak.Streak)
+                if (JumpRopeCount > BotProgram.BotData.JRData.Streak)
                 {
-                    JRStreak.Streak = JumpRopeCount;
-                    string text = JsonConvert.SerializeObject(JRStreak, Formatting.Indented);
-                    File.WriteAllText(Globals.GetDataFilePath("JumpRopeStreak.txt"), text);
+                    BotProgram.BotData.JRData.User = e.Command.ChatMessage.Username;
+                    BotProgram.BotData.JRData.Streak = JumpRopeCount;
+                    BotProgram.SaveBotData();
 
                     BotProgram.QueueMessage($"Ouch! I tripped and fell after {JumpRopeCount} attempt(s) at Jump Rope! Wow, it's a new record!");
                 }
@@ -64,11 +57,6 @@ namespace KimimaruBot
                 JumpRopeCount++;
                 BotProgram.QueueMessage($"Yay :D I succeeded in Jump Rope {JumpRopeCount} time(s) in a row!");
             }
-        }
-
-        public class JumpRopeStreak
-        {
-            public int Streak;
         }
     }
 }

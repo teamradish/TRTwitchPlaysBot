@@ -34,8 +34,8 @@ namespace KimimaruBot
         private void Initialize()
         {
             CommandDict.Add("help", new HelpCommand());
-            CommandDict.Add("schedule", new ScheduleCommand());
-            CommandDict.Add("suggestions", new SuggestionsCommand());
+            //CommandDict.Add("schedule", new ScheduleCommand());
+            //CommandDict.Add("suggestions", new SuggestionsCommand());
             CommandDict.Add("credits", new CreditsCommand());
             CommandDict.Add("transfer", new TransferCommand());
             CommandDict.Add("bet", new BetCommand());

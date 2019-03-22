@@ -38,8 +38,11 @@ namespace KimimaruBot
                 string dueled = data.UserDueling;
                 string dueledToLower = dueled.ToLower();
 
+                User duelerUser = BotProgram.GetUser(nameToLower);
+                User dueledUser = BotProgram.GetUser(dueledToLower);
+
                 //First confirm both users have enough credits for the duel, as they could've lost some in that time
-                if (CreditsCommand.UserCredits[nameToLower] < betAmount || CreditsCommand.UserCredits[dueledToLower] < betAmount)
+                if (duelerUser.Credits < betAmount || dueledUser.Credits < betAmount)
                 {
                     BotProgram.QueueMessage("At least one user involved in the duel no longer has enough points for the duel! The duel is off!");
                     return;
@@ -52,20 +55,20 @@ namespace KimimaruBot
 
                 if (val == 0)
                 {
-                    CreditsCommand.UserCredits[nameToLower] += betAmount;
-                    CreditsCommand.UserCredits[dueledToLower] -= betAmount;
+                    duelerUser.Credits += betAmount;
+                    dueledUser.Credits -= betAmount;
 
                     message = $"{name} won the bet against {dueled} for {betAmount} credit(s)!";
                 }
                 else
                 {
-                    CreditsCommand.UserCredits[nameToLower] -= betAmount;
-                    CreditsCommand.UserCredits[dueledToLower] += betAmount;
+                    duelerUser.Credits -= betAmount;
+                    dueledUser.Credits += betAmount;
 
                     message = $"{dueled} won the bet against {name} for {betAmount} credit(s)!";
                 }
 
-                CreditsCommand.SaveDict();
+                BotProgram.SaveBotData();
 
                 BotProgram.QueueMessage(message);
             }

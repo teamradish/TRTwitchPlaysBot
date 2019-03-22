@@ -11,7 +11,6 @@ namespace KimimaruBot
 {
     public sealed class CreditsCommand : BaseCommand
     {
-        public static Dictionary<string, long> UserCredits = new Dictionary<string, long>();
         public static readonly string FileName = Globals.GetDataFilePath("UserCredits.txt");
 
         public CreditsCommand()
@@ -19,19 +18,9 @@ namespace KimimaruBot
 
         }
 
-        public static void SaveDict()
-        {
-            string creditJSON = JsonConvert.SerializeObject(UserCredits, Formatting.Indented);
-
-            File.WriteAllText(FileName, creditJSON);
-        }
-
         public override void Initialize(CommandHandler commandHandler)
         {
-            string text = string.Empty;
-            text = File.ReadAllText(FileName);
 
-            UserCredits = JsonConvert.DeserializeObject<Dictionary<string,long>>(text);
         }
 
         public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
@@ -55,13 +44,14 @@ namespace KimimaruBot
 
                 string userLower = userName.ToLower();
 
-                if (UserCredits.ContainsKey(userLower) == false)
+                if (BotProgram.BotData.Users.ContainsKey(userLower) == false)
                 {
                     if (sameName == true)
                     {
-                        UserCredits.Add(userLower, 0);
-
-                        SaveDict();
+                        //Kimimaru: comment out for now - unsure if commands would happen before messages
+                        //UserCredits.Add(userLower, 0);
+                        //
+                        //SaveDict();
                     }
                     else
                     {
@@ -70,7 +60,7 @@ namespace KimimaruBot
                     }
                 }
 
-                BotProgram.QueueMessage($"{userName} has {UserCredits[userLower]} credit(s)!");
+                BotProgram.QueueMessage($"{userName} has {BotProgram.BotData.Users[userLower].Credits} credit(s)!");
             }
             else
             {
@@ -81,19 +71,19 @@ namespace KimimaruBot
                 string name1Lower = name1.ToLower();
                 string name2Lower = name2.ToLower();
 
-                if (UserCredits.ContainsKey(name1Lower) == false)
+                if (BotProgram.BotData.Users.ContainsKey(name1Lower) == false)
                 {
                     BotProgram.QueueMessage($"{name1} is not in the database!");
                     return;
                 }
-                if (UserCredits.ContainsKey(name2Lower) == false)
+                if (BotProgram.BotData.Users.ContainsKey(name2Lower) == false)
                 {
                     BotProgram.QueueMessage($"{name2} is not in the database!");
                     return;
                 }
 
-                long credits1 = UserCredits[name1Lower];
-                long credits2 = UserCredits[name2Lower];
+                long credits1 = BotProgram.BotData.Users[name1Lower].Credits;
+                long credits2 = BotProgram.BotData.Users[name2Lower].Credits;
 
                 string message = string.Empty;
                 if (credits1 < credits2)

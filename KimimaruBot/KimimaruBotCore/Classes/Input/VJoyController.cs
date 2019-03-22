@@ -135,7 +135,6 @@ namespace KimimaruBot
             UpdateJoystickEfficient();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PressInput(in Parser.Input input)
         {
             if (InputGlobals.IsAbsoluteAxis(input) == true)
@@ -152,7 +151,6 @@ namespace KimimaruBot
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReleaseInput(in Parser.Input input)
         {
             if (InputGlobals.IsAbsoluteAxis(input) == true)
@@ -169,7 +167,6 @@ namespace KimimaruBot
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PressAxis(in HID_USAGES axis, in bool min, in int percent)
         {
             if (MinMaxAxes.TryGetValue(axis, out (long, long) axisVals) == false)
@@ -199,7 +196,6 @@ namespace KimimaruBot
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PressAbsoluteAxis(in HID_USAGES axis, in int percent)
         {
             if (MinMaxAxes.TryGetValue(axis, out (long, long) axisVals) == false)
@@ -219,7 +215,6 @@ namespace KimimaruBot
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReleaseAbsoluteAxis(in HID_USAGES axis)
         {
             if (MinMaxAxes.ContainsKey(axis) == false)
@@ -237,7 +232,6 @@ namespace KimimaruBot
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReleaseAxis(in HID_USAGES axis)
         {
             if (MinMaxAxes.TryGetValue(axis, out (long, long) axisVals) == false)
@@ -256,7 +250,6 @@ namespace KimimaruBot
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PressButton(in string buttonName)
         {
             if (ButtonStates[buttonName] == true) return;
@@ -273,7 +266,6 @@ namespace KimimaruBot
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReleaseButton(in string buttonName)
         {
             if (ButtonStates[buttonName] == false) return;

@@ -34,11 +34,7 @@ namespace KimimaruBot
             string displayLower = displayName.ToLower();
 
             //If the user participating in the group duel isn't in the database, add them
-            if (CreditsCommand.UserCredits.ContainsKey(displayLower) == false)
-            {
-                CreditsCommand.UserCredits.Add(displayLower, 0);
-                CreditsCommand.SaveDict();
-            }
+            User user = BotProgram.GetOrAddUser(displayLower, true);
 
             //Check if we can parse the bet amount
             long betAmount = -1L;
@@ -49,7 +45,7 @@ namespace KimimaruBot
                 return;
             }
 
-            if (CreditsCommand.UserCredits[displayLower] < betAmount)
+            if (user.Credits < betAmount)
             {
                 BotProgram.QueueMessage("You don't have enough credits to bet this much!");
                 return;

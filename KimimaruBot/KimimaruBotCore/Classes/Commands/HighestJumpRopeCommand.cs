@@ -10,27 +10,16 @@ namespace KimimaruBot
 {
     public sealed class HighestJumpRopeCommand : BaseCommand
     {
-        private JumpRopeCommand JumpRope = null;
-
         public HighestJumpRopeCommand()
         {
 
         }
 
-        public override void Initialize(CommandHandler commandHandler)
-        {
-            const string jumpRope = "jumprope";
-            if (commandHandler.CommandDict.ContainsKey(jumpRope) == true)
-            {
-                JumpRope = commandHandler.CommandDict[jumpRope] as JumpRopeCommand;
-            }
-        }
-
         public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
         {
-            if (JumpRope != null && JumpRope.JRStreak != null)
+            if (BotProgram.BotData != null && BotProgram.BotData.JRData != null)
             {
-                BotProgram.QueueMessage($"The biggest jump rope streak is {JumpRope.JRStreak.Streak}!");
+                BotProgram.QueueMessage($"The biggest jump rope streak is {BotProgram.BotData.JRData.Streak}!");
             }
             else
             {

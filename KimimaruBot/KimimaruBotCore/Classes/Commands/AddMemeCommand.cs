@@ -41,17 +41,17 @@ namespace KimimaruBot
             string memeToLower = args[0].ToLower();
             bool sendOverwritten = false;
 
-            if (MemesCommand.Memes.ContainsKey(memeToLower) == true)
+            if (BotProgram.BotData.Memes.ContainsKey(memeToLower) == true)
             {
-                MemesCommand.Memes.Remove(memeToLower);
+                BotProgram.BotData.Memes.Remove(memeToLower);
                 sendOverwritten = true;
             }
 
             string actualMeme = e.Command.ArgumentsAsString.Remove(0, args[0].Length + 1);
 
-            MemesCommand.Memes.Add(memeToLower, actualMeme);
+            BotProgram.BotData.Memes.Add(memeToLower, actualMeme);
 
-            MemesCommand.SaveMemesDict();
+            BotProgram.SaveBotData();
 
             if (sendOverwritten == true)
             {
