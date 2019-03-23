@@ -150,7 +150,7 @@ namespace KimimaruBot
                         str += Parser.populate_variables(BotProgram.BotData.Macros[current.Item1], current.Item3);
                         prev = current;
                     }
-                    //str += message.Substring(clamp(prev.Item2.Item2, 0, message.Length));
+                    str += message.Substring(prev.Item2.Item2);
                     message = str;
                 }
                 count += 1;

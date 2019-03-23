@@ -22,7 +22,7 @@ namespace KimimaruBot
 
             if (args.Count < 2)
             {
-                BotProgram.QueueMessage("!addmeme usage: memename memevalue");
+                BotProgram.QueueMessage($"{Globals.CommandIdentifier}addmeme usage: memename memevalue");
                 return;
             }
 

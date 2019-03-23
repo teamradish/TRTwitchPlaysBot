@@ -19,7 +19,7 @@ namespace KimimaruBot
 {
     public sealed class BotProgram : IDisposable
     {
-        private static object LockObj = new object();
+        private static readonly object LockObj = new object();
 
         private static BotProgram instance = null;
 
@@ -250,6 +250,8 @@ namespace KimimaruBot
         {
             QueueMessage($"{LoginInformation.BotName} has connected :D ! Use {Globals.CommandIdentifier}help to display a list of commands! Input parser by Jdog, aka TwitchPlays_Everything, converted & modified by Kimimaru");
 
+            Console.WriteLine($"Joined channel \"{e.Channel}\"");
+
             TryReconnect = false;
 
             if (CommandHandler == null)
@@ -400,6 +402,7 @@ namespace KimimaruBot
             if (BotData.Users.TryGetValue(username, out userData) == false)
             {
                 userData = new User();
+                userData.Name = username;
                 BotData.Users.Add(username, userData);
 
                 BotProgram.QueueMessage($"{origName} added to database!");
@@ -443,7 +446,6 @@ namespace KimimaruBot
             public double MessageCooldown = 0d;
             public double CreditsTime = 0d;
             public long CreditsAmount = 50L;
-            public string OwnerName = string.Empty;
         }
     }
 }

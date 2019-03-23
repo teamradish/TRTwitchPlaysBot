@@ -9,6 +9,7 @@ namespace KimimaruBot
     /// </summary>
     public class User
     {
+        public string Name;
         public int Level;
         public long Credits;
         public long TotalMessages;

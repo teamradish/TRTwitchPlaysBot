@@ -1,5 +1,5 @@
 ﻿{
     "BotName": "KimimaruBot",
 	"Password": "oauth:xoyhs10elnol8bcbkpxmhylct8c060",
-	"ChannelName": "twitchplays_everything"
+	"ChannelName": "twitchplayspapermario"
 }

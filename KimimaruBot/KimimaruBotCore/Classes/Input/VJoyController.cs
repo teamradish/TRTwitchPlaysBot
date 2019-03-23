@@ -324,6 +324,20 @@ namespace KimimaruBot
                 ButtonStates.Add(inputs[i], false);
             }
 
+            //NOTE: Hacky for now
+            ButtonStates.Add("savestate1", false);
+            ButtonStates.Add("savestate2", false);
+            ButtonStates.Add("savestate3", false);
+            ButtonStates.Add("savestate4", false);
+            ButtonStates.Add("savestate5", false);
+            ButtonStates.Add("savestate6", false);
+            ButtonStates.Add("loadstate1", false);
+            ButtonStates.Add("loadstate2", false);
+            ButtonStates.Add("loadstate3", false);
+            ButtonStates.Add("loadstate4", false);
+            ButtonStates.Add("loadstate5", false);
+            ButtonStates.Add("loadstate6", false);
+
             Console.WriteLine($"Set controller {ControllerID} buttons to {console}");
 
             //Reset the controller when we set buttons

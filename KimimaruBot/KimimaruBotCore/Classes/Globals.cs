@@ -18,6 +18,7 @@ namespace KimimaruBot
         public static string RootDir => Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Environment.CurrentDirectory).FullName).FullName).FullName).FullName).FullName;
         public static readonly string DataPath = $"{Path.Combine(RootDir, $"Data{Path.DirectorySeparatorChar}")}";
         public const char CommandIdentifier = '!';
+        public const char MacroIdentifier = '#';
 
         public static string GetDataFilePath(in string fileName)
         {

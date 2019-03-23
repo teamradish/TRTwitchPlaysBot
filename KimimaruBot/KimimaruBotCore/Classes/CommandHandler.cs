@@ -61,6 +61,12 @@ namespace KimimaruBot
             CommandDict.Add("crashbot", new CrashBotCommand());
             CommandDict.Add("console", new ConsoleCommand());
             CommandDict.Add("stopall", new StopAllCommand());
+            CommandDict.Add("macros", new MacrosCommand());
+            CommandDict.Add("addmacro", new AddMacroCommand());
+            CommandDict.Add("removemacro", new RemoveMacroCommand());
+            CommandDict.Add("show", new ShowCommand());
+            CommandDict.Add("savestate", new SavestateCommand());
+            CommandDict.Add("loadstate", new LoadstateCommand());
 
             foreach (KeyValuePair<string, BaseCommand> command in CommandDict)
             {
@@ -76,18 +82,30 @@ namespace KimimaruBot
                 return;
             }
 
+            string userToLower = e.Command.ChatMessage.DisplayName.ToLower();
+
             //Don't handle certain users (Ex. MrMacroBot)
-            if (ExemptUsers.Contains(e.Command.ChatMessage.DisplayName.ToLower()) == true)
+            if (ExemptUsers.Contains(userToLower) == true)
             {
                 Console.WriteLine($"User {e.Command.ChatMessage.DisplayName} is exempt and I won't take commands from them");
                 return;
             }
 
-            string toLower = e.Command.CommandText.ToLower();
+            User user = BotProgram.GetOrAddUser(userToLower);
 
-            if (CommandDict.ContainsKey(toLower) == true)
+            string commandToLower = e.Command.CommandText.ToLower();
+
+            if (CommandDict.TryGetValue(commandToLower, out BaseCommand command) == true)
             {
-                CommandDict[toLower].ExecuteCommand(sender, e);
+                //Handle permissions
+                if (user.Level >= command.AccessLevel)
+                {
+                    command.ExecuteCommand(sender, e);
+                }
+                else
+                {
+                    BotProgram.QueueMessage("You don't have permission to do that!");
+                }
             }
         }
     }

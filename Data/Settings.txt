@@ -1,7 +1,6 @@
 ﻿{
     "MessageTime": 30,
-	"MessageCooldown": 2000,
+	"MessageCooldown": 1000,
     "CreditsTime": 2,
-    "CreditsAmount": 100,
-    "OwnerName": "kimimaru4000"
+    "CreditsAmount": 100
 }
