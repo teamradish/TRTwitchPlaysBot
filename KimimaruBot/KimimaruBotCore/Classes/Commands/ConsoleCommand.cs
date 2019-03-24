@@ -9,6 +9,12 @@ namespace KimimaruBot
     {
         private StringBuilder StrBuilder = null;
 
+        public override void Initialize(CommandHandler commandHandler)
+        {
+            base.Initialize(commandHandler);
+            AccessLevel = 3;
+        }
+
         public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
         {
             List<string> amount = e.Command.ArgumentsAsList;

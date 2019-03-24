@@ -67,6 +67,8 @@ namespace KimimaruBot
             CommandDict.Add("show", new ShowCommand());
             CommandDict.Add("savestate", new SavestateCommand());
             CommandDict.Add("loadstate", new LoadstateCommand());
+            CommandDict.Add("setlevel", new SetLevelCommand());
+            CommandDict.Add("level", new LevelCommand());
 
             foreach (KeyValuePair<string, BaseCommand> command in CommandDict)
             {

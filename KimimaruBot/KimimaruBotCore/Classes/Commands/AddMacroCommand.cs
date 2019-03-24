@@ -10,18 +10,25 @@ namespace KimimaruBot
     /// </summary>
     public sealed class AddMacroCommand : BaseCommand
     {
+        public override void Initialize(CommandHandler commandHandler)
+        {
+            base.Initialize(commandHandler);
+            AccessLevel = 2;
+        }
+
         public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
         {
             List<string> args = e.Command.ArgumentsAsList;
 
-            if (args.Count != 2)
+            if (args.Count < 2)
             {
                 BotProgram.QueueMessage($"{Globals.CommandIdentifier}addmacro usage: \"#macroname\" \"command\"");
                 return;
             }
 
             string macroName = args[0].ToLowerInvariant();
-            string macroVal = args[1].ToLowerInvariant();
+
+            string macroVal = e.Command.ArgumentsAsString.Remove(0, macroName.Length + 1).ToLowerInvariant();
 
             if (macroName[0] != Globals.MacroIdentifier)
             {
@@ -29,12 +36,13 @@ namespace KimimaruBot
                 return;
             }
 
+            //Check for a dynamic macro
             if (macroName.Contains("(*") == true)
             {
                 BotProgram.BotData.Macros[macroName] = macroVal;
                 BotProgram.SaveBotData();
             
-                BotProgram.QueueMessage($"Added dynamic macro {macroName}. NOTE: dynamic macro contents cannot be verified beforehand.");
+                BotProgram.QueueMessage($"Added dynamic macro {macroName}. NOTE: dynamic macro contents cannot be verified upon creation.");
             
                 return;
             }
@@ -44,6 +52,7 @@ namespace KimimaruBot
 
             try
             {
+                //Parse the macro to check for valid input
                 string parse_message = Parser.expandify(Parser.populate_macros(macroVal));
 
                 parsedData = Parser.Parse(parse_message);

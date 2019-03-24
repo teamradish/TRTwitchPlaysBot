@@ -30,7 +30,7 @@ namespace KimimaruBot
             {
                 if (creditBet <= 0)
                 {
-                    BotProgram.QueueMessage("Bet amount must be greater than or equal to 0!");
+                    BotProgram.QueueMessage("Bet amount must be greater than 0!");
                     return;
                 }
 

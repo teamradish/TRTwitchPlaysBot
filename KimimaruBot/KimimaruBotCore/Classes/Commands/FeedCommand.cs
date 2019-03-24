@@ -70,6 +70,7 @@ namespace KimimaruBot
             { "My taste buds are jumping!", new List<string>() { "cookie", "brownie" } },
             { "EWWW!!", new List<string>() { "poo", "poop", "feces" } },
             { "Yum, yum, yum!", new List<string>() { "fettuccine alfredo", "mushroom", "super mushroom" } },
+            { "I've never had donkey before!", new List<string>() { "ass" } },
 
             { "Great! All toasters, toast toast!", new List<string>() { "toast" } },
 

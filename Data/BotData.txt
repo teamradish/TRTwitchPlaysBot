@@ -3,10 +3,11 @@
     "#mashalt(*,*)": "[<0>34ms#17ms<1>34ms]*10",
     "#mash(*)": "[<0>34ms#17ms]*20",
     "#tj": "_up150ms[a50ms#267ms]*3",
-    "#spinjump": "_up34ms_left34ms-up34ms_down34ms-left34ms_right34ms-down34ms_up34ms-right34ms#150msa",
+    "#spinjump": "_up34ms _left34ms -up34ms _down34ms -left34ms _right34ms -down34ms _up34ms -right34ms #150ms a",
     "#spamsprayup": "up400ms_upa15msr+a#400msa15msr+a#400msa15msr+a#400msa15mscright40msr+a#400msa15msr+a#400msa15msr+a#400ms",
     "#sfr": "_left-left+_right250ms_a",
-    "#sfl": "_right-left+_left250ms_a"
+    "#sfl": "_right-left+_left250ms_a",
+    "#test2": "a34ms b17ms"
   },
   "Memes": {
     "testmeme": "Hello"
@@ -14,10 +15,10 @@
   "Users": {
     "kimimaru4000": {
       "Name": null,
-      "Level": 0,
-      "Credits": 600,
-      "TotalMessages": 475,
-      "ValidInputs": 224,
+      "Level": 3,
+      "Credits": 700,
+      "TotalMessages": 498,
+      "ValidInputs": 231,
       "Silenced": false,
       "Team": 0,
       "Subscriber": 0,
@@ -25,7 +26,7 @@
     },
     "silver_ninja_guy": {
       "Name": "silver_ninja_guy",
-      "Level": 0,
+      "Level": 2,
       "Credits": 3102,
       "TotalMessages": 90,
       "ValidInputs": 22,
@@ -36,7 +37,7 @@
     },
     "twitchplayspapermario": {
       "Name": "twitchplayspapermario",
-      "Level": 0,
+      "Level": 2,
       "Credits": 1698,
       "TotalMessages": 81,
       "ValidInputs": 1,
@@ -47,7 +48,7 @@
     },
     "mooismyusername": {
       "Name": "mooismyusername",
-      "Level": 0,
+      "Level": 1,
       "Credits": 2400,
       "TotalMessages": 124,
       "ValidInputs": 38,
@@ -58,7 +59,7 @@
     },
     "taximadish": {
       "Name": "taximadish",
-      "Level": 0,
+      "Level": 2,
       "Credits": 1300,
       "TotalMessages": 26,
       "ValidInputs": 4,
@@ -69,7 +70,7 @@
     },
     "baconismyusername": {
       "Name": "baconismyusername",
-      "Level": 0,
+      "Level": 2,
       "Credits": 400,
       "TotalMessages": 15,
       "ValidInputs": 0,

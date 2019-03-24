@@ -278,6 +278,12 @@ namespace KimimaruBot
             }
             else
             {
+                //Ignore commands as inputs
+                if (possibleMeme.StartsWith(Globals.CommandIdentifier) == true)
+                {
+                    return;
+                }
+
                 (bool valid, List<List<Parser.Input>> inputList, bool containsStartInput, int durationCounter)
                         parsedData = default;
 
@@ -298,7 +304,7 @@ namespace KimimaruBot
 
                 if (parsedData.valid == false)
                 {
-                    //Kimimaru: Currently this also shows this for commands - keep commented until we find a better way to differentiate them
+                    //Kimimaru: Currently this also shows this for any message - keep commented until we find a better way to differentiate them
                     //Parser.Input input = parsedData.inputList[0][0];
                     //if (string.IsNullOrEmpty(input.error) == false)
                     //    BotProgram.QueueMessage($"Invalid input: {input.error}");
@@ -322,6 +328,7 @@ namespace KimimaruBot
                         QueueMessage("New inputs cannot be processed until all other inputs have stopped.");
                     }
 
+                    //Debug info
                     //BotProgram.QueueMessage("Valid input!");
                     //string thing = "Valid input(s): ";
                     //
@@ -371,7 +378,7 @@ namespace KimimaruBot
         {
             if (isLower == false)
             {
-                username = username.ToLower();
+                username = username.ToLowerInvariant();
             }
 
             User userData = null;
@@ -393,7 +400,7 @@ namespace KimimaruBot
             string origName = username;
             if (isLower == false)
             {
-                username = username.ToLower();
+                username = username.ToLowerInvariant();
             }
 
             User userData = null;

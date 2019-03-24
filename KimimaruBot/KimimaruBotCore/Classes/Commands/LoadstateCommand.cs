@@ -8,6 +8,12 @@ namespace KimimaruBot
 {
     public sealed class LoadstateCommand : BaseCommand
     {
+        public override void Initialize(CommandHandler commandHandler)
+        {
+            base.Initialize(commandHandler);
+            AccessLevel = 2;
+        }
+
         public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
         {
             List<string> args = e.Command.ArgumentsAsList;
