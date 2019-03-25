@@ -92,6 +92,9 @@ namespace KimimaruBot
 
         public void Initialize()
         {
+            //Kimimaru: Use invariant culture
+            Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+
             string loginText = File.ReadAllText(Globals.GetDataFilePath("LoginInfo.txt"));
             LoginInformation = JsonConvert.DeserializeObject<LoginInfo>(loginText);
 

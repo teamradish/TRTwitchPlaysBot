@@ -17,7 +17,7 @@
       "Name": null,
       "Level": 3,
       "Credits": 700,
-      "TotalMessages": 498,
+      "TotalMessages": 504,
       "ValidInputs": 231,
       "Silenced": false,
       "Team": 0,
