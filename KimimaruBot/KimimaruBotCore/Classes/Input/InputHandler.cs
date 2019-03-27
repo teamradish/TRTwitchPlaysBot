@@ -57,6 +57,13 @@ namespace KimimaruBot
             //ThreadPool.GetMaxThreads(out int workerthreads, out int completionPortThreads);
             //Console.WriteLine($"Min workers: {workermin} Max workers: {workerthreads} Min async IO threads: {completionmin} Max async IO threads: {completionPortThreads}");
 
+            //NOTE: Potential minor performance improvements during input:
+            // 1. Copy the input contents into a jagged double array beforehand and pass them into ExecuteInput
+            // 2. When verifying which inputs are complete, use a bool* array allocated on the stack and check for true
+            // 3. When checking for input info we can prevent stack copies via ref return (Ex. "ref Parser.Input input = ref inputs[indices[j]]")
+            // While allocating the jagged array creates more GC pressure, TwitchLib and the other commands are already doing plenty of that,
+            // so it should be a net gain during input, which is what matters most
+
             ThreadPool.QueueUserWorkItem(new WaitCallback(ExecuteInput), inputList);
         }
 
