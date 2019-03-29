@@ -14,5 +14,6 @@ namespace KimimaruBot
         public readonly Dictionary<string, User> Users = new Dictionary<string, User>();
         public readonly List<GameLog> Logs = new List<GameLog>();
         public readonly JumpRopeData JRData = new JumpRopeData();
+        public readonly Dictionary<int, GameLog> SavestateLogs = new Dictionary<int, GameLog>();
     }
 }

@@ -16,8 +16,8 @@
     "kimimaru4000": {
       "Name": null,
       "Level": 3,
-      "Credits": 700,
-      "TotalMessages": 504,
+      "Credits": 800,
+      "TotalMessages": 532,
       "ValidInputs": 231,
       "Silenced": false,
       "Team": 0,
@@ -95,5 +95,22 @@
   "JRData": {
     "User": "kimimaru4000",
     "Streak": 10
+  },
+  "SavestateLogs": {
+    "1": {
+      "DateTimeString": "03/29/2019 at 04:13:14",
+      "User": "kimimaru4000",
+      "LogMessage": "Started game"
+    },
+    "2": {
+      "DateTimeString": "03/29/2019 at 04:21:02",
+      "User": "kimimaru4000",
+      "LogMessage": "welwalrweklrlkaw"
+    },
+    "3": {
+      "DateTimeString": "03/29/2019 at 04:21:17",
+      "User": "kimimaru4000",
+      "LogMessage": ""
+    }
   }
 }

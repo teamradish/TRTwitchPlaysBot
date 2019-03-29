@@ -21,7 +21,7 @@ namespace KimimaruBot
         {
             List<string> args = e.Command.ArgumentsAsList;
 
-            if (args.Count != 1)
+            if (args.Count < 1)
             {
                 BotProgram.QueueMessage($"{Globals.CommandIdentifier}savestate usage: #");
                 return;
@@ -31,19 +31,44 @@ namespace KimimaruBot
 
             if (int.TryParse(stateNumStr, out int stateNum) == false)
             {
-                BotProgram.QueueMessage($"Invalid savestate number.");
+                BotProgram.QueueMessage("Invalid savestate number.");
                 return;
             }
 
             string saveStateStr = $"savestate{stateNum}";
             if (InputGlobals.InputMap.ContainsKey(saveStateStr) == false)
             {
-                BotProgram.QueueMessage($"Invalid savestate number.");
+                BotProgram.QueueMessage("Invalid savestate number.");
                 return;
             }
 
             VJoyController.Joystick.PressButton(saveStateStr);
             VJoyController.Joystick.UpdateJoystickEfficient();
+
+            //Track the time of the savestate
+            DateTime curTime = DateTime.UtcNow;
+
+            //Add a new savestate log
+            GameLog newStateLog = new GameLog();
+            newStateLog.User = e.Command.ChatMessage.Username;
+
+            string date = curTime.ToShortDateString();
+            string time = curTime.ToLongTimeString();
+            newStateLog.DateTimeString = $"{date} at {time}";
+
+            newStateLog.User = e.Command.ChatMessage.Username;
+            newStateLog.LogMessage = string.Empty;
+
+            //Add the message if one was specified
+            if (args.Count > 1)
+            {
+                string message = e.Command.ArgumentsAsString.Remove(0, stateNumStr.Length + 1);
+                newStateLog.LogMessage = message;
+            }
+
+            //Add or replace the log and save the bot data
+            BotProgram.BotData.SavestateLogs[stateNum] = newStateLog;
+            BotProgram.SaveBotData();
 
             //Wait a bit before releasing the input
             const float wait = 50f;

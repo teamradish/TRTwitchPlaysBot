@@ -67,11 +67,13 @@ namespace KimimaruBot
             CommandDict.Add("show", new ShowCommand());
             CommandDict.Add("savestate", new SavestateCommand());
             CommandDict.Add("loadstate", new LoadstateCommand());
+            CommandDict.Add("viewstate", new ViewstateCommand());
             CommandDict.Add("setlevel", new SetLevelCommand());
             CommandDict.Add("level", new LevelCommand());
             CommandDict.Add("log", new LogCommand());
             CommandDict.Add("viewlog", new ViewLogCommand());
             CommandDict.Add("numlogs", new NumLogsCommand());
+            CommandDict.Add("time", new TimeCommand());
 
             foreach (KeyValuePair<string, BaseCommand> command in CommandDict)
             {

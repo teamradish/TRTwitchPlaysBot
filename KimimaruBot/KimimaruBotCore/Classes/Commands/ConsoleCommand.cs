@@ -74,6 +74,8 @@ namespace KimimaruBot
                 StrBuilder = new StringBuilder(500);
             }
 
+            StrBuilder.Clear();
+
             for (int i = 0; i < names.Length; i++)
             {
                 StrBuilder.Append(names[i]).Append(',').Append(' ');
