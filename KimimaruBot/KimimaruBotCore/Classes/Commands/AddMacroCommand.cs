@@ -69,10 +69,21 @@ namespace KimimaruBot
             }
             else
             {
+                string message = string.Empty;
+
+                if (BotProgram.BotData.Macros.ContainsKey(macroName) == false)
+                {
+                    message = $"Added macro {macroName}!";
+                }
+                else
+                {
+                    message = $"Updated macro {macroName}!";
+                }
+
                 BotProgram.BotData.Macros[macroName] = macroVal;
                 BotProgram.SaveBotData();
 
-                BotProgram.QueueMessage($"Added macro {macroName}!");
+                BotProgram.QueueMessage(message);
             }
         }
     }

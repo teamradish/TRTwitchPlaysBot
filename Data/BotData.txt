@@ -7,7 +7,9 @@
     "#spamsprayup": "up400ms_upa15msr+a#400msa15msr+a#400msa15msr+a#400msa15mscright40msr+a#400msa15msr+a#400msa15msr+a#400ms",
     "#sfr": "_left-left+_right250ms_a",
     "#sfl": "_right-left+_left250ms_a",
-    "#test2": "a34ms b17ms"
+    "#test2": "a34ms b17ms",
+    "#test3": "a . b500ms #17ms [a34ms]*10",
+    "#test4": "x500ms . #test3"
   },
   "Memes": {
     "testmeme": "Hello"
@@ -16,8 +18,8 @@
     "kimimaru4000": {
       "Name": null,
       "Level": 3,
-      "Credits": 800,
-      "TotalMessages": 532,
+      "Credits": 1000,
+      "TotalMessages": 561,
       "ValidInputs": 231,
       "Silenced": false,
       "Team": 0,
@@ -109,6 +111,11 @@
     },
     "3": {
       "DateTimeString": "03/29/2019 at 04:21:17",
+      "User": "kimimaru4000",
+      "LogMessage": ""
+    },
+    "4": {
+      "DateTimeString": "03/31/2019 at 07:01:01",
       "User": "kimimaru4000",
       "LogMessage": ""
     }

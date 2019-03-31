@@ -23,7 +23,7 @@ namespace KimimaruBot
 
             if (args.Count < 1)
             {
-                BotProgram.QueueMessage($"{Globals.CommandIdentifier}savestate usage: #");
+                BotProgram.QueueMessage("Usage: state #");
                 return;
             }
 
@@ -31,14 +31,14 @@ namespace KimimaruBot
 
             if (int.TryParse(stateNumStr, out int stateNum) == false)
             {
-                BotProgram.QueueMessage("Invalid savestate number.");
+                BotProgram.QueueMessage("Invalid state number.");
                 return;
             }
 
             string saveStateStr = $"savestate{stateNum}";
             if (InputGlobals.InputMap.ContainsKey(saveStateStr) == false)
             {
-                BotProgram.QueueMessage("Invalid savestate number.");
+                BotProgram.QueueMessage("Invalid state number.");
                 return;
             }
 
@@ -69,6 +69,8 @@ namespace KimimaruBot
             //Add or replace the log and save the bot data
             BotProgram.BotData.SavestateLogs[stateNum] = newStateLog;
             BotProgram.SaveBotData();
+
+            BotProgram.QueueMessage($"Saved state {stateNum}!");
 
             //Wait a bit before releasing the input
             const float wait = 50f;

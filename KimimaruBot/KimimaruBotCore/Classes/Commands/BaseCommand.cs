@@ -15,7 +15,7 @@ namespace KimimaruBot
     /// </summary>
     public abstract class BaseCommand
     {
-        public bool HiddenFromHelp { get; protected set; } = false;
+        public bool HiddenFromHelp = false;
         public int AccessLevel { get; protected set; } = 0;
 
         public BaseCommand()

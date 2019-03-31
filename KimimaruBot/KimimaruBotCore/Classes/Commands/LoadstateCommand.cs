@@ -20,7 +20,7 @@ namespace KimimaruBot
 
             if (args.Count != 1)
             {
-                BotProgram.QueueMessage($"{Globals.CommandIdentifier}loadstate usage: #");
+                BotProgram.QueueMessage("Usage: state #");
                 return;
             }
 
@@ -28,19 +28,21 @@ namespace KimimaruBot
 
             if (int.TryParse(stateNumStr, out int stateNum) == false)
             {
-                BotProgram.QueueMessage($"Invalid loadstate number.");
+                BotProgram.QueueMessage($"Invalid state number.");
                 return;
             }
 
             string loadStateStr = $"loadstate{stateNum}";
             if (InputGlobals.InputMap.ContainsKey(loadStateStr) == false)
             {
-                BotProgram.QueueMessage($"Invalid savestate number.");
+                BotProgram.QueueMessage($"Invalid state number.");
                 return;
             }
 
             VJoyController.Joystick.PressButton(loadStateStr);
             VJoyController.Joystick.UpdateJoystickEfficient();
+
+            BotProgram.QueueMessage($"Loaded state {stateNum}!");
 
             //Wait a bit before releasing the input
             const float wait = 50f;

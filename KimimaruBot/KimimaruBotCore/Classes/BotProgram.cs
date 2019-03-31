@@ -296,7 +296,7 @@ namespace KimimaruBot
 
                     parsedData = Parser.Parse(parse_message);
                 }
-                catch (Exception exception)
+                catch
                 {
                     //Kimimaru: Sanitize parsing exceptions for now
                     //Most of these are currently caused by differences in how C# and Python handle slicing strings (Substring() vs string[:])

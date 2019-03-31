@@ -16,7 +16,7 @@ namespace KimimaruBot
 
             if (args.Count < 1)
             {
-                BotProgram.QueueMessage($"{Globals.CommandIdentifier}viewstate usage: #");
+                BotProgram.QueueMessage("Usage: state #");
                 return;
             }
 
@@ -24,14 +24,14 @@ namespace KimimaruBot
 
             if (int.TryParse(stateNumStr, out int stateNum) == false)
             {
-                BotProgram.QueueMessage("Invalid viewstate number.");
+                BotProgram.QueueMessage("Invalid state number.");
                 return;
             }
 
             string saveStateStr = $"savestate{stateNum}";
             if (InputGlobals.InputMap.ContainsKey(saveStateStr) == false)
             {
-                BotProgram.QueueMessage("Invalid viewstate number.");
+                BotProgram.QueueMessage("Invalid state number.");
                 return;
             }
 
