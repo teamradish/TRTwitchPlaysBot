@@ -47,6 +47,11 @@ namespace KimimaruBot
         //Throttler
         private Stopwatch Throttler = new Stopwatch();
 
+        /// <summary>
+        /// Whether to ignore logging bot messages to the console based on potential console logs from the <see cref="ExecCommand"/>.
+        /// </summary>
+        public static bool IgnoreConsoleLog = false;
+
         public static string BotName
         {
             get
@@ -164,7 +169,11 @@ namespace KimimaruBot
                         string message = ClientMessages.Dequeue();
                         //Send the message
                         Client.SendMessage(LoginInformation.ChannelName, message);
-                        Console.WriteLine(message);
+
+                        if (IgnoreConsoleLog == false)
+                        {
+                            Console.WriteLine(message);
+                        }
                 
                         CurQueueTime = now;
                     }

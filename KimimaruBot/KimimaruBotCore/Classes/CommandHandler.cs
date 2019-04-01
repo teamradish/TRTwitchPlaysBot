@@ -78,6 +78,7 @@ namespace KimimaruBot
             CommandDict.Add("numlogs", new NumLogsCommand());
             CommandDict.Add("time", new TimeCommand());
             CommandDict.Add("length", new LengthCommand());
+            CommandDict.Add("exec", new ExecCommand());
 
             foreach (KeyValuePair<string, BaseCommand> command in CommandDict)
             {

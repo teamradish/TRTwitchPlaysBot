@@ -12,7 +12,7 @@ namespace KimimaruBot
         public override void Initialize(CommandHandler commandHandler)
         {
             base.Initialize(commandHandler);
-            AccessLevel = 3;
+            AccessLevel = (int)AccessLevels.Levels.Admin;
         }
 
         public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
