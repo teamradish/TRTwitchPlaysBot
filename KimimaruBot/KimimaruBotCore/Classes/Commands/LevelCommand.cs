@@ -25,7 +25,7 @@ namespace KimimaruBot
 
             if (levelUser == null)
             {
-                BotProgram.QueueMessage($"User {levelUsername} does not exist in database!");
+                BotProgram.QueueMessage($"User does not exist in database!");
                 return;
             }
 

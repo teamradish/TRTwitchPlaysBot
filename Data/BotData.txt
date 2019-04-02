@@ -16,7 +16,7 @@
   },
   "Users": {
     "kimimaru4000": {
-      "Name": null,
+      "Name": "kimimaru4000",
       "Level": 3,
       "Credits": 2600,
       "TotalMessages": 641,

@@ -39,7 +39,7 @@ namespace KimimaruBot
 
             if (user == null)
             {
-                BotProgram.QueueMessage($"User {unsilencedName} does not exist in database!");
+                BotProgram.QueueMessage($"User does not exist in database!");
                 return;
             }
 

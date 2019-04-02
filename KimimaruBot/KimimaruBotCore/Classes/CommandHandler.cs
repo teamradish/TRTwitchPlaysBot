@@ -84,6 +84,7 @@ namespace KimimaruBot
             CommandDict.Add("silence", new SilenceCommand());
             CommandDict.Add("unsilence", new UnsilenceCommand());
             CommandDict.Add("viewsilence", new ViewSilencedCommand());
+            CommandDict.Add("userinfo", new UserInfoCommand());
 
             foreach (KeyValuePair<string, BaseCommand> command in CommandDict)
             {

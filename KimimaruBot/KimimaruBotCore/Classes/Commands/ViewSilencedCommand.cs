@@ -32,7 +32,7 @@ namespace KimimaruBot
 
                 if (user == null)
                 {
-                    BotProgram.QueueMessage($"User {username} does not exist in database!");
+                    BotProgram.QueueMessage($"User does not exist in database!");
                 }
                 else
                 {

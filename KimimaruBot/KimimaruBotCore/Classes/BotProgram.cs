@@ -373,12 +373,12 @@ namespace KimimaruBot
 
         private void OnNewSubscriber(object sender, OnNewSubscriberArgs e)
         {
-            QueueMessage($"Thank you for subscribing, {e.Subscriber.DisplayName}!!");
+            QueueMessage($"Thank you for subscribing, {e.Subscriber.DisplayName} :D !!");
         }
 
         private void OnReSubscriber(object sender, OnReSubscriberArgs e)
         {
-            QueueMessage($"Thank you for subscribing for {e.ReSubscriber.Months} months, {e.ReSubscriber.DisplayName}!!");
+            QueueMessage($"Thank you for subscribing for {e.ReSubscriber.Months} months, {e.ReSubscriber.DisplayName} :D !!");
         }
 
         private void OnDisconnected(object sender, OnDisconnectedEventArgs e)
