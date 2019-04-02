@@ -16,7 +16,7 @@ namespace KimimaruBot
     public abstract class BaseCommand
     {
         public bool HiddenFromHelp = false;
-        public int AccessLevel { get; protected set; } = 0;
+        public int AccessLevel { get; protected set; } = (int)AccessLevels.Levels.User;
 
         public BaseCommand()
         {

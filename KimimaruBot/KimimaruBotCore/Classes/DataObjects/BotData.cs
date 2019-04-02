@@ -15,5 +15,7 @@ namespace KimimaruBot
         public readonly List<GameLog> Logs = new List<GameLog>();
         public readonly JumpRopeData JRData = new JumpRopeData();
         public readonly Dictionary<int, GameLog> SavestateLogs = new Dictionary<int, GameLog>();
+        public readonly HashSet<string> SilencedUsers = new HashSet<string>();
+        public string GameMessage = string.Empty;
     }
 }

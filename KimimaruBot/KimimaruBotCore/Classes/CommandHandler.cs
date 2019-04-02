@@ -79,6 +79,11 @@ namespace KimimaruBot
             CommandDict.Add("time", new TimeCommand());
             CommandDict.Add("length", new LengthCommand());
             CommandDict.Add("exec", new ExecCommand());
+            CommandDict.Add("setmessage", new SetMessageCommand());
+            CommandDict.Add("viewmessage", new ViewMessageCommand());
+            CommandDict.Add("silence", new SilenceCommand());
+            CommandDict.Add("unsilence", new UnsilenceCommand());
+            CommandDict.Add("viewsilence", new ViewSilencedCommand());
 
             foreach (KeyValuePair<string, BaseCommand> command in CommandDict)
             {

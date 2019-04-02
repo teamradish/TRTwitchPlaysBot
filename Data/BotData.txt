@@ -19,7 +19,7 @@
       "Name": null,
       "Level": 3,
       "Credits": 2600,
-      "TotalMessages": 624,
+      "TotalMessages": 641,
       "ValidInputs": 233,
       "Silenced": false,
       "Team": 0,
@@ -28,7 +28,7 @@
     },
     "silver_ninja_guy": {
       "Name": "silver_ninja_guy",
-      "Level": 2,
+      "Level": 1,
       "Credits": 3102,
       "TotalMessages": 90,
       "ValidInputs": 22,
@@ -39,7 +39,7 @@
     },
     "twitchplayspapermario": {
       "Name": "twitchplayspapermario",
-      "Level": 2,
+      "Level": 1,
       "Credits": 1698,
       "TotalMessages": 81,
       "ValidInputs": 1,
@@ -61,7 +61,7 @@
     },
     "taximadish": {
       "Name": "taximadish",
-      "Level": 2,
+      "Level": 1,
       "Credits": 1300,
       "TotalMessages": 26,
       "ValidInputs": 4,
@@ -72,7 +72,7 @@
     },
     "baconismyusername": {
       "Name": "baconismyusername",
-      "Level": 2,
+      "Level": 1,
       "Credits": 400,
       "TotalMessages": 15,
       "ValidInputs": 0,
@@ -130,5 +130,7 @@
       "User": "kimimaru4000",
       "LogMessage": ""
     }
-  }
+  },
+  "SilencedUsers": [],
+  "GameMessage": "Test message"
 }
