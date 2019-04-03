@@ -32,7 +32,13 @@ namespace KimimaruBot
                 return;
             }
 
-            if (args[0].Length >= MAX_MEME_LENGTH)
+            if (args[0].ElementAt(0) == Globals.MacroIdentifier)
+            {
+                BotProgram.QueueMessage($"Memes cannot start with \'{Globals.MacroIdentifier}\'");
+                return;
+            }
+
+            if (args[0].Length > MAX_MEME_LENGTH)
             {
                 BotProgram.QueueMessage($"The max meme length is {MAX_MEME_LENGTH} characters!");
                 return;

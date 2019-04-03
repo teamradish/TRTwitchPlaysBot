@@ -10,6 +10,8 @@ namespace KimimaruBot
     /// </summary>
     public sealed class AddMacroCommand : BaseCommand
     {
+        public const int MAX_MACRO_LENGTH = 50;
+
         public override void Initialize(CommandHandler commandHandler)
         {
             base.Initialize(commandHandler);
@@ -33,6 +35,12 @@ namespace KimimaruBot
             if (macroName[0] != Globals.MacroIdentifier)
             {
                 BotProgram.QueueMessage($"Macros must start with '{Globals.MacroIdentifier}'.");
+                return;
+            }
+
+            if (macroName.Length > MAX_MACRO_LENGTH)
+            {
+                BotProgram.QueueMessage($"The max macro length is {MAX_MACRO_LENGTH} characters!");
                 return;
             }
 

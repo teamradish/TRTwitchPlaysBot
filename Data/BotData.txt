@@ -18,8 +18,8 @@
     "kimimaru4000": {
       "Name": "kimimaru4000",
       "Level": 3,
-      "Credits": 2700,
-      "TotalMessages": 650,
+      "Credits": 2900,
+      "TotalMessages": 688,
       "ValidInputs": 233,
       "Silenced": false,
       "Team": 0,

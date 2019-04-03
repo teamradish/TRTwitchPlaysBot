@@ -11,9 +11,8 @@ namespace KimimaruBot
 {
     public sealed class MemesCommand : BaseCommand
     {
-        public const int CHAR_LIMIT = 500;
-
-        private static List<string> MemesCache = new List<string>();
+        private static List<string> MemesCache = new List<string>(16);
+        private const string InitMessage = "Here is the list of memes: ";
 
         public MemesCommand()
         {
@@ -37,8 +36,13 @@ namespace KimimaruBot
             for (int i = 0; i < memes.Length; i++)
             {
                 int length = memes[i].Length + curString.Length;
+                int maxLength = Globals.BotCharacterLimit;
+                if (MemesCache.Count == 0)
+                {
+                    maxLength -= InitMessage.Length;
+                }
 
-                if (length >= CHAR_LIMIT)
+                if (length >= maxLength)
                 {
                     MemesCache.Add(curString);
                     curString = string.Empty;
@@ -52,7 +56,7 @@ namespace KimimaruBot
                 }
             }
 
-            if (curString != string.Empty)
+            if (string.IsNullOrEmpty(curString) == false)
             {
                 MemesCache.Add(curString);
             }
@@ -68,7 +72,7 @@ namespace KimimaruBot
 
             for (int i = 0; i < MemesCache.Count; i++)
             {
-                string message = (i == 0) ? "Here is the list of memes: " : string.Empty;
+                string message = (i == 0) ? InitMessage : string.Empty;
                 message += MemesCache[i];
                 BotProgram.QueueMessage(message);
             }

@@ -51,18 +51,22 @@ namespace KimimaruBot
                 //Show the command only if the user has access to it
                 if (user.Level >= cmd.Value.AccessLevel)
                 {
-                    StrBuilder.Append(Globals.CommandIdentifier).Append(cmd.Key).Append(", ");
+                    int newLength = StrBuilder.Length + cmd.Key.Length + 3;
+                    int maxLength = Globals.BotCharacterLimit;
+                    if (MultiMessageCache.Count == 0)
+                    {
+                        maxLength -= InitMessage.Length;
+                    }
 
                     //Send in multiple messages if it exceeds the length
                     //NOTE: Do the same thing for memes and macros
-                    if (StrBuilder.Length >= (Globals.BotCharacterLimit - InitMessage.Length))
+                    if (newLength >= maxLength)
                     {
-                        StrBuilder.Remove(StrBuilder.Length - 2 - cmd.Key.Length - 3, cmd.Key.Length + 3);
                         MultiMessageCache.Add(StrBuilder.ToString());
                         StrBuilder.Clear();
-
-                        StrBuilder.Append(Globals.CommandIdentifier).Append(cmd.Key).Append(", ");
                     }
+
+                    StrBuilder.Append(Globals.CommandIdentifier).Append(cmd.Key).Append(", ");
                 }
             }
 
