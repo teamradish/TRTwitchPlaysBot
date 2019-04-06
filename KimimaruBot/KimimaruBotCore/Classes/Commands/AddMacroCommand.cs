@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using TwitchLib.Client.Events;
 
 namespace KimimaruBot
@@ -44,15 +45,39 @@ namespace KimimaruBot
                 return;
             }
 
+            bool isDynamic = false;
+            string parsedVal = macroVal;
+
             //Check for a dynamic macro
             if (macroName.Contains("(*") == true)
             {
-                BotProgram.BotData.Macros[macroName] = macroVal;
-                BotProgram.SaveBotData();
-            
-                BotProgram.QueueMessage($"Added dynamic macro {macroName}. NOTE: dynamic macro contents cannot be verified upon creation.");
-            
-                return;
+                isDynamic = true;
+
+                //NOTE: We need to verify that the dynamic macro takes the form of "#macroname(*,*)"
+                //It needs to have an open parenthesis followed by a number of asterisks separated by commas, then ending with a closed parenthesis
+                string parseMsg = string.Empty;
+                try
+                {
+                    parseMsg = Parser.expandify(Parser.populate_macros(parsedVal));
+                }
+                catch
+                {
+                    BotProgram.QueueMessage("Invalid dynamic macro. Ensure that variables are listed in order (Ex. (*,*,...) = <0>, <1>,...)");
+                    return;
+                }
+
+                MatchCollection matches = Regex.Matches(parseMsg, @"<[0-9]+>");
+
+                //Kimimaru: Replace all variables with a valid input to verify its validity
+                //Any input will do, so just grab the first one
+                string input = InputGlobals.ValidInputs[0];
+
+                for (int i = 0; i < matches.Count; i++)
+                {
+                    Match match = matches[i];
+
+                    parsedVal = parsedVal.Replace(match.Value, input);
+                }
             }
 
             (bool valid, List<List<Parser.Input>> inputList, bool containsStartInput, int durationCounter)
@@ -61,19 +86,33 @@ namespace KimimaruBot
             try
             {
                 //Parse the macro to check for valid input
-                string parse_message = Parser.expandify(Parser.populate_macros(macroVal));
+                string parse_message = Parser.expandify(Parser.populate_macros(parsedVal));
 
                 parsedData = Parser.Parse(parse_message);
             }
             catch
             {
-                BotProgram.QueueMessage("Invalid macro.");
+                if (isDynamic == false)
+                {
+                    BotProgram.QueueMessage("Invalid macro.");
+                }
+                else
+                {
+                    BotProgram.QueueMessage("Invalid dynamic macro. Ensure that variables are listed in order (Ex. (*,*,...) = <0>, <1>,...)");
+                }
                 return;
             }
 
             if (parsedData.valid == false)
             {
-                BotProgram.QueueMessage("Invalid macro.");
+                if (isDynamic == false)
+                {
+                    BotProgram.QueueMessage("Invalid macro.");
+                }
+                else
+                {
+                    BotProgram.QueueMessage("Invalid dynamic macro. Ensure that variables are listed in order (Ex. (*,*,...) = <0>, <1>,...)");
+                }
             }
             else
             {
@@ -81,11 +120,15 @@ namespace KimimaruBot
 
                 if (BotProgram.BotData.Macros.ContainsKey(macroName) == false)
                 {
-                    message = $"Added macro {macroName}!";
+                    if (isDynamic == false)
+                        message = $"Added macro {macroName}!";
+                    else message = $"Added dynamic macro {macroName}!";
                 }
                 else
                 {
-                    message = $"Updated macro {macroName}!";
+                    if (isDynamic == false)
+                        message = $"Updated macro {macroName}!";
+                    else message = $"Updated dynamic macro {macroName}!";
                 }
 
                 BotProgram.BotData.Macros[macroName] = macroVal;

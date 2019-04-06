@@ -83,7 +83,7 @@ namespace KimimaruBot
             //Add to the duel requests
             DuelRequests.Add(usertoLower, new DuelData(dueler, betAmount, DateTime.Now));
 
-            BotProgram.QueueMessage($"{dueler} has requested to duel {user} for {betAmount} credit(s)! Type {Globals.CommandIdentifier}accept to duel or {Globals.CommandIdentifier}deny to refuse.");
+            BotProgram.QueueMessage($"{dueler} has requested to duel {user} for {betAmount} credit(s)! Type {Globals.CommandIdentifier}accept to duel or {Globals.CommandIdentifier}deny to refuse. The duel expires in {DUEL_MINUTES} minute(s)!");
         }
 
         public struct DuelData

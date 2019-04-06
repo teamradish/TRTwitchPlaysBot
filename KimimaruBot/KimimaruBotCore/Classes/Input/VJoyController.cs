@@ -314,7 +314,7 @@ namespace KimimaruBot
             }
         }
 
-        public void SetButtons(InputGlobals.InputConsoles console)
+        public void SetButtons(in InputGlobals.InputConsoles console)
         {
             ButtonStates.Clear();
 
@@ -338,7 +338,7 @@ namespace KimimaruBot
             ButtonStates.Add("loadstate5", false);
             ButtonStates.Add("loadstate6", false);
 
-            Console.WriteLine($"Set controller {ControllerID} buttons to {console}");
+            //Console.WriteLine($"Set controller {ControllerID} buttons to {console}");
 
             //Reset the controller when we set buttons
             //If we switch to a different console, this will clear all other inputs, including ones not supported by this console

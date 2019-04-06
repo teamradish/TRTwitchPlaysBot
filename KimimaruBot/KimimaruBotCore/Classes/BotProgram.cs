@@ -115,6 +115,22 @@ namespace KimimaruBot
                 SaveBotData();
             }
 
+            //Kimimaru: If the bot itself isn't in the bot data, add it as an admin!
+            if (string.IsNullOrEmpty(LoginInformation.BotName) == false)
+            {
+                string botName = LoginInformation.BotName.ToLowerInvariant();
+                User botUser = null;
+                if (BotData.Users.TryGetValue(botName, out botUser) == false)
+                {
+                    botUser = new User();
+                    botUser.Name = botName;
+                    botUser.Level = (int)AccessLevels.Levels.Admin;
+                    BotData.Users.Add(botName, botUser);
+
+                    SaveBotData();
+                }
+            }
+
             Credentials = new ConnectionCredentials(LoginInformation.BotName, LoginInformation.Password);
 
             Client = new TwitchClient();
