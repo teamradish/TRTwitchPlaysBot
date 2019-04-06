@@ -140,6 +140,9 @@ namespace KimimaruBot
             if (InputGlobals.IsAbsoluteAxis(input) == true)
             {
                 PressAbsoluteAxis(InputGlobals.InputAxes[input.name], input.percent);
+
+                //Kimimaru: In the case of L and R buttons on GCN, when the axes are pressed, the buttons should be released
+                ReleaseButton(input.name);
             }
             else if (InputGlobals.IsAxis(input) == true)
             {
@@ -148,6 +151,12 @@ namespace KimimaruBot
             else if (InputGlobals.IsButton(input) == true)
             {
                 PressButton(input.name);
+
+                //Kimimaru: In the case of L and R buttons on GCN, when the buttons are pressed, the axes should be released
+                if (InputGlobals.InputAxes.TryGetValue(input.name, out HID_USAGES value) == true)
+                {
+                    ReleaseAbsoluteAxis(value);
+                }
             }
         }
 
@@ -156,6 +165,9 @@ namespace KimimaruBot
             if (InputGlobals.IsAbsoluteAxis(input) == true)
             {
                 ReleaseAbsoluteAxis(InputGlobals.InputAxes[input.name]);
+
+                //Kimimaru: In the case of L and R buttons on GCN, when the axes are released, the buttons should be too
+                ReleaseButton(input.name);
             }
             else if (InputGlobals.IsAxis(input) == true)
             {
@@ -164,6 +176,12 @@ namespace KimimaruBot
             else if (InputGlobals.IsButton(input) == true)
             {
                 ReleaseButton(input.name);
+
+                //Kimimaru: In the case of L and R buttons on GCN, when the buttons are released, the axes should be too
+                if (InputGlobals.InputAxes.TryGetValue(input.name, out HID_USAGES value) == true)
+                {
+                    ReleaseAbsoluteAxis(value);
+                }
             }
         }
 

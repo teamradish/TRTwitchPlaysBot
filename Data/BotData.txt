@@ -2,14 +2,12 @@
   "Macros": {
     "#mashalt(*,*)": "[<0>34ms#17ms<1>34ms]*10",
     "#mash(*)": "[<0>34ms#17ms]*20",
-    "#tj": "_up150ms[a50ms#267ms]*3",
-    "#spinjump": "_up34ms _left34ms -up34ms _down34ms -left34ms _right34ms -down34ms _up34ms -right34ms #150ms a",
-    "#spamsprayup": "up400ms_upa15msr+a#400msa15msr+a#400msa15msr+a#400msa15mscright40msr+a#400msa15msr+a#400msa15msr+a#400ms",
-    "#sfr": "_left-left+_right250ms_a",
-    "#sfl": "_right-left+_left250ms_a",
-    "#test2": "a34ms b17ms",
-    "#test3": "a . b500ms #17ms [a34ms]*10",
-    "#test4": "x500ms . #test3"
+    "#bouncejumproll": "#bouncejump _up r",
+    "#p": "#400ms a",
+    "#celebrate": "[r #1s]*3",
+    "#eggdriver": "a #50ms a1200ms",
+    "#test(*,*)": "<0>500ms #500ms <1>500ms",
+    "#bouncejump": "a100ms #34ms a"
   },
   "Memes": {
     "testmeme": "Hello"
@@ -18,9 +16,9 @@
     "kimimaru4000": {
       "Name": "kimimaru4000",
       "Level": 3,
-      "Credits": 2900,
-      "TotalMessages": 726,
-      "ValidInputs": 233,
+      "Credits": 6600,
+      "TotalMessages": 1051,
+      "ValidInputs": 428,
       "Silenced": false,
       "Team": 0,
       "Subscriber": 0,
@@ -61,10 +59,10 @@
     },
     "taximadish": {
       "Name": "taximadish",
-      "Level": 1,
-      "Credits": 1300,
-      "TotalMessages": 26,
-      "ValidInputs": 4,
+      "Level": 2,
+      "Credits": 3500,
+      "TotalMessages": 89,
+      "ValidInputs": 23,
       "Silenced": false,
       "Team": 0,
       "Subscriber": 0,
@@ -72,9 +70,9 @@
     },
     "baconismyusername": {
       "Name": "baconismyusername",
-      "Level": 1,
-      "Credits": 400,
-      "TotalMessages": 15,
+      "Level": 2,
+      "Credits": 500,
+      "TotalMessages": 16,
       "ValidInputs": 0,
       "Silenced": false,
       "Team": 0,
@@ -115,29 +113,50 @@
       "BetCounter": 0
     }
   },
-  "Logs": [],
+  "Logs": [
+    {
+      "DateTimeString": "04/06/2019 at 19:14:21",
+      "User": "kimimaru4000",
+      "LogMessage": "Started test"
+    },
+    {
+      "DateTimeString": "04/06/2019 at 19:29:56",
+      "User": "kimimaru4000",
+      "LogMessage": "test"
+    }
+  ],
   "JRData": {
     "User": "kimimaru4000",
     "Streak": 10
   },
   "SavestateLogs": {
     "1": {
-      "DateTimeString": "03/29/2019 at 04:13:14",
+      "DateTimeString": "04/06/2019 at 19:14:33",
       "User": "kimimaru4000",
-      "LogMessage": "Started game"
+      "LogMessage": "Level 1"
     },
     "2": {
-      "DateTimeString": "03/29/2019 at 04:21:02",
-      "User": "kimimaru4000",
-      "LogMessage": "welwalrweklrlkaw"
-    },
-    "3": {
-      "DateTimeString": "03/29/2019 at 04:21:17",
+      "DateTimeString": "04/06/2019 at 19:14:36",
       "User": "kimimaru4000",
       "LogMessage": ""
     },
+    "3": {
+      "DateTimeString": "04/06/2019 at 19:26:37",
+      "User": "kimimaru4000",
+      "LogMessage": "Obtained chicken suit"
+    },
     "4": {
-      "DateTimeString": "03/31/2019 at 07:01:01",
+      "DateTimeString": "04/06/2019 at 18:53:15",
+      "User": "kimimaru4000",
+      "LogMessage": ""
+    },
+    "5": {
+      "DateTimeString": "04/06/2019 at 18:53:15",
+      "User": "kimimaru4000",
+      "LogMessage": ""
+    },
+    "6": {
+      "DateTimeString": "04/06/2019 at 18:53:16",
       "User": "kimimaru4000",
       "LogMessage": ""
     }

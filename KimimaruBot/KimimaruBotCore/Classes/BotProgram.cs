@@ -276,7 +276,7 @@ namespace KimimaruBot
 
         private void OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
-            QueueMessage($"{LoginInformation.BotName} has connected :D ! Use {Globals.CommandIdentifier}help to display a list of commands! Input parser by Jdog, aka TwitchPlays_Everything, converted & modified by Kimimaru");
+            QueueMessage($"{LoginInformation.BotName} has connected :D ! Use {Globals.CommandIdentifier}help to display a list of commands and {Globals.CommandIdentifier}tutorial to see how to play! Input parser by Jdog, aka TwitchPlays_Everything, converted & modified by Kimimaru");
 
             Console.WriteLine($"Joined channel \"{e.Channel}\"");
 

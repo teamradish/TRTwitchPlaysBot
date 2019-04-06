@@ -14,7 +14,11 @@ namespace KimimaruBot
         {
             int numLogs = BotProgram.BotData.Logs.Count;
 
-            if (numLogs > 0)
+            if (numLogs == 1)
+            {
+                BotProgram.QueueMessage("There is 1 game log!");
+            }
+            else if (numLogs > 0)
             {
                 BotProgram.QueueMessage($"There are {numLogs} game logs!");
             }
