@@ -144,9 +144,9 @@ namespace KimimaruBot
                 //Kimimaru: In the case of L and R buttons on GCN, when the axes are pressed, the buttons should be released
                 ReleaseButton(input.name);
             }
-            else if (InputGlobals.IsAxis(input) == true)
+            else if (InputGlobals.GetAxis(input, out HID_USAGES axis) == true)
             {
-                PressAxis(InputGlobals.InputAxes[input.name], InputGlobals.IsMinAxis(input.name), input.percent);
+                PressAxis(axis, InputGlobals.IsMinAxis(input.name), input.percent);
             }
             else if (InputGlobals.IsButton(input) == true)
             {
@@ -169,9 +169,9 @@ namespace KimimaruBot
                 //Kimimaru: In the case of L and R buttons on GCN, when the axes are released, the buttons should be too
                 ReleaseButton(input.name);
             }
-            else if (InputGlobals.IsAxis(input) == true)
+            else if (InputGlobals.GetAxis(input, out HID_USAGES axis) == true)
             {
-                ReleaseAxis(InputGlobals.InputAxes[input.name]);
+                ReleaseAxis(axis);
             }
             else if (InputGlobals.IsButton(input) == true)
             {

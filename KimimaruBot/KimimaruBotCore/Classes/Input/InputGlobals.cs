@@ -114,6 +114,32 @@ namespace KimimaruBot
          * This also makes extending them to other consoles easier
          * */
 
+        /// <summary>
+        /// A more efficient version of telling whether an input is an axis.
+        /// Returns the axis if found to save a dictionary lookup if one is needed afterwards.
+        /// </summary>
+        /// <param name="input">The input to check.</param>
+        /// <param name="axis">The axis value that is assigned.</param>
+        /// <returns>true if the input is an axis, otherwise false.</returns>
+        public static bool GetAxis(in Parser.Input input, out HID_USAGES axis)
+        {
+            if (input.name == "l" || input.name == "r")
+            {
+                if (CurrentConsole != InputConsoles.GC || input.percent == 100)
+                {
+                    axis = default;
+                    return false;
+                }
+            }
+
+            return InputAxes.TryGetValue(input.name, out axis);
+        }
+
+        /// <summary>
+        /// Tells whether an input is an axis or not.
+        /// </summary>
+        /// <param name="input">The input to check.</param>
+        /// <returns>true if the input is an axis, otherwise false.</returns>
         public static bool IsAxis(in Parser.Input input)
         {
             if (input.name == "l" || input.name == "r")
@@ -124,9 +150,19 @@ namespace KimimaruBot
             return (InputAxes.ContainsKey(input.name) == true);
         }
 
+        /// <summary>
+        /// Tells whether the input is a wait input.
+        /// </summary>
+        /// <param name="input">The input to check.</param>
+        /// <returns>true if the input is one of the wait characters, otherwise false.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsWait(in Parser.Input input) => (input.name == "#" || input.name == ".");
 
+        /// <summary>
+        /// Tells whether the input is a button.
+        /// </summary>
+        /// <param name="input">The input to check.</param>
+        /// <returns>true if the input is a button, otherwise false.</returns>
         public static bool IsButton(in Parser.Input input)
         {
             if (CurrentConsole == InputConsoles.GC && (input.name == "l" || input.name == "r"))
@@ -143,6 +179,12 @@ namespace KimimaruBot
             return (input == "left" || input == "up" || input == "cleft" || input == "cup");
         }
 
+        /// <summary>
+        /// Tells whether the input is an absolute axis - one that starts at 0 and goes up to a value.
+        /// <para>This is usually true only for triggers, such as the GameCube's L and R buttons.</para>
+        /// </summary>
+        /// <param name="input">The input to check.</param>
+        /// <returns>true if the input is an absolute axis, otherwise false.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsAbsoluteAxis(in Parser.Input input)
         {
