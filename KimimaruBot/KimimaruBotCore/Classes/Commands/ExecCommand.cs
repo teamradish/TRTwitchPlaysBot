@@ -56,7 +56,9 @@ namespace KimimaruBot
                     BotProgram.IgnoreConsoleLog = true;
 
                     var script = await CSharpScript.RunAsync(code, ScriptCompileOptions);
+
                     Console.SetOut(defaultOut);
+                    BotProgram.IgnoreConsoleLog = false;
                 }
             }
             catch (CompilationErrorException exception)
