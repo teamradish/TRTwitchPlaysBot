@@ -29,7 +29,7 @@ namespace KimimaruBot
             }
 
             string saveStateStr = $"savestate{stateNum}";
-            if (InputGlobals.InputMap.ContainsKey(saveStateStr) == false)
+            if (InputGlobals.CurrentConsole.ButtonInputMap.ContainsKey(saveStateStr) == false)
             {
                 BotProgram.QueueMessage("Invalid state number.");
                 return;

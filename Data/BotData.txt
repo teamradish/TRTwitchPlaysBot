@@ -7,7 +7,9 @@
     "#celebrate": "[r #1s]*3",
     "#eggdriver": "a #50ms a1200ms",
     "#test(*,*)": "<0>500ms #500ms <1>500ms",
-    "#bouncejump": "a100ms #34ms a"
+    "#bouncejump": "a100ms #34ms a",
+    "#triplejump": "_up100ms a34ms #500ms a34ms #500ms a",
+    "#tj": "#triplejump"
   },
   "Memes": {
     "testmeme": "Hello"
@@ -16,9 +18,9 @@
     "kimimaru4000": {
       "Name": "kimimaru4000",
       "Level": 3,
-      "Credits": 6600,
-      "TotalMessages": 1051,
-      "ValidInputs": 428,
+      "Credits": 7600,
+      "TotalMessages": 1338,
+      "ValidInputs": 690,
       "Silenced": false,
       "Team": 0,
       "Subscriber": 0,

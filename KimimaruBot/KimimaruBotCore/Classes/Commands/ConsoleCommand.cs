@@ -17,22 +17,16 @@ namespace KimimaruBot
 
         public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
         {
-            List<string> amount = e.Command.ArgumentsAsList;
+            List<string> args = e.Command.ArgumentsAsList;
 
             //See the console
-            if (amount.Count == 0)
+            if (args.Count == 0)
             {
-                BotProgram.QueueMessage($"The current console is {InputGlobals.CurrentConsole}. To set the console, add one as an argument: {GetValidConsoleStr()}");
+                BotProgram.QueueMessage($"The current console is {InputGlobals.CurrentConsoleVal}. To set the console, add one as an argument: {GetValidConsoleStr()}");
                 return;
             }
 
-            if (amount.Count > 1)
-            {
-                BotProgram.QueueMessage($"Please enter a valid console: {GetValidConsoleStr()}");
-                return;
-            }
-
-            string consoleStr = amount[0];
+            string consoleStr = args[0];
 
             if (Enum.TryParse<InputGlobals.InputConsoles>(consoleStr, true, out InputGlobals.InputConsoles console) == false)
             {
@@ -40,9 +34,9 @@ namespace KimimaruBot
                 return;
             }
 
-            if (console == InputGlobals.CurrentConsole)
+            if (console == InputGlobals.CurrentConsoleVal)
             {
-                BotProgram.QueueMessage($"The current console is already {InputGlobals.CurrentConsole}!");
+                BotProgram.QueueMessage($"The current console is already {InputGlobals.CurrentConsoleVal}!");
                 return;
             }
 
@@ -56,13 +50,13 @@ namespace KimimaruBot
             }
 
             //Set console and buttons
-            InputGlobals.CurrentConsole = console;
-            VJoyController.Joystick.SetButtons(InputGlobals.CurrentConsole);
+            InputGlobals.SetConsole(console, args);
+            VJoyController.Joystick.SetButtons(InputGlobals.CurrentConsoleVal);
 
             //Resume inputs
             InputHandler.ResumeRunningInputs();
 
-            BotProgram.QueueMessage($"Set console to {InputGlobals.CurrentConsole} and reset all inputs!");
+            BotProgram.QueueMessage($"Set console to {InputGlobals.CurrentConsoleVal} and reset all inputs!");
         }
 
         private string GetValidConsoleStr()

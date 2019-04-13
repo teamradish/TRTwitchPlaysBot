@@ -86,7 +86,7 @@ namespace KimimaruBot
                     Parser.Input input = inputs[j];
 
                     //Don't do anything for a wait input
-                    if (InputGlobals.IsWait(input) == true)
+                    if (InputGlobals.CurrentConsole.IsWait(input) == true)
                     {
                         continue;
                     }
@@ -130,7 +130,7 @@ namespace KimimaruBot
                         }
 
                         //Release if the input isn't a hold and isn't a wait input
-                        if (input.hold == false && InputGlobals.IsWait(input) == false)
+                        if (input.hold == false && InputGlobals.CurrentConsole.IsWait(input) == false)
                         {
                             VJoyController.Joystick.ReleaseInput(input);
 

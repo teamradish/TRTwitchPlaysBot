@@ -33,7 +33,7 @@ namespace KimimaruBot
             }
 
             string loadStateStr = $"loadstate{stateNum}";
-            if (InputGlobals.InputMap.ContainsKey(loadStateStr) == false)
+            if (InputGlobals.CurrentConsole.ButtonInputMap.ContainsKey(loadStateStr) == false)
             {
                 BotProgram.QueueMessage($"Invalid state number.");
                 return;

@@ -81,7 +81,7 @@ namespace KimimaruBot
 
         public void Init()
         {
-            Joystick.SetButtons(InputGlobals.CurrentConsole);
+            Joystick.SetButtons(InputGlobals.CurrentConsoleVal);
 
             HID_USAGES[] axes = EnumUtility.GetValues<HID_USAGES>.EnumValues;
 
@@ -137,23 +137,23 @@ namespace KimimaruBot
 
         public void PressInput(in Parser.Input input)
         {
-            if (InputGlobals.IsAbsoluteAxis(input) == true)
+            if (InputGlobals.CurrentConsole.IsAbsoluteAxis(input) == true)
             {
-                PressAbsoluteAxis(InputGlobals.InputAxes[input.name], input.percent);
+                PressAbsoluteAxis(InputGlobals.CurrentConsole.InputAxes[input.name], input.percent);
 
                 //Kimimaru: In the case of L and R buttons on GCN, when the axes are pressed, the buttons should be released
                 ReleaseButton(input.name);
             }
-            else if (InputGlobals.GetAxis(input, out HID_USAGES axis) == true)
+            else if (InputGlobals.CurrentConsole.GetAxis(input, out HID_USAGES axis) == true)
             {
-                PressAxis(axis, InputGlobals.IsMinAxis(input.name), input.percent);
+                PressAxis(axis, InputGlobals.CurrentConsole.IsMinAxis(input), input.percent);
             }
-            else if (InputGlobals.IsButton(input) == true)
+            else if (InputGlobals.CurrentConsole.IsButton(input) == true)
             {
                 PressButton(input.name);
 
                 //Kimimaru: In the case of L and R buttons on GCN, when the buttons are pressed, the axes should be released
-                if (InputGlobals.InputAxes.TryGetValue(input.name, out HID_USAGES value) == true)
+                if (InputGlobals.CurrentConsole.InputAxes.TryGetValue(input.name, out HID_USAGES value) == true)
                 {
                     ReleaseAbsoluteAxis(value);
                 }
@@ -162,23 +162,23 @@ namespace KimimaruBot
 
         public void ReleaseInput(in Parser.Input input)
         {
-            if (InputGlobals.IsAbsoluteAxis(input) == true)
+            if (InputGlobals.CurrentConsole.IsAbsoluteAxis(input) == true)
             {
-                ReleaseAbsoluteAxis(InputGlobals.InputAxes[input.name]);
+                ReleaseAbsoluteAxis(InputGlobals.CurrentConsole.InputAxes[input.name]);
 
                 //Kimimaru: In the case of L and R buttons on GCN, when the axes are released, the buttons should be too
                 ReleaseButton(input.name);
             }
-            else if (InputGlobals.GetAxis(input, out HID_USAGES axis) == true)
+            else if (InputGlobals.CurrentConsole.GetAxis(input, out HID_USAGES axis) == true)
             {
                 ReleaseAxis(axis);
             }
-            else if (InputGlobals.IsButton(input) == true)
+            else if (InputGlobals.CurrentConsole.IsButton(input) == true)
             {
                 ReleaseButton(input.name);
 
                 //Kimimaru: In the case of L and R buttons on GCN, when the buttons are released, the axes should be too
-                if (InputGlobals.InputAxes.TryGetValue(input.name, out HID_USAGES value) == true)
+                if (InputGlobals.CurrentConsole.InputAxes.TryGetValue(input.name, out HID_USAGES value) == true)
                 {
                     ReleaseAbsoluteAxis(value);
                 }
@@ -274,7 +274,7 @@ namespace KimimaruBot
 
             ButtonStates[buttonName] = true;
 
-            uint buttonVal = InputGlobals.InputMap[buttonName];
+            uint buttonVal = InputGlobals.CurrentConsole.ButtonInputMap[buttonName];
 
             if (InputFeedMethod == DeviceFeedMethod.Robust)
             {
@@ -306,7 +306,7 @@ namespace KimimaruBot
 
             ButtonStates[buttonName] = false;
 
-            uint buttonVal = InputGlobals.InputMap[buttonName];
+            uint buttonVal = InputGlobals.CurrentConsole.ButtonInputMap[buttonName];
 
             if (InputFeedMethod == DeviceFeedMethod.Robust)
             {

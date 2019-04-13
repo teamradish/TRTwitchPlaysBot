@@ -33,6 +33,16 @@ namespace KimimaruBot
         #region Abstract Methods
 
         /// <summary>
+        /// Allows the console to handle additional arguments when its changed.
+        /// <para>For instance, an argument can include a specific controller mode for the Wii.</para>
+        /// </summary>
+        /// <param name="arguments">A list of arguments as strings.</param>
+        public virtual void HandleArgsOnConsoleChange(List<string> arguments)
+        {
+
+        }
+
+        /// <summary>
         /// A more efficient version of telling whether an input is an axis.
         /// Returns the axis if found to save a dictionary lookup if one is needed afterwards.
         /// </summary>

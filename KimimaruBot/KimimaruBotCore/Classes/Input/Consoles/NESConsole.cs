@@ -13,14 +13,26 @@ namespace KimimaruBot
 
         public override Dictionary<string, uint> ButtonInputMap { get; protected set; } = new Dictionary<string, uint>()
         {
-            { "up", 0 },
-            { "down", 1 },
-            { "left", 2 },
-            { "right", 3 },
-            { "a", 4 },
-            { "b", 5 },
-            { "select", 6 },
-            { "start", 7 }
+            { "left", 1 },
+            { "right", 2 },
+            { "up", 3 },
+            { "down", 4 },
+            { "a", 5 },
+            { "b", 6 },
+            { "select", 7 },
+            { "start", 8 },
+            { "savestate1", 19 },
+            { "savestate2", 20 },
+            { "savestate3", 21 },
+            { "savestate4", 22 },
+            { "savestate5", 23 },
+            { "savestate6", 24 },
+            { "loadstate1", 25 },
+            { "loadstate2", 26 },
+            { "loadstate3", 27 },
+            { "loadstate4", 28 },
+            { "loadstate5", 29 },
+            { "loadstate6", 30 },
         };
 
         public override string[] ValidInputs { get; protected set; } = new string[10]
