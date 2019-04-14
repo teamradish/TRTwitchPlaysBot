@@ -14,7 +14,7 @@ namespace KimimaruBot
         {
             ///Kimimaru: Set a console so we have one to start out with
             ///We do this to avoid dictionary lookups each time using the <see cref="CurrentConsoleVal"/> to achieve better performance during inputs
-            SetConsole(CurrentConsoleVal, null);
+            SetConsole((InputConsoles)BotProgram.BotData.LastConsole, null);
         }
 
         /// <summary>
@@ -65,6 +65,8 @@ namespace KimimaruBot
             {
                 CurrentConsoleVal = consoleVal;
                 CurrentConsole = consoleBase;
+                BotProgram.BotData.LastConsole = (int)CurrentConsoleVal;
+                BotProgram.SaveBotData();
 
                 CurrentConsole.HandleArgsOnConsoleChange(consoleArgs);
             }
