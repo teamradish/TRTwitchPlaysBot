@@ -56,7 +56,7 @@ namespace KimimaruBot
             //Resume inputs
             InputHandler.ResumeRunningInputs();
 
-            BotProgram.QueueMessage($"Set console to {InputGlobals.CurrentConsoleVal} and reset all inputs!");
+            BotProgram.QueueMessage($"Set console to {InputGlobals.CurrentConsoleVal} and reset all running inputs!");
         }
 
         private string GetValidConsoleStr()
