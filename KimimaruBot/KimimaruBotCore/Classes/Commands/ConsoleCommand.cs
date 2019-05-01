@@ -51,7 +51,14 @@ namespace KimimaruBot
 
             //Set console and buttons
             InputGlobals.SetConsole(console, args);
-            VJoyController.Joystick.SetButtons(InputGlobals.CurrentConsoleVal);
+            
+            for (int i = 0; i < VJoyController.Joysticks.Length; i++)
+            {
+                if (VJoyController.Joysticks[i].IsAcquired == true)
+                {
+                    VJoyController.Joysticks[i].SetButtons(InputGlobals.CurrentConsoleVal);
+                }
+            }
 
             //Resume inputs
             InputHandler.ResumeRunningInputs();

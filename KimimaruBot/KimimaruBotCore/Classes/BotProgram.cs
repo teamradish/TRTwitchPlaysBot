@@ -347,9 +347,32 @@ namespace KimimaruBot
 
                     if (InputHandler.StopRunningInputs == false)
                     {
+                        //Mark this as a valid input
                         userData.ValidInputs++;
 
-                        InputHandler.CarryOutInput(parsedData.inputList);
+                        bool shouldPerformInput = true;
+
+                        //Check the team the user is on for the controller they should be using
+                        //Validate that the controller is acquired and exists
+                        int controllerNum = userData.Team;
+
+                        if (controllerNum < 0 || controllerNum >= VJoyController.Joysticks.Length)
+                        {
+                            BotProgram.QueueMessage($"ERROR: Invalid joystick number {controllerNum}. # of joysticks: {VJoyController.Joysticks.Length}. Please change your controller port to a valid number to perform inputs.");
+                            shouldPerformInput = false;
+                        }
+                        //Now verify that the controller has been acquired by vJoy
+                        else if (VJoyController.Joysticks[controllerNum].IsAcquired == false)
+                        {
+                            BotProgram.QueueMessage($"ERROR: Joystick number {controllerNum} with controller ID of {VJoyController.Joysticks[controllerNum].ControllerID} has not been acquired by the vJoy driver! Unable to perform inputs with this controller!");
+                            shouldPerformInput = false;
+                        }
+
+                        //We're okay to perform the input
+                        if (shouldPerformInput == true)
+                        {
+                            InputHandler.CarryOutInput(parsedData.inputList, controllerNum);
+                        }
                     }
                     else
                     {
@@ -448,7 +471,7 @@ namespace KimimaruBot
 
         public static void SaveBotData()
         {
-            //Make sure more than one thread doesn't try to save at the same time to prevent potential loss of data
+            //Make sure more than one thread doesn't try to save at the same time to prevent potential loss of data and access violations
             lock (LockObj)
             {
                 string text = JsonConvert.SerializeObject(BotData, Formatting.Indented);

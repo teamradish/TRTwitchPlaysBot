@@ -12,6 +12,21 @@ namespace KimimaruBot
     public static class InputHandler
     {
         /// <summary>
+        /// A simple struct containing an input sequence and the controller number to perform the sequence on.
+        /// </summary>
+        private struct InputWrapper
+        {
+            public int ControllerNum;
+            public List<List<Parser.Input>> InputList;
+
+            public InputWrapper(in int controllerNum, List<List<Parser.Input>> inputList)
+            {
+                ControllerNum = controllerNum;
+                InputList = inputList;
+            }
+        }
+
+        /// <summary>
         /// The current number of running input sequences.
         /// </summary>
         public static int CurrentRunningInputs => RunningInputThreads;
@@ -47,7 +62,7 @@ namespace KimimaruBot
         /// Carries out a set of inputs.
         /// </summary>
         /// <param name="inputList">A list of lists of inputs to execute.</param>
-        public static void CarryOutInput(List<List<Parser.Input>> inputList)
+        public static void CarryOutInput(List<List<Parser.Input>> inputList, in int controllerNum)
         {
             /*Kimimaru: We're using a thread pool for efficiency
              * Though very unlikely, there's a chance the input won't execute right away if it has to wait for a thread to be available
@@ -57,7 +72,8 @@ namespace KimimaruBot
             //ThreadPool.GetMaxThreads(out int workerthreads, out int completionPortThreads);
             //Console.WriteLine($"Min workers: {workermin} Max workers: {workerthreads} Min async IO threads: {completionmin} Max async IO threads: {completionPortThreads}");
 
-            ThreadPool.QueueUserWorkItem(new WaitCallback(ExecuteInput), inputList);
+            InputWrapper inputWrapper = new InputWrapper(controllerNum, inputList);
+            ThreadPool.QueueUserWorkItem(new WaitCallback(ExecuteInput), inputWrapper);
         }
 
         private static void ExecuteInput(object obj)
@@ -65,7 +81,10 @@ namespace KimimaruBot
             //Increment running threads
             Interlocked.Increment(ref RunningInputThreads);
 
-            List<List<Parser.Input>> inputList = (List<List<Parser.Input>>)obj;
+            //Get the input list and controller we're using - this should have been validated beforehand
+            InputWrapper inputWrapper = (InputWrapper)obj;
+            List<List<Parser.Input>> inputList = inputWrapper.InputList;
+            VJoyController controller = VJoyController.GetController(inputWrapper.ControllerNum);
 
             Stopwatch sw = new Stopwatch();
 
@@ -95,18 +114,18 @@ namespace KimimaruBot
 
                     if (input.release == true)
                     {
-                        VJoyController.Joystick.ReleaseInput(input);
+                        controller.ReleaseInput(input);
                     }
                     else
                     {
-                        VJoyController.Joystick.PressInput(input);
+                        controller.PressInput(input);
                     }
                 }
 
                 //Update the controller if there are non-wait inputs
                 if (nonWaits > 0)
                 {
-                    VJoyController.Joystick.UpdateJoystickEfficient();
+                    controller.UpdateJoystickEfficient();
                 }
 
                 sw.Start();
@@ -132,9 +151,9 @@ namespace KimimaruBot
                         //Release if the input isn't a hold and isn't a wait input
                         if (input.hold == false && InputGlobals.CurrentConsole.IsWait(input) == false)
                         {
-                            VJoyController.Joystick.ReleaseInput(input);
+                            controller.ReleaseInput(input);
 
-                            VJoyController.Joystick.UpdateJoystickEfficient();
+                            controller.UpdateJoystickEfficient();
                         }
 
                         indices.RemoveAt(j);
@@ -153,11 +172,11 @@ namespace KimimaruBot
                 List<Parser.Input> inputs = inputList[i];
                 for (int j = 0; j < inputs.Count; j++)
                 {
-                    VJoyController.Joystick.ReleaseInput(inputs[j]);
+                    controller.ReleaseInput(inputs[j]);
                 }
             }
 
-            VJoyController.Joystick.UpdateJoystickEfficient();
+            controller.UpdateJoystickEfficient();
 
             //Decrement running threads
             Interlocked.Decrement(ref RunningInputThreads);

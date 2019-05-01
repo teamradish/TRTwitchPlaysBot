@@ -41,22 +41,35 @@ namespace KimimaruBot
         public const uint MAX_VJOY_DEVICE_ID = 16;
 
         /// <summary>
+        /// The number of joysticks connected. You must have vJoy configured for this many joysticks.
+        /// <para>Kimimaru: NOTE - make this configurable.</para>
+        /// </summary>
+        public const int JOYSTICK_COUNT = 1;
+
+        /// <summary>
         /// Tells whether the vJoy instance is initialized.
         /// </summary>
         public static bool Initialized => (VJoyInstance != null);
 
         public static vJoy VJoyInstance { get; private set; } = null;
-        public static VJoyController Joystick { get; private set; } = null;
+        public static VJoyController[] Joysticks { get; private set; } = null;
 
         /// <summary>
         /// Holds the button states for the controller, updated by the bot. true means pressed, and false means released.
         /// </summary>
+        //Kimimaru: I'm not sure if we need this. vJoy knows when a button is pressed, and pushing a button that's already pressed shouldn't do anything.
         public readonly Dictionary<string, bool> ButtonStates = new Dictionary<string, bool>();
 
         /// <summary>
         /// The ID of the controller.
         /// </summary>
         public uint ControllerID { get; private set; } = 0;
+
+        /// <summary>
+        /// Tells whether the controller device was successfully acquired through vJoy.
+        /// If this is false, don't use this controller instance to make inputs.
+        /// </summary>
+        public bool IsAcquired { get; private set; } = false;
 
         /// <summary>
         /// The JoystickState of the controller, used in the Efficient implementation.
@@ -81,8 +94,9 @@ namespace KimimaruBot
 
         public void Init()
         {
-            Joystick.SetButtons(InputGlobals.CurrentConsoleVal);
+            SetButtons(InputGlobals.CurrentConsoleVal);
 
+            //Initialize axes
             HID_USAGES[] axes = EnumUtility.GetValues<HID_USAGES>.EnumValues;
 
             for (int i = 0; i < axes.Length; i++)
@@ -97,6 +111,8 @@ namespace KimimaruBot
                     MinMaxAxes.Add(axes[i], (min, max));
                 }
             }
+
+            IsAcquired = true;
         }
 
         public void Reset()
@@ -342,7 +358,7 @@ namespace KimimaruBot
                 ButtonStates.Add(inputs[i], false);
             }
 
-            //NOTE: Hacky for now
+            //NOTE: Hacky for now to not throw exceptions when calling button methods. See ButtonStates comments
             ButtonStates.Add("savestate1", false);
             ButtonStates.Add("savestate2", false);
             ButtonStates.Add("savestate3", false);
@@ -389,6 +405,17 @@ namespace KimimaruBot
             }
         }
 
+        /// <summary>
+        /// Retrieves a joystick at a zero-based index.
+        /// </summary>
+        /// <param name="playerIndex">The zero-based index to retrieve the joystick at.</param>
+        /// <returns>The VJoyController at the desired index. If this index is out of range, it'll throw an <see cref="IndexOutOfRangeException"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static VJoyController GetController(in int playerIndex)
+        {
+            return Joysticks[playerIndex];
+        }
+
         public static void Initialize()
         {
             if (Initialized == true) return;
@@ -401,7 +428,23 @@ namespace KimimaruBot
                 return;
             }
 
-            Joystick = new VJoyController(1);
+            int count = JOYSTICK_COUNT;
+
+            //Check for max vJoy device ID to ensure we don't try to register more devices than it can support
+            if (count > MAX_VJOY_DEVICE_ID)
+            {
+                count = (int)MAX_VJOY_DEVICE_ID;
+
+                Console.WriteLine($"{nameof(JOYSTICK_COUNT)} of {count} is greater than max {nameof(MAX_VJOY_DEVICE_ID)} of {MAX_VJOY_DEVICE_ID}. Clamping value to this limit.");
+            }
+
+            Joysticks = new VJoyController[count];
+            for (int i = 0; i < Joysticks.Length; i++)
+            {
+                Joysticks[i] = new VJoyController((uint)i + MIN_VJOY_DEVICE_ID);
+            }
+
+            //Joystick = new VJoyController(1);
 
             string vendor = VJoyInstance.GetvJoyManufacturerString();
             string product = VJoyInstance.GetvJoyProductString();
@@ -414,25 +457,30 @@ namespace KimimaruBot
 
             Console.WriteLine($"Using vJoy DLL version {dllver} and vJoy driver version {drvver} | Version Match: {match}");
 
-            //Acquire the device ID
-            VjdStat controllerStatus = VJoyInstance.GetVJDStatus(Joystick.ControllerID);
-            switch (controllerStatus)
+            //Acquire the device IDs
+            for (int i = 0; i < Joysticks.Length; i++)
             {
-                case VjdStat.VJD_STAT_FREE:
-                    bool acquire = VJoyInstance.AcquireVJD(Joystick.ControllerID);
-                    if (acquire == false) goto default;
+                VJoyController joystick = Joysticks[i];
+                VjdStat controlStatus = VJoyInstance.GetVJDStatus(joystick.ControllerID);
 
-                    Console.WriteLine($"Acquired vJoy device ID {Joystick.ControllerID}!");
+                switch (controlStatus)
+                {
+                    case VjdStat.VJD_STAT_FREE:
+                        bool acquire = VJoyInstance.AcquireVJD(joystick.ControllerID);
+                        if (acquire == false) goto default;
 
-                    //Initialize the joystick
-                    Joystick.Init();
+                        Console.WriteLine($"Acquired vJoy device ID {joystick.ControllerID}!");
 
-                    //Reset the joystick
-                    Joystick.Reset();
-                    break;
-                default:
-                    Console.WriteLine($"Unable to acquire vJoy device ID {Joystick.ControllerID}");
-                    break;
+                        //Initialize the joystick
+                        joystick.Init();
+
+                        //Reset the joystick
+                        joystick.Reset();
+                        break;
+                    default:
+                        Console.WriteLine($"Unable to acquire vJoy device ID {joystick.ControllerID}");
+                        break;
+                }
             }
         }
 
@@ -444,7 +492,13 @@ namespace KimimaruBot
                 return;
             }
 
-            Joystick?.Dispose();
+            if (Joysticks != null)
+            {
+                for (int i = 0; i < Joysticks.Length; i++)
+                {
+                    Joysticks[i]?.Dispose();
+                }
+            }
         }
 
         public static void CheckDeviceIDState(in uint deviceID)

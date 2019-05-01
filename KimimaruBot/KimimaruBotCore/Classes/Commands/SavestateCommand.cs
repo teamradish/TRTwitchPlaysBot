@@ -42,8 +42,10 @@ namespace KimimaruBot
                 return;
             }
 
-            VJoyController.Joystick.PressButton(saveStateStr);
-            VJoyController.Joystick.UpdateJoystickEfficient();
+            //Savestates are always performed on the first controller
+            VJoyController joystick = VJoyController.GetController(0);
+            joystick.PressButton(saveStateStr);
+            joystick.UpdateJoystickEfficient();
 
             //Track the time of the savestate
             DateTime curTime = DateTime.UtcNow;
@@ -80,8 +82,8 @@ namespace KimimaruBot
 
             }
 
-            VJoyController.Joystick.ReleaseButton(saveStateStr);
-            VJoyController.Joystick.UpdateJoystickEfficient();
+            joystick.ReleaseButton(saveStateStr);
+            joystick.UpdateJoystickEfficient();
         }
     }
 }

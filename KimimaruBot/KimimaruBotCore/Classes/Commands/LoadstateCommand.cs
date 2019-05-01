@@ -39,8 +39,10 @@ namespace KimimaruBot
                 return;
             }
 
-            VJoyController.Joystick.PressButton(loadStateStr);
-            VJoyController.Joystick.UpdateJoystickEfficient();
+            //Load states are always performed on the first controller
+            VJoyController joystick = VJoyController.GetController(0);
+            joystick.PressButton(loadStateStr);
+            joystick.UpdateJoystickEfficient();
 
             BotProgram.QueueMessage($"Loaded state {stateNum}!");
 
@@ -52,8 +54,8 @@ namespace KimimaruBot
 
             }
 
-            VJoyController.Joystick.ReleaseButton(loadStateStr);
-            VJoyController.Joystick.UpdateJoystickEfficient();
+            joystick.ReleaseButton(loadStateStr);
+            joystick.UpdateJoystickEfficient();
         }
     }
 }
