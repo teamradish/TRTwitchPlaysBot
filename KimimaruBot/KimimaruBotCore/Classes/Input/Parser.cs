@@ -357,7 +357,7 @@ namespace KimimaruBot
 
                 duration_counter += subduration_max;
 
-                if (duration_counter > InputGlobals.DURATION_MAX)
+                if (duration_counter > BotProgram.BotData.MaxInputDuration)
                 {
                     current_input.error = "ERR_DURATION_MAX";
                     return (false, new List<List<Input>>() { new List<Input>() { current_input }  }, false, subduration_max);
@@ -386,7 +386,7 @@ namespace KimimaruBot
             /// <summary>
             /// Returns a default Input.
             /// </summary>
-            public static Input Default => new Input(string.Empty, false, false, 100, InputGlobals.DURATION_DEFAULT, "ms", 0, string.Empty);
+            public static Input Default => new Input(string.Empty, false, false, 100, BotProgram.BotData.DefaultInputDuration, "ms", 0, string.Empty);
 
             public Input(string nme, in bool hld, in bool relse, in int percnt, in int dur, string durType, in int len, in string err)
             {

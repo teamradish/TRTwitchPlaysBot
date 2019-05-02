@@ -77,16 +77,6 @@ namespace KimimaruBot
         }
 
         /// <summary>
-        /// The default duration of an input.
-        /// </summary>
-        public const int DURATION_DEFAULT = 200;
-
-        /// <summary>
-        /// The max duration of a given input sequence.
-        /// </summary>
-        public const int DURATION_MAX = 60000;
-
-        /// <summary>
         /// Returns the valid input names of the current console.
         /// </summary>
         public static string[] ValidInputs => CurrentConsole.ValidInputs;

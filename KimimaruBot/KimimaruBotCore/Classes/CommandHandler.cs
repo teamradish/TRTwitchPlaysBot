@@ -17,6 +17,7 @@ namespace KimimaruBot
     public sealed class CommandHandler
     {
         public Dictionary<string, BaseCommand> CommandDict = new Dictionary<string, BaseCommand>();
+        public const string INVALID_ACCESS_MESSAGE = "You don't have permission to do that!";
 
         private readonly string[] ExemptUsers = new string[]
         {
@@ -88,6 +89,8 @@ namespace KimimaruBot
             CommandDict.Add("inputs", new ValidInputsCommand());
             CommandDict.Add("controllers", new ControllerCountCommand());
             CommandDict.Add("player", new ChangePlayerCommand());
+            CommandDict.Add("defaultinputdur", new DefaultInputDurationCommand());
+            CommandDict.Add("maxinputdur", new MaxInputDurationCommand());
             CommandDict.Add("tutorial", new TutorialCommand());
 
             foreach (KeyValuePair<string, BaseCommand> command in CommandDict)
@@ -126,7 +129,7 @@ namespace KimimaruBot
                 }
                 else
                 {
-                    BotProgram.QueueMessage("You don't have permission to do that!");
+                    BotProgram.QueueMessage(INVALID_ACCESS_MESSAGE);
                 }
             }
         }

@@ -18,5 +18,15 @@ namespace KimimaruBot
         public readonly HashSet<string> SilencedUsers = new HashSet<string>();
         public string GameMessage = string.Empty;
         public int LastConsole = 0;
+
+        /// <summary>
+        /// The default duration of an input if no duration is specified.
+        /// </summary>
+        public int DefaultInputDuration = 200;
+
+        /// <summary>
+        /// The max duration of a given input sequence.
+        /// </summary>
+        public int MaxInputDuration = 60000;
     }
 }
