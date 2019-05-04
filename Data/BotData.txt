@@ -5,11 +5,8 @@
     "#bouncejumproll": "#bouncejump _up r",
     "#p": "#400ms a",
     "#celebrate": "[r #1s]*3",
-    "#eggdriver": "a #50ms a1200ms",
-    "#test(*,*)": "<0>500ms #500ms <1>500ms",
     "#bouncejump": "a100ms #34ms a",
-    "#triplejump": "_up100ms a34ms #500ms a34ms #500ms a",
-    "#tj": "#triplejump"
+    "#triplejump": "_up100ms a34ms #500ms a34ms #500ms a"
   },
   "Memes": {
     "testmeme": "Hello"
@@ -18,9 +15,9 @@
     "kimimaru4000": {
       "Name": "kimimaru4000",
       "Level": 3,
-      "Credits": 8000,
-      "TotalMessages": 1456,
-      "ValidInputs": 762,
+      "Credits": 13200,
+      "TotalMessages": 2273,
+      "ValidInputs": 1425,
       "Silenced": false,
       "Team": 0,
       "Subscriber": 0,
@@ -39,9 +36,9 @@
     },
     "twitchplayspapermario": {
       "Name": "twitchplayspapermario",
-      "Level": 1,
-      "Credits": 1698,
-      "TotalMessages": 81,
+      "Level": 2,
+      "Credits": 2598,
+      "TotalMessages": 97,
       "ValidInputs": 1,
       "Silenced": false,
       "Team": 0,
@@ -73,9 +70,9 @@
     "baconismyusername": {
       "Name": "baconismyusername",
       "Level": 2,
-      "Credits": 500,
-      "TotalMessages": 16,
-      "ValidInputs": 0,
+      "Credits": 200,
+      "TotalMessages": 64,
+      "ValidInputs": 38,
       "Silenced": false,
       "Team": 0,
       "Subscriber": 0,
@@ -108,6 +105,50 @@
       "Level": 3,
       "Credits": 100,
       "TotalMessages": 0,
+      "ValidInputs": 0,
+      "Silenced": false,
+      "Team": 0,
+      "Subscriber": 0,
+      "BetCounter": 0
+    },
+    "raven_roo": {
+      "Name": "raven_roo",
+      "Level": 0,
+      "Credits": 200,
+      "TotalMessages": 3,
+      "ValidInputs": 2,
+      "Silenced": false,
+      "Team": 0,
+      "Subscriber": 0,
+      "BetCounter": 0
+    },
+    "luckycodes": {
+      "Name": "luckycodes",
+      "Level": 0,
+      "Credits": 100,
+      "TotalMessages": 1,
+      "ValidInputs": 0,
+      "Silenced": false,
+      "Team": 0,
+      "Subscriber": 0,
+      "BetCounter": 0
+    },
+    "validusername16": {
+      "Name": "validusername16",
+      "Level": 0,
+      "Credits": 1400,
+      "TotalMessages": 52,
+      "ValidInputs": 31,
+      "Silenced": false,
+      "Team": 2,
+      "Subscriber": 0,
+      "BetCounter": 0
+    },
+    "girsake": {
+      "Name": "girsake",
+      "Level": 0,
+      "Credits": 100,
+      "TotalMessages": 2,
       "ValidInputs": 0,
       "Silenced": false,
       "Team": 0,

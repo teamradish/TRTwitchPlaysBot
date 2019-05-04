@@ -444,8 +444,6 @@ namespace KimimaruBot
                 Joysticks[i] = new VJoyController((uint)i + MIN_VJOY_DEVICE_ID);
             }
 
-            //Joystick = new VJoyController(1);
-
             string vendor = VJoyInstance.GetvJoyManufacturerString();
             string product = VJoyInstance.GetvJoyProductString();
             string serialNum = VJoyInstance.GetvJoySerialNumberString();
