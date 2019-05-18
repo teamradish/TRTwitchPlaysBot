@@ -16,7 +16,7 @@
       "Name": "kimimaru4000",
       "Level": 3,
       "Credits": 13200,
-      "TotalMessages": 2273,
+      "TotalMessages": 2281,
       "ValidInputs": 1425,
       "Silenced": false,
       "Team": 0,
@@ -205,7 +205,7 @@
     }
   },
   "SilencedUsers": [],
-  "GameMessage": "Test message",
+  "GameMessage": "",
   "LastConsole": 3,
   "DefaultInputDuration": 200,
   "MaxInputDuration": 60000
