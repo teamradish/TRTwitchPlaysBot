@@ -89,7 +89,7 @@ namespace KimimaruBot
             ClientMessages.Clear();
             Client.Disconnect();
 
-            //Clean up the device when the driver is finished
+            //Clean up and relinquish the devices when we're done
             VJoyController.CleanUp();
 
             instance = null;
@@ -358,13 +358,13 @@ namespace KimimaruBot
 
                         if (controllerNum < 0 || controllerNum >= VJoyController.Joysticks.Length)
                         {
-                            BotProgram.QueueMessage($"ERROR: Invalid joystick number {controllerNum}. # of joysticks: {VJoyController.Joysticks.Length}. Please change your controller port to a valid number to perform inputs.");
+                            BotProgram.QueueMessage($"ERROR: Invalid joystick number {controllerNum + 1}. # of joysticks: {VJoyController.Joysticks.Length}. Please change your controller port to a valid number to perform inputs.");
                             shouldPerformInput = false;
                         }
                         //Now verify that the controller has been acquired by vJoy
                         else if (VJoyController.Joysticks[controllerNum].IsAcquired == false)
                         {
-                            BotProgram.QueueMessage($"ERROR: Joystick number {controllerNum} with controller ID of {VJoyController.Joysticks[controllerNum].ControllerID} has not been acquired by the vJoy driver! Unable to perform inputs with this controller!");
+                            BotProgram.QueueMessage($"ERROR: Joystick number {controllerNum + 1} with controller ID of {VJoyController.Joysticks[controllerNum].ControllerID} has not been acquired by the vJoy driver! Ensure you (the streamer) have a vJoy device set up at this ID.");
                             shouldPerformInput = false;
                         }
 

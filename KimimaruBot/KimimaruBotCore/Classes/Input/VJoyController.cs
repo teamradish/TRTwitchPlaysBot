@@ -41,12 +41,6 @@ namespace KimimaruBot
         public const uint MAX_VJOY_DEVICE_ID = 16;
 
         /// <summary>
-        /// The number of joysticks connected. You must have vJoy configured for this many joysticks.
-        /// <para>Kimimaru: NOTE - make this configurable.</para>
-        /// </summary>
-        public const int JOYSTICK_COUNT = 1;
-
-        /// <summary>
         /// Tells whether the vJoy instance is initialized.
         /// </summary>
         public static bool Initialized => (VJoyInstance != null);
@@ -416,6 +410,17 @@ namespace KimimaruBot
             return Joysticks[playerIndex];
         }
 
+        public static void OnDeviceRemoved(bool removed, bool first, object userData)
+        {
+            string startMessage = "A vJoy device has been removed!";
+            if (removed == false)
+            {
+                startMessage = "A vJoy device has been added!";
+            }
+
+            BotProgram.QueueMessage($"{startMessage} {nameof(first)}: {first} | {nameof(userData)}: {userData}");
+        }
+
         public static void Initialize()
         {
             if (Initialized == true) return;
@@ -428,21 +433,10 @@ namespace KimimaruBot
                 return;
             }
 
-            int count = JOYSTICK_COUNT;
-
-            //Check for max vJoy device ID to ensure we don't try to register more devices than it can support
-            if (count > MAX_VJOY_DEVICE_ID)
-            {
-                count = (int)MAX_VJOY_DEVICE_ID;
-
-                Console.WriteLine($"{nameof(JOYSTICK_COUNT)} of {count} is greater than max {nameof(MAX_VJOY_DEVICE_ID)} of {MAX_VJOY_DEVICE_ID}. Clamping value to this limit.");
-            }
-
-            Joysticks = new VJoyController[count];
-            for (int i = 0; i < Joysticks.Length; i++)
-            {
-                Joysticks[i] = new VJoyController((uint)i + MIN_VJOY_DEVICE_ID);
-            }
+            //Kimimaru: The data object passed in here will be returned in the callback
+            //This can be used to update the object's data when a vJoy device is connected or disconnected from the computer
+            //This does not get fired when the vJoy device is acquired or relinquished
+            VJoyInstance.RegisterRemovalCB(OnDeviceRemoved, null);
 
             string vendor = VJoyInstance.GetvJoyManufacturerString();
             string product = VJoyInstance.GetvJoyProductString();
@@ -454,6 +448,39 @@ namespace KimimaruBot
             bool match = VJoyInstance.DriverMatch(ref dllver, ref drvver);
 
             Console.WriteLine($"Using vJoy DLL version {dllver} and vJoy driver version {drvver} | Version Match: {match}");
+
+            int acquiredCount = InitControllers(BotProgram.BotData.JoystickCount);
+            Console.WriteLine($"Acquired {acquiredCount} controllers!");
+        }
+
+        public static int InitControllers(in int joystickCount)
+        {
+            if (Initialized == false) return 0;
+
+            int count = joystickCount;
+
+            //Ensure count of 1
+            if (count < 1)
+            {
+                count = 1;
+                Console.WriteLine($"Joystick count of {count} is less than 1. Clamping value to this limit.");
+            }
+
+            //Check for max vJoy device ID to ensure we don't try to register more devices than it can support
+            if (count > MAX_VJOY_DEVICE_ID)
+            {
+                count = (int)MAX_VJOY_DEVICE_ID;
+
+                Console.WriteLine($"Joystick count of {count} is greater than max {nameof(MAX_VJOY_DEVICE_ID)} of {MAX_VJOY_DEVICE_ID}. Clamping value to this limit.");
+            }
+
+            Joysticks = new VJoyController[count];
+            for (int i = 0; i < Joysticks.Length; i++)
+            {
+                Joysticks[i] = new VJoyController((uint)i + MIN_VJOY_DEVICE_ID);
+            }
+
+            int acquiredCount = 0;
 
             //Acquire the device IDs
             for (int i = 0; i < Joysticks.Length; i++)
@@ -467,6 +494,7 @@ namespace KimimaruBot
                         bool acquire = VJoyInstance.AcquireVJD(joystick.ControllerID);
                         if (acquire == false) goto default;
 
+                        acquiredCount++;
                         Console.WriteLine($"Acquired vJoy device ID {joystick.ControllerID}!");
 
                         //Initialize the joystick
@@ -480,6 +508,8 @@ namespace KimimaruBot
                         break;
                 }
             }
+
+            return acquiredCount;
         }
 
         public static void CleanUp()

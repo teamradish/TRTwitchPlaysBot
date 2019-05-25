@@ -88,9 +88,11 @@ namespace KimimaruBot
             CommandDict.Add("userinfo", new UserInfoCommand());
             CommandDict.Add("inputs", new ValidInputsCommand());
             CommandDict.Add("controllers", new ControllerCountCommand());
+            CommandDict.Add("setcontrollers", new SetControllersCommand());
             CommandDict.Add("player", new ChangePlayerCommand());
             CommandDict.Add("defaultinputdur", new DefaultInputDurationCommand());
             CommandDict.Add("maxinputdur", new MaxInputDurationCommand());
+            CommandDict.Add("opensource", new OpenSourceCommand());
             CommandDict.Add("tutorial", new TutorialCommand());
 
             foreach (KeyValuePair<string, BaseCommand> command in CommandDict)

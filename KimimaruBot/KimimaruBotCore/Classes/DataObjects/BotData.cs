@@ -28,5 +28,10 @@ namespace KimimaruBot
         /// The max duration of a given input sequence.
         /// </summary>
         public int MaxInputDuration = 60000;
+
+        /// <summary>
+        /// The number of joysticks connected. You must have vJoy configured for this many joysticks.
+        /// </summary>
+        public int JoystickCount = 1;
     }
 }

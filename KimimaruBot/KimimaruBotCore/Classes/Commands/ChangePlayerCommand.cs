@@ -28,7 +28,7 @@ namespace KimimaruBot
 
             if (portNum <= 0 || portNum > VJoyController.Joysticks.Length)
             {
-                BotProgram.QueueMessage($"Please specify a number in the range of 1 through the current controller count ({VJoyController.Joysticks.Length})");
+                BotProgram.QueueMessage($"Please specify a number in the range of 1 through the current controller count ({VJoyController.Joysticks.Length}).");
                 return;
             }
 

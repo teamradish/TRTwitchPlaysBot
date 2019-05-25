@@ -17,8 +17,7 @@ namespace KimimaruBot
         {
             base.Initialize(commandHandler);
 
-            AccessLevel = (int)AccessLevels.Levels.Whitelisted
-                ;
+            AccessLevel = (int)AccessLevels.Levels.Whitelisted;
         }
 
         public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)

@@ -15,9 +15,9 @@
     "kimimaru4000": {
       "Name": "kimimaru4000",
       "Level": 3,
-      "Credits": 13200,
-      "TotalMessages": 2281,
-      "ValidInputs": 1425,
+      "Credits": 13500,
+      "TotalMessages": 2527,
+      "ValidInputs": 1593,
       "Silenced": false,
       "Team": 0,
       "Subscriber": 0,
@@ -208,5 +208,6 @@
   "GameMessage": "",
   "LastConsole": 3,
   "DefaultInputDuration": 200,
-  "MaxInputDuration": 60000
+  "MaxInputDuration": 60000,
+  "JoystickCount": 4
 }

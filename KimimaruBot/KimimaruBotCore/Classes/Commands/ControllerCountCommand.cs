@@ -12,7 +12,7 @@ namespace KimimaruBot
     {
         public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
         {
-            BotProgram.QueueMessage($"There are {VJoyController.Joysticks.Length} controller(s) plugged in!");
+            BotProgram.QueueMessage($"There are {BotProgram.BotData.JoystickCount} controller(s) plugged in!");
         }
     }
 }
