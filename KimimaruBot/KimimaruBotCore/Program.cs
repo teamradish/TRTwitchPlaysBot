@@ -14,7 +14,15 @@ namespace KimimaruBot
             {
                 botProgram.Initialize();
 
-                botProgram.Run();
+                if (botProgram.Initialized == true)
+                {
+                    botProgram.Run();
+                }
+                else
+                {
+                    Console.WriteLine("Bot failed to initialize. Press any key to continue...");
+                    Console.ReadKey();
+                }
             }
         }
     }

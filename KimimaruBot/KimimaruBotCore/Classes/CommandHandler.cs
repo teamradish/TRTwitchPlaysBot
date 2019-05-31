@@ -93,6 +93,7 @@ namespace KimimaruBot
             CommandDict.Add("defaultinputdur", new DefaultInputDurationCommand());
             CommandDict.Add("maxinputdur", new MaxInputDurationCommand());
             CommandDict.Add("opensource", new OpenSourceCommand());
+            CommandDict.Add("reload", new ReloadCommand());
             CommandDict.Add("tutorial", new TutorialCommand());
 
             foreach (KeyValuePair<string, BaseCommand> command in CommandDict)

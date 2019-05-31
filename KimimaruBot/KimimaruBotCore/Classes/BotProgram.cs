@@ -23,8 +23,10 @@ namespace KimimaruBot
 
         private static BotProgram instance = null;
 
+        public bool Initialized { get; private set; } = false;
+
         private LoginInfo LoginInformation = null;
-        public static Settings BotSettings = null;
+        public static Settings BotSettings { get; private set; } = null;
         public static BotData BotData { get; private set; } = null;
 
         private TwitchClient Client;
@@ -79,6 +81,9 @@ namespace KimimaruBot
 
         public void Dispose()
         {
+            if (Initialized == false)
+                return;
+
             UnsubscribeEvents();
 
             for (int i = 0; i < BotRoutines.Count; i++)
@@ -97,23 +102,26 @@ namespace KimimaruBot
 
         public void Initialize()
         {
+            if (Initialized == true)
+                return;
+
             //Kimimaru: Use invariant culture
             Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
-            string loginText = File.ReadAllText(Globals.GetDataFilePath("LoginInfo.txt"));
+            //Load all the necessary data; if something doesn't exist, save out an empty object so it can be filled in manually
+            string loginText = Globals.ReadFromTextFileOrCreate(Globals.LoginInfoFilename);
             LoginInformation = JsonConvert.DeserializeObject<LoginInfo>(loginText);
 
-            string settingsText = File.ReadAllText(Globals.GetDataFilePath("Settings.txt"));
-            BotSettings = JsonConvert.DeserializeObject<Settings>(settingsText);
-
-            string dataText = File.ReadAllText(Globals.GetDataFilePath("BotData.txt"));
-            BotData = JsonConvert.DeserializeObject<BotData>(dataText);
-
-            if (BotData == null)
+            if (LoginInformation == null)
             {
-                BotData = new BotData();
-                SaveBotData();
+                Console.WriteLine("No login information found; attempting to create file template. If created, please manually fill out the information.");
+
+                LoginInformation = new LoginInfo();
+                string text = JsonConvert.SerializeObject(LoginInformation, Formatting.Indented);
+                Globals.SaveToTextFile(Globals.LoginInfoFilename, text);
             }
+
+            LoadSettingsAndBotData();
 
             //Kimimaru: If the bot itself isn't in the bot data, add it as an admin!
             if (string.IsNullOrEmpty(LoginInformation.BotName) == false)
@@ -131,7 +139,16 @@ namespace KimimaruBot
                 }
             }
 
-            Credentials = new ConnectionCredentials(LoginInformation.BotName, LoginInformation.Password);
+            try
+            {
+                Credentials = new ConnectionCredentials(LoginInformation.BotName, LoginInformation.Password);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"Invalid credentials: {exception.Message}");
+                Console.WriteLine("Cannot proceed. Please double check the login information in the data folder");
+                return;
+            }
 
             Client = new TwitchClient();
             Client.Initialize(Credentials, LoginInformation.ChannelName, Globals.CommandIdentifier, Globals.CommandIdentifier, true);
@@ -157,6 +174,8 @@ namespace KimimaruBot
             //Initialize controller input
             VJoyController.Initialize();
             VJoyController.CheckButtonCount(1);
+
+            Initialized = true;
         }
 
         public void Run()
@@ -477,15 +496,37 @@ namespace KimimaruBot
                 string text = JsonConvert.SerializeObject(BotData, Formatting.Indented);
                 if (string.IsNullOrEmpty(text) == false)
                 {
-                    try
+                    if (Globals.SaveToTextFile("BotData.txt", text) == false)
                     {
-                        File.WriteAllText(Globals.GetDataFilePath("BotData.txt"), text);
-                    }
-                    catch (Exception e)
-                    {
-                        QueueMessage($"CRITICAL - Unable to save bot data: {e.Message}");
+                        QueueMessage($"CRITICAL - Unable to save bot data");
                     }
                 }
+            }
+        }
+
+        public static void LoadSettingsAndBotData()
+        {
+            string settingsText = Globals.ReadFromTextFileOrCreate(Globals.SettingsFilename);
+            BotSettings = JsonConvert.DeserializeObject<Settings>(settingsText);
+
+            if (BotSettings == null)
+            {
+                Console.WriteLine("No settings found; attempting to create file template. If created, please manually fill out the information.");
+
+                BotSettings = new Settings();
+                string text = JsonConvert.SerializeObject(BotSettings, Formatting.Indented);
+                Globals.SaveToTextFile(Globals.SettingsFilename, text);
+            }
+
+            string dataText = Globals.ReadFromTextFile(Globals.BotDataFilename);
+            BotData = JsonConvert.DeserializeObject<BotData>(dataText);
+
+            if (BotData == null)
+            {
+                Console.WriteLine("Not bot data found; initializing new bot data.");
+
+                BotData = new BotData();
+                SaveBotData();
             }
         }
 
@@ -493,17 +534,17 @@ namespace KimimaruBot
 
         private class LoginInfo
         {
-            public string BotName = null;
-            public string Password = null;
-            public string ChannelName = null;
+            public string BotName = string.Empty;
+            public string Password = string.Empty;
+            public string ChannelName = string.Empty;
         }
 
         public class Settings
         {
-            public int MessageTime = 0;
-            public double MessageCooldown = 0d;
-            public double CreditsTime = 0d;
-            public long CreditsAmount = 50L;
+            public int MessageTime = 30;
+            public double MessageCooldown = 1000d;
+            public double CreditsTime = 2d;
+            public long CreditsAmount = 100L;
         }
     }
 }

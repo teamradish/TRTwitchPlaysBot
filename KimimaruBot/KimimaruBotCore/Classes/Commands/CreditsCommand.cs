@@ -11,8 +11,6 @@ namespace KimimaruBot
 {
     public sealed class CreditsCommand : BaseCommand
     {
-        public static readonly string FileName = Globals.GetDataFilePath("UserCredits.txt");
-
         public CreditsCommand()
         {
 

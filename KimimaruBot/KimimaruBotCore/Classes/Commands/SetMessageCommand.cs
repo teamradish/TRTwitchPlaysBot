@@ -37,13 +37,9 @@ namespace KimimaruBot
               2. Check the box labeled "Read from file"
               3. Browse and select the file
              */
-            try
+            if (Globals.SaveToTextFile(MessageFile, BotProgram.BotData.GameMessage) == false)
             {
-                File.WriteAllText(Globals.GetDataFilePath(MessageFile), BotProgram.BotData.GameMessage);
-            }
-            catch (Exception exception)
-            {
-                BotProgram.QueueMessage($"Unable to save message to file: {exception.Message}");
+                BotProgram.QueueMessage($"Unable to save message to file");
             }
 
             BotProgram.SaveBotData();
