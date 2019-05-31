@@ -11,3 +11,6 @@ This Twitch bot contains many features that facilitate handling Twitch Plays gam
 * Powerful Twitch Plays features - macros, savestate support, game logs, and silencing users (without having to timeout on Twitch)
 * User data with access levels that restrict/allow access to certain commands
 * Several additional bot goodies and games, such as dueling, jump rope, and memes
+
+## Getting Started
+Instructions for building and setting up the bot can be found on the [wiki](https://github.com/teamradish/TRTwitchPlaysBot/wiki).
