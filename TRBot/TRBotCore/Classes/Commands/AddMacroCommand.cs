@@ -66,7 +66,7 @@ namespace TRBot
                     return;
                 }
 
-                MatchCollection matches = Regex.Matches(parseMsg, @"<[0-9]+>");
+                MatchCollection matches = Regex.Matches(parseMsg, @"<[0-9]+>", RegexOptions.Compiled);
 
                 //Kimimaru: Replace all variables with a valid input to verify its validity
                 //Any input will do, so just grab the first one
