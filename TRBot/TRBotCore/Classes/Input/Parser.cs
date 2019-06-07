@@ -14,21 +14,22 @@ namespace TRBot
     /// <summary>
     /// The parser for input.
     /// </summary>
+    /// <remarks>
+    /// Kimimaru: Constant Regex expressions are compiled to increase performance of subsequent Match calls.
+    /// This is favorable since we have only a few Regex expressions that are run many times.
+    /// </remarks>
     public static class Parser
     {
-        //TEMPORARY
-        public static Dictionary<string, string> MACROS = new Dictionary<string, string>()
+        static Parser()
         {
-            { "#jump", "left300ms y" },
-            { "#complex", "_x50% [#jump #17ms]*2 b -x y" },
-            { "#mash(*)", "[<0>17ms #17ms]*5" },
-            { "#mashalt(*,*)", "<0>34ms #17ms <1>100ms #50ms" }
-        };
+            //Set Regex cache size
+            Regex.CacheSize = 32;
+        }
 
-        public static string expandify(string message)
+        public static string Expandify(string message)
         {
             string regex = @"\[([^\[\]]*\])\*(\d{1,2})";
-            Match m = Regex.Match(message, regex);
+            Match m = Regex.Match(message, regex, RegexOptions.Compiled);
             while (m.Success == true)
             {
                 string str = string.Empty;
@@ -53,12 +54,12 @@ namespace TRBot
                 string end = message.Substring(m.Groups[2].Index + m.Groups[2].Length);
 
                 message = start + str + end;
-                m = Regex.Match(message, regex);
+                m = Regex.Match(message, regex, RegexOptions.Compiled);
             }
             return message;
         }
 
-        public static string populate_variables(string macro_contents, List<string> variables)
+        public static string PopulateVariables(string macro_contents, List<string> variables)
         {
             for (int i = 0; i < variables.Count; i++)
             {
@@ -68,10 +69,10 @@ namespace TRBot
             return macro_contents;
         }
 
-        public static string populate_macros(string message)
+        public static string PopulateMacros(string message)
         {
             message = message.Replace(" ", string.Empty);
-            message = Parser.expandify(message);
+            message = Parser.Expandify(message);
 
             const int MAX_RECURSION = 10;
             int count = 0;
@@ -81,24 +82,24 @@ namespace TRBot
             while (count < MAX_RECURSION && found_macro == true)
             {
                 found_macro = false;
-                MatchCollection possible_macros = Regex.Matches(message, @"#[a-zA-Z0-9\(\,\.]*");
+                MatchCollection possible_macros = Regex.Matches(message, @"#[a-zA-Z0-9\(\,\.]*", RegexOptions.Compiled);
                 List<(string, (int, int), List<string>)> subs = new List<(string, (int, int), List<string>)>();
                 foreach (Match p in possible_macros)
                 {
-                    string macro_name = Regex.Replace(message.Substring(p.Index, p.Length), @"\(.*\)", string.Empty);
+                    string macro_name = Regex.Replace(message.Substring(p.Index, p.Length), @"\(.*\)", string.Empty, RegexOptions.Compiled);
                     string macro_name_generic = string.Empty;
                     int arg_index = macro_name.IndexOf("(");
                     if (arg_index != -1)
                     {
                         string sub = message.Substring(p.Index, p.Length + 1);
-                        macro_args = Regex.Match(sub, @"\(.*\)");
+                        macro_args = Regex.Match(sub, @"\(.*\)", RegexOptions.Compiled);
                         if (macro_args.Success == true)
                         {
                             int start = p.Index + macro_args.Index + 1;
                             string substr = message.Substring(start, macro_args.Length - 2);
                             macro_argsarr = new List<string>(substr.Split(","));
                             macro_name += ")";
-                            macro_name_generic = Regex.Replace(macro_name, @"\(.*\)", string.Empty) + "(";
+                            macro_name_generic = Regex.Replace(macro_name, @"\(.*\)", string.Empty, RegexOptions.Compiled) + "(";
                             for (int i = 0; i < macro_argsarr.Count; i++)
                             {
                                 macro_name_generic += "*,";
@@ -147,7 +148,7 @@ namespace TRBot
                     foreach (var current in subs)
                     {
                         if (prev != def) str += message.Substring(prev.Item2.Item2, current.Item2.Item1 - prev.Item2.Item2);
-                        str += Parser.populate_variables(BotProgram.BotData.Macros[current.Item1], current.Item3);
+                        str += Parser.PopulateVariables(BotProgram.BotData.Macros[current.Item1], current.Item3);
                         prev = current;
                     }
                     str += message.Substring(prev.Item2.Item2);
@@ -158,7 +159,7 @@ namespace TRBot
             return message;
         }
 
-        public static string populate_synonyms(string message)
+        public static string PopulateSynonyms(string message)
         {
             foreach (string synonym in InputGlobals.INPUT_SYNONYMS.Keys)
             {
@@ -169,13 +170,13 @@ namespace TRBot
         }
 
         //Returns Input object
-        private static Input get_input(string message)
+        private static Input GetInput(string message)
         {
             //Create a default input instance
             Input current_input = Input.Default;
 
             string regex = @"^[_-]";
-            Match m = Regex.Match(message, regex);
+            Match m = Regex.Match(message, regex, RegexOptions.Compiled);
 
             //If there's a match, trim the message
             if (m.Success == true)
@@ -202,11 +203,9 @@ namespace TRBot
             foreach (string button in InputGlobals.ValidInputs)
             {
                 if (button == ".")
-                    regex = @"\.";
+                    m = Regex.Match(message, @"\.", RegexOptions.Compiled);
                 else
-                    regex = $"^{button}";
-
-                m = Regex.Match(message, regex);
+                    m = Regex.Match(message, $"^{button}");
 
                 if (m.Success == true)
                 {
@@ -235,7 +234,7 @@ namespace TRBot
 
             //Try to match a percent
             regex = @"^\d+%";
-            m = Regex.Match(message, regex);
+            m = Regex.Match(message, regex, RegexOptions.Compiled);
 
             if (m.Success == true)
             {
@@ -252,7 +251,7 @@ namespace TRBot
 
             //Try to match a duration
             regex = @"^\d+";
-            m = Regex.Match(message, regex);
+            m = Regex.Match(message, regex, RegexOptions.Compiled);
 
             if (m.Success == true)
             {
@@ -262,7 +261,7 @@ namespace TRBot
 
                 //Determine the type of duration
                 regex = @"(s|ms)";
-                m = Regex.Match(message, regex);
+                m = Regex.Match(message, regex, RegexOptions.Compiled);
 
                 if (m.Success == true)
                 {
@@ -303,13 +302,13 @@ namespace TRBot
             List<List<Input>> input_sequence = new List<List<Input>>();
             int duration_counter = 0;
 
-            message = populate_synonyms(message);
+            message = PopulateSynonyms(message);
 
             while (message.Length > 0)
             {
                 input_subsequence = new List<Input>();
                 int subduration_max = 0;
-                Input current_input = get_input(message);
+                Input current_input = GetInput(message);
 
                 /*
                  * if (current_input.name == "plus")
@@ -334,7 +333,7 @@ namespace TRBot
                         else
                             break;
 
-                        current_input = get_input(message);
+                        current_input = GetInput(message);
 
                         /*
                          * if (current_input.name == "plus")

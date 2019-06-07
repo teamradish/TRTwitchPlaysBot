@@ -58,7 +58,7 @@ namespace TRBot
                 string parseMsg = string.Empty;
                 try
                 {
-                    parseMsg = Parser.expandify(Parser.populate_macros(parsedVal));
+                    parseMsg = Parser.Expandify(Parser.PopulateMacros(parsedVal));
                 }
                 catch
                 {
@@ -86,7 +86,7 @@ namespace TRBot
             try
             {
                 //Parse the macro to check for valid input
-                string parse_message = Parser.expandify(Parser.populate_macros(parsedVal));
+                string parse_message = Parser.Expandify(Parser.PopulateMacros(parsedVal));
 
                 parsedData = Parser.Parse(parse_message);
             }

@@ -26,7 +26,7 @@ namespace TRBot
 
             try
             {
-                string parse_message = Parser.expandify(Parser.populate_macros(args));
+                string parse_message = Parser.Expandify(Parser.PopulateMacros(args));
 
                 parsedData = Parser.Parse(parse_message);
             }

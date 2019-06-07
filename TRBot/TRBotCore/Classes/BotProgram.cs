@@ -342,7 +342,7 @@ namespace TRBot
 
                 try
                 {
-                    string parse_message = Parser.expandify(Parser.populate_macros(e.ChatMessage.Message));
+                    string parse_message = Parser.Expandify(Parser.PopulateMacros(e.ChatMessage.Message));
 
                     parsedData = Parser.Parse(parse_message);
                 }
