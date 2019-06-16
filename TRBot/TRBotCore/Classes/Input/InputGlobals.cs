@@ -96,5 +96,42 @@ namespace TRBot
 
             return Array.Empty<string>();
         }
+
+        /// <summary>
+        /// Validates how long the pause input is held for. This is to prevent resetting the game for certain inputs.
+        /// <para>Kimimaru: NOTE - make this more comprehensive.
+        /// It should handle consistent and separated holds (Ex. "_start left1s" and "start300ms start500ms").</para>
+        /// </summary>
+        /// <param name="parsedInputs"></param>
+        /// <param name="pauseInput"></param>
+        /// <param name="maxPauseDuration"></param>
+        /// <returns></returns>
+        public static bool IsValidPauseInputDuration(in List<List<Parser.Input>> parsedInputs, in string pauseInput, in int maxPauseDuration)
+        {
+            //Check for pause duration
+            if (maxPauseDuration >= 0)
+            {
+                for (int i = 0; i < parsedInputs.Count; i++)
+                {
+                    List<Parser.Input> inputList = parsedInputs[i];
+                    for (int j = 0; j < inputList.Count; j++)
+                    {
+                        Parser.Input input = inputList[j];
+
+                        //We found pause
+                        if (input.name == pauseInput)
+                        {
+                            //Check how long the pause input is held for; if it's held for longer than the max, it's not valid
+                            if (input.duration >= maxPauseDuration)
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
     }
 }

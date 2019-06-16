@@ -283,11 +283,11 @@ namespace TRBot
                 }
             }
 
-            if (current_input.name == "start" && current_input.duration >= 500)
-            {
-                current_input.error = "ERR_START_BUTTON_DURATION_MAX_EXCEEDED";
-                return current_input;
-            }
+            //if (current_input.name == "start" && current_input.duration >= 500)
+            //{
+            //    current_input.error = "ERR_START_BUTTON_DURATION_MAX_EXCEEDED";
+            //    return current_input;
+            //}
 
             return current_input;
         }

@@ -20,6 +20,12 @@ namespace TRBot
         public int LastConsole = 0;
 
         /// <summary>
+        /// The maximum duration the pause button can be held; this is often used to prevent inputs involved in resetting the game.
+        /// Set this to -1 to allow it to be held indefinitely.
+        /// </summary>
+        public int MaxPauseHoldDuration = 500;
+
+        /// <summary>
         /// The default duration of an input if no duration is specified.
         /// </summary>
         public int DefaultInputDuration = 200;

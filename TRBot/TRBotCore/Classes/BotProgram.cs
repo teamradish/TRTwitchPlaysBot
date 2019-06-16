@@ -370,6 +370,12 @@ namespace TRBot
                         return;
                     }
 
+                    if (InputGlobals.IsValidPauseInputDuration(parsedData.inputList, "start", BotData.MaxPauseHoldDuration) == false)
+                    {
+                        BotProgram.QueueMessage($"Invalid input: Pause button held for longer than the max duration of {BotData.MaxPauseHoldDuration} milliseconds!");
+                        return;
+                    }
+
                     if (InputHandler.StopRunningInputs == false)
                     {
                         //Mark this as a valid input
