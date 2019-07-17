@@ -96,7 +96,6 @@ namespace TRBot
                 List<Parser.Input> inputs = inputList[i];
 
                 indices.Clear();
-                nonWaits = 0;
 
                 //Press all buttons unless it's a release input
                 for (int j = 0; j < inputs.Count; j++)
@@ -126,6 +125,7 @@ namespace TRBot
                 if (nonWaits > 0)
                 {
                     controller.UpdateJoystickEfficient();
+                    nonWaits = 0;
                 }
 
                 sw.Start();
@@ -153,10 +153,18 @@ namespace TRBot
                         {
                             controller.ReleaseInput(input);
 
-                            controller.UpdateJoystickEfficient();
+                            //Track that we have a non-wait or hold input so we can update the controller with all input releases at once
+                            nonWaits++;
                         }
 
                         indices.RemoveAt(j);
+                    }
+
+                    //If there are no wait or hold inputs, update the controller
+                    if (nonWaits > 0)
+                    {
+                        controller.UpdateJoystickEfficient();
+                        nonWaits = 0;
                     }
                 }
 
