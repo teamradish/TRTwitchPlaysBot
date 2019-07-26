@@ -17,12 +17,12 @@ namespace TRBot
         private struct InputWrapper
         {
             public int ControllerNum;
-            public List<List<Parser.Input>> InputList;
+            public Parser.Input[][] InputArray;
 
-            public InputWrapper(in int controllerNum, List<List<Parser.Input>> inputList)
+            public InputWrapper(in int controllerNum, Parser.Input[][] inputArray)
             {
                 ControllerNum = controllerNum;
-                InputList = inputList;
+                InputArray = inputArray;
             }
         }
 
@@ -72,7 +72,17 @@ namespace TRBot
             //ThreadPool.GetMaxThreads(out int workerthreads, out int completionPortThreads);
             //Console.WriteLine($"Min workers: {workermin} Max workers: {workerthreads} Min async IO threads: {completionmin} Max async IO threads: {completionPortThreads}");
 
-            InputWrapper inputWrapper = new InputWrapper(controllerNum, inputList);
+            //Kimimaru: Copy the input list over to an array, which is more performant
+            //and lets us bypass redundant copying and bounds checks in certain instances
+            //This matters once we've begun processing inputs since we're
+            //trying to reduce the delay between pressing and releasing inputs as much as we can
+            Parser.Input[][] inputArray = new Parser.Input[inputList.Count][];
+            for (int i = 0; i < inputArray.Length; i++)
+            {
+                inputArray[i] = inputList[i].ToArray();
+            }
+
+            InputWrapper inputWrapper = new InputWrapper(controllerNum, inputArray);
             ThreadPool.QueueUserWorkItem(new WaitCallback(ExecuteInput), inputWrapper);
         }
 
@@ -83,7 +93,7 @@ namespace TRBot
 
             //Get the input list and controller we're using - this should have been validated beforehand
             InputWrapper inputWrapper = (InputWrapper)obj;
-            List<List<Parser.Input>> inputList = inputWrapper.InputList;
+            Parser.Input[][] inputArray = inputWrapper.InputArray;
             VJoyController controller = VJoyController.GetController(inputWrapper.ControllerNum);
 
             Stopwatch sw = new Stopwatch();
@@ -91,17 +101,19 @@ namespace TRBot
             List<int> indices = new List<int>(16);
             int nonWaits = 0;
 
-            for (int i = 0; i < inputList.Count; i++)
+            for (int i = 0; i < inputArray.Length; i++)
             {
-                List<Parser.Input> inputs = inputList[i];
+                ref Parser.Input[] inputs = ref inputArray[i];
 
                 indices.Clear();
 
                 //Press all buttons unless it's a release input
-                for (int j = 0; j < inputs.Count; j++)
+                for (int j = 0; j < inputs.Length; j++)
                 {
                     indices.Add(j);
-                    Parser.Input input = inputs[j];
+
+                    //Get a reference to avoid copying the struct
+                    ref Parser.Input input = ref inputs[j];
 
                     //Don't do anything for a wait input
                     if (InputGlobals.CurrentConsole.IsWait(input) == true)
@@ -141,7 +153,7 @@ namespace TRBot
                     //Release buttons when we should
                     for (int j = indices.Count - 1; j >= 0; j--)
                     {
-                        Parser.Input input = inputs[indices[j]];
+                        ref Parser.Input input = ref inputs[indices[j]];
 
                         if (sw.ElapsedMilliseconds < input.duration)
                         {
@@ -175,10 +187,10 @@ namespace TRBot
             End:
 
             //At the end of it all, release every input
-            for (int i = 0; i < inputList.Count; i++)
+            for (int i = 0; i < inputArray.Length; i++)
             {
-                List<Parser.Input> inputs = inputList[i];
-                for (int j = 0; j < inputs.Count; j++)
+                ref Parser.Input[] inputs = ref inputArray[i];
+                for (int j = 0; j < inputs.Length; j++)
                 {
                     controller.ReleaseInput(inputs[j]);
                 }
