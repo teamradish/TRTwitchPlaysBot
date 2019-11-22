@@ -14,3 +14,6 @@ This Twitch bot contains many features that facilitate handling Twitch Plays gam
 
 ## Getting Started
 Instructions for building and setting up the bot can be found on the [wiki](https://github.com/teamradish/TRTwitchPlaysBot/wiki).
+
+## Disclaimer
+TRBot is free, open source software. All data TRBot stores is local to the streamer running the machine. Outside of Twitch chat connectivity via [TwitchLib](https://github.com/TwitchLib/TwitchLib), TRBot does not making any further network requests. Note that streamers may have their own custom builds with additional settings and features. Consult the streamer in question if you'd like to learn more about their build. You can find the license for TwitchLib [here](https://github.com/TwitchLib/TwitchLib/blob/master/LICENSE).
