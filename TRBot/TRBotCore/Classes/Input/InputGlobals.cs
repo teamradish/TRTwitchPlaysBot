@@ -27,6 +27,7 @@ namespace TRBot
             N64,
             GC,
             Wii,
+            Custom
         }
 
         public static readonly Dictionary<string, string> INPUT_SYNONYMS = new Dictionary<string, string>()
@@ -41,7 +42,8 @@ namespace TRBot
             { InputConsoles.SNES, new SNESConsole() },
             { InputConsoles.N64, new N64Console() },
             { InputConsoles.GC, new GCConsole() },
-            { InputConsoles.Wii, new WiiConsole() }
+            { InputConsoles.Wii, new WiiConsole() },
+            { InputConsoles.Custom, new CustomConsole() }
         };
 
         /// <summary>

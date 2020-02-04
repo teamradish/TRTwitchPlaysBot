@@ -66,12 +66,14 @@ namespace TRBot
             CommandDict.Add("addmacro", new AddMacroCommand());
             CommandDict.Add("removemacro", new RemoveMacroCommand());
             CommandDict.Add("show", new ShowCommand());
-            CommandDict.Add("savestate", new SavestateCommand());
-            CommandDict.Add("loadstate", new LoadstateCommand());
-            CommandDict.Add("viewstate", new ViewstateCommand());
+            CommandDict.Add("savestate", new SavestateCommand() { HiddenFromHelp = true });
+            CommandDict.Add("loadstate", new LoadstateCommand() { HiddenFromHelp = true });
+            CommandDict.Add("viewstate", new ViewstateCommand() { HiddenFromHelp = true });
             CommandDict.Add("ss", new SavestateCommand() { HiddenFromHelp = true });
             CommandDict.Add("ls", new LoadstateCommand() { HiddenFromHelp = true });
             CommandDict.Add("vs", new ViewstateCommand() { HiddenFromHelp = true });
+            CommandDict.Add("info", new InfoCommand());
+            CommandDict.Add("setinfo", new SetInfoCommand());
             CommandDict.Add("setlevel", new SetLevelCommand());
             CommandDict.Add("level", new LevelCommand());
             CommandDict.Add("log", new LogCommand());

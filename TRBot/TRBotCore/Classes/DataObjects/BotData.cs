@@ -17,6 +17,7 @@ namespace TRBot
         public readonly Dictionary<int, GameLog> SavestateLogs = new Dictionary<int, GameLog>();
         public readonly HashSet<string> SilencedUsers = new HashSet<string>();
         public string GameMessage = string.Empty;
+        public string InfoMessage = string.Empty;
         public int LastConsole = 0;
 
         /// <summary>
