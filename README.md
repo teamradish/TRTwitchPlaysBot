@@ -1,4 +1,6 @@
 # TRTwitchPlaysBot
+<img src="https://tdeeb.github.io/projects/images/TRBot/TRBot_AdvancedCommands.gif" alt="Example of an advanced command." width="655" height="319"/>
+
 A TwitchPlays bot for Team Radish. Continuing the legacy of TwitchPlays_Everything.
 
 This Twitch bot contains many features that facilitate handling Twitch Plays games. It uses [TwitchLib](https://github.com/TwitchLib/TwitchLib) to handle Twitch connection.

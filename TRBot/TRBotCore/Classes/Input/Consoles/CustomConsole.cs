@@ -22,14 +22,14 @@ namespace TRBot
             { "pause", 7 }, { "p", 7 }, { "start", 7 },
             { "restart", 8 },
             { "undo", 9 },
-            { "back", 10 },
-            { "viewmap", 11 },
+            { "back", 10 }, { "b", 10 },
+            { "viewmap", 11 }, { "v", 11 },
         };
 
         public override string[] ValidInputs { get; protected set; } = new string[]
         {
             "up", "u", "down", "d", "left", "l", "right", "r", "grab", "g",
-            "select", "s", "pause", "p", "start", "restart", "undo", "back", "viewmap", 
+            "select", "s", "pause", "p", "start", "restart", "undo", "back", "b", "viewmap", "v", 
             "#", "."
         };
 
