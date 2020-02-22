@@ -352,19 +352,19 @@ namespace TRBot
                 ButtonStates.Add(inputs[i], false);
             }
 
-            //NOTE: Hacky for now to not throw exceptions when calling button methods. See ButtonStates comments
-            ButtonStates.Add("savestate1", false);
-            ButtonStates.Add("savestate2", false);
-            ButtonStates.Add("savestate3", false);
-            ButtonStates.Add("savestate4", false);
-            ButtonStates.Add("savestate5", false);
-            ButtonStates.Add("savestate6", false);
-            ButtonStates.Add("loadstate1", false);
-            ButtonStates.Add("loadstate2", false);
-            ButtonStates.Add("loadstate3", false);
-            ButtonStates.Add("loadstate4", false);
-            ButtonStates.Add("loadstate5", false);
-            ButtonStates.Add("loadstate6", false);
+            //Add savestates if they're not explicitly defined so !savestate and !loadstate commands can work
+            ButtonStates["savestate1"] = false;
+            ButtonStates["savestate2"] = false;
+            ButtonStates["savestate3"] = false;
+            ButtonStates["savestate4"] = false;
+            ButtonStates["savestate5"] = false;
+            ButtonStates["savestate6"] = false;
+            ButtonStates["loadstate1"] = false;
+            ButtonStates["loadstate2"] = false;
+            ButtonStates["loadstate3"] = false;
+            ButtonStates["loadstate4"] = false;
+            ButtonStates["loadstate5"] = false;
+            ButtonStates["loadstate6"] = false;
 
             //Console.WriteLine($"Set controller {ControllerID} buttons to {console}");
 

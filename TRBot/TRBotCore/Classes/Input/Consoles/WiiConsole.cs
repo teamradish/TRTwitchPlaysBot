@@ -24,7 +24,7 @@ namespace TRBot
         /// </summary>
         public InputModes InputMode = InputModes.RemoteNunchuk;
 
-        public override string[] ValidInputs { get; protected set; } = new string[28]
+        public override string[] ValidInputs { get; protected set; } = new string[]
         {
             "left", "right", "up", "down",
             "pleft", "pright", "pup", "pdown",
@@ -33,6 +33,8 @@ namespace TRBot
             "a", "b", "one", "two", "minus", "plus",
             "c", "z",
             "shake", "point",
+            "savestate1", "savestate2", "savestate3", "savestate4", "savestate5", "savestate6", "ss1", "ss2", "ss3", "ss4", "ss5", "ss6",
+            "loadstate1", "loadstate2", "loadstate3", "loadstate4", "loadstate5", "loadstate6", "ls1", "ls2", "ls3", "ls4", "ls5", "ls6",
             "#", "."
         };
 
@@ -75,22 +77,22 @@ namespace TRBot
             { "dright", 16 },
             { "dup", 17 },
             { "ddown", 18 },
-            { "savestate1", 19 }, { "tforward", 19 },
-            { "savestate2", 20 }, { "tback", 20 },
-            { "savestate3", 21 },
-            { "savestate4", 22 },
-            { "savestate5", 23 },
-            { "savestate6", 24 },
-            { "loadstate1", 25 },
-            { "loadstate2", 26 },
-            { "loadstate3", 27 },
-            { "loadstate4", 28 },
-            { "loadstate5", 29 },
-            { "loadstate6", 30 },
+            { "savestate1", 19 }, { "ss1", 19 }, { "tforward", 19 },
+            { "savestate2", 20 }, { "ss2", 20 }, { "tback", 20 },
+            { "savestate3", 21 }, { "ss3", 21 },
+            { "savestate4", 22 }, { "ss4", 22 },
+            { "savestate5", 23 }, { "ss5", 23 },
+            { "savestate6", 24 }, { "ss6", 24 },
+            { "loadstate1", 25 }, { "ls1", 25 },
+            { "loadstate2", 26 }, { "ls2", 26 },
+            { "loadstate3", 27 }, { "ls3", 27 },
+            { "loadstate4", 28 }, { "ls4", 28 },
+            { "loadstate5", 29 }, { "ls5", 29 },
+            { "loadstate6", 30 }, { "ls6", 30 },
             { "shake", 31 },
             { "point", 32 }
         };
-
+        
         public override void HandleArgsOnConsoleChange(List<string> arguments)
         {
             if (arguments?.Count == 0) return;
