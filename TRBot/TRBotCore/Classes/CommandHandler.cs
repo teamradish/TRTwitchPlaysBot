@@ -94,7 +94,7 @@ namespace TRBot
             CommandDict.Add("player", new ChangePlayerCommand());
             CommandDict.Add("defaultinputdur", new DefaultInputDurationCommand());
             CommandDict.Add("maxinputdur", new MaxInputDurationCommand());
-            CommandDict.Add("opensource", new OpenSourceCommand());
+            CommandDict.Add("sourcecode", new OpenSourceCommand());
             CommandDict.Add("reload", new ReloadCommand());
             CommandDict.Add("maxpause", new MaxPauseDurationCommand());
             CommandDict.Add("tutorial", new TutorialCommand());
