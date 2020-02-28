@@ -403,6 +403,22 @@ namespace TRBot
                         if (shouldPerformInput == true)
                         {
                             InputHandler.CarryOutInput(parsedData.inputList, controllerNum);
+
+                            //If auto whitelist is enabled, the user reached the whitelist message threshold,
+                            //the user isn't whitelisted, and the user hasn't ever been whitelisted, whitelist them
+                            if (BotSettings.AutoWhitelistEnabled == true && userData.Level < (int)AccessLevels.Levels.Whitelisted
+                                && userData.AutoWhitelisted == false && userData.ValidInputs >= BotSettings.AutoWhitelistInputCount)
+                            {
+                                userData.Level = (int)AccessLevels.Levels.Whitelisted;
+                                userData.AutoWhitelisted = true;
+
+                                if (string.IsNullOrEmpty(BotSettings.AutoWhitelistMsg) == false)
+                                {
+                                    //Replace the user's name with the message
+                                    string msg = BotSettings.AutoWhitelistMsg.Replace("{0}", e.ChatMessage.Username);
+                                    QueueMessage(msg);
+                                }
+                            }
                         }
                     }
                     else
@@ -557,6 +573,21 @@ namespace TRBot
             public double MessageCooldown = 1000d;
             public double CreditsTime = 2d;
             public long CreditsAmount = 100L;
+
+            /// <summary>
+            /// If true, automatically whitelists users if conditions are met, including the command count.
+            /// </summary>
+            public bool AutoWhitelistEnabled = false;
+
+            /// <summary>
+            /// The number of valid inputs required to whitelist a user if they're not whitelisted and auto whitelist is enabled.
+            /// </summary>
+            public int AutoWhitelistInputCount = 20;
+
+            /// <summary>
+            /// The message to send when a user is auto whitelisted. "{0}" is replaced with the name of the user whitelisted.
+            /// </summary>
+            public string AutoWhitelistMsg = "{0} has been whitelisted! New commands are available.";
         }
     }
 }

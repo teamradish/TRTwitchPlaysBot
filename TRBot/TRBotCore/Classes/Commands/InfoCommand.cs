@@ -17,7 +17,7 @@ namespace TRBot
         {
             base.Initialize(commandHandler);
 
-            AccessLevel = (int)AccessLevels.Levels.User;
+            AccessLevel = (int)AccessLevels.Levels.Moderator;
         }
 
         public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)

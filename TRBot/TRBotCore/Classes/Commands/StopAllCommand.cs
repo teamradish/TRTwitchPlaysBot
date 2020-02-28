@@ -10,6 +10,11 @@ namespace TRBot
     /// </summary>
     public sealed class StopAllCommand : BaseCommand
     {
+        public StopAllCommand()
+        {
+            AccessLevel = (int)AccessLevels.Levels.Whitelisted;
+        }
+
         public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
         {
             InputHandler.CancelRunningInputs();

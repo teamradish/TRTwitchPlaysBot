@@ -18,5 +18,6 @@ namespace TRBot
         public int Team;
         public int Subscriber;
         public int BetCounter;
+        public bool AutoWhitelisted = false;
     }
 }
