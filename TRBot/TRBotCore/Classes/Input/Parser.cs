@@ -203,7 +203,7 @@ namespace TRBot
             foreach (string button in InputGlobals.ValidInputs)
             {
                 if (button == ".")
-                    m = Regex.Match(message, @"\.", RegexOptions.Compiled);
+                    m = Regex.Match(message, @"^\.", RegexOptions.Compiled);
                 else
                     m = Regex.Match(message, $"^{button}");
 
