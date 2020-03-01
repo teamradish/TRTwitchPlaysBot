@@ -35,7 +35,10 @@ namespace TRBot
 
         private CommandHandler CommandHandler = null;
 
-        private bool TryReconnect = false;
+        public static bool TryReconnect { get; private set; } = false;
+        public static bool ChannelJoined { get; private set; } = false;
+
+        public bool IsInChannel => (Client?.IsConnected == true && ChannelJoined == true);
 
         private DateTime CurQueueTime;
 
@@ -70,7 +73,7 @@ namespace TRBot
         public BotProgram()
         {
             crashHandler = new CrashHandler();
-
+            
             instance = this;
 
             //Below normal priority
@@ -92,7 +95,9 @@ namespace TRBot
             }
 
             ClientMessages.Clear();
-            Client.Disconnect();
+
+            if (Client.IsConnected == true)
+                Client.Disconnect();
 
             //Clean up and relinquish the devices when we're done
             VJoyController.CleanUp();
@@ -166,10 +171,12 @@ namespace TRBot
             
             Client.OnConnected += OnConnected;
             Client.OnConnectionError += OnConnectionError;
+            Client.OnReconnected += OnReconnected;
             Client.OnDisconnected += OnDisconnected;
 
             AddRoutine(new PeriodicMessageRoutine());
             AddRoutine(new CreditsGiveRoutine());
+            AddRoutine(new ReconnectRoutine());
 
             //Initialize controller input
             VJoyController.Initialize();
@@ -205,7 +212,7 @@ namespace TRBot
                 //Queued messages
                 if (ClientMessages.Count > 0 && queueDiff.TotalMilliseconds >= BotSettings.MessageCooldown)
                 {
-                    if (Client.IsConnected == true)
+                    if (IsInChannel == true)
                     {
                         string message = ClientMessages.Dequeue();
                         //Send the message
@@ -215,7 +222,7 @@ namespace TRBot
                         {
                             Console.WriteLine(message);
                         }
-                
+
                         CurQueueTime = now;
                     }
                 }
@@ -276,6 +283,7 @@ namespace TRBot
             Client.OnChatCommandReceived -= OnChatCommandReceived;
             Client.OnConnected -= OnConnected;
             Client.OnConnectionError -= OnConnectionError;
+            Client.OnReconnected += OnReconnected;
             Client.OnDisconnected -= OnDisconnected;
             Client.OnBeingHosted -= OnBeingHosted;
         }
@@ -285,12 +293,15 @@ namespace TRBot
         private void OnConnected(object sender, OnConnectedArgs e)
         {
             TryReconnect = false;
+            ChannelJoined = false;
 
             Console.WriteLine($"{LoginInformation.BotName} connected!");
         }
 
         private void OnConnectionError(object sender, OnConnectionErrorArgs e)
         {
+            ChannelJoined = false;
+
             if (TryReconnect == false)
             {
                 Console.WriteLine($"Failed to connect: {e.Error.Message}");
@@ -306,6 +317,7 @@ namespace TRBot
             Console.WriteLine($"Joined channel \"{e.Channel}\"");
 
             TryReconnect = false;
+            ChannelJoined = true;
 
             if (CommandHandler == null)
             {
@@ -467,9 +479,18 @@ namespace TRBot
             QueueMessage($"Thank you for subscribing for {e.ReSubscriber.Months} months, {e.ReSubscriber.DisplayName} :D !!");
         }
 
+        private void OnReconnected(object sender, OnReconnectedEventArgs e)
+        {
+            QueueMessage("Successfully reconnected to chat!");
+
+            TryReconnect = false;
+        }
+
         private void OnDisconnected(object sender, OnDisconnectedEventArgs e)
         {
             Console.WriteLine("Disconnected!");
+
+            TryReconnect = true;
         }
 
         public static User GetUser(string username, bool isLower = true)
