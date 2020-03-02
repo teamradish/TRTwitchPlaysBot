@@ -16,6 +16,7 @@ namespace TRBot
         public readonly JumpRopeData JRData = new JumpRopeData();
         public readonly Dictionary<int, GameLog> SavestateLogs = new Dictionary<int, GameLog>();
         public readonly HashSet<string> SilencedUsers = new HashSet<string>();
+        public readonly InputAccessData InputAccess = new InputAccessData();
         public string GameMessage = string.Empty;
         public string InfoMessage = string.Empty;
         public int LastConsole = 0;

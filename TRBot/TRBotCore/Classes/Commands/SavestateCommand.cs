@@ -42,6 +42,22 @@ namespace TRBot
                 return;
             }
 
+            User user = BotProgram.GetOrAddUser(e.Command.ChatMessage.Username, false);
+
+            //Check if the user can perform this input
+            ParserPostProcess.InputValidation inputValidation = ParserPostProcess.CheckInputPermissions(user.Level, saveStateStr, BotProgram.BotData.InputAccess.InputAccessDict);
+
+            //If the input isn't valid, exit
+            if (inputValidation.IsValid == false)
+            {
+                if (string.IsNullOrEmpty(inputValidation.Message) == false)
+                {
+                    BotProgram.QueueMessage(inputValidation.Message);
+                }
+
+                return;
+            }
+
             //Savestates are always performed on the first controller
             VJoyController joystick = VJoyController.GetController(0);
             joystick.PressButton(saveStateStr);

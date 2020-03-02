@@ -388,6 +388,20 @@ namespace TRBot
                         return;
                     }
 
+                    //Check if the user has permission to perform all the inputs they attempted
+                    ParserPostProcess.InputValidation inputValidation = ParserPostProcess.CheckInputPermissions(userData.Level, parsedData.inputList, BotData.InputAccess.InputAccessDict);
+
+                    //If the input isn't valid, exit
+                    if (inputValidation.IsValid == false)
+                    {
+                        if (string.IsNullOrEmpty(inputValidation.Message) == false)
+                        {
+                            QueueMessage(inputValidation.Message);
+                        }
+
+                        return;
+                    }
+
                     if (InputHandler.StopRunningInputs == false)
                     {
                         //Mark this as a valid input

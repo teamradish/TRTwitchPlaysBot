@@ -298,15 +298,15 @@ namespace TRBot
         {
             bool contains_start_input = false;
             message = message.Replace(" ", string.Empty).ToLower();
-            List<Input> input_subsequence = new List<Input>();
-            List<List<Input>> input_sequence = new List<List<Input>>();
+            List<Input> input_subsequence = null;
+            List<List<Input>> input_sequence = new List<List<Input>>(8);
             int duration_counter = 0;
 
             message = PopulateSynonyms(message);
 
             while (message.Length > 0)
             {
-                input_subsequence = new List<Input>();
+                input_subsequence = new List<Input>(8);
                 int subduration_max = 0;
                 Input current_input = GetInput(message);
 
@@ -316,7 +316,7 @@ namespace TRBot
                  */
 
                 if (string.IsNullOrEmpty(current_input.error) == false)
-                    return (false, new List<List<Input>>() { new List<Input>() { current_input } }, false, subduration_max);
+                    return (false, new List<List<Input>>(1) { new List<Input>(1) { current_input } }, false, subduration_max);
 
                 message = message.Substring(current_input.length);
                 input_subsequence.Add(current_input);
@@ -341,7 +341,7 @@ namespace TRBot
                          */
 
                         if (string.IsNullOrEmpty(current_input.error) == false)
-                            return (false, new List<List<Input>>() { new List<Input>() { current_input }  }, false, subduration_max);
+                            return (false, new List<List<Input>>(1) { new List<Input>(1) { current_input }  }, false, subduration_max);
 
                         message = message.Substring(current_input.length);
                         input_subsequence.Add(current_input);
@@ -359,7 +359,7 @@ namespace TRBot
                 if (duration_counter > BotProgram.BotData.MaxInputDuration)
                 {
                     current_input.error = "ERR_DURATION_MAX";
-                    return (false, new List<List<Input>>() { new List<Input>() { current_input }  }, false, subduration_max);
+                    return (false, new List<List<Input>>(1) { new List<Input>(1) { current_input }  }, false, subduration_max);
                 }
 
                 input_sequence.Add(input_subsequence);
