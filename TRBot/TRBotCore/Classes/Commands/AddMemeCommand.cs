@@ -26,6 +26,12 @@ namespace TRBot
                 return;
             }
 
+            if (args[0].ElementAt(0) == '/' || args[1].ElementAt(0) == '/')
+            {
+                BotProgram.QueueMessage("Memes cannot start with Twitch chat commands!");
+                return;
+            }
+
             if (args[0].ElementAt(0) == Globals.CommandIdentifier)
             {
                 BotProgram.QueueMessage($"Memes cannot start with \'{Globals.CommandIdentifier}\'");
