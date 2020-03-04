@@ -34,8 +34,8 @@ namespace TRBot
                 string finalExpr = exp.Evaluate().ToString();
 
                 //You can use text in calculate to make the bot do things, such as Twitch chat commands
-                //Ignore any output with a "/" in it to avoid exploiting this
-                if (finalExpr.Contains('/') == true)
+                //Ignore any output starting with a "/" to avoid exploiting this
+                if (finalExpr.StartsWith('/') == true)
                 {
                     BotProgram.QueueMessage("Very clever, but I'm one step ahead of you.");
                     return;
