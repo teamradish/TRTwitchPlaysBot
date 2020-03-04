@@ -13,8 +13,6 @@ namespace TRBot
 {
     public sealed class CalculateCommand : BaseCommand
     {
-        private DataTable CalculateTable = new DataTable();
-
         public CalculateCommand()
         {
 
@@ -34,8 +32,15 @@ namespace TRBot
                 exp.EvaluateFunction += Exp_EvaluateFunction;
 
                 string finalExpr = exp.Evaluate().ToString();
-                //string finalExpr = CalculateTable.Compute(expression, null).ToString();
-                
+
+                //You can use text in calculate to make the bot do things, such as Twitch chat commands
+                //Ignore any output with a "/" in it to avoid exploiting this
+                if (finalExpr.Contains('/') == true)
+                {
+                    BotProgram.QueueMessage("Very clever, but I'm one step ahead of you.");
+                    return;
+                }
+
                 BotProgram.QueueMessage(finalExpr);
             }
             catch (Exception exc)
