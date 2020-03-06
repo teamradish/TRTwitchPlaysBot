@@ -20,6 +20,8 @@ namespace TRBot
     /// </remarks>
     public static class Parser
     {
+        private static Comparison<(string, (int, int), List<string>)> SubCompare = SubComparison;
+
         static Parser()
         {
             //Set Regex cache size
@@ -36,11 +38,7 @@ namespace TRBot
                 string value = m.Groups[1].Value.Replace("]", string.Empty).Replace("[", string.Empty);
 
                 int number = 0;
-                try
-                {
-                    number = int.Parse(m.Groups[2].Value);
-                }
-                catch
+                if (int.TryParse(m.Groups[2].Value, out number) == false)
                 {
                     return message;
                 }
@@ -61,7 +59,8 @@ namespace TRBot
 
         public static string PopulateVariables(string macro_contents, List<string> variables)
         {
-            for (int i = 0; i < variables.Count; i++)
+            int count = variables.Count;
+            for (int i = 0; i < count; i++)
             {
                 string v = variables[i];
                 macro_contents = Regex.Replace(macro_contents, "<" + i + ">", v);
@@ -83,7 +82,7 @@ namespace TRBot
             {
                 found_macro = false;
                 MatchCollection possible_macros = Regex.Matches(message, @"#[a-zA-Z0-9\(\,\.]*", RegexOptions.Compiled);
-                List<(string, (int, int), List<string>)> subs = new List<(string, (int, int), List<string>)>();
+                List<(string, (int, int), List<string>)> subs = null;
                 foreach (Match p in possible_macros)
                 {
                     string macro_name = Regex.Replace(message.Substring(p.Index, p.Length), @"\(.*\)", string.Empty, RegexOptions.Compiled);
@@ -100,7 +99,9 @@ namespace TRBot
                             macro_argsarr = new List<string>(substr.Split(","));
                             macro_name += ")";
                             macro_name_generic = Regex.Replace(macro_name, @"\(.*\)", string.Empty, RegexOptions.Compiled) + "(";
-                            for (int i = 0; i < macro_argsarr.Count; i++)
+
+                            int macroArgsCount = macro_argsarr.Count;
+                            for (int i = 0; i < macroArgsCount; i++)
                             {
                                 macro_name_generic += "*,";
                             }
@@ -125,6 +126,9 @@ namespace TRBot
                     }
                     if (string.IsNullOrEmpty(longest) == false)
                     {
+                        if (subs == null)
+                            subs = new List<(string, (int, int), List<string>)>(4);
+
                         if (macro_argsarr.Count > 0)
                         {
                             subs.Add((longest, (p.Index, p.Index + p.Length + 1), macro_argsarr));
@@ -136,11 +140,12 @@ namespace TRBot
                     }
                 }
 
-                //Sort by start of the macro index
-                subs.Sort((x, y) => x.Item2.Item1.CompareTo(y.Item2.Item1));
                 string str = string.Empty;
-                if (subs.Count > 0)
+                if (subs?.Count > 0)
                 {
+                    //Sort by start of the macro index
+                    subs.Sort(SubCompare);
+
                     found_macro = true;
                     str = message.Substring(0, subs[0].Item2.Item1);
                     (string, (int, int), List<string>) def = default;
@@ -366,6 +371,11 @@ namespace TRBot
             }
 
             return (true, input_sequence, contains_start_input, duration_counter);
+        }
+
+        private static int SubComparison((string, (int, int), List<string>) val1, (string, (int, int), List<string>) val2)
+        {
+            return val1.Item2.Item1.CompareTo(val2.Item2.Item1);
         }
 
         /// <summary>
