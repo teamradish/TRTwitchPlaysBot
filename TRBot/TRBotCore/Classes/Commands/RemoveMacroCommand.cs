@@ -30,6 +30,16 @@ namespace TRBot
             
             if (BotProgram.BotData.Macros.ContainsKey(macroName) == true)
             {
+                char macroFirstChar = macroName[1];
+
+                //Remove from the parser macro list
+                List<string> parserMacroList = BotProgram.BotData.ParserMacroLookup[macroFirstChar];
+                parserMacroList.Remove(macroName);
+                if (parserMacroList.Count == 0)
+                {
+                    BotProgram.BotData.ParserMacroLookup.Remove(macroFirstChar);
+                }
+
                 BotProgram.BotData.Macros.Remove(macroName);
                 BotProgram.SaveBotData();
 

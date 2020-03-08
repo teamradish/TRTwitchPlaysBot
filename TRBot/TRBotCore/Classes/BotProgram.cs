@@ -215,8 +215,17 @@ namespace TRBot
                     if (IsInChannel == true)
                     {
                         string message = ClientMessages.Dequeue();
-                        //Send the message
-                        Client.SendMessage(LoginInformation.ChannelName, message);
+
+                        //There's a chance the bot could be disconnected from the channel between the conditional and now
+                        try
+                        {
+                            //Send the message
+                            Client.SendMessage(LoginInformation.ChannelName, message);
+                        }
+                        catch (TwitchLib.Client.Exceptions.BadStateException e)
+                        {
+                            Console.WriteLine($"Could not send message due to bad state: {e.Message}");
+                        }
 
                         if (IgnoreConsoleLog == false)
                         {
@@ -545,7 +554,7 @@ namespace TRBot
                 userData.Name = username;
                 BotData.Users.Add(username, userData);
 
-                BotProgram.QueueMessage($"{origName} added to database!");
+                BotProgram.QueueMessage($"Welcome to the stream, {origName} :D ! We hope you enjoy your stay!");
             }
 
             return userData;

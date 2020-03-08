@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace TRBot
 {
@@ -9,13 +10,20 @@ namespace TRBot
     /// </summary>
     public sealed class BotData
     {
-        public readonly Dictionary<string, string> Macros = new Dictionary<string, string>();
-        public readonly Dictionary<string, string> Memes = new Dictionary<string, string>();
-        public readonly Dictionary<string, User> Users = new Dictionary<string, User>();
-        public readonly List<GameLog> Logs = new List<GameLog>();
+        /// <summary>
+        /// This dictionary is used to improve the speed of macro lookups for the parser, which needs to iterate through them since there are no spaces.
+        /// This is used only internally by the bot and is not saved in the JSON.
+        /// </summary>
+        [JsonIgnore]
+        public readonly Dictionary<char, List<string>> ParserMacroLookup = new Dictionary<char, List<string>>(16);
+
+        public readonly Dictionary<string, string> Macros = new Dictionary<string, string>(64);
+        public readonly Dictionary<string, string> Memes = new Dictionary<string, string>(64);
+        public readonly Dictionary<string, User> Users = new Dictionary<string, User>(128);
+        public readonly List<GameLog> Logs = new List<GameLog>(32);
         public readonly JumpRopeData JRData = new JumpRopeData();
-        public readonly Dictionary<int, GameLog> SavestateLogs = new Dictionary<int, GameLog>();
-        public readonly HashSet<string> SilencedUsers = new HashSet<string>();
+        public readonly Dictionary<int, GameLog> SavestateLogs = new Dictionary<int, GameLog>(8);
+        public readonly HashSet<string> SilencedUsers = new HashSet<string>(16);
         public readonly InputAccessData InputAccess = new InputAccessData();
         public string GameMessage = string.Empty;
         public string InfoMessage = string.Empty;

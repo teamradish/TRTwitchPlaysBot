@@ -30,7 +30,7 @@ namespace TRBot
 
         public static string Expandify(string message)
         {
-            string regex = @"\[([^\[\]]*\])\*(\d{1,2})";
+            const string regex = @"\[([^\[\]]*\])\*(\d{1,2})";
             Match m = Regex.Match(message, regex, RegexOptions.Compiled);
             while (m.Success == true)
             {
@@ -116,14 +116,22 @@ namespace TRBot
 
                     string longest = string.Empty;
                     int end = 0;
-                    foreach (string macro in BotProgram.BotData.Macros.Keys)
+
+                    //Look through the parser macro list for performance
+                    if (BotProgram.BotData.ParserMacroLookup.TryGetValue(macro_name_generic[1], out List<string> macroList) == true)
                     {
-                        if (macro_name_generic.Contains(macro) == true)
+                        for (int i = 0; i < macroList.Count; i++)
                         {
-                            if (macro.Length > longest.Length) longest = macro;
+                            string macro = macroList[i];
+                    
+                            if (macro_name_generic.Contains(macro) == true)
+                            {
+                                if (macro.Length > longest.Length) longest = macro;
+                            }
+                            end = p.Index + longest.Length;
                         }
-                        end = p.Index + longest.Length;
                     }
+
                     if (string.IsNullOrEmpty(longest) == false)
                     {
                         if (subs == null)
@@ -161,6 +169,7 @@ namespace TRBot
                 }
                 count += 1;
             }
+
             return message;
         }
 

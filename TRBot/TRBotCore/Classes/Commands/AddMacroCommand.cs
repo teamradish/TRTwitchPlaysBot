@@ -17,6 +17,12 @@ namespace TRBot
         {
             base.Initialize(commandHandler);
             AccessLevel = (int)AccessLevels.Levels.Whitelisted;
+
+            //Add all macros in the data to the parser list on initialization
+            foreach (var macroName in BotProgram.BotData.Macros.Keys)
+            {
+                AddMacroToParserList(macroName);
+            }
         }
 
         public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
@@ -29,13 +35,25 @@ namespace TRBot
                 return;
             }
 
-            string macroName = args[0].ToLowerInvariant();
+            //Make sure the first argument has at least two characters
+            if (args[0].Length < 2)
+            {
+                BotProgram.QueueMessage("Macros need to be at least two characters!");
+                return;
+            }
 
-            string macroVal = e.Command.ArgumentsAsString.Remove(0, macroName.Length + 1).ToLowerInvariant();
+            string macroName = args[0].ToLowerInvariant();
 
             if (macroName[0] != Globals.MacroIdentifier)
             {
                 BotProgram.QueueMessage($"Macros must start with '{Globals.MacroIdentifier}'.");
+                return;
+            }
+
+            //For simplicity with wait inputs, force the first character in the macro name to be alphanumeric
+            if (char.IsLetterOrDigit(args[0][1]) == false)
+            {
+                BotProgram.QueueMessage("The first character in macro names must be alphanumeric!");
                 return;
             }
 
@@ -44,6 +62,8 @@ namespace TRBot
                 BotProgram.QueueMessage($"The max macro length is {MAX_MACRO_LENGTH} characters!");
                 return;
             }
+
+            string macroVal = e.Command.ArgumentsAsString.Remove(0, macroName.Length + 1).ToLowerInvariant();
 
             bool isDynamic = false;
             string parsedVal = macroVal;
@@ -123,6 +143,8 @@ namespace TRBot
                     if (isDynamic == false)
                         message = $"Added macro {macroName}!";
                     else message = $"Added dynamic macro {macroName}!";
+                    
+                    AddMacroToParserList(macroName);
                 }
                 else
                 {
@@ -136,6 +158,20 @@ namespace TRBot
 
                 BotProgram.QueueMessage(message);
             }
+        }
+
+        private void AddMacroToParserList(string macroName)
+        {
+            char macroFirstChar = macroName[1];
+
+            //Add to the parsed macro list for quicker lookup
+            if (BotProgram.BotData.ParserMacroLookup.TryGetValue(macroFirstChar, out List<string> macroList) == false)
+            {
+                macroList = new List<string>(16);
+                BotProgram.BotData.ParserMacroLookup.Add(macroFirstChar, macroList);
+            }
+
+            macroList.Add(macroName);
         }
     }
 }
