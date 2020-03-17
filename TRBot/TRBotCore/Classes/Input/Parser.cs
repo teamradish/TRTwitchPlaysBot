@@ -189,7 +189,7 @@ namespace TRBot
             //Create a default input instance
             Input current_input = Input.Default;
 
-            string regex = @"^[_-]";
+            const string regex = @"^[_-]";
             Match m = Regex.Match(message, regex, RegexOptions.Compiled);
 
             //If there's a match, trim the message
@@ -247,8 +247,8 @@ namespace TRBot
             message = message.Substring(max);
 
             //Try to match a percent
-            regex = @"^\d+%";
-            m = Regex.Match(message, regex, RegexOptions.Compiled);
+            const string percentRegex = @"^\d+%";
+            m = Regex.Match(message, percentRegex, RegexOptions.Compiled);
 
             if (m.Success == true)
             {
@@ -264,8 +264,8 @@ namespace TRBot
             }
 
             //Try to match a duration
-            regex = @"^\d+";
-            m = Regex.Match(message, regex, RegexOptions.Compiled);
+            const string durationRegex = @"^\d+";
+            m = Regex.Match(message, durationRegex, RegexOptions.Compiled);
 
             if (m.Success == true)
             {
@@ -274,8 +274,8 @@ namespace TRBot
                 current_input.length += current_input.duration.ToString().Length;
 
                 //Determine the type of duration
-                regex = @"(s|ms)";
-                m = Regex.Match(message, regex, RegexOptions.Compiled);
+                const string durTypeRegex = @"(s|ms)";
+                m = Regex.Match(message, durTypeRegex, RegexOptions.Compiled);
 
                 if (m.Success == true)
                 {
@@ -296,13 +296,6 @@ namespace TRBot
                     return current_input;
                 }
             }
-
-            //if (current_input.name == "start" && current_input.duration >= 500)
-            //{
-            //    current_input.error = "ERR_START_BUTTON_DURATION_MAX_EXCEEDED";
-            //    return current_input;
-            //}
-
             return current_input;
         }
 
@@ -323,12 +316,7 @@ namespace TRBot
                 input_subsequence = new List<Input>(8);
                 int subduration_max = 0;
                 Input current_input = GetInput(message);
-
-                /*
-                 * if (current_input.name == "plus")
-                 *     contains_start_input = true;
-                 */
-
+                
                 if (string.IsNullOrEmpty(current_input.error) == false)
                     return (false, new List<List<Input>>(1) { new List<Input>(1) { current_input } }, false, subduration_max);
 
