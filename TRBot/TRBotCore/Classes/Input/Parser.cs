@@ -299,6 +299,50 @@ namespace TRBot
             return current_input;
         }
 
+        //NOTE: TEST METHOD FOR NEW PARSING - DO NOT USE YET
+        public static void ParseInputs(string message)
+        {
+            bool validInput = true;
+
+            message = message.Replace(" ", string.Empty).ToLower();
+            message = PopulateSynonyms(message);
+
+            //Full Regex:
+            // ([_-])?(left|right|a|b|l|r){1}(\d*)(ms|s)?
+            //Replace "left", "right", etc. with all the inputs for the console
+
+            //Group 1 = zero or one of '_' or '-' for hold and subtract, respectively
+            //Group 2 = the input - exactly one
+            //Group 3 = the number for duration
+            //Group 4 = ms or s - the duration type
+
+            string regex = "([_-])?(";
+            for (int i = 0; i < InputGlobals.ValidInputs.Length; i++)
+            {
+                regex += Regex.Escape(InputGlobals.ValidInputs[i]);
+
+                if (i == InputGlobals.ValidInputs.Length - 1)
+                    regex += ")";
+                else regex += "|";
+            }
+
+            regex += @"{1}(\d*)(ms|s)?";
+
+            //Console.WriteLine(regex);
+
+            //New method: Get ALL the matches at once and parse them as we go, instead of matching each time and parsing
+
+            MatchCollection matches = Regex.Matches(message, regex, RegexOptions.IgnoreCase);
+            //Console.WriteLine(matches.Count);
+
+            foreach (Match m in matches)
+            {
+                Console.WriteLine($"Name: {m.Index}");
+            }
+
+            //Console.WriteLine($"Valid input: {validInput}");
+        }
+
         //Returns list containing: [Valid, input_sequence]
         //Or: [Invalid, input that it failed on]
         public static (bool, List<List<Input>>, bool, int) Parse(string message)
