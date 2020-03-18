@@ -100,15 +100,14 @@ namespace TRBot
                 }
             }
 
-            (bool valid, List<List<Parser.Input>> inputList, bool containsStartInput, int durationCounter)
-                parsedData = default;
+            Parser.InputSequence inputSequence = default;
 
             try
             {
                 //Parse the macro to check for valid input
                 string parse_message = Parser.Expandify(Parser.PopulateMacros(parsedVal));
 
-                parsedData = Parser.Parse(parse_message);
+                inputSequence = Parser.ParseInputs(parse_message);
             }
             catch
             {
@@ -123,7 +122,7 @@ namespace TRBot
                 return;
             }
 
-            if (parsedData.valid == false)
+            if (inputSequence.InputValidationType != Parser.InputValidationTypes.Valid)
             {
                 if (isDynamic == false)
                 {

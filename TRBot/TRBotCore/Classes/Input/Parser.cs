@@ -21,6 +21,24 @@ namespace TRBot
     /// </remarks>
     public static class Parser
     {
+        /// <summary>
+        /// The validation types for inputs.
+        /// </summary>
+        public enum InputValidationTypes
+        {
+            NormalMsg, Valid, Invalid
+        }
+
+        /// <summary>
+        /// The start of the input regex string.
+        /// </summary>
+        public const string ParseRegexStart = "([_-])?(";
+
+        /// <summary>
+        /// The end of the input regex string.
+        /// </summary>
+        public const string ParseRegexEnd = @"){1}(\d*)(\%?)(\d*)(ms|s)?(\+?)";
+
         private static Comparison<(string, (int, int), List<string>)> SubCompare = SubComparison;
 
         static Parser()
@@ -186,6 +204,7 @@ namespace TRBot
         }
 
         //Returns Input object
+        [Obsolete("Use GetInputFast with ParseInputs for greatly improved performance and readability.", true)]
         private static Input GetInput(string message)
         {
             //Create a default input instance
@@ -301,16 +320,19 @@ namespace TRBot
             return current_input;
         }
 
-        //NOTE: TEST METHOD FOR NEW PARSING - DO NOT USE YET
+        /// <summary>
+        /// Parses inputs from an expanded message.
+        /// </summary>
+        /// <param name="message">The expanded message.</param>
+        /// <returns>An InputSequence containing information about the parsed inputs.</returns>
         public static InputSequence ParseInputs(string message)
         {
-            Stopwatch sw = Stopwatch.StartNew();
-
+            //Remove all whitespace and populate synonyms
             message = message.Replace(" ", string.Empty).ToLower();
             message = PopulateSynonyms(message);
 
             //Full Regex:
-            // ([_-])?(left|right|a|b|l|r){1}(\d*)(\%?)(\d*)(ms|s)?(\+?)
+            // ([_-])?(left|right|a){1}(\d*)(\%?)(\d*)(ms|s)?(\+?)
             //Replace "left", "right", etc. with all the inputs for the console
             //Group 1 = zero or one of '_' or '-' for hold and subtract, respectively
             //Group 2 = the input - exactly one
@@ -320,32 +342,24 @@ namespace TRBot
             //Group 6 = ms or s - the duration type
             //Group 7 = + sign for performing inputs simultaneously
 
-            string regex = "([_-])?(";
-            for (int i = 0; i < InputGlobals.ValidInputs.Length; i++)
-            {
-                regex += Regex.Escape(InputGlobals.ValidInputs[i]);
-
-                if (i == InputGlobals.ValidInputs.Length - 1)
-                    regex += ")";
-                else regex += "|";
-            }
-
-            regex += @"{1}(\d*)(\%?)(\d*)(ms|s)?(\+?)";
+            string regex = InputGlobals.ValidInputRegexStr;
 
             //Console.WriteLine(regex);
 
-            //New method: Get ALL the matches at once and parse them as we go, instead of matching each time and parsing
+            //Uncomment these stopwatch lines to time it
+            //Stopwatch sw = Stopwatch.StartNew();
 
+            //New method: Get ALL the matches at once and parse them as we go, instead of matching each time and parsing
             MatchCollection matches = Regex.Matches(message, regex, RegexOptions.IgnoreCase);
 
             //No matches, so invalid input
             if (matches.Count <= 0)
             {
-                return new InputSequence(false, null, 0, "ERR_NO_INPUTS");
+                return new InputSequence(InputValidationTypes.NormalMsg, null, 0, "ERR_NORMAL_MSG");
             }
 
             //Set up the input sequence
-            InputSequence inputSequence = new InputSequence(true, new List<List<Input>>(matches.Count), 0, string.Empty);
+            InputSequence inputSequence = new InputSequence(InputValidationTypes.Valid, new List<List<Input>>(matches.Count), 0, string.Empty);
 
             //Store the previous index - if there's anything in between that's not picked up by the regex, it's an invalid input
             int prevIndex = 0;
@@ -358,16 +372,26 @@ namespace TRBot
             for (int i = 0; i < matches.Count; i++)
             {
                 Match m = matches[i];
+
+                //If there's a gap in matches (Ex. "a34ms hi b300ms"), this isn't a valid input and is likely a normal message
+                if (m.Index != prevIndex)
+                {
+                    inputSequence.InputValidationType = InputValidationTypes.NormalMsg;
+                    inputSequence.Error = "ERR_NORMAL_MSG";
+                    break;
+                }
+
+                //Get the input using the match information
                 Input input = GetInputFast(m, ref prevIndex, ref hasPlus);
 
                 //Console.WriteLine(input.ToString());
 
+                //There's an error, so something went wrong
                 if (string.IsNullOrEmpty(input.error) == false)
                 {
-                    inputSequence.IsValid = false;
-                    inputSequence.Error = input.error;
+                    inputSequence.InputValidationType = InputValidationTypes.Invalid;
+                    inputSequence.Error = input.error + " for: \"" + m.Value + "\"";
 
-                    Console.WriteLine("Broke for invalid input");
                     break;
                 }
 
@@ -382,7 +406,7 @@ namespace TRBot
                 //There's a plus at the very end of the input sequence, which is invalid
                 if (hasPlus == true && i == (matches.Count - 1))
                 {
-                    inputSequence.IsValid = false;
+                    inputSequence.InputValidationType = InputValidationTypes.Invalid;
                     inputSequence.Error = "ERR_PLUS_AT_END";
                     break;
                 }
@@ -396,19 +420,26 @@ namespace TRBot
                     totalDuration += maxSubDuration;
                     maxSubDuration = 0;
 
+                    inputSequence.TotalDuration = totalDuration;
+
                     if (totalDuration > BotProgram.BotData.MaxInputDuration)
                     {
-                        inputSequence.IsValid = false;
+                        inputSequence.InputValidationType = InputValidationTypes.Invalid;
                         inputSequence.Error = "ERR_MAX_DURATION";
                         break;
                     }
                 }
             }
 
-            sw.Stop();
-            Console.WriteLine($"SW MS: {sw.ElapsedMilliseconds}");
+            //sw.Stop();
+            //Console.WriteLine($"SW MS: {sw.ElapsedMilliseconds}");
 
-            Console.WriteLine(inputSequence.ToString());
+            //If there's more past what the regex caught, this isn't a valid input and is likely a normal message
+            if (inputSequence.InputValidationType == InputValidationTypes.Valid && prevIndex != message.Length)
+            {
+                inputSequence.InputValidationType = InputValidationTypes.NormalMsg;
+                inputSequence.Error = "ERR_NORMAL_MSG";
+            }
 
             return inputSequence;
         }
@@ -416,7 +447,7 @@ namespace TRBot
         private static Input GetInputFast(Match regexMatch, ref int prevIndex, ref bool hasPlus)
         {
             //Full Regex:
-            // ([_-])?(left|right|a|b|l|r){1}(\d*)(\%?)(\d*)(ms|s)?(\+?)
+            // ([_-])?(left|right|a){1}(\d*)(\%?)(\d*)(ms|s)?(\+?)
             //Replace "left", "right", etc. with all the inputs for the console
             //Group 1 = zero or one of '_' or '-' for hold and subtract, respectively
             //Group 2 = the input - exactly one
@@ -443,7 +474,7 @@ namespace TRBot
                     input.release = true;
             }
 
-            if (regexMatch.Groups[2].Success == false)
+            if (regexMatch.Groups[2].Success == false || string.IsNullOrEmpty(regexMatch.Groups[2].Value) == true)
             {
                 input.error = "ERR_NO_INPUT";
                 return input;
@@ -452,7 +483,7 @@ namespace TRBot
             input.name = regexMatch.Groups[2].Value;
 
             bool hasPercent = false;
-            int firstNumber = 0;
+            int firstNumber = -1;
 
             //Check the first number, which will either be a duration or percentage
             //First number succeeded
@@ -490,9 +521,15 @@ namespace TRBot
             {
                 input.duration_type = regexMatch.Groups[6].Value;
 
-                //If there's no percentage, use the number as the duration
+                //If there's no percentage, use the number as the duration if it's valid
                 if (hasPercent == false)
                 {
+                    if (firstNumber < 0)
+                    {
+                        input.error = "ERR_NO_DURATION";
+                        return input;
+                    }
+
                     input.duration = firstNumber;
                 }
                 //Check for the second duration
@@ -533,6 +570,7 @@ namespace TRBot
 
         //Returns list containing: [Valid, input_sequence]
         //Or: [Invalid, input that it failed on]
+        [Obsolete("Use ParseInputs instead for better type safety and greatly improved performance and readability.", true)]
         public static (bool, List<List<Input>>, bool, int) Parse(string message)
         {
             bool contains_start_input = false;
@@ -654,14 +692,14 @@ namespace TRBot
         /// </summary>
         public struct InputSequence
         {
-            public bool IsValid;
+            public InputValidationTypes InputValidationType;
             public List<List<Input>> Inputs;
             public int TotalDuration;
             public string Error;
 
-            public InputSequence(in bool isValid, List<List<Input>> inputs, in int totalDuration, string error)
+            public InputSequence(in InputValidationTypes inputValidationType, List<List<Input>> inputs, in int totalDuration, string error)
             {
-                IsValid = isValid;
+                InputValidationType = inputValidationType;
                 Inputs = inputs;
                 TotalDuration = totalDuration;
                 Error = error;
@@ -670,7 +708,7 @@ namespace TRBot
             public override string ToString()
             {
                 int inputCount = (Inputs == null) ? 0 : Inputs.Count;
-                return $"Valid:{IsValid} | SubInputs:{inputCount} | Duration:{TotalDuration} | Err:{Error}";
+                return $"VType:{InputValidationType} | SubInputs:{inputCount} | Duration:{TotalDuration} | Err:{Error}";
             }
         }
     }

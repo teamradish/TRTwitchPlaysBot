@@ -28,6 +28,8 @@ namespace TRBot
         /// </summary>
         public abstract Dictionary<string, uint> ButtonInputMap { get; protected set; }
 
+        public string InputRegex { get; private set; } = string.Empty;
+
         #endregion
 
         #region Abstract Methods
@@ -93,6 +95,30 @@ namespace TRBot
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsWait(in Parser.Input input) => (input.name == "#" || input.name == ".");
 
+        public void Initialize()
+        {
+            //Set up the regex for the console
+            StringBuilder sb = new StringBuilder(Parser.ParseRegexStart.Length + Parser.ParseRegexEnd.Length);
+
+            sb.Append(Parser.ParseRegexStart);
+            for (int i = 0; i < ValidInputs.Length; i++)
+            {
+                sb.Append(System.Text.RegularExpressions.Regex.Escape(ValidInputs[i]));
+                if (i != (ValidInputs.Length - 1))
+                {
+                    sb.Append('|');
+                }
+            }
+            sb.Append(Parser.ParseRegexEnd);
+
+            InputRegex = sb.ToString();
+        }
+
         #endregion
+
+        public ConsoleBase()
+        {
+            Initialize();
+        }
     }
 }

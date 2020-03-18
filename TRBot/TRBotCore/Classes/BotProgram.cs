@@ -358,33 +358,34 @@ namespace TRBot
                     return;
                 }
 
-                (bool valid, List<List<Parser.Input>> inputList, bool containsStartInput, int durationCounter)
-                        parsedData = default;
+                Parser.InputSequence inputSequence = default;
 
                 try
                 {
                     string parse_message = Parser.Expandify(Parser.PopulateMacros(e.ChatMessage.Message));
 
-                    //Parser.ParseInputs(parse_message);
-
-                    parsedData = Parser.Parse(parse_message);
+                    inputSequence = Parser.ParseInputs(parse_message);
+                    //Console.WriteLine(inputSequence.ToString());
                 }
                 catch
                 {
-                    //Kimimaru: Sanitize parsing exceptions for now
+                    //Kimimaru: Sanitize parsing exceptions
                     //Most of these are currently caused by differences in how C# and Python handle slicing strings (Substring() vs string[:])
                     //One example that throws this that shouldn't is "#mash(w234"
                     //BotProgram.QueueMessage($"ERROR: {exception.Message}");
-                    parsedData.valid = false;
+                    inputSequence.InputValidationType = Parser.InputValidationTypes.Invalid;
                 }
 
-                if (parsedData.valid == false)
+                //Check for non-valid messages
+                if (inputSequence.InputValidationType != Parser.InputValidationTypes.Valid)
                 {
-                    //Kimimaru: Currently this also shows this for any message - keep commented until we find a better way to differentiate them
-                    //Parser.Input input = parsedData.inputList[0][0];
-                    //if (string.IsNullOrEmpty(input.error) == false)
-                    //    BotProgram.QueueMessage($"Invalid input: {input.error}");
+                    //Display error message for invalid inputs
+                    if (inputSequence.InputValidationType == Parser.InputValidationTypes.Invalid)
+                    {
+                        BotProgram.QueueMessage(inputSequence.Error);
+                    }
                 }
+                //It's a valid message, so process it
                 else
                 {
                     //Ignore if user is silenced
@@ -393,14 +394,14 @@ namespace TRBot
                         return;
                     }
 
-                    if (InputGlobals.IsValidPauseInputDuration(parsedData.inputList, "start", BotData.MaxPauseHoldDuration) == false)
+                    if (InputGlobals.IsValidPauseInputDuration(inputSequence.Inputs, "start", BotData.MaxPauseHoldDuration) == false)
                     {
                         BotProgram.QueueMessage($"Invalid input: Pause button held for longer than the max duration of {BotData.MaxPauseHoldDuration} milliseconds!");
                         return;
                     }
 
                     //Check if the user has permission to perform all the inputs they attempted
-                    ParserPostProcess.InputValidation inputValidation = ParserPostProcess.CheckInputPermissions(userData.Level, parsedData.inputList, BotData.InputAccess.InputAccessDict);
+                    ParserPostProcess.InputValidation inputValidation = ParserPostProcess.CheckInputPermissions(userData.Level, inputSequence.Inputs, BotData.InputAccess.InputAccessDict);
 
                     //If the input isn't valid, exit
                     if (inputValidation.IsValid == false)
@@ -439,7 +440,7 @@ namespace TRBot
                         //We're okay to perform the input
                         if (shouldPerformInput == true)
                         {
-                            InputHandler.CarryOutInput(parsedData.inputList, controllerNum);
+                            InputHandler.CarryOutInput(inputSequence.Inputs, controllerNum);
 
                             //If auto whitelist is enabled, the user reached the whitelist message threshold,
                             //the user isn't whitelisted, and the user hasn't ever been whitelisted, whitelist them
@@ -462,21 +463,6 @@ namespace TRBot
                     {
                         QueueMessage("New inputs cannot be processed until all other inputs have stopped.");
                     }
-
-                    //Debug info
-                    //BotProgram.QueueMessage("Valid input!");
-                    //string thing = "Valid input(s): ";
-                    //
-                    //for (int i = 0; i < parsedData.inputList.Count; i++)
-                    //{
-                    //    for (int j = 0; j < parsedData.inputList[i].Count; j++)
-                    //    {
-                    //        Parser.Input thing2 = parsedData.inputList[i][j];
-                    //
-                    //        thing += thing2.ToString() + "\n";
-                    //    }
-                    //}
-                    //Console.WriteLine(thing);
                 }
             }
 

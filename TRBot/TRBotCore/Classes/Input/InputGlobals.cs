@@ -84,6 +84,11 @@ namespace TRBot
         public static string[] ValidInputs => CurrentConsole.ValidInputs;
 
         /// <summary>
+        /// Returns the input regex string for the current console.
+        /// </summary>
+        public static string ValidInputRegexStr => CurrentConsole.InputRegex;
+
+        /// <summary>
         /// Retrieves the valid input names for a given console.
         /// </summary>
         /// <param name="console">The console to retrieve inputs for.</param>
