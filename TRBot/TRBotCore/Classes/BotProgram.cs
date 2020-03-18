@@ -365,6 +365,8 @@ namespace TRBot
                 {
                     string parse_message = Parser.Expandify(Parser.PopulateMacros(e.ChatMessage.Message));
 
+                    //Parser.ParseInputs(parse_message);
+
                     parsedData = Parser.Parse(parse_message);
                 }
                 catch

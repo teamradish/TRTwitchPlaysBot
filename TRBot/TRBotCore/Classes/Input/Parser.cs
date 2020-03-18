@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace TRBot
 {
@@ -54,6 +55,7 @@ namespace TRBot
                 message = start + str + end;
                 m = Regex.Match(message, regex, RegexOptions.Compiled);
             }
+
             return message;
         }
 
@@ -300,21 +302,23 @@ namespace TRBot
         }
 
         //NOTE: TEST METHOD FOR NEW PARSING - DO NOT USE YET
-        public static void ParseInputs(string message)
+        public static InputSequence ParseInputs(string message)
         {
-            bool validInput = true;
+            Stopwatch sw = Stopwatch.StartNew();
 
             message = message.Replace(" ", string.Empty).ToLower();
             message = PopulateSynonyms(message);
 
             //Full Regex:
-            // ([_-])?(left|right|a|b|l|r){1}(\d*)(ms|s)?
+            // ([_-])?(left|right|a|b|l|r){1}(\d*)(\%?)(\d*)(ms|s)?(\+?)
             //Replace "left", "right", etc. with all the inputs for the console
-
             //Group 1 = zero or one of '_' or '-' for hold and subtract, respectively
             //Group 2 = the input - exactly one
-            //Group 3 = the number for duration
-            //Group 4 = ms or s - the duration type
+            //Group 3 = the number for percentage
+            //Group 4 = the percentage symbol
+            //Group 5 = the number for duration
+            //Group 6 = ms or s - the duration type
+            //Group 7 = + sign for performing inputs simultaneously
 
             string regex = "([_-])?(";
             for (int i = 0; i < InputGlobals.ValidInputs.Length; i++)
@@ -326,21 +330,205 @@ namespace TRBot
                 else regex += "|";
             }
 
-            regex += @"{1}(\d*)(ms|s)?";
+            regex += @"{1}(\d*)(\%?)(\d*)(ms|s)?(\+?)";
 
             //Console.WriteLine(regex);
 
             //New method: Get ALL the matches at once and parse them as we go, instead of matching each time and parsing
 
             MatchCollection matches = Regex.Matches(message, regex, RegexOptions.IgnoreCase);
-            //Console.WriteLine(matches.Count);
 
-            foreach (Match m in matches)
+            //No matches, so invalid input
+            if (matches.Count <= 0)
             {
-                Console.WriteLine($"Name: {m.Index}");
+                return new InputSequence(false, null, 0, "ERR_NO_INPUTS");
             }
 
-            //Console.WriteLine($"Valid input: {validInput}");
+            //Set up the input sequence
+            InputSequence inputSequence = new InputSequence(true, new List<List<Input>>(matches.Count), 0, string.Empty);
+
+            //Store the previous index - if there's anything in between that's not picked up by the regex, it's an invalid input
+            int prevIndex = 0;
+            bool hasPlus = false;
+            int maxSubDuration = 0;
+            int totalDuration = 0;
+
+            List<Input> simultaneousInputs = new List<Input>(4);
+
+            for (int i = 0; i < matches.Count; i++)
+            {
+                Match m = matches[i];
+                Input input = GetInputFast(m, ref prevIndex, ref hasPlus);
+
+                //Console.WriteLine(input.ToString());
+
+                if (string.IsNullOrEmpty(input.error) == false)
+                {
+                    inputSequence.IsValid = false;
+                    inputSequence.Error = input.error;
+
+                    Console.WriteLine("Broke for invalid input");
+                    break;
+                }
+
+                //Check for the max sub-duration (Ex. "a300ms+b500ms" should be 500ms)
+                if (input.duration > maxSubDuration)
+                {
+                    maxSubDuration = input.duration;
+                }
+
+                simultaneousInputs.Add(input);
+
+                //There's a plus at the very end of the input sequence, which is invalid
+                if (hasPlus == true && i == (matches.Count - 1))
+                {
+                    inputSequence.IsValid = false;
+                    inputSequence.Error = "ERR_PLUS_AT_END";
+                    break;
+                }
+
+                //If there's no plus, add all current simultaneous inputs to the final input list and start over
+                if (hasPlus == false)
+                {
+                    inputSequence.Inputs.Add(simultaneousInputs);
+                    simultaneousInputs = new List<Input>(4);
+
+                    totalDuration += maxSubDuration;
+                    maxSubDuration = 0;
+
+                    if (totalDuration > BotProgram.BotData.MaxInputDuration)
+                    {
+                        inputSequence.IsValid = false;
+                        inputSequence.Error = "ERR_MAX_DURATION";
+                        break;
+                    }
+                }
+            }
+
+            sw.Stop();
+            Console.WriteLine($"SW MS: {sw.ElapsedMilliseconds}");
+
+            Console.WriteLine(inputSequence.ToString());
+
+            return inputSequence;
+        }
+
+        private static Input GetInputFast(Match regexMatch, ref int prevIndex, ref bool hasPlus)
+        {
+            //Full Regex:
+            // ([_-])?(left|right|a|b|l|r){1}(\d*)(\%?)(\d*)(ms|s)?(\+?)
+            //Replace "left", "right", etc. with all the inputs for the console
+            //Group 1 = zero or one of '_' or '-' for hold and subtract, respectively
+            //Group 2 = the input - exactly one
+            //Group 3 = the number for percentage
+            //Group 4 = the percentage symbol
+            //Group 5 = the number for duration
+            //Group 6 = ms or s - the duration type
+            //Group 7 = + sign for performing inputs simultaneously
+
+            Input input = Input.Default;
+
+            //Check the top level success - if no matches at all or there's a gap, this isn't a valid input
+            if (regexMatch.Success == false || regexMatch.Index != prevIndex)
+            {
+                input.error = "ERR_INVALID_INPUT";
+                return input;
+            }
+
+            if (regexMatch.Groups[1].Success == true)
+            {
+                if (regexMatch.Groups[1].Value == "_")
+                    input.hold = true;
+                else if (regexMatch.Groups[1].Value == "-")
+                    input.release = true;
+            }
+
+            if (regexMatch.Groups[2].Success == false)
+            {
+                input.error = "ERR_NO_INPUT";
+                return input;
+            }
+
+            input.name = regexMatch.Groups[2].Value;
+
+            bool hasPercent = false;
+            int firstNumber = 0;
+
+            //Check the first number, which will either be a duration or percentage
+            //First number succeeded
+            if (regexMatch.Groups[3].Success == true && string.IsNullOrEmpty(regexMatch.Groups[3].Value) == false)
+            {
+                if (int.TryParse(regexMatch.Groups[3].Value, out firstNumber) == false)
+                {
+                    input.error = "ERR_INVALID_PERCENTAGE";
+                    return input;
+                }
+
+                //Has the percent sign matched? If so, this is a percentage
+                if (regexMatch.Groups[4].Success == true && string.IsNullOrEmpty(regexMatch.Groups[4].Value) == false)
+                {
+                    //The percentage can't be less than 0 or greater than 100
+                    if (firstNumber < 0 || firstNumber > 100)
+                    {
+                        input.error = "ERR_INVALID_PERCENTAGE";
+                        return input;
+                    }
+
+                    input.percent = firstNumber;
+                    hasPercent = true;
+                }
+            }
+            //A percentage sign without a number is invalid
+            else if (regexMatch.Groups[4].Success == true && string.IsNullOrEmpty(regexMatch.Groups[4].Value) == false)
+            {
+                input.error = "ERR_NO_PERCENTAGE";
+                return input;
+            }
+
+            //Check duration type
+            if (regexMatch.Groups[6].Success == true && string.IsNullOrEmpty(regexMatch.Groups[6].Value) == false)
+            {
+                input.duration_type = regexMatch.Groups[6].Value;
+
+                //If there's no percentage, use the number as the duration
+                if (hasPercent == false)
+                {
+                    input.duration = firstNumber;
+                }
+                //Check for the second duration
+                else
+                {
+                    int secondNumber = 0;
+                    //There is a percentage and a duration type, but no valid second number - invalid
+                    if (regexMatch.Groups[5].Success == false || string.IsNullOrEmpty(regexMatch.Groups[5].Value) == true
+                        || int.TryParse(regexMatch.Groups[5].Value, out secondNumber) == false)
+                    {
+                        input.error = "ERR_NO_DURATION";
+                        return input;
+                    }
+                    else
+                    {
+                        input.duration = secondNumber;
+                    }
+                }
+
+                if (input.duration_type == "s") input.duration *= 1000;
+            }
+            //A duration without either a percentage or duration type is invalid
+            else if (hasPercent == false &&
+                ((regexMatch.Groups[3].Success == true && string.IsNullOrEmpty(regexMatch.Groups[3].Value) == false)
+                  || (regexMatch.Groups[5].Success == true && string.IsNullOrEmpty(regexMatch.Groups[5].Value) == false)))
+            {
+                input.error = "ERR_NO_PERCENTAGE_OR_DUR_TYPE";
+                return input;
+            }
+
+            //Check for a plus sign to perform the next input simultaneously
+            hasPlus = (regexMatch.Groups[7].Success == true && string.IsNullOrEmpty(regexMatch.Groups[7].Value) == false);
+
+            prevIndex = regexMatch.Index + regexMatch.Length;
+
+            return input;
         }
 
         //Returns list containing: [Valid, input_sequence]
@@ -354,6 +542,8 @@ namespace TRBot
             int duration_counter = 0;
 
             message = PopulateSynonyms(message);
+
+            //System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
 
             while (message.Length > 0)
             {
@@ -411,6 +601,9 @@ namespace TRBot
                 input_sequence.Add(input_subsequence);
             }
 
+            //sw.Stop();
+            //Console.WriteLine($"Elapsed: {sw.ElapsedMilliseconds}");
+
             return (true, input_sequence, contains_start_input, duration_counter);
         }
 
@@ -453,6 +646,31 @@ namespace TRBot
             public override string ToString()
             {
                 return $"\"{name}\" {duration}{duration_type} | H:{hold} | R:{release} | P:{percent} | Err:{error}";
+            }
+        }
+
+        /// <summary>
+        /// Represents a fully parsed input sequence.
+        /// </summary>
+        public struct InputSequence
+        {
+            public bool IsValid;
+            public List<List<Input>> Inputs;
+            public int TotalDuration;
+            public string Error;
+
+            public InputSequence(in bool isValid, List<List<Input>> inputs, in int totalDuration, string error)
+            {
+                IsValid = isValid;
+                Inputs = inputs;
+                TotalDuration = totalDuration;
+                Error = error;
+            }
+
+            public override string ToString()
+            {
+                int inputCount = (Inputs == null) ? 0 : Inputs.Count;
+                return $"Valid:{IsValid} | SubInputs:{inputCount} | Duration:{TotalDuration} | Err:{Error}";
             }
         }
     }
