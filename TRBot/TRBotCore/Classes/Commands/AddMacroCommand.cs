@@ -73,76 +73,104 @@ namespace TRBot
             {
                 isDynamic = true;
 
+                //Dynamic macros can't be fully verified until we do some brute forcing
+                //An example is: "a500ms [b .]*<0>"
+                //The <0> should be a number, so if we use a valid input it won't work
+                //The brute force approach would check with all possible combinations of the first input (Ex. "a") and a number
+                //If any are valid, it's a valid dynamic macro
+
                 //NOTE: We need to verify that the dynamic macro takes the form of "#macroname(*,*)"
                 //It needs to have an open parenthesis followed by a number of asterisks separated by commas, then ending with a closed parenthesis
-                string parseMsg = string.Empty;
+                //string parseMsg = string.Empty;
+                //try
+                //{
+                //    parseMsg = Parser.Expandify(Parser.PopulateMacros(parsedVal));
+                //}
+                //catch (Exception exception)
+                //{
+                //    BotProgram.QueueMessage("Invalid dynamic macro. Ensure that variables are listed in order (Ex. (*,*,...) = <0>, <1>,...)");
+                //    Console.WriteLine(exception.Message);
+                //    return;
+                //}
+                //
+                //MatchCollection matches = Regex.Matches(parseMsg, @"<[0-9]+>", RegexOptions.Compiled);
+                //
+                ////Kimimaru: Replace all variables with a valid input to verify its validity
+                ////Any input will do, so just grab the first one
+                //string input = InputGlobals.ValidInputs[0];
+                //
+                //for (int i = 0; i < matches.Count; i++)
+                //{
+                //    Match match = matches[i];
+                //
+                //    parsedVal = parsedVal.Replace(match.Value, input);
+                //}
+            }
+
+            //Validate input if not dynamic
+            if (isDynamic == false)
+            {
                 try
                 {
-                    parseMsg = Parser.Expandify(Parser.PopulateMacros(parsedVal));
+                    string parse_message = Parser.Expandify(Parser.PopulateMacros(parsedVal));
+
+                    var val = Parser.Parse(parse_message);
+
+                    if (val.Item1 == false)
+                    {
+                        BotProgram.QueueMessage("Invalid macro.");
+                        return;
+                    }
                 }
-                catch (Exception exception)
+                catch
                 {
-                    BotProgram.QueueMessage("Invalid dynamic macro. Ensure that variables are listed in order (Ex. (*,*,...) = <0>, <1>,...)");
-                    Console.WriteLine(exception.Message);
+                    BotProgram.QueueMessage("Invalid macro.");
                     return;
                 }
-
-                MatchCollection matches = Regex.Matches(parseMsg, @"<[0-9]+>", RegexOptions.Compiled);
-
-                //Kimimaru: Replace all variables with a valid input to verify its validity
-                //Any input will do, so just grab the first one
-                string input = InputGlobals.ValidInputs[0];
-
-                for (int i = 0; i < matches.Count; i++)
-                {
-                    Match match = matches[i];
-
-                    parsedVal = parsedVal.Replace(match.Value, input);
-                }
             }
 
-            Parser.InputSequence inputSequence = default;
+            //Parser.InputSequence inputSequence = default;
+            //
+            //try
+            //{
+            //    //Parse the macro to check for valid input
+            //    string parse_message = Parser.Expandify(Parser.PopulateMacros(parsedVal));
+            //
+            //    inputSequence = Parser.ParseInputs(parse_message);
+            //}
+            //catch
+            //{
+            //    if (isDynamic == false)
+            //    {
+            //        BotProgram.QueueMessage("Invalid macro.");
+            //    }
+            //    else
+            //    {
+            //        BotProgram.QueueMessage("Invalid dynamic macro. Ensure that variables are listed in order (Ex. (*,*,...) = <0>, <1>,...)");
+            //    }
+            //    return;
+            //}
 
-            try
-            {
-                //Parse the macro to check for valid input
-                string parse_message = Parser.Expandify(Parser.PopulateMacros(parsedVal));
-
-                inputSequence = Parser.ParseInputs(parse_message);
-            }
-            catch
-            {
-                if (isDynamic == false)
-                {
-                    BotProgram.QueueMessage("Invalid macro.");
-                }
-                else
-                {
-                    BotProgram.QueueMessage("Invalid dynamic macro. Ensure that variables are listed in order (Ex. (*,*,...) = <0>, <1>,...)");
-                }
-                return;
-            }
-
-            if (inputSequence.InputValidationType != Parser.InputValidationTypes.Valid)
-            {
-                if (isDynamic == false)
-                {
-                    BotProgram.QueueMessage("Invalid macro.");
-                }
-                else
-                {
-                    BotProgram.QueueMessage("Invalid dynamic macro. Ensure that variables are listed in order (Ex. (*,*,...) = <0>, <1>,...)");
-                }
-            }
-            else
-            {
+            //if (inputSequence.InputValidationType != Parser.InputValidationTypes.Valid)
+            //{
+            //    if (isDynamic == false)
+            //    {
+            //        BotProgram.QueueMessage("Invalid macro.");
+            //    }
+            //    else
+            //    {
+            //        BotProgram.QueueMessage("Invalid dynamic macro. Ensure that variables are listed in order (Ex. (*,*,...) = <0>, <1>,...)");
+            //    }
+            //}
+            //else
+            //{
                 string message = string.Empty;
 
                 if (BotProgram.BotData.Macros.ContainsKey(macroName) == false)
                 {
                     if (isDynamic == false)
                         message = $"Added macro {macroName}!";
-                    else message = $"Added dynamic macro {macroName}!";
+                    else message = $"Added dynamic macro {macroName}! Dynamic macros can't be validated beforehand, so verify it works manually.";
                     
                     AddMacroToParserList(macroName);
                 }
@@ -150,14 +178,14 @@ namespace TRBot
                 {
                     if (isDynamic == false)
                         message = $"Updated macro {macroName}!";
-                    else message = $"Updated dynamic macro {macroName}!";
+                    else message = $"Updated dynamic macro {macroName}! Dynamic macros can't be validated beforehand, so verify it works manually.";
                 }
 
                 BotProgram.BotData.Macros[macroName] = macroVal;
                 BotProgram.SaveBotData();
 
                 BotProgram.QueueMessage(message);
-            }
+            //}
         }
 
         private void AddMacroToParserList(string macroName)

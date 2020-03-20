@@ -206,7 +206,7 @@ namespace TRBot
         }
 
         //Returns Input object
-        [Obsolete("Use GetInputFast with ParseInputs for greatly improved performance and readability.", true)]
+        //[Obsolete("Use GetInputFast with ParseInputs for greatly improved performance and readability.", true)]
         private static Input GetInput(string message)
         {
             //Create a default input instance
@@ -572,7 +572,7 @@ namespace TRBot
 
         //Returns list containing: [Valid, input_sequence]
         //Or: [Invalid, input that it failed on]
-        [Obsolete("Use ParseInputs instead for better type safety and greatly improved performance and readability.", true)]
+        //[Obsolete("Use ParseInputs instead for better type safety and greatly improved performance and readability.", true)]
         public static (bool, List<List<Input>>, bool, int) Parse(string message)
         {
             bool contains_start_input = false;
