@@ -138,7 +138,9 @@ namespace TRBot
                     int end = 0;
 
                     //Look through the parser macro list for performance
-                    if (BotProgram.BotData.ParserMacroLookup.TryGetValue(macro_name_generic[1], out List<string> macroList) == true)
+                    //Handle no macro (Ex. "#" alone)
+                    if (macro_name_generic.Length > 1
+                        && BotProgram.BotData.ParserMacroLookup.TryGetValue(macro_name_generic[1], out List<string> macroList) == true)
                     {
                         for (int i = 0; i < macroList.Count; i++)
                         {

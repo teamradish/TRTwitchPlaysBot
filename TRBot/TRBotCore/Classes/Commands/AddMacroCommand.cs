@@ -80,9 +80,10 @@ namespace TRBot
                 {
                     parseMsg = Parser.Expandify(Parser.PopulateMacros(parsedVal));
                 }
-                catch
+                catch (Exception exception)
                 {
                     BotProgram.QueueMessage("Invalid dynamic macro. Ensure that variables are listed in order (Ex. (*,*,...) = <0>, <1>,...)");
+                    Console.WriteLine(exception.Message);
                     return;
                 }
 
