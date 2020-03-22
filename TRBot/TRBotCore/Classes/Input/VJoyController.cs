@@ -49,12 +49,6 @@ namespace TRBot
         public static VJoyController[] Joysticks { get; private set; } = null;
 
         /// <summary>
-        /// Holds the button states for the controller, updated by the bot. true means pressed, and false means released.
-        /// </summary>
-        //Kimimaru: I'm not sure if we need this. vJoy knows when a button is pressed, and pushing a button that's already pressed shouldn't do anything.
-        public readonly Dictionary<string, bool> ButtonStates = new Dictionary<string, bool>();
-
-        /// <summary>
         /// The ID of the controller.
         /// </summary>
         public uint ControllerID { get; private set; } = 0;
@@ -113,13 +107,6 @@ namespace TRBot
         {
             if (Initialized == false)
                 return;
-
-            string[] keys = new string[ButtonStates.Keys.Count];
-            ButtonStates.Keys.CopyTo(keys, 0);
-            for (int i = 0; i < keys.Length; i++)
-            {
-                ButtonStates[keys[i]] = false;
-            }
 
             if (InputFeedMethod == DeviceFeedMethod.Robust)
             {
@@ -280,10 +267,6 @@ namespace TRBot
 
         public void PressButton(in string buttonName)
         {
-            if (ButtonStates[buttonName] == true) return;
-
-            ButtonStates[buttonName] = true;
-
             uint buttonVal = InputGlobals.CurrentConsole.ButtonInputMap[buttonName];
 
             if (InputFeedMethod == DeviceFeedMethod.Robust)
@@ -312,10 +295,6 @@ namespace TRBot
 
         public void ReleaseButton(in string buttonName)
         {
-            if (ButtonStates[buttonName] == false) return;
-
-            ButtonStates[buttonName] = false;
-
             uint buttonVal = InputGlobals.CurrentConsole.ButtonInputMap[buttonName];
 
             if (InputFeedMethod == DeviceFeedMethod.Robust)
@@ -344,28 +323,6 @@ namespace TRBot
 
         public void SetButtons(in InputGlobals.InputConsoles console)
         {
-            ButtonStates.Clear();
-
-            string[] inputs = InputGlobals.GetValidInputs(console);
-            for (int i = 0; i < inputs.Length; i++)
-            {
-                ButtonStates.Add(inputs[i], false);
-            }
-
-            //Add savestates if they're not explicitly defined so !savestate and !loadstate commands can work
-            ButtonStates["savestate1"] = false;
-            ButtonStates["savestate2"] = false;
-            ButtonStates["savestate3"] = false;
-            ButtonStates["savestate4"] = false;
-            ButtonStates["savestate5"] = false;
-            ButtonStates["savestate6"] = false;
-            ButtonStates["loadstate1"] = false;
-            ButtonStates["loadstate2"] = false;
-            ButtonStates["loadstate3"] = false;
-            ButtonStates["loadstate4"] = false;
-            ButtonStates["loadstate5"] = false;
-            ButtonStates["loadstate6"] = false;
-
             //Console.WriteLine($"Set controller {ControllerID} buttons to {console}");
 
             //Reset the controller when we set buttons
