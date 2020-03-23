@@ -37,21 +37,21 @@ namespace TRBot
             "loadstate1", "loadstate2", "loadstate3", "loadstate4", "loadstate5", "loadstate6", "ls1", "ls2", "ls3", "ls4", "ls5", "ls6",
             "#", "."
         };
-
+        
         public override Dictionary<string, int> InputAxes { get; protected set; } = new Dictionary<string, int>()
         {
-            { "left", (int)HID_USAGES.HID_USAGE_X },
-            { "right", (int)HID_USAGES.HID_USAGE_X },
-            { "up", (int)HID_USAGES.HID_USAGE_Y },
-            { "down", (int)HID_USAGES.HID_USAGE_Y },
-            { "tleft", (int)HID_USAGES.HID_USAGE_RX },
-            { "tright", (int)HID_USAGES.HID_USAGE_RX },
-            { "tforward", (int)HID_USAGES.HID_USAGE_RY },
-            { "tback", (int)HID_USAGES.HID_USAGE_RY },
-            { "pleft", (int)HID_USAGES.HID_USAGE_RZ },
-            { "pright", (int)HID_USAGES.HID_USAGE_RZ },
-            { "pup", (int)HID_USAGES.HID_USAGE_Z },
-            { "pdown", (int)HID_USAGES.HID_USAGE_Z }
+            { "left",       (int)GlobalAxisVals.AXIS_X },
+            { "right",      (int)GlobalAxisVals.AXIS_X },
+            { "up",         (int)GlobalAxisVals.AXIS_Y },
+            { "down",       (int)GlobalAxisVals.AXIS_Y },
+            { "tleft",      (int)GlobalAxisVals.AXIS_RX },
+            { "tright",     (int)GlobalAxisVals.AXIS_RX },
+            { "tforward",   (int)GlobalAxisVals.AXIS_RY },
+            { "tback",      (int)GlobalAxisVals.AXIS_RY },
+            { "pleft",      (int)GlobalAxisVals.AXIS_RZ },
+            { "pright",     (int)GlobalAxisVals.AXIS_RZ },
+            { "pup",        (int)GlobalAxisVals.AXIS_Z },
+            { "pdown",      (int)GlobalAxisVals.AXIS_Z }
         };
 
         //Kimimaru: NOTE - Though vJoy supports up to 128 buttons, Dolphin supports only 32 max
@@ -59,38 +59,38 @@ namespace TRBot
         //and change the input map based on the input scheme
         //We might have to make some sacrifices, such as fewer savestates or disallowing use of the D-pad if a Nunchuk is being used
         public override Dictionary<string, uint> ButtonInputMap { get; protected set; } = new Dictionary<string, uint>() {
-            { "left", 1 }, { "c", 1 },
-            { "right", 2 }, { "z", 2 },
-            { "up", 3 }, { "tleft", 3 },
-            { "down", 4 }, { "tright", 4 },
-            { "a", 5 },
-            { "b", 6 },
-            { "one", 7 },
-            { "two", 8 },
-            { "minus", 9 },
-            { "plus", 10 },
-            { "pleft", 11 },
-            { "pright", 12 },
-            { "pup", 13 },
-            { "pdown", 14 },
-            { "dleft", 15 },
-            { "dright", 16 },
-            { "dup", 17 },
-            { "ddown", 18 },
-            { "savestate1", 19 }, { "ss1", 19 }, { "tforward", 19 },
-            { "savestate2", 20 }, { "ss2", 20 }, { "tback", 20 },
-            { "savestate3", 21 }, { "ss3", 21 },
-            { "savestate4", 22 }, { "ss4", 22 },
-            { "savestate5", 23 }, { "ss5", 23 },
-            { "savestate6", 24 }, { "ss6", 24 },
-            { "loadstate1", 25 }, { "ls1", 25 },
-            { "loadstate2", 26 }, { "ls2", 26 },
-            { "loadstate3", 27 }, { "ls3", 27 },
-            { "loadstate4", 28 }, { "ls4", 28 },
-            { "loadstate5", 29 }, { "ls5", 29 },
-            { "loadstate6", 30 }, { "ls6", 30 },
-            { "shake", 31 },
-            { "point", 32 }
+            { "left",       (int)GlobalButtonVals.BTN1 }, { "c",        (int)GlobalButtonVals.BTN1 },
+            { "right",      (int)GlobalButtonVals.BTN2 }, { "z",        (int)GlobalButtonVals.BTN2 },
+            { "up",         (int)GlobalButtonVals.BTN3 }, { "tleft",    (int)GlobalButtonVals.BTN3 },
+            { "down",       (int)GlobalButtonVals.BTN4 }, { "tright",   (int)GlobalButtonVals.BTN4 },
+            { "a",          (int)GlobalButtonVals.BTN5 },
+            { "b",          (int)GlobalButtonVals.BTN6 },
+            { "one",        (int)GlobalButtonVals.BTN7 },
+            { "two",        (int)GlobalButtonVals.BTN8 },
+            { "minus",      (int)GlobalButtonVals.BTN9 },
+            { "plus",       (int)GlobalButtonVals.BTN10 },
+            { "pleft",      (int)GlobalButtonVals.BTN11 },
+            { "pright",     (int)GlobalButtonVals.BTN12 },
+            { "pup",        (int)GlobalButtonVals.BTN13 },
+            { "pdown",      (int)GlobalButtonVals.BTN14 },
+            { "dleft",      (int)GlobalButtonVals.BTN15 },
+            { "dright",     (int)GlobalButtonVals.BTN16 },
+            { "dup",        (int)GlobalButtonVals.BTN17 },
+            { "ddown",      (int)GlobalButtonVals.BTN18 },
+            { "savestate1", (int)GlobalButtonVals.BTN19 }, { "ss1",     (int)GlobalButtonVals.BTN19 }, { "tforward",    (int)GlobalButtonVals.BTN19 },
+            { "savestate2", (int)GlobalButtonVals.BTN20 }, { "ss2",     (int)GlobalButtonVals.BTN20 }, { "tback",       (int)GlobalButtonVals.BTN20 },
+            { "savestate3", (int)GlobalButtonVals.BTN21 }, { "ss3",     (int)GlobalButtonVals.BTN21 },
+            { "savestate4", (int)GlobalButtonVals.BTN22 }, { "ss4",     (int)GlobalButtonVals.BTN22 },
+            { "savestate5", (int)GlobalButtonVals.BTN23 }, { "ss5",     (int)GlobalButtonVals.BTN23 },
+            { "savestate6", (int)GlobalButtonVals.BTN24 }, { "ss6",     (int)GlobalButtonVals.BTN24 },
+            { "loadstate1", (int)GlobalButtonVals.BTN25 }, { "ls1",     (int)GlobalButtonVals.BTN25 },
+            { "loadstate2", (int)GlobalButtonVals.BTN26 }, { "ls2",     (int)GlobalButtonVals.BTN26 },
+            { "loadstate3", (int)GlobalButtonVals.BTN27 }, { "ls3",     (int)GlobalButtonVals.BTN27 },
+            { "loadstate4", (int)GlobalButtonVals.BTN28 }, { "ls4",     (int)GlobalButtonVals.BTN28 },
+            { "loadstate5", (int)GlobalButtonVals.BTN29 }, { "ls5",     (int)GlobalButtonVals.BTN29 },
+            { "loadstate6", (int)GlobalButtonVals.BTN30 }, { "ls6",     (int)GlobalButtonVals.BTN30 },
+            { "shake",      (int)GlobalButtonVals.BTN31 },
+            { "point",      (int)GlobalButtonVals.BTN32 }
         };
         
         public override void HandleArgsOnConsoleChange(List<string> arguments)

@@ -11,8 +11,14 @@
 #define MAX_CONTROLLERS 16
 #define INVALID_CONTROLLER -1
 
+#define MIN_AXIS_VAL -32767
+#define MAX_AXIS_VAL 32767
+
 int GetMinControllers();
 int GetMaxControllers();
+
+int GetMinAxisVal();
+int GetMaxAxisVal();
 
 int Emit(int fd, int eventType, int eventCode, int eventValue);
 

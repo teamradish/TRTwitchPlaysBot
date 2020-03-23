@@ -10,6 +10,16 @@ int GetMaxControllers()
     return MAX_CONTROLLERS;
 }
 
+int GetMinAxisVal()
+{
+    return MIN_AXIS_VAL;
+}
+
+int GetMaxAxisVal()
+{
+    return MAX_AXIS_VAL;
+}
+
 int Emit(int fd, int eventType, int eventCode, int eventValue)
 {
     struct input_event ie;
@@ -175,116 +185,116 @@ void CloseController(int fd)
     close(fd);
 }
 
-int main(int argc, char* argv[])
-{
-    int NumControllers = 1;
-    if (argc > 1)
-    {
-        NumControllers = atoi(argv[1]);
-    }
-
-    if (NumControllers < MIN_CONTROLLERS)
-    {
-        NumControllers = MIN_CONTROLLERS;
-        printf("Specified less than the min count of %d. Increasing to it\n", MIN_CONTROLLERS);
-    }
-    else if (NumControllers > MAX_CONTROLLERS)
-    {
-        NumControllers = MAX_CONTROLLERS;
-        printf("Specified more than max controller count of %d. Lowering to max count\n", MAX_CONTROLLERS);
-    }
-
-    printf("Starting application with %d controllers\n", NumControllers);
-    
-    int Descriptors[MAX_CONTROLLERS];
-    
-    for (int i = 0; i < NumControllers; i++)
-    {
-        Descriptors[i] = CreateController(i);
-    }
-    
-    char prev = 0;
-    while(1)
-    {
-        char c = getchar();
-        
-        if (c == prev)
-            continue;
-        
-        prev = c;
-        int descriptor = Descriptors[0];
-        
-        if (c == 'r')
-        {
-            PressReleaseButton(descriptor, BTN_A, 0);
-            UpdateJoystick(descriptor);
-        }
-        else if (c == 'p')
-        {
-            PressReleaseButton(descriptor, BTN_A, 1);
-            UpdateJoystick(descriptor);
-        }
-        else if (c == 'a')
-        {
-            PressAxis(descriptor, ABS_X, -32767);
-            UpdateJoystick(descriptor);
-        }
-        else if (c == 'w')
-        {
-            PressAxis(descriptor, ABS_Y, -32767);
-            UpdateJoystick(descriptor);
-        }
-        else if (c == 's')
-        {
-            PressAxis(descriptor, ABS_Y, 32767);
-            UpdateJoystick(descriptor);
-        }
-        else if (c == 'd')
-        {
-            PressAxis(descriptor, ABS_X, 32767);
-            UpdateJoystick(descriptor);
-        }
-        else if (c == 'z')
-        {
-            PressAxis(descriptor, ABS_X, 0);
-            UpdateJoystick(descriptor);
-        }
-        else if (c == 'x')
-        {
-            PressAxis(descriptor, ABS_Y, 0);
-            UpdateJoystick(descriptor);
-        }
-        else if (c == 'f')
-        {
-            PressAxis(descriptor, ABS_Z, 32767);
-            UpdateJoystick(descriptor);
-        }
-        else if (c == 'g')
-        {
-            PressAxis(descriptor, ABS_RZ, 32767);
-            UpdateJoystick(descriptor);
-        }
-        else if (c == 'v')
-        {
-            PressAxis(descriptor, ABS_Z, 0);
-            UpdateJoystick(descriptor);
-        }
-        else if (c == 'b')
-        {
-            PressAxis(descriptor, ABS_RZ, 0);
-            UpdateJoystick(descriptor);
-        }
-    }
-    
-    sleep(1);
-    
-    for (int i = 0; i < NumControllers; i++)
-    {
-        int val = Descriptors[i];
-        CloseController(Descriptors[i]);
-        
-        printf("Descriptor at %d was %d and is now %d\n", i, val, Descriptors[i]);
-    }
-    
-    return 0;
-}
+//int main(int argc, char* argv[])
+//{
+//    int NumControllers = 1;
+//    if (argc > 1)
+//    {
+//        NumControllers = atoi(argv[1]);
+//    }
+//
+//    if (NumControllers < MIN_CONTROLLERS)
+//    {
+//        NumControllers = MIN_CONTROLLERS;
+//        printf("Specified less than the min count of %d. Increasing to it\n", MIN_CONTROLLERS);
+//    }
+//    else if (NumControllers > MAX_CONTROLLERS)
+//    {
+//        NumControllers = MAX_CONTROLLERS;
+//        printf("Specified more than max controller count of %d. Lowering to max count\n", MAX_CONTROLLERS);
+//    }
+//
+//    printf("Starting application with %d controllers\n", NumControllers);
+//    
+//    int Descriptors[MAX_CONTROLLERS];
+//    
+//    for (int i = 0; i < NumControllers; i++)
+//    {
+//        Descriptors[i] = CreateController(i);
+//    }
+//    
+//    char prev = 0;
+//    while(1)
+//    {
+//        char c = getchar();
+//        
+//        if (c == prev)
+//            continue;
+//        
+//        prev = c;
+//        int descriptor = Descriptors[0];
+//        
+//        if (c == 'r')
+//        {
+//            PressReleaseButton(descriptor, BTN_A, 0);
+//            UpdateJoystick(descriptor);
+//        }
+//        else if (c == 'p')
+//        {
+//            PressReleaseButton(descriptor, BTN_A, 1);
+//            UpdateJoystick(descriptor);
+//        }
+//        else if (c == 'a')
+//        {
+//            PressAxis(descriptor, ABS_X, -32767);
+//            UpdateJoystick(descriptor);
+//        }
+//        else if (c == 'w')
+//        {
+//            PressAxis(descriptor, ABS_Y, -32767);
+//            UpdateJoystick(descriptor);
+//        }
+//        else if (c == 's')
+//        {
+//            PressAxis(descriptor, ABS_Y, 32767);
+//            UpdateJoystick(descriptor);
+//        }
+//        else if (c == 'd')
+//        {
+//            PressAxis(descriptor, ABS_X, 32767);
+//            UpdateJoystick(descriptor);
+//        }
+//        else if (c == 'z')
+//        {
+//            PressAxis(descriptor, ABS_X, 0);
+//            UpdateJoystick(descriptor);
+//        }
+//        else if (c == 'x')
+//        {
+//            PressAxis(descriptor, ABS_Y, 0);
+//            UpdateJoystick(descriptor);
+//        }
+//        else if (c == 'f')
+//        {
+//            PressAxis(descriptor, ABS_Z, 32767);
+//            UpdateJoystick(descriptor);
+//        }
+//        else if (c == 'g')
+//        {
+//            PressAxis(descriptor, ABS_RZ, 32767);
+//            UpdateJoystick(descriptor);
+//        }
+//        else if (c == 'v')
+//        {
+//            PressAxis(descriptor, ABS_Z, 0);
+//            UpdateJoystick(descriptor);
+//        }
+//        else if (c == 'b')
+//        {
+//            PressAxis(descriptor, ABS_RZ, 0);
+//            UpdateJoystick(descriptor);
+//        }
+//    }
+//    
+//    sleep(1);
+//    
+//    for (int i = 0; i < NumControllers; i++)
+//    {
+//        int val = Descriptors[i];
+//        CloseController(Descriptors[i]);
+//        
+//        printf("Descriptor at %d was %d and is now %d\n", i, val, Descriptors[i]);
+//    }
+//    
+//    return 0;
+//}

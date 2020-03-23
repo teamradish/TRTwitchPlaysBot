@@ -48,7 +48,7 @@ namespace TRBot
         int InitControllers(in int controllerCount);
 
         /// <summary>
-        /// Retrieves a virtual controller.
+        /// Retrieves a virtual controller at a certain index (controller port).
         /// </summary>
         /// <param name="controllerPort">The controller port of the virtual controller.</param>
         /// <returns>A virtual controller at the controller port if found, otherwise null.</returns>

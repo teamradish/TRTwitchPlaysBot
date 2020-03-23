@@ -15,6 +15,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <Optimize>false</Optimize>
+    <DefineConstants>TRACE;WINDOWS</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -39,6 +40,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="SetupVController.so">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="vJoyInterface.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

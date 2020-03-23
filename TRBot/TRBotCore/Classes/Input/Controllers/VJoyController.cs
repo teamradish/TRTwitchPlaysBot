@@ -10,6 +10,21 @@ namespace TRBot
     public class VJoyController : IVirtualController
     {
         /// <summary>
+        /// The mapping from axis number to axis code.
+        /// </summary>
+        private static readonly Dictionary<int, int> AxisCodeMap = new Dictionary<int, int>(8)
+        {
+            { (int)GlobalAxisVals.AXIS_X,  (int)HID_USAGES.HID_USAGE_X },
+            { (int)GlobalAxisVals.AXIS_Y,  (int)HID_USAGES.HID_USAGE_Y },
+            { (int)GlobalAxisVals.AXIS_Z,  (int)HID_USAGES.HID_USAGE_Z },
+            { (int)GlobalAxisVals.AXIS_RX, (int)HID_USAGES.HID_USAGE_RX },
+            { (int)GlobalAxisVals.AXIS_RY, (int)HID_USAGES.HID_USAGE_RY },
+            { (int)GlobalAxisVals.AXIS_RZ, (int)HID_USAGES.HID_USAGE_RZ },
+            { (int)GlobalAxisVals.AXIS_M1, (int)HID_USAGES.HID_USAGE_SL0 },
+            { (int)GlobalAxisVals.AXIS_M2, (int)HID_USAGES.HID_USAGE_SL1 }
+        };
+
+        /// <summary>
         /// The ID of the controller.
         /// </summary>
         public uint ControllerID { get; private set; } = 0;
@@ -27,7 +42,7 @@ namespace TRBot
         /// </summary>
         private JoystickState JSState = default;
 
-        private Dictionary<int, (long AxisMin, long AxisMax)> MinMaxAxes = new Dictionary<int, (long, long)>();
+        private Dictionary<int, (long AxisMin, long AxisMax)> MinMaxAxes = new Dictionary<int, (long, long)>(8);
 
         private vJoy VJoyInstance = null;
 
@@ -62,18 +77,28 @@ namespace TRBot
             Reset();
 
             //Initialize axes
-            HID_USAGES[] axes = EnumUtility.GetValues<HID_USAGES>.EnumValues;
+            //Use the global axes values, which will be converted to vJoy ones when needing to carry out the inputs
+            GlobalAxisVals[] axes = EnumUtility.GetValues<GlobalAxisVals>.EnumValues;
 
             for (int i = 0; i < axes.Length; i++)
             {
-                if (VJoyInstance.GetVJDAxisExist(ControllerID, axes[i]))
+                int globalAxisVal = (int)axes[i];
+
+                if (AxisCodeMap.TryGetValue(globalAxisVal, out int axisVal) == false)
+                {
+                    continue;
+                }
+
+                HID_USAGES vJoyAxis = (HID_USAGES)axisVal;
+
+                if (VJoyInstance.GetVJDAxisExist(ControllerID, vJoyAxis))
                 {
                     long min = 0L;
                     long max = 0L;
-                    VJoyInstance.GetVJDAxisMin(ControllerID, axes[i], ref min);
-                    VJoyInstance.GetVJDAxisMax(ControllerID, axes[i], ref max);
+                    VJoyInstance.GetVJDAxisMin(ControllerID, vJoyAxis, ref min);
+                    VJoyInstance.GetVJDAxisMax(ControllerID, vJoyAxis, ref max);
 
-                    MinMaxAxes.Add((int)axes[i], (min, max));
+                    MinMaxAxes.Add(globalAxisVal, (min, max));
                 }
             }
         }
@@ -87,7 +112,7 @@ namespace TRBot
 
             foreach (KeyValuePair<int, (long, long)> val in MinMaxAxes)
             {
-                if (val.Key == (int)HID_USAGES.HID_USAGE_RZ || val.Key == (int)HID_USAGES.HID_USAGE_Z)
+                if (val.Key == (int)GlobalAxisVals.AXIS_Z || val.Key == (int)GlobalAxisVals.AXIS_RZ)
                 {
                     ReleaseAbsoluteAxis(val.Key);
                 }
@@ -169,7 +194,9 @@ namespace TRBot
                 val = (int)(mid + ((percent / 100f) * mid));
             }
 
-            SetAxisEfficient(axis, val);
+            AxisCodeMap.TryGetValue(axis, out int vJoyAxis);
+
+            SetAxisEfficient(vJoyAxis, val);
         }
 
         public void ReleaseAxis(in int axis)
@@ -181,7 +208,9 @@ namespace TRBot
 
             int val = (int)((axisVals.Item2 - axisVals.Item1) / 2);
 
-            SetAxisEfficient(axis, val);
+            AxisCodeMap.TryGetValue(axis, out int vJoyAxis);
+
+            SetAxisEfficient(vJoyAxis, val);
         }
 
         public void PressAbsoluteAxis(in int axis, in int percent)
@@ -193,7 +222,9 @@ namespace TRBot
 
             int val = (int)(axisVals.Item2 * (percent / 100f));
 
-            SetAxisEfficient(axis, val);
+            AxisCodeMap.TryGetValue(axis, out int vJoyAxis);
+
+            SetAxisEfficient(vJoyAxis, val);
         }
 
         public void ReleaseAbsoluteAxis(in int axis)
@@ -203,7 +234,9 @@ namespace TRBot
                 return;
             }
 
-            SetAxisEfficient(axis, 0);
+            AxisCodeMap.TryGetValue(axis, out int vJoyAxis);
+
+            SetAxisEfficient(vJoyAxis, 0);
         }
 
         public void PressButton(in string buttonName)

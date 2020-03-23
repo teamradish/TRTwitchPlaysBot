@@ -181,7 +181,12 @@ namespace TRBot
             AddRoutine(new ReconnectRoutine());
 
             //Initialize controller input
+#if WINDOWS
             ControllerMngr = new VJoyControllerManager();
+#else
+            ControllerMngr = new UInputControllerManager();          
+#endif
+
             ControllerMngr.Initialize();
 
             Initialized = true;
@@ -299,7 +304,7 @@ namespace TRBot
             Client.OnBeingHosted -= OnBeingHosted;
         }
 
-        #region Events
+#region Events
 
         private void OnConnected(object sender, OnConnectedArgs e)
         {
@@ -594,7 +599,7 @@ namespace TRBot
             }
         }
 
-        #endregion
+#endregion
 
         private class LoginInfo
         {

@@ -13,17 +13,17 @@ namespace TRBot
 
         public override Dictionary<string, uint> ButtonInputMap { get; protected set; } = new Dictionary<string, uint>()
         {
-            { "left", 3 }, { "l", 3 },
-            { "right", 4 }, { "r", 4 },
-            { "up", 1 }, { "u", 1 },
-            { "down", 2 }, { "d", 2 },
-            { "grab", 5 }, { "g", 5 },
-            { "select", 6 }, { "s", 6 },
-            { "pause", 7 }, { "p", 7 }, { "start", 7 },
-            { "restart", 8 },
-            { "undo", 9 },
-            { "back", 10 }, { "b", 10 },
-            { "viewmap", 11 }, { "v", 11 },
+            { "left", (int)GlobalButtonVals.BTN3 }, { "l", (int)GlobalButtonVals.BTN3 },
+            { "right", (int)GlobalButtonVals.BTN4 }, { "r", (int)GlobalButtonVals.BTN4 },
+            { "up", (int)GlobalButtonVals.BTN1 }, { "u", (int)GlobalButtonVals.BTN1 },
+            { "down", (int)GlobalButtonVals.BTN2 }, { "d", (int)GlobalButtonVals.BTN2 },
+            { "grab", (int)GlobalButtonVals.BTN5 }, { "g", (int)GlobalButtonVals.BTN5 },
+            { "select", (int)GlobalButtonVals.BTN6 }, { "s", (int)GlobalButtonVals.BTN6 },
+            { "pause", (int)GlobalButtonVals.BTN7 }, { "p", (int)GlobalButtonVals.BTN7 }, { "start", (int)GlobalButtonVals.BTN7 },
+            { "restart", (int)GlobalButtonVals.BTN8 },
+            { "undo", (int)GlobalButtonVals.BTN9 },
+            { "back", (int)GlobalButtonVals.BTN10 }, { "b", (int)GlobalButtonVals.BTN10 },
+            { "viewmap", (int)GlobalButtonVals.BTN11 }, { "v", (int)GlobalButtonVals.BTN11 },
         };
 
         public override string[] ValidInputs { get; protected set; } = new string[]
