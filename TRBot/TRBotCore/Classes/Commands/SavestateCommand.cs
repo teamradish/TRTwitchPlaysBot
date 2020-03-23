@@ -59,9 +59,9 @@ namespace TRBot
             }
 
             //Savestates are always performed on the first controller
-            VJoyController joystick = VJoyController.GetController(0);
+            IVirtualController joystick = BotProgram.ControllerMngr.GetController(0);
             joystick.PressButton(saveStateStr);
-            joystick.UpdateJoystickEfficient();
+            joystick.UpdateController();
 
             //Track the time of the savestate
             DateTime curTime = DateTime.UtcNow;
@@ -99,7 +99,7 @@ namespace TRBot
             }
 
             joystick.ReleaseButton(saveStateStr);
-            joystick.UpdateJoystickEfficient();
+            joystick.UpdateController();
         }
     }
 }

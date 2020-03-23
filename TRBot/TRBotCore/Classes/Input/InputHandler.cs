@@ -94,7 +94,7 @@ namespace TRBot
             //Get the input list and controller we're using - this should have been validated beforehand
             InputWrapper inputWrapper = (InputWrapper)obj;
             Parser.Input[][] inputArray = inputWrapper.InputArray;
-            VJoyController controller = VJoyController.GetController(inputWrapper.ControllerNum);
+            IVirtualController controller = BotProgram.ControllerMngr.GetController(inputWrapper.ControllerNum);
 
             Stopwatch sw = new Stopwatch();
 
@@ -136,7 +136,7 @@ namespace TRBot
                 //Update the controller if there are non-wait inputs
                 if (nonWaits > 0)
                 {
-                    controller.UpdateJoystickEfficient();
+                    controller.UpdateController();
                     nonWaits = 0;
                 }
 
@@ -175,7 +175,7 @@ namespace TRBot
                     //If there are no wait or hold inputs, update the controller
                     if (nonWaits > 0)
                     {
-                        controller.UpdateJoystickEfficient();
+                        controller.UpdateController();
                         nonWaits = 0;
                     }
                 }
@@ -196,7 +196,7 @@ namespace TRBot
                 }
             }
 
-            controller.UpdateJoystickEfficient();
+            controller.UpdateController();
 
             //Decrement running threads
             Interlocked.Decrement(ref RunningInputThreads);

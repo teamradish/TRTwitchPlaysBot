@@ -8,7 +8,7 @@ namespace TRBot
 {
     /// <summary>
     /// Sets the number of controllers available.
-    /// For simplicity, this will reset all inputs and recapture the vJoy devices.
+    /// For simplicity, this will reset all inputs and recapture the virtual devices.
     /// </summary>
     public sealed class SetControllersCommand : BaseCommand
     {
@@ -23,7 +23,7 @@ namespace TRBot
 
             if (args.Count != 1)
             {
-                BotProgram.QueueMessage($"Usage: \"# of controllers (min: {VJoyController.MIN_VJOY_DEVICE_ID}, max: {VJoyController.MAX_VJOY_DEVICE_ID})\"");
+                BotProgram.QueueMessage($"Usage: \"# of controllers (min: {BotProgram.ControllerMngr.MinControllers}, max: {BotProgram.ControllerMngr.MaxControllers})\"");
                 return;
             }
 
@@ -33,15 +33,15 @@ namespace TRBot
                 return;
             }
 
-            if (newJoystickCount < VJoyController.MIN_VJOY_DEVICE_ID)
+            if (newJoystickCount < BotProgram.ControllerMngr.MinControllers)
             {
-                BotProgram.QueueMessage($"Value is less than {VJoyController.MIN_VJOY_DEVICE_ID}!");
+                BotProgram.QueueMessage($"Value is less than {BotProgram.ControllerMngr.MinControllers}!");
                 return;
             }
 
-            if (newJoystickCount > VJoyController.MAX_VJOY_DEVICE_ID)
+            if (newJoystickCount > BotProgram.ControllerMngr.MaxControllers)
             {
-                BotProgram.QueueMessage($"Value is greater than {VJoyController.MAX_VJOY_DEVICE_ID}, which is the max number of supported controllers!");
+                BotProgram.QueueMessage($"Value is greater than {BotProgram.ControllerMngr.MaxControllers}, which is the max number of supported controllers!");
                 return;
             }
 
@@ -51,7 +51,7 @@ namespace TRBot
                 return;
             }
 
-            //We changed count, so let's stop all inputs and reinitialize the vJoy devices
+            //We changed count, so let's stop all inputs and reinitialize the devices
             BotProgram.QueueMessage($"Changing controller count from {BotProgram.BotData.JoystickCount} to {newJoystickCount}. Stopping all inputs and reinitializing.");
 
             InputHandler.CancelRunningInputs();
@@ -62,43 +62,50 @@ namespace TRBot
 
             }
 
-            //Reinitialize the vJoy devices
-            VJoyController.CleanUp();
+            //Reinitialize the virtual controllers
+            BotProgram.ControllerMngr.CleanUp();
 
             //Kimimaru: Time out so we don't softlock everything if all devices cannot be freed
             //While this is an issue if it happens, we'll let the streamer know without permanently suspending inputs
-            const long timeOut = 60000;
+            const long timeOut = 60000L;
+
+            //Wait at least this much time before checking to give it some time
+            const long minWait = 300L;
 
             Stopwatch sw = Stopwatch.StartNew();
 
-            //Wait until all vJoy devices are no longer owned
+            //Wait until all devices are no longer owned
             while (true)
             {
+                if (sw.ElapsedMilliseconds < minWait)
+                {
+                    continue;
+                }
+
                 int freeCount = 0;
 
-                for (int i = 0; i < VJoyController.Joysticks.Length; i++)
+                for (int i = 0; i < BotProgram.ControllerMngr.ControllerCount; i++)
                 {
-                    VjdStat stat = VJoyController.VJoyInstance.GetVJDStatus(VJoyController.Joysticks[i].ControllerID);
-                    if (stat != VjdStat.VJD_STAT_OWN)
+                    if (BotProgram.ControllerMngr.GetController(i).IsAcquired == false)
                     {
                         freeCount++;
                     }
                 }
 
                 //We're done if all are no longer owned
-                if (freeCount == VJoyController.Joysticks.Length)
+                if (freeCount == BotProgram.ControllerMngr.ControllerCount)
                 {
                     break;
                 }
 
                 if (sw.ElapsedMilliseconds >= timeOut)
                 {
-                    BotProgram.QueueMessage($"ERROR: Unable to free all vJoy controllers. {freeCount}/{VJoyController.Joysticks.Length} freed.");
+                    BotProgram.QueueMessage($"ERROR: Unable to free all virtual controllers. {freeCount}/{BotProgram.ControllerMngr.ControllerCount} freed.");
                     break;
                 }
             }
 
-            int acquiredCount = VJoyController.InitControllers(newJoystickCount);
+            int acquiredCount = BotProgram.ControllerMngr.InitControllers(newJoystickCount);
             Console.WriteLine($"Acquired {acquiredCount} controllers!");
 
             const long wait = 500L;

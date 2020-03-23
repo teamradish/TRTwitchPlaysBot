@@ -15,6 +15,11 @@ namespace TRBot
         uint ControllerID { get; }
 
         /// <summary>
+        /// The index of the controller (Ex. port 1).
+        /// </summary>
+        int ControllerIndex { get; }
+
+        /// <summary>
         /// Tells whether the controller device was successfully acquired.
         /// If this is false, don't use this controller instance to make inputs.
         /// </summary>
@@ -44,6 +49,9 @@ namespace TRBot
 
         #region Inputs
 
+        void PressInput(in Parser.Input input);
+        void ReleaseInput(in Parser.Input input);
+
         void PressAxis(in int axis, in bool min, in int percent);
         void ReleaseAxis(in int axis);
 
@@ -52,6 +60,11 @@ namespace TRBot
 
         void PressButton(in string buttonName);
         void ReleaseButton(in string buttonName);
+
+        /// <summary>
+        /// Updates the virtual device by applying all changes.
+        /// </summary>
+        void UpdateController();
 
         #endregion
     }

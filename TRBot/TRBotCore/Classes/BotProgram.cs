@@ -52,6 +52,8 @@ namespace TRBot
         //Throttler
         private Stopwatch Throttler = new Stopwatch();
 
+        public static IVirtualControllerManager ControllerMngr { get; private set; } = null;
+
         /// <summary>
         /// Whether to ignore logging bot messages to the console based on potential console logs from the <see cref="ExecCommand"/>.
         /// </summary>
@@ -100,7 +102,7 @@ namespace TRBot
                 Client.Disconnect();
 
             //Clean up and relinquish the devices when we're done
-            VJoyController.CleanUp();
+            ControllerMngr?.CleanUp();
 
             instance = null;
         }
@@ -179,7 +181,8 @@ namespace TRBot
             AddRoutine(new ReconnectRoutine());
 
             //Initialize controller input
-            VJoyController.Initialize();
+            ControllerMngr = new VJoyControllerManager();
+            ControllerMngr.Initialize();
 
             Initialized = true;
         }
@@ -426,15 +429,15 @@ namespace TRBot
                         //Validate that the controller is acquired and exists
                         int controllerNum = userData.Team;
 
-                        if (controllerNum < 0 || controllerNum >= VJoyController.Joysticks.Length)
+                        if (controllerNum < 0 || controllerNum >= ControllerMngr.ControllerCount)
                         {
-                            BotProgram.QueueMessage($"ERROR: Invalid joystick number {controllerNum + 1}. # of joysticks: {VJoyController.Joysticks.Length}. Please change your controller port to a valid number to perform inputs.");
+                            BotProgram.QueueMessage($"ERROR: Invalid joystick number {controllerNum + 1}. # of joysticks: {ControllerMngr.ControllerCount}. Please change your controller port to a valid number to perform inputs.");
                             shouldPerformInput = false;
                         }
-                        //Now verify that the controller has been acquired by vJoy
-                        else if (VJoyController.Joysticks[controllerNum].IsAcquired == false)
+                        //Now verify that the controller has been acquired
+                        else if (ControllerMngr.GetController(controllerNum).IsAcquired == false)
                         {
-                            BotProgram.QueueMessage($"ERROR: Joystick number {controllerNum + 1} with controller ID of {VJoyController.Joysticks[controllerNum].ControllerID} has not been acquired by the vJoy driver! Ensure you (the streamer) have a vJoy device set up at this ID.");
+                            BotProgram.QueueMessage($"ERROR: Joystick number {controllerNum + 1} with controller ID of {ControllerMngr.GetController(controllerNum).ControllerID} has not been acquired! Ensure you (the streamer) have a virtual device set up at this ID.");
                             shouldPerformInput = false;
                         }
 

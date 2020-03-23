@@ -52,11 +52,12 @@ namespace TRBot
             //Set console and buttons
             InputGlobals.SetConsole(console, args);
             
-            for (int i = 0; i < VJoyController.Joysticks.Length; i++)
+            for (int i = 0; i < BotProgram.ControllerMngr.ControllerCount; i++)
             {
-                if (VJoyController.Joysticks[i].IsAcquired == true)
+                IVirtualController controller = BotProgram.ControllerMngr.GetController(i);
+                if (controller.IsAcquired == true)
                 {
-                    VJoyController.Joysticks[i].Reset();
+                    controller.Reset();
                 }
             }
 

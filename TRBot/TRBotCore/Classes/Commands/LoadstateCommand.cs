@@ -56,9 +56,9 @@ namespace TRBot
             }
 
             //Load states are always performed on the first controller
-            VJoyController joystick = VJoyController.GetController(0);
+            IVirtualController joystick = BotProgram.ControllerMngr.GetController(0);
             joystick.PressButton(loadStateStr);
-            joystick.UpdateJoystickEfficient();
+            joystick.UpdateController();
 
             BotProgram.QueueMessage($"Loaded state {stateNum}!");
 
@@ -71,7 +71,7 @@ namespace TRBot
             }
 
             joystick.ReleaseButton(loadStateStr);
-            joystick.UpdateJoystickEfficient();
+            joystick.UpdateController();
         }
     }
 }

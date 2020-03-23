@@ -10,27 +10,11 @@ namespace TRBot
     public class VJoyController : IVirtualController
     {
         /// <summary>
-        /// Minimum acceptable vJoy device ID.
-        /// </summary>
-        public const uint MIN_VJOY_DEVICE_ID = 1;
-
-        /// <summary>
-        /// Maximum acceptable vJoy device ID.
-        /// </summary>
-        public const uint MAX_VJOY_DEVICE_ID = 16;
-
-        /// <summary>
-        /// Tells whether the vJoy instance is initialized.
-        /// </summary>
-        public static bool Initialized => (VJoyInstance != null);
-
-        public static vJoy VJoyInstance { get; private set; } = null;
-        public static VJoyController[] Joysticks { get; private set; } = null;
-
-        /// <summary>
         /// The ID of the controller.
         /// </summary>
         public uint ControllerID { get; private set; } = 0;
+
+        public int ControllerIndex => (int)ControllerID;
 
         /// <summary>
         /// Tells whether the controller device was successfully acquired through vJoy.
@@ -45,14 +29,17 @@ namespace TRBot
 
         private Dictionary<int, (long AxisMin, long AxisMax)> MinMaxAxes = new Dictionary<int, (long, long)>();
 
-        public VJoyController(in uint controllerID)
+        private vJoy VJoyInstance = null;
+
+        public VJoyController(in uint controllerID, vJoy vjoyInstance)
         {
             ControllerID = controllerID;
+            VJoyInstance = vjoyInstance;
         }
 
         public void Dispose()
         {
-            if (Initialized == false)
+            if (IsAcquired == false)
                 return;
 
             Reset();
@@ -93,7 +80,7 @@ namespace TRBot
 
         public void Reset()
         {
-            if (Initialized == false)
+            if (IsAcquired == false)
                 return;
 
             JSState.Buttons = JSState.ButtonsEx1 = JSState.ButtonsEx2 = JSState.ButtonsEx3 = 0;
@@ -110,7 +97,7 @@ namespace TRBot
                 }
             }
 
-            UpdateJoystickEfficient();
+            UpdateController();
         }
 
         public void PressInput(in Parser.Input input)
@@ -261,6 +248,11 @@ namespace TRBot
             }
         }
 
+        public void UpdateController()
+        {
+            UpdateJoystickEfficient();
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void SetAxisEfficient(in int axis, in int value)
         {
@@ -283,172 +275,5 @@ namespace TRBot
         {
             VJoyInstance.UpdateVJD(ControllerID, ref JSState);
         }
-
-        /// <summary>
-        /// Retrieves a joystick at a zero-based index.
-        /// </summary>
-        /// <param name="playerIndex">The zero-based index to retrieve the joystick at.</param>
-        /// <returns>The VJoyController at the desired index. If this index is out of range, it'll throw an <see cref="IndexOutOfRangeException"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static VJoyController GetController(in int playerIndex)
-        {
-            return Joysticks[playerIndex];
-        }
-
-        public static void OnDeviceRemoved(bool removed, bool first, object userData)
-        {
-            string startMessage = "A vJoy device has been removed!";
-            if (removed == false)
-            {
-                startMessage = "A vJoy device has been added!";
-            }
-
-            BotProgram.QueueMessage($"{startMessage} {nameof(first)}: {first} | {nameof(userData)}: {userData}");
-        }
-
-        public static void Initialize()
-        {
-            if (Initialized == true) return;
-
-            VJoyInstance = new vJoy();
-
-            if (VJoyInstance.vJoyEnabled() == false)
-            {
-                Console.WriteLine("vJoy driver not enabled!");
-                return;
-            }
-
-            //Kimimaru: The data object passed in here will be returned in the callback
-            //This can be used to update the object's data when a vJoy device is connected or disconnected from the computer
-            //This does not get fired when the vJoy device is acquired or relinquished
-            VJoyInstance.RegisterRemovalCB(OnDeviceRemoved, null);
-
-            string vendor = VJoyInstance.GetvJoyManufacturerString();
-            string product = VJoyInstance.GetvJoyProductString();
-            string serialNum = VJoyInstance.GetvJoySerialNumberString();
-            Console.WriteLine($"vJoy driver found - Vendor: {vendor} | Product: {product} | Version: {serialNum}");
-
-            uint dllver = 0;
-            uint drvver = 0;
-            bool match = VJoyInstance.DriverMatch(ref dllver, ref drvver);
-
-            Console.WriteLine($"Using vJoy DLL version {dllver} and vJoy driver version {drvver} | Version Match: {match}");
-
-            int acquiredCount = InitControllers(BotProgram.BotData.JoystickCount);
-            Console.WriteLine($"Acquired {acquiredCount} controllers!");
-        }
-
-        public static int InitControllers(in int joystickCount)
-        {
-            if (Initialized == false) return 0;
-
-            int count = joystickCount;
-
-            //Ensure count of 1
-            if (count < 1)
-            {
-                count = 1;
-                Console.WriteLine($"Joystick count of {count} is less than 1. Clamping value to this limit.");
-            }
-
-            //Check for max vJoy device ID to ensure we don't try to register more devices than it can support
-            if (count > MAX_VJOY_DEVICE_ID)
-            {
-                count = (int)MAX_VJOY_DEVICE_ID;
-
-                Console.WriteLine($"Joystick count of {count} is greater than max {nameof(MAX_VJOY_DEVICE_ID)} of {MAX_VJOY_DEVICE_ID}. Clamping value to this limit.");
-            }
-
-            Joysticks = new VJoyController[count];
-            for (int i = 0; i < Joysticks.Length; i++)
-            {
-                Joysticks[i] = new VJoyController((uint)i + MIN_VJOY_DEVICE_ID);
-            }
-
-            int acquiredCount = 0;
-
-            //Acquire the device IDs
-            for (int i = 0; i < Joysticks.Length; i++)
-            {
-                VJoyController joystick = Joysticks[i];
-                VjdStat controlStatus = VJoyInstance.GetVJDStatus(joystick.ControllerID);
-
-                switch (controlStatus)
-                {
-                    case VjdStat.VJD_STAT_FREE:
-                        joystick.Acquire();
-                        if (joystick.IsAcquired == false) goto default;
-
-                        acquiredCount++;
-                        Console.WriteLine($"Acquired vJoy device ID {joystick.ControllerID}!");
-
-                        //Initialize the joystick
-                        joystick.Init();
-
-                        //Reset the joystick
-                        joystick.Reset();
-                        break;
-                    default:
-                        Console.WriteLine($"Unable to acquire vJoy device ID {joystick.ControllerID}");
-                        break;
-                }
-            }
-
-            return acquiredCount;
-        }
-
-        public static void CleanUp()
-        {
-            if (Initialized == false)
-            {
-                Console.WriteLine("Not initialized; cannot clean up");
-                return;
-            }
-
-            if (Joysticks != null)
-            {
-                for (int i = 0; i < Joysticks.Length; i++)
-                {
-                    Joysticks[i]?.Dispose();
-                }
-            }
-        }
-
-        public static void CheckDeviceIDState(in uint deviceID)
-        {
-            VjdStat status = VJoyInstance.GetVJDStatus(deviceID);
-
-            switch (status)
-            {
-                case VjdStat.VJD_STAT_OWN:
-                    Console.WriteLine($"vJoy Device {deviceID} is already owned by this feeder");
-                    break;
-                case VjdStat.VJD_STAT_FREE:
-                    Console.WriteLine($"vJoy Device {deviceID} is free!");
-                    break;
-                case VjdStat.VJD_STAT_BUSY:
-                    Console.WriteLine($"vJoy Device {deviceID} is already owned by another feeder - cannot continue");
-                    break;
-                case VjdStat.VJD_STAT_MISS:
-                    Console.WriteLine($"vJoy Device {deviceID} is not installed or disabled - cannot continue");
-                    break;
-                default:
-                    Console.WriteLine($"vJoy Device {deviceID} general error - cannot continue");
-                    break;
-            }
-        }
-
-        //public static void CheckButtonCount(in uint deviceID)
-        //{
-        //    int nBtn = VJoyInstance.GetVJDButtonNumber(deviceID);
-        //    int nDPov = VJoyInstance.GetVJDDiscPovNumber(deviceID);
-        //    int nCPov = VJoyInstance.GetVJDContPovNumber(deviceID);
-        //    bool hasX = VJoyInstance.GetVJDAxisExist(deviceID, HID_USAGES.HID_USAGE_X);
-        //    bool hasY = VJoyInstance.GetVJDAxisExist(deviceID, HID_USAGES.HID_USAGE_Y);
-        //    bool hasZ = VJoyInstance.GetVJDAxisExist(deviceID, HID_USAGES.HID_USAGE_Z);
-        //    bool hasRX = VJoyInstance.GetVJDAxisExist(deviceID, HID_USAGES.HID_USAGE_RX);
-        //
-        //    Console.WriteLine($"Device[{deviceID}]: Buttons: {nBtn} | DiscPOVs: {nDPov} | ContPOVs: {nCPov} | Axes - X:{hasX} Y:{hasY} Z: {hasZ} RX: {hasRX}");
-        //}
     }
 }
