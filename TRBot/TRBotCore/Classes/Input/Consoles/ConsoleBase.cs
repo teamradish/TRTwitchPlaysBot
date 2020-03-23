@@ -20,7 +20,7 @@ namespace TRBot
         /// <summary>
         /// The input axes this console supports.
         /// </summary>
-        public abstract Dictionary<string, HID_USAGES> InputAxes { get; protected set; }
+        public abstract Dictionary<string, int> InputAxes { get; protected set; }
 
         /// <summary>
         /// The button input map for this console.
@@ -51,7 +51,7 @@ namespace TRBot
         /// <param name="input">The input to check.</param>
         /// <param name="axis">The axis value that is assigned. If no axis is found, the default value.</param>
         /// <returns>true if the input is an axis, otherwise false.</returns>
-        public abstract bool GetAxis(in Parser.Input input, out HID_USAGES axis);
+        public abstract bool GetAxis(in Parser.Input input, out int axis);
 
         /// <summary>
         /// Tells whether an input is an axis or not.

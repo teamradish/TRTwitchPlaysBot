@@ -180,7 +180,6 @@ namespace TRBot
 
             //Initialize controller input
             VJoyController.Initialize();
-            VJoyController.CheckButtonCount(1);
 
             Initialized = true;
         }

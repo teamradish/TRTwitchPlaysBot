@@ -21,12 +21,12 @@ namespace TRBot
             "#", "."
         };
 
-        public override Dictionary<string, HID_USAGES> InputAxes { get; protected set; } = new Dictionary<string, HID_USAGES>()
+        public override Dictionary<string, int> InputAxes { get; protected set; } = new Dictionary<string, int>()
         {
-            { "left", HID_USAGES.HID_USAGE_X },
-            { "right", HID_USAGES.HID_USAGE_X },
-            { "up", HID_USAGES.HID_USAGE_Y },
-            { "down", HID_USAGES.HID_USAGE_Y }
+            { "left", (int)HID_USAGES.HID_USAGE_X },
+            { "right", (int)HID_USAGES.HID_USAGE_X },
+            { "up", (int)HID_USAGES.HID_USAGE_Y },
+            { "down", (int)HID_USAGES.HID_USAGE_Y }
         };
 
         public override Dictionary<string, uint> ButtonInputMap { get; protected set; } = new Dictionary<string, uint>()
@@ -63,7 +63,7 @@ namespace TRBot
             { "loadstate6", 30 }, { "ls6", 30 },
         };
 
-        public override bool GetAxis(in Parser.Input input, out HID_USAGES axis)
+        public override bool GetAxis(in Parser.Input input, out int axis)
         {
             return InputAxes.TryGetValue(input.name, out axis);
         }

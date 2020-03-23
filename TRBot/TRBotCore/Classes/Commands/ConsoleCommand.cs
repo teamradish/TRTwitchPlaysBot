@@ -56,7 +56,7 @@ namespace TRBot
             {
                 if (VJoyController.Joysticks[i].IsAcquired == true)
                 {
-                    VJoyController.Joysticks[i].SetButtons(InputGlobals.CurrentConsoleVal);
+                    VJoyController.Joysticks[i].Reset();
                 }
             }
 

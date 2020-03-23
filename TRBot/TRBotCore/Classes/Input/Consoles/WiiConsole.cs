@@ -38,20 +38,20 @@ namespace TRBot
             "#", "."
         };
 
-        public override Dictionary<string, HID_USAGES> InputAxes { get; protected set; } = new Dictionary<string, HID_USAGES>()
+        public override Dictionary<string, int> InputAxes { get; protected set; } = new Dictionary<string, int>()
         {
-            { "left", HID_USAGES.HID_USAGE_X },
-            { "right", HID_USAGES.HID_USAGE_X },
-            { "up", HID_USAGES.HID_USAGE_Y },
-            { "down", HID_USAGES.HID_USAGE_Y },
-            { "tleft", HID_USAGES.HID_USAGE_RX },
-            { "tright", HID_USAGES.HID_USAGE_RX },
-            { "tforward", HID_USAGES.HID_USAGE_RY },
-            { "tback", HID_USAGES.HID_USAGE_RY },
-            { "pleft", HID_USAGES.HID_USAGE_RZ },
-            { "pright", HID_USAGES.HID_USAGE_RZ },
-            { "pup", HID_USAGES.HID_USAGE_Z },
-            { "pdown", HID_USAGES.HID_USAGE_Z }
+            { "left", (int)HID_USAGES.HID_USAGE_X },
+            { "right", (int)HID_USAGES.HID_USAGE_X },
+            { "up", (int)HID_USAGES.HID_USAGE_Y },
+            { "down", (int)HID_USAGES.HID_USAGE_Y },
+            { "tleft", (int)HID_USAGES.HID_USAGE_RX },
+            { "tright", (int)HID_USAGES.HID_USAGE_RX },
+            { "tforward", (int)HID_USAGES.HID_USAGE_RY },
+            { "tback", (int)HID_USAGES.HID_USAGE_RY },
+            { "pleft", (int)HID_USAGES.HID_USAGE_RZ },
+            { "pright", (int)HID_USAGES.HID_USAGE_RZ },
+            { "pup", (int)HID_USAGES.HID_USAGE_Z },
+            { "pdown", (int)HID_USAGES.HID_USAGE_Z }
         };
 
         //Kimimaru: NOTE - Though vJoy supports up to 128 buttons, Dolphin supports only 32 max
@@ -116,7 +116,7 @@ namespace TRBot
             }
         }
 
-        public override bool GetAxis(in Parser.Input input, out HID_USAGES axis)
+        public override bool GetAxis(in Parser.Input input, out int axis)
         {
             return InputAxes.TryGetValue(input.name, out axis);
         }

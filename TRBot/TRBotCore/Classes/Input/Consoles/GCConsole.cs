@@ -21,18 +21,18 @@ namespace TRBot
             "#", "."
         };
 
-        public override Dictionary<string, HID_USAGES> InputAxes { get; protected set; } = new Dictionary<string, HID_USAGES>()
+        public override Dictionary<string, int> InputAxes { get; protected set; } = new Dictionary<string, int>()
         {
-            { "left", HID_USAGES.HID_USAGE_X },
-            { "right", HID_USAGES.HID_USAGE_X },
-            { "up", HID_USAGES.HID_USAGE_Y },
-            { "down", HID_USAGES.HID_USAGE_Y },
-            { "cleft", HID_USAGES.HID_USAGE_RX },
-            { "cright", HID_USAGES.HID_USAGE_RX },
-            { "cup", HID_USAGES.HID_USAGE_RY },
-            { "cdown", HID_USAGES.HID_USAGE_RY },
-            { "l", HID_USAGES.HID_USAGE_RZ },
-            { "r", HID_USAGES.HID_USAGE_Z }
+            { "left", (int)HID_USAGES.HID_USAGE_X },
+            { "right", (int)HID_USAGES.HID_USAGE_X },
+            { "up", (int)HID_USAGES.HID_USAGE_Y },
+            { "down", (int)HID_USAGES.HID_USAGE_Y },
+            { "cleft", (int)HID_USAGES.HID_USAGE_RX },
+            { "cright", (int)HID_USAGES.HID_USAGE_RX },
+            { "cup", (int)HID_USAGES.HID_USAGE_RY },
+            { "cdown", (int)HID_USAGES.HID_USAGE_RY },
+            { "l", (int)HID_USAGES.HID_USAGE_RZ },
+            { "r", (int)HID_USAGES.HID_USAGE_Z }
         };
 
         public override Dictionary<string, uint> ButtonInputMap { get; protected set; } = new Dictionary<string, uint>() {
@@ -70,7 +70,7 @@ namespace TRBot
             { "y", 32 },
         };
 
-        public override bool GetAxis(in Parser.Input input, out HID_USAGES axis)
+        public override bool GetAxis(in Parser.Input input, out int axis)
         {
             if (input.name == "l" || input.name == "r")
             {

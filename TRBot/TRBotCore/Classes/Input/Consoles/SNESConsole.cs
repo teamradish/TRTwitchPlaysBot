@@ -9,7 +9,7 @@ namespace TRBot
     /// </summary>
     public sealed class SNESConsole : ConsoleBase
     {
-        public override Dictionary<string, HID_USAGES> InputAxes { get; protected set; } = new Dictionary<string, HID_USAGES>();
+        public override Dictionary<string, int> InputAxes { get; protected set; } = new Dictionary<string, int>();
 
         public override Dictionary<string, uint> ButtonInputMap { get; protected set; } = new Dictionary<string, uint>()
         {
@@ -47,7 +47,7 @@ namespace TRBot
             "#", "."
         };
 
-        public override bool GetAxis(in Parser.Input input, out HID_USAGES axis)
+        public override bool GetAxis(in Parser.Input input, out int axis)
         {
             axis = default;
             return false;
