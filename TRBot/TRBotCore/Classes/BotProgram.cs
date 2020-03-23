@@ -182,8 +182,10 @@ namespace TRBot
 
             //Initialize controller input
 #if WINDOWS
+            Console.WriteLine("On Windows; setting up vJoy");
             ControllerMngr = new VJoyControllerManager();
 #else
+            Console.WriteLine("On Linux; setting up UInput");
             ControllerMngr = new UInputControllerManager();          
 #endif
 

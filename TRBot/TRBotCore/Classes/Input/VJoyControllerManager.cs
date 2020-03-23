@@ -66,7 +66,7 @@ namespace TRBot
         {
             if (Initialized == false)
             {
-                Console.WriteLine("Not initialized; cannot clean up");
+                Console.WriteLine("VJoyControllerManager not initialized; cannot clean up");
                 return;
             }
 

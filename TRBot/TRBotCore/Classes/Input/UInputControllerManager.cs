@@ -25,17 +25,17 @@ namespace TRBot
             MinControllers = NativeWrapperUInput.GetMinControllerCount();
             MaxControllers = NativeWrapperUInput.GetMaxControllerCount();
 
+            Initialized = true;
+
             int acquiredCount = InitControllers(BotProgram.BotData.JoystickCount);
             Console.WriteLine($"Acquired {acquiredCount} controllers!");
-
-            Initialized = true;
         }
 
         public void CleanUp()
         {
             if (Initialized == false)
             {
-                Console.WriteLine("Not initialized; cannot clean up");
+                Console.WriteLine("UInputControllerManager not initialized; cannot clean up");
                 return;
             }
 
@@ -61,7 +61,7 @@ namespace TRBot
                 Console.WriteLine($"Joystick count of {count} is less than 1. Clamping value to this limit.");
             }
 
-            //Check for max vJoy device ID to ensure we don't try to register more devices than it can support
+            //Check for max uinput device ID to ensure we don't try to register more devices than it can support
             if (count > MaxControllers)
             {
                 count = MaxControllers;
@@ -86,10 +86,11 @@ namespace TRBot
                 if (joystick.IsAcquired == false)
                 {
                     Console.WriteLine($"Unable to acquire uinput device at index {joystick.ControllerIndex}");
+                    continue;
                 }
 
                 acquiredCount++;
-                Console.WriteLine($"Acquired vJoy device ID {joystick.ControllerID} at index {joystick.ControllerIndex}!");
+                Console.WriteLine($"Acquired uinput device ID {joystick.ControllerID} at index {joystick.ControllerIndex} with descriptor {joystick.ControllerDescriptor}!");
 
                 //Initialize the joystick
                 joystick.Init();

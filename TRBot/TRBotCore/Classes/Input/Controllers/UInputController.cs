@@ -157,12 +157,13 @@ namespace TRBot
         public void Acquire()
         {
             ControllerDescriptor = NativeWrapperUInput.CreateVirtualController(ControllerIndex);
-            ControllerID = (uint)ControllerDescriptor;
+            ControllerID = 0;
 
             //Check for valid controller
             if (ControllerDescriptor > INVALID_CONTROLLER)
             {
                 IsAcquired = true;
+                ControllerID = (uint)ControllerDescriptor;
             }
         }
 
@@ -170,6 +171,9 @@ namespace TRBot
         {
             NativeWrapperUInput.Close(ControllerDescriptor);
             IsAcquired = false;
+            
+            ControllerDescriptor = INVALID_CONTROLLER;
+            ControllerID = 0;
         }
 
         public void Init()
@@ -279,16 +283,18 @@ namespace TRBot
                 return;
             }
 
-            long mid = (axisVals.Item2 - axisVals.Item1) / 2;
+            //Neutral is halfway between the min and max axes 
+            long half = (axisVals.Item2 - axisVals.Item1) / 2L;
+            int mid = (int)(axisVals.Item1 + half);
             int val = 0;
 
             if (min)
             {
-                val = (int)(mid - ((percent / 100f) * mid));
+                val = (int)(mid - ((percent / 100f) * half));
             }
             else
             {
-                val = (int)(mid + ((percent / 100f) * mid));
+                val = (int)(mid + ((percent / 100f) * half));
             }
 
             AxisCodeMap.TryGetValue(axis, out int uinputAxis);
@@ -303,7 +309,9 @@ namespace TRBot
                 return;
             }
 
-            int val = (int)((axisVals.Item2 - axisVals.Item1) / 2);
+            //Neutral is halfway between the min and max axes
+            long half = (axisVals.Item2 - axisVals.Item1) / 2L;
+            int val = (int)(axisVals.Item1 + half);
 
             AxisCodeMap.TryGetValue(axis, out int uinputAxis);
 

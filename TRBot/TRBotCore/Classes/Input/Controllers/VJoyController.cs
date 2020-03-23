@@ -182,16 +182,18 @@ namespace TRBot
                 return;
             }
 
-            long mid = (axisVals.Item2 - axisVals.Item1) / 2;
+            //Neutral is halfway between the min and max axes 
+            long half = (axisVals.Item2 - axisVals.Item1) / 2L;
+            int mid = (int)(axisVals.Item1 + half);
             int val = 0;
 
             if (min)
             {
-                val = (int)(mid - ((percent / 100f) * mid));
+                val = (int)(mid - ((percent / 100f) * half));
             }
             else
             {
-                val = (int)(mid + ((percent / 100f) * mid));
+                val = (int)(mid + ((percent / 100f) * half));
             }
 
             AxisCodeMap.TryGetValue(axis, out int vJoyAxis);
@@ -206,7 +208,9 @@ namespace TRBot
                 return;
             }
 
-            int val = (int)((axisVals.Item2 - axisVals.Item1) / 2);
+            //Neutral is halfway between the min and max axes
+            long half = (axisVals.Item2 - axisVals.Item1) / 2L;
+            int val = (int)(axisVals.Item1 + half);
 
             AxisCodeMap.TryGetValue(axis, out int vJoyAxis);
 
