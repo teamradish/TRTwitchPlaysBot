@@ -7,7 +7,7 @@ This Twitch bot contains many features that facilitate handling Twitch Plays gam
 
 ## Features
 * Powerful input parser with a flexible, expressive syntax - provided by JDog (aka TwitchPlays_Everything) and converted to C# by [tdeeb](https://github.com/tdeeb) (aka Kimimaru)
-* Efficient vJoy controller handling with simple methods to press and release input buttons and axes
+* Virtual controller handling through a simple interface with currently two implementations: vJoy (Windows) and uinput (Linux)
 * Performant multi-threaded input handler with support for stopping all ongoing inputs
 * Flexible console infrastructure - supports NES, SNES, N64, GC, Wii, and more that can be easily added
 * Powerful Twitch Plays features - macros, savestate support, game logs, and silencing users (without having to timeout on Twitch)
