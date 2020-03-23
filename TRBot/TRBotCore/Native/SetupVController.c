@@ -1,17 +1,14 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <linux/input.h>
-#include <linux/uinput.h>
+#include "SetupVController.h"
 
-#define MIN_CONTROLLERS 1
-#define MAX_CONTROLLERS 16
+int GetMinControllers()
+{
+    return MIN_CONTROLLERS;
+}
 
-int NumControllers = 1;
-int Descriptors[MAX_CONTROLLERS];   
+int GetMaxControllers()
+{
+    return MAX_CONTROLLERS;
+}
 
 int Emit(int fd, int eventType, int eventCode, int eventValue)
 {
@@ -23,40 +20,38 @@ int Emit(int fd, int eventType, int eventCode, int eventValue)
     return write(fd, &ie, sizeof(ie));
 }
 
-void UpdateJoystick(int index)
+void UpdateJoystick(int fd)
 {
-    if (Emit(Descriptors[index], EV_SYN, SYN_REPORT, 0) < 0)
+    if (Emit(fd, EV_SYN, SYN_REPORT, 0) < 0)
     {
         printf("Error: UpdateJoystick()");
     }
 }
 
-void PressReleaseButton(int index, int button, int press)
+void PressReleaseButton(int fd, int button, int press)
 {
-    if (Emit(Descriptors[index], EV_KEY, button, press) < 0)
+    if (Emit(fd, EV_KEY, button, press) < 0)
     {
         printf("Error: PressReleaseButton() | Button: %d | Press: %d", button, press);
     }
 }
 
-void PressAxis(int index, int axis, int value)
+void PressAxis(int fd, int axis, int value)
 {
-    if (Emit(Descriptors[index], EV_ABS, axis, value) < 0)
+    if (Emit(fd, EV_ABS, axis, value) < 0)
     {
         printf("Error: PressAxis() | Axis: %d | Value: %d", axis, value);
     }
 }
 
-void SetupController(int index)
+int CreateController(int index)
 {
     int fd = open("/dev/uinput", O_WRONLY | O_NONBLOCK); //opening of uinput
     if (fd < 0)
     {
         printf("Opening of uinput at index %d failed!\n", index);
-        return;
+        return INVALID_CONTROLLER;
     }
-    
-    Descriptors[index] = fd;
     
     printf("Opened uinput descriptor %d at index %d\n", fd, index);
     
@@ -95,7 +90,7 @@ void SetupController(int index)
     ioctl(fd, UI_SET_KEYBIT, BTN_THUMB);
     ioctl(fd, UI_SET_KEYBIT, BTN_THUMB2);
     
-    //Set up the gamepad axes - 6 in total
+    //Set up the gamepad axes - 8 in total
     ioctl(fd, UI_SET_EVBIT, EV_ABS);
     ioctl(fd, UI_SET_ABSBIT, ABS_X);
     ioctl(fd, UI_SET_ABSBIT, ABS_Y);
@@ -103,6 +98,8 @@ void SetupController(int index)
     ioctl(fd, UI_SET_ABSBIT, ABS_RX);
     ioctl(fd, UI_SET_ABSBIT, ABS_RY);
     ioctl(fd, UI_SET_ABSBIT, ABS_RZ);
+    ioctl(fd, UI_SET_ABSBIT, ABS_HAT0X);
+    ioctl(fd, UI_SET_ABSBIT, ABS_HAT0Y);
     
     struct uinput_user_dev uidev; //setting the default settings of Gamepad
     memset(&uidev, 0, sizeof(uidev));					   
@@ -142,20 +139,45 @@ void SetupController(int index)
     uidev.absfuzz[ABS_RZ] = 0;
     uidev.absflat[ABS_RZ] = 16;
     
+    uidev.absmax[ABS_HAT0X] = 32767; 
+    uidev.absmin[ABS_HAT0X] = -32767;
+    uidev.absfuzz[ABS_HAT0X] = 0;
+    uidev.absflat[ABS_HAT0X] = 16;
+    
+    uidev.absmax[ABS_HAT0Y] = 32767; 
+    uidev.absmin[ABS_HAT0Y] = -32767;
+    uidev.absfuzz[ABS_HAT0Y] = 0;
+    uidev.absflat[ABS_HAT0Y] = 16;
+    
     if(write(fd, &uidev, sizeof(uidev)) < 0) //writing settings
     {
         printf("error: write at index %d\n", index);
-        return;
+        return INVALID_CONTROLLER;
     }
+    
     if(ioctl(fd, UI_DEV_CREATE) < 0) //writing ui dev create
     {
         printf("error: ui_dev_create at index %d\n", index);
+        return INVALID_CONTROLLER;
+    }
+    
+    return fd;
+}
+
+void CloseController(int fd)
+{
+    if (ioctl(fd, UI_DEV_DESTROY) < 0)
+    {
+        printf("Error destroying device with descriptor %d\n", fd);
         return;
     }
+    
+    close(fd);
 }
 
 int main(int argc, char* argv[])
 {
+    int NumControllers = 1;
     if (argc > 1)
     {
         NumControllers = atoi(argv[1]);
@@ -174,9 +196,11 @@ int main(int argc, char* argv[])
 
     printf("Starting application with %d controllers\n", NumControllers);
     
+    int Descriptors[MAX_CONTROLLERS];
+    
     for (int i = 0; i < NumControllers; i++)
     {
-        SetupController(i);
+        Descriptors[i] = CreateController(i);
     }
     
     char prev = 0;
@@ -188,108 +212,78 @@ int main(int argc, char* argv[])
             continue;
         
         prev = c;
+        int descriptor = Descriptors[0];
         
         if (c == 'r')
         {
-            PressReleaseButton(0, BTN_A, 0);
-            UpdateJoystick(0);
+            PressReleaseButton(descriptor, BTN_A, 0);
+            UpdateJoystick(descriptor);
         }
         else if (c == 'p')
         {
-            PressReleaseButton(0, BTN_A, 1);
-            UpdateJoystick(0);
+            PressReleaseButton(descriptor, BTN_A, 1);
+            UpdateJoystick(descriptor);
         }
         else if (c == 'a')
         {
-            PressAxis(0, ABS_X, -32767);
-            UpdateJoystick(0);
+            PressAxis(descriptor, ABS_X, -32767);
+            UpdateJoystick(descriptor);
         }
         else if (c == 'w')
         {
-            PressAxis(0, ABS_Y, -32767);
-            UpdateJoystick(0);
+            PressAxis(descriptor, ABS_Y, -32767);
+            UpdateJoystick(descriptor);
         }
         else if (c == 's')
         {
-            PressAxis(0, ABS_Y, 32767);
-            UpdateJoystick(0);
+            PressAxis(descriptor, ABS_Y, 32767);
+            UpdateJoystick(descriptor);
         }
         else if (c == 'd')
         {
-            PressAxis(0, ABS_X, 32767);
-            UpdateJoystick(0);
+            PressAxis(descriptor, ABS_X, 32767);
+            UpdateJoystick(descriptor);
         }
         else if (c == 'z')
         {
-            PressAxis(0, ABS_X, 0);
-            UpdateJoystick(0);
+            PressAxis(descriptor, ABS_X, 0);
+            UpdateJoystick(descriptor);
         }
         else if (c == 'x')
         {
-            PressAxis(0, ABS_Y, 0);
-            UpdateJoystick(0);
+            PressAxis(descriptor, ABS_Y, 0);
+            UpdateJoystick(descriptor);
         }
         else if (c == 'f')
         {
-            PressAxis(0, ABS_Z, 32767);
-            UpdateJoystick(0);
+            PressAxis(descriptor, ABS_Z, 32767);
+            UpdateJoystick(descriptor);
         }
         else if (c == 'g')
         {
-            PressAxis(0, ABS_RZ, 32767);
-            UpdateJoystick(0);
+            PressAxis(descriptor, ABS_RZ, 32767);
+            UpdateJoystick(descriptor);
         }
         else if (c == 'v')
         {
-            PressAxis(0, ABS_Z, 0);
-            UpdateJoystick(0);
+            PressAxis(descriptor, ABS_Z, 0);
+            UpdateJoystick(descriptor);
         }
         else if (c == 'b')
         {
-            PressAxis(0, ABS_RZ, 0);
-            UpdateJoystick(0);
+            PressAxis(descriptor, ABS_RZ, 0);
+            UpdateJoystick(descriptor);
         }
-        
-        /*continue;
-        memset(&ev, 0, sizeof(struct input_event)); //setting the memory for event
-        ev.type = EV_KEY;
-        ev.code = BTN_X;
-        ev.value = !toggle;
-        toggle = !toggle;
-        if(write(fd, &ev, sizeof(struct input_event)) < 0) //writing the key change
-        {
-            printf("error: key-write");
-            return 1;
-        }
-        memset(&ev, 0, sizeof(struct input_event)); //setting the memory for event
-        ev.type = EV_ABS;
-        ev.code = ABS_X;
-        ev.value = toggle == 1 ? 256 : 0;
-        if(write(fd, &ev, sizeof(struct input_event)) < 0) //writing the thumbstick change
-        {
-            printf("error: thumbstick-write");
-            return 1;
-        }
-        memset(&ev, 0, sizeof(struct input_event));
-        ev.type = EV_SYN;
-        ev.code = SYN_REPORT;
-        ev.value = 0;
-        if(write(fd, &ev, sizeof(struct input_event)) < 0) //writing the sync report
-        {
-            printf("error: sync-report");
-            return 1;
-        }*/
     }
+    
+    sleep(1);
     
     for (int i = 0; i < NumControllers; i++)
     {
-        if (ioctl(Descriptors[i], UI_DEV_DESTROY) < 0)
-        {
-            printf("Error destroying device at index %d\n", i);
-            continue;
-        } 
+        int val = Descriptors[i];
+        CloseController(Descriptors[i]);
         
-        close(Descriptors[i]);
+        printf("Descriptor at %d was %d and is now %d\n", i, val, Descriptors[i]);
     }
     
     return 0;
