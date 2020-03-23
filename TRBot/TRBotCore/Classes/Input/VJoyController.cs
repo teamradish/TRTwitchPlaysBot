@@ -10,27 +10,6 @@ namespace TRBot
     public class VJoyController : IDisposable
     {
         /// <summary>
-        /// The method of feeding inputs to the device.
-        /// </summary>
-        public enum DeviceFeedMethod
-        {
-            /// <summary>
-            /// Less efficient but easier to work with.
-            /// </summary>
-            Robust,
-
-            /// <summary>
-            /// More efficient, as it updates the driver less frequently, but harder to work with.
-            /// </summary>
-            Efficient
-        }
-
-        /// <summary>
-        /// The method of feeding inputs to the vJoy driver.
-        /// </summary>
-        public static DeviceFeedMethod InputFeedMethod = DeviceFeedMethod.Efficient;
-
-        /// <summary>
         /// Minimum acceptable vJoy device ID.
         /// </summary>
         public const uint MIN_VJOY_DEVICE_ID = 1;
@@ -108,14 +87,7 @@ namespace TRBot
             if (Initialized == false)
                 return;
 
-            if (InputFeedMethod == DeviceFeedMethod.Robust)
-            {
-                VJoyInstance.ResetButtons(ControllerID);
-            }
-            else
-            {
-                JSState.Buttons = JSState.ButtonsEx1 = JSState.ButtonsEx2 = JSState.ButtonsEx3 = 0;
-            }
+            JSState.Buttons = JSState.ButtonsEx1 = JSState.ButtonsEx2 = JSState.ButtonsEx3 = 0;
 
             foreach (KeyValuePair<HID_USAGES, (long, long)> val in MinMaxAxes)
             {
@@ -201,14 +173,7 @@ namespace TRBot
                 val = (int)(mid + ((percent / 100f) * mid));
             }
 
-            if (InputFeedMethod == DeviceFeedMethod.Robust)
-            {
-                VJoyInstance.SetAxis(val, ControllerID, axis);
-            }
-            else
-            {
-                SetAxisEfficient(axis, val);
-            }
+            SetAxisEfficient(axis, val);
         }
 
         public void PressAbsoluteAxis(in HID_USAGES axis, in int percent)
@@ -220,14 +185,7 @@ namespace TRBot
 
             int val = (int)(axisVals.Item2 * (percent / 100f));
 
-            if (InputFeedMethod == DeviceFeedMethod.Robust)
-            {
-                VJoyInstance.SetAxis(val, ControllerID, axis);
-            }
-            else
-            {
-                SetAxisEfficient(axis, val);
-            }
+            SetAxisEfficient(axis, val);
         }
 
         public void ReleaseAbsoluteAxis(in HID_USAGES axis)
@@ -237,14 +195,7 @@ namespace TRBot
                 return;
             }
 
-            if (InputFeedMethod == DeviceFeedMethod.Robust)
-            {
-                VJoyInstance.SetAxis(0, ControllerID, axis);
-            }
-            else
-            {
-                SetAxisEfficient(axis, 0);
-            }
+            SetAxisEfficient(axis, 0);
         }
 
         public void ReleaseAxis(in HID_USAGES axis)
@@ -255,41 +206,28 @@ namespace TRBot
             }
 
             int val = (int)((axisVals.Item2 - axisVals.Item1) / 2);
-            if (InputFeedMethod == DeviceFeedMethod.Robust)
-            {
-                VJoyInstance.SetAxis(val, ControllerID, axis);
-            }
-            else
-            {
-                SetAxisEfficient(axis, val);
-            }
+            
+            SetAxisEfficient(axis, val);
         }
 
         public void PressButton(in string buttonName)
         {
             uint buttonVal = InputGlobals.CurrentConsole.ButtonInputMap[buttonName];
 
-            if (InputFeedMethod == DeviceFeedMethod.Robust)
-            {
-                VJoyInstance.SetBtn(true, ControllerID, buttonVal);
-            }
-            else
-            {
-                //Kimimaru: Handle button counts greater than 32
-                //Each buttons value contains 32 bits, so choose the appropriate one based on the value of the button pressed
-                //Note that not all emulators (such as Dolphin) support more than 32 buttons
-                int buttonDiv = ((int)buttonVal - 1);
-                int divVal = buttonDiv / 32;
-                int realVal = buttonDiv - (32 * divVal);
-                uint addition = (uint)(1 << realVal);
+            //Kimimaru: Handle button counts greater than 32
+            //Each buttons value contains 32 bits, so choose the appropriate one based on the value of the button pressed
+            //Note that not all emulators (such as Dolphin) support more than 32 buttons
+            int buttonDiv = ((int)buttonVal - 1);
+            int divVal = buttonDiv / 32;
+            int realVal = buttonDiv - (32 * divVal);
+            uint addition = (uint)(1 << realVal);
 
-                switch (divVal)
-                {
-                    case 0: JSState.Buttons |= addition; break;
-                    case 1: JSState.ButtonsEx1 |= addition; break;
-                    case 2: JSState.ButtonsEx2 |= addition; break;
-                    case 3: JSState.ButtonsEx3 |= addition; break;
-                }
+            switch (divVal)
+            {
+                case 0: JSState.Buttons |= addition; break;
+                case 1: JSState.ButtonsEx1 |= addition; break;
+                case 2: JSState.ButtonsEx2 |= addition; break;
+                case 3: JSState.ButtonsEx3 |= addition; break;
             }
         }
 
@@ -297,27 +235,20 @@ namespace TRBot
         {
             uint buttonVal = InputGlobals.CurrentConsole.ButtonInputMap[buttonName];
 
-            if (InputFeedMethod == DeviceFeedMethod.Robust)
-            {
-                VJoyInstance.SetBtn(false, ControllerID, buttonVal);
-            }
-            else
-            {
-                //Kimimaru: Handle button counts greater than 32
-                //Each buttons value contains 32 bits, so choose the appropriate one based on the value of the button pressed
-                //Note that not all emulators (such as Dolphin) support more than 32 buttons
-                int buttonDiv = ((int)buttonVal - 1);
-                int divVal = buttonDiv / 32;
-                int realVal = buttonDiv - (32 * divVal);
-                uint inverse = ~(uint)(1 << realVal);
+            //Kimimaru: Handle button counts greater than 32
+            //Each buttons value contains 32 bits, so choose the appropriate one based on the value of the button pressed
+            //Note that not all emulators (such as Dolphin) support more than 32 buttons
+            int buttonDiv = ((int)buttonVal - 1);
+            int divVal = buttonDiv / 32;
+            int realVal = buttonDiv - (32 * divVal);
+            uint inverse = ~(uint)(1 << realVal);
 
-                switch (divVal)
-                {
-                    case 0: JSState.Buttons &= inverse; break;
-                    case 1: JSState.ButtonsEx1 &= inverse; break;
-                    case 2: JSState.ButtonsEx2 &= inverse; break;
-                    case 3: JSState.ButtonsEx3 &= inverse; break;
-                }
+            switch (divVal)
+            {
+                case 0: JSState.Buttons &= inverse; break;
+                case 1: JSState.ButtonsEx1 &= inverse; break;
+                case 2: JSState.ButtonsEx2 &= inverse; break;
+                case 3: JSState.ButtonsEx3 &= inverse; break;
             }
         }
 
@@ -345,15 +276,12 @@ namespace TRBot
         }
 
         /// <summary>
-        /// Updates the joystick when using the <see cref="DeviceFeedMethod.Efficient"/> method of feeding input.
+        /// Updates the joystick.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void UpdateJoystickEfficient()
         {
-            if (InputFeedMethod == DeviceFeedMethod.Efficient)
-            {
-                VJoyInstance.UpdateVJD(ControllerID, ref JSState);
-            }
+            VJoyInstance.UpdateVJD(ControllerID, ref JSState);
         }
 
         /// <summary>
