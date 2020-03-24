@@ -58,8 +58,8 @@ namespace TRBot
         void PressAbsoluteAxis(in int axis, in int percent);
         void ReleaseAbsoluteAxis(in int axis);
 
-        void PressButton(in string buttonName);
-        void ReleaseButton(in string buttonName);
+        void PressButton(in uint buttonVal);
+        void ReleaseButton(in uint buttonVal);
 
         /// <summary>
         /// Updates the virtual device by applying all changes.

@@ -25,6 +25,45 @@ namespace TRBot
         };
 
         /// <summary>
+        /// The mapping from button number to button code.
+        /// </summary>
+        private static readonly Dictionary<int, int> ButtonCodeMap = new Dictionary<int, int>(32)
+        {
+            { (int)GlobalButtonVals.BTN1,       0 },
+            { (int)GlobalButtonVals.BTN2,       1 },
+            { (int)GlobalButtonVals.BTN3,       2 },
+            { (int)GlobalButtonVals.BTN4,       3 },
+            { (int)GlobalButtonVals.BTN5,       4 },
+            { (int)GlobalButtonVals.BTN6,       5 },
+            { (int)GlobalButtonVals.BTN7,       6 },
+            { (int)GlobalButtonVals.BTN8,       7 },
+            { (int)GlobalButtonVals.BTN9,       8 },
+            { (int)GlobalButtonVals.BTN10,      9 },
+            { (int)GlobalButtonVals.BTN11,      10 },
+            { (int)GlobalButtonVals.BTN12,      11 },
+            { (int)GlobalButtonVals.BTN13,      12 },
+            { (int)GlobalButtonVals.BTN14,      13 },
+            { (int)GlobalButtonVals.BTN15,      14 },
+            { (int)GlobalButtonVals.BTN16,      15 },
+            { (int)GlobalButtonVals.BTN17,      16 },
+            { (int)GlobalButtonVals.BTN18,      17 },
+            { (int)GlobalButtonVals.BTN19,      18 },
+            { (int)GlobalButtonVals.BTN20,      19 },
+            { (int)GlobalButtonVals.BTN21,      20 },
+            { (int)GlobalButtonVals.BTN22,      21 },
+            { (int)GlobalButtonVals.BTN23,      22 },
+            { (int)GlobalButtonVals.BTN24,      23 },
+            { (int)GlobalButtonVals.BTN25,      24 },
+            { (int)GlobalButtonVals.BTN26,      25 },
+            { (int)GlobalButtonVals.BTN27,      26 },
+            { (int)GlobalButtonVals.BTN28,      27 },
+            { (int)GlobalButtonVals.BTN29,      28 },
+            { (int)GlobalButtonVals.BTN30,      29 },
+            { (int)GlobalButtonVals.BTN31,      30 },
+            { (int)GlobalButtonVals.BTN32,      31 }
+        };
+
+        /// <summary>
         /// The ID of the controller.
         /// </summary>
         public uint ControllerID { get; private set; } = 0;
@@ -132,7 +171,7 @@ namespace TRBot
                 PressAbsoluteAxis(InputGlobals.CurrentConsole.InputAxes[input.name], input.percent);
 
                 //Kimimaru: In the case of L and R buttons on GCN, when the axes are pressed, the buttons should be released
-                ReleaseButton(input.name);
+                ReleaseButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name]);
             }
             else if (InputGlobals.CurrentConsole.GetAxis(input, out int axis) == true)
             {
@@ -140,7 +179,7 @@ namespace TRBot
             }
             else if (InputGlobals.CurrentConsole.IsButton(input) == true)
             {
-                PressButton(input.name);
+                PressButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name]);
 
                 //Kimimaru: In the case of L and R buttons on GCN, when the buttons are pressed, the axes should be released
                 if (InputGlobals.CurrentConsole.InputAxes.TryGetValue(input.name, out int value) == true)
@@ -157,7 +196,7 @@ namespace TRBot
                 ReleaseAbsoluteAxis(InputGlobals.CurrentConsole.InputAxes[input.name]);
 
                 //Kimimaru: In the case of L and R buttons on GCN, when the axes are released, the buttons should be too
-                ReleaseButton(input.name);
+                ReleaseButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name]);
             }
             else if (InputGlobals.CurrentConsole.GetAxis(input, out int axis) == true)
             {
@@ -165,7 +204,7 @@ namespace TRBot
             }
             else if (InputGlobals.CurrentConsole.IsButton(input) == true)
             {
-                ReleaseButton(input.name);
+                ReleaseButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name]);
 
                 //Kimimaru: In the case of L and R buttons on GCN, when the buttons are released, the axes should be too
                 if (InputGlobals.CurrentConsole.InputAxes.TryGetValue(input.name, out int value) == true)
@@ -177,6 +216,12 @@ namespace TRBot
 
         public void PressAxis(in int axis, in bool min, in int percent)
         {
+            //Not a valid axis - defaulting to 0 results in the wrong axis being set
+            if (AxisCodeMap.TryGetValue(axis, out int vJoyAxis) == false)
+            {
+                return;
+            }
+
             if (MinMaxAxes.TryGetValue(axis, out (long, long) axisVals) == false)
             {
                 return;
@@ -196,13 +241,17 @@ namespace TRBot
                 val = (int)(mid + ((percent / 100f) * half));
             }
 
-            AxisCodeMap.TryGetValue(axis, out int vJoyAxis);
-
             SetAxisEfficient(vJoyAxis, val);
         }
 
         public void ReleaseAxis(in int axis)
         {
+            //Not a valid axis - defaulting to 0 results in the wrong axis being set
+            if (AxisCodeMap.TryGetValue(axis, out int vJoyAxis) == false)
+            {
+                return;
+            }
+
             if (MinMaxAxes.TryGetValue(axis, out (long, long) axisVals) == false)
             {
                 return;
@@ -212,13 +261,17 @@ namespace TRBot
             long half = (axisVals.Item2 - axisVals.Item1) / 2L;
             int val = (int)(axisVals.Item1 + half);
 
-            AxisCodeMap.TryGetValue(axis, out int vJoyAxis);
-
             SetAxisEfficient(vJoyAxis, val);
         }
 
         public void PressAbsoluteAxis(in int axis, in int percent)
         {
+            //Not a valid axis - defaulting to 0 results in the wrong axis being set
+            if (AxisCodeMap.TryGetValue(axis, out int vJoyAxis) == false)
+            {
+                return;
+            }
+
             if (MinMaxAxes.TryGetValue(axis, out (long, long) axisVals) == false)
             {
                 return;
@@ -226,33 +279,38 @@ namespace TRBot
 
             int val = (int)(axisVals.Item2 * (percent / 100f));
 
-            AxisCodeMap.TryGetValue(axis, out int vJoyAxis);
-
             SetAxisEfficient(vJoyAxis, val);
         }
 
         public void ReleaseAbsoluteAxis(in int axis)
         {
+            //Not a valid axis - defaulting to 0 results in the wrong axis being set
+            if (AxisCodeMap.TryGetValue(axis, out int vJoyAxis) == false)
+            {
+                return;
+            }
+
             if (MinMaxAxes.ContainsKey(axis) == false)
             {
                 return;
             }
 
-            AxisCodeMap.TryGetValue(axis, out int vJoyAxis);
-
             SetAxisEfficient(vJoyAxis, 0);
         }
 
-        public void PressButton(in string buttonName)
+        public void PressButton(in uint buttonVal)
         {
-            uint buttonVal = InputGlobals.CurrentConsole.ButtonInputMap[buttonName];
+            //Not a valid button - defaulting to 0 results in the wrong button being pressed/released
+            if (ButtonCodeMap.TryGetValue((int)buttonVal, out int button) == false)
+            {
+                return;
+            }
 
             //Kimimaru: Handle button counts greater than 32
             //Each buttons value contains 32 bits, so choose the appropriate one based on the value of the button pressed
             //Note that not all emulators (such as Dolphin) support more than 32 buttons
-            int buttonDiv = ((int)buttonVal - 1);
-            int divVal = buttonDiv / 32;
-            int realVal = buttonDiv - (32 * divVal);
+            int divVal = button / 32;
+            int realVal = button - (32 * divVal);
             uint addition = (uint)(1 << realVal);
 
             switch (divVal)
@@ -264,16 +322,19 @@ namespace TRBot
             }
         }
 
-        public void ReleaseButton(in string buttonName)
+        public void ReleaseButton(in uint buttonVal)
         {
-            uint buttonVal = InputGlobals.CurrentConsole.ButtonInputMap[buttonName];
+            //Not a valid button - defaulting to 0 results in the wrong button being pressed/released
+            if (ButtonCodeMap.TryGetValue((int)buttonVal, out int button) == false)
+            {
+                return;
+            }
 
             //Kimimaru: Handle button counts greater than 32
             //Each buttons value contains 32 bits, so choose the appropriate one based on the value of the button pressed
             //Note that not all emulators (such as Dolphin) support more than 32 buttons
-            int buttonDiv = ((int)buttonVal - 1);
-            int divVal = buttonDiv / 32;
-            int realVal = buttonDiv - (32 * divVal);
+            int divVal = button / 32;
+            int realVal = button - (32 * divVal);
             uint inverse = ~(uint)(1 << realVal);
 
             switch (divVal)

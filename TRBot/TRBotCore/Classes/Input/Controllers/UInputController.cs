@@ -233,7 +233,7 @@ namespace TRBot
                 PressAbsoluteAxis(InputGlobals.CurrentConsole.InputAxes[input.name], input.percent);
 
                 //Kimimaru: In the case of L and R buttons on GCN, when the axes are pressed, the buttons should be released
-                ReleaseButton(input.name);
+                ReleaseButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name]);
             }
             else if (InputGlobals.CurrentConsole.GetAxis(input, out int axis) == true)
             {
@@ -241,7 +241,7 @@ namespace TRBot
             }
             else if (InputGlobals.CurrentConsole.IsButton(input) == true)
             {
-                PressButton(input.name);
+                PressButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name]);
 
                 //Kimimaru: In the case of L and R buttons on GCN, when the buttons are pressed, the axes should be released
                 if (InputGlobals.CurrentConsole.InputAxes.TryGetValue(input.name, out int value) == true)
@@ -258,7 +258,7 @@ namespace TRBot
                 ReleaseAbsoluteAxis(InputGlobals.CurrentConsole.InputAxes[input.name]);
 
                 //Kimimaru: In the case of L and R buttons on GCN, when the axes are released, the buttons should be too
-                ReleaseButton(input.name);
+                ReleaseButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name]);
             }
             else if (InputGlobals.CurrentConsole.GetAxis(input, out int axis) == true)
             {
@@ -266,7 +266,7 @@ namespace TRBot
             }
             else if (InputGlobals.CurrentConsole.IsButton(input) == true)
             {
-                ReleaseButton(input.name);
+                ReleaseButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name]);
 
                 //Kimimaru: In the case of L and R buttons on GCN, when the buttons are released, the axes should be too
                 if (InputGlobals.CurrentConsole.InputAxes.TryGetValue(input.name, out int value) == true)
@@ -278,6 +278,12 @@ namespace TRBot
 
         public void PressAxis(in int axis, in bool min, in int percent)
         {
+            //Not a valid axis - defaulting to 0 results in the wrong axis being set
+            if (AxisCodeMap.TryGetValue(axis, out int uinputAxis) == false)
+            {
+                return;
+            }
+            
             if (MinMaxAxes.TryGetValue(axis, out (long, long) axisVals) == false)
             {
                 return;
@@ -297,13 +303,17 @@ namespace TRBot
                 val = (int)(mid + ((percent / 100f) * half));
             }
 
-            AxisCodeMap.TryGetValue(axis, out int uinputAxis);
-
             SetAxis(uinputAxis, val);
         }
 
         public void ReleaseAxis(in int axis)
         {
+            //Not a valid axis - defaulting to 0 results in the wrong axis being set
+            if (AxisCodeMap.TryGetValue(axis, out int uinputAxis) == false)
+            {
+                return;
+            }
+            
             if (MinMaxAxes.TryGetValue(axis, out (long, long) axisVals) == false)
             {
                 return;
@@ -313,51 +323,61 @@ namespace TRBot
             long half = (axisVals.Item2 - axisVals.Item1) / 2L;
             int val = (int)(axisVals.Item1 + half);
 
-            AxisCodeMap.TryGetValue(axis, out int uinputAxis);
-
             SetAxis(uinputAxis, val);
         }
 
         public void PressAbsoluteAxis(in int axis, in int percent)
         {
+            //Not a valid axis - defaulting to 0 results in the wrong axis being set
+            if (AxisCodeMap.TryGetValue(axis, out int uinputAxis) == false)
+            {
+                return;
+            }
+            
             if (MinMaxAxes.TryGetValue(axis, out (long, long) axisVals) == false)
             {
                 return;
             }
 
             int val = (int)(axisVals.Item2 * (percent / 100f));
-
-            AxisCodeMap.TryGetValue(axis, out int uinputAxis);
-
+            
             SetAxis(uinputAxis, val);
         }
 
         public void ReleaseAbsoluteAxis(in int axis)
         {
+            //Not a valid axis - defaulting to 0 results in the wrong axis being set
+            if (AxisCodeMap.TryGetValue(axis, out int uinputAxis) == false)
+            {
+                return;
+            }
+            
             if (MinMaxAxes.ContainsKey(axis) == false)
             {
                 return;
             }
 
-            AxisCodeMap.TryGetValue(axis, out int uinputAxis);
-
             SetAxis(uinputAxis, 0);
         }
 
-        public void PressButton(in string buttonName)
+        public void PressButton(in uint buttonVal)
         {
-            uint buttonVal = InputGlobals.CurrentConsole.ButtonInputMap[buttonName];
-
-            ButtonCodeMap.TryGetValue((int)buttonVal, out int button);
+            //Not a valid button - defaulting to 0 results in the wrong button being pressed/released
+            if (ButtonCodeMap.TryGetValue((int)buttonVal, out int button) == false)
+            {
+                return;
+            }
 
             NativeWrapperUInput.PressButton(ControllerDescriptor, button);
         }
 
-        public void ReleaseButton(in string buttonName)
+        public void ReleaseButton(in uint buttonVal)
         {
-            uint buttonVal = InputGlobals.CurrentConsole.ButtonInputMap[buttonName];
-
-            ButtonCodeMap.TryGetValue((int)buttonVal, out int button);
+            //Not a valid button - defaulting to 0 results in the wrong button being pressed/released
+            if (ButtonCodeMap.TryGetValue((int)buttonVal, out int button) == false)
+            {
+                return;
+            }
 
             NativeWrapperUInput.ReleaseButton(ControllerDescriptor, button);
         }
