@@ -27,6 +27,7 @@ namespace TRBot
             N64,
             GC,
             Wii,
+            PS2,
             Custom
         }
 
@@ -43,6 +44,7 @@ namespace TRBot
             { InputConsoles.N64, new N64Console() },
             { InputConsoles.GC, new GCConsole() },
             { InputConsoles.Wii, new WiiConsole() },
+            { InputConsoles.PS2, new PS2Console() },
             { InputConsoles.Custom, new CustomConsole() }
         };
 
