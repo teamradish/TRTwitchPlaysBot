@@ -28,6 +28,7 @@ namespace TRBot
             GC,
             Wii,
             PS2,
+            PC,
             Custom
         }
 
@@ -45,13 +46,14 @@ namespace TRBot
             { InputConsoles.GC, new GCConsole() },
             { InputConsoles.Wii, new WiiConsole() },
             { InputConsoles.PS2, new PS2Console() },
+            { InputConsoles.PC, new PCConsole() },
             { InputConsoles.Custom, new CustomConsole() }
         };
 
         /// <summary>
         /// The console value associated with the current console inputs are being sent for.
         /// </summary>
-        public static InputConsoles CurrentConsoleVal { get; private set; } = InputConsoles.GC;
+        public static InputConsoles CurrentConsoleVal { get; private set; } = InputConsoles.NES;
 
         /// <summary>
         /// The current console inputs are being sent for.
