@@ -1,17 +1,17 @@
 # TRTwitchPlaysBot
 [Example of an advanced command](https://tdeeb.github.io/projects/images/TRBot/TRBot_AdvancedCommands.gif)
 
-A TwitchPlays bot for Team Radish. Continuing the legacy of TwitchPlays_Everything.
+A Twitch bot that contains many features to facilitate handling Twitch Plays games. It uses [TwitchLib](https://github.com/TwitchLib/TwitchLib) to handle Twitch connection.
 
-This Twitch bot contains many features that facilitate handling Twitch Plays games. It uses [TwitchLib](https://github.com/TwitchLib/TwitchLib) to handle Twitch connection.
+The bot is inspired by TwitchPlays_Everything; the input syntax allows for great precision, making it well-suited for 2D and 3D games of any kind.
 
 ## Features
-* Powerful input parser with a flexible, expressive syntax - provided by JDog (aka TwitchPlays_Everything) and converted to C# by [tdeeb](https://github.com/tdeeb) (aka Kimimaru)
+* Powerful input parser with a flexible, expressive syntax - original Python implementation by TwitchPlays_Everything, improved and converted to C#.
 * Virtual controller handling through a simple interface with currently two implementations: vJoy (Windows) and uinput (Linux)
 * Performant multi-threaded input handler with support for stopping all ongoing inputs
-* Flexible console infrastructure - supports NES, SNES, N64, GC, Wii, and more that can be easily added
+* Flexible console infrastructure - supports NES, SNES, N64, GC, Wii, and more that can be added
 * Powerful Twitch Plays features - macros, savestate support, game logs, and silencing users (without having to timeout on Twitch)
-* User data with access levels that restrict/allow access to certain commands
+* User data with access levels that restrict or allow access to commands and inputs
 * Several additional bot goodies and games, such as dueling, jump rope, and memes
 
 ## Getting Started
