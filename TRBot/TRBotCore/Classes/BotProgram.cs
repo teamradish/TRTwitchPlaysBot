@@ -52,8 +52,6 @@ namespace TRBot
         //Throttler
         private Stopwatch Throttler = new Stopwatch();
 
-        public static IVirtualControllerManager ControllerMngr { get; private set; } = null;
-
         /// <summary>
         /// Whether to ignore logging bot messages to the console based on potential console logs from the <see cref="ExecCommand"/>.
         /// </summary>
@@ -102,7 +100,7 @@ namespace TRBot
                 Client.Disconnect();
 
             //Clean up and relinquish the devices when we're done
-            ControllerMngr?.CleanUp();
+            InputGlobals.ControllerMngr?.CleanUp();
 
             instance = null;
         }
@@ -180,16 +178,16 @@ namespace TRBot
             AddRoutine(new CreditsGiveRoutine());
             AddRoutine(new ReconnectRoutine());
 
-            //Initialize controller input
-#if WINDOWS
-            Console.WriteLine("On Windows; setting up vJoy");
-            ControllerMngr = new VJoyControllerManager();
-#else
-            Console.WriteLine("On Linux; setting up UInput");
-            ControllerMngr = new UInputControllerManager();          
-#endif
+            //Initialize controller input - validate the controller type first
+            if (InputGlobals.IsVControllerSupported((InputGlobals.VControllerTypes)BotData.LastVControllerType) == false)
+            {
+                BotData.LastVControllerType = (int)InputGlobals.GetDefaultSupportedVControllerType();
+            }
 
-            ControllerMngr.Initialize();
+            InputGlobals.VControllerTypes vCType = (InputGlobals.VControllerTypes)BotData.LastVControllerType;
+            Console.WriteLine($"Setting up virtual controller {vCType}");
+            
+            InputGlobals.SetVirtualController(vCType);
 
             Initialized = true;
         }
@@ -330,7 +328,11 @@ namespace TRBot
 
         private void OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
-            QueueMessage($"{LoginInformation.BotName} has connected :D ! Use {Globals.CommandIdentifier}help to display a list of commands and {Globals.CommandIdentifier}tutorial to see how to play! Input parser by Jdog, aka TwitchPlays_Everything, converted & modified by Kimimaru");
+            if (string.IsNullOrEmpty(BotSettings.ConnectMessage) == false)
+            {
+                string finalMsg = BotSettings.ConnectMessage.Replace("{0}", LoginInformation.BotName).Replace("{1}", Globals.CommandIdentifier.ToString());
+                QueueMessage(finalMsg);
+            }
 
             Console.WriteLine($"Joined channel \"{e.Channel}\"");
 
@@ -436,15 +438,15 @@ namespace TRBot
                         //Validate that the controller is acquired and exists
                         int controllerNum = userData.Team;
 
-                        if (controllerNum < 0 || controllerNum >= ControllerMngr.ControllerCount)
+                        if (controllerNum < 0 || controllerNum >= InputGlobals.ControllerMngr.ControllerCount)
                         {
-                            BotProgram.QueueMessage($"ERROR: Invalid joystick number {controllerNum + 1}. # of joysticks: {ControllerMngr.ControllerCount}. Please change your controller port to a valid number to perform inputs.");
+                            BotProgram.QueueMessage($"ERROR: Invalid joystick number {controllerNum + 1}. # of joysticks: {InputGlobals.ControllerMngr.ControllerCount}. Please change your controller port to a valid number to perform inputs.");
                             shouldPerformInput = false;
                         }
                         //Now verify that the controller has been acquired
-                        else if (ControllerMngr.GetController(controllerNum).IsAcquired == false)
+                        else if (InputGlobals.ControllerMngr.GetController(controllerNum).IsAcquired == false)
                         {
-                            BotProgram.QueueMessage($"ERROR: Joystick number {controllerNum + 1} with controller ID of {ControllerMngr.GetController(controllerNum).ControllerID} has not been acquired! Ensure you (the streamer) have a virtual device set up at this ID.");
+                            BotProgram.QueueMessage($"ERROR: Joystick number {controllerNum + 1} with controller ID of {InputGlobals.ControllerMngr.GetController(controllerNum).ControllerID} has not been acquired! Ensure you (the streamer) have a virtual device set up at this ID.");
                             shouldPerformInput = false;
                         }
 
@@ -616,6 +618,11 @@ namespace TRBot
             public double MessageCooldown = 1000d;
             public double CreditsTime = 2d;
             public long CreditsAmount = 100L;
+
+            /// <summary>
+            /// The message to send when the bot connects to a channel. "{0}" is replaced with the name of the bot and "{1}" is replaced with the command identifier.
+            /// </summary>
+            public string ConnectMessage = "{0} has connected :D ! Use {1}help to display a list of commands and {1}tutorial to see how to play! Original input parser by Jdog, aka TwitchPlays_Everything, converted to C# & improved by the community.";
 
             /// <summary>
             /// If true, automatically whitelists users if conditions are met, including the command count.

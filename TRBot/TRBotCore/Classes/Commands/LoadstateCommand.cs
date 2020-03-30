@@ -56,7 +56,7 @@ namespace TRBot
             }
 
             //Load states are always performed on the first controller
-            IVirtualController joystick = BotProgram.ControllerMngr.GetController(0);
+            IVirtualController joystick = InputGlobals.ControllerMngr.GetController(0);
             joystick.PressButton(InputGlobals.CurrentConsole.ButtonInputMap[loadStateStr]);
             joystick.UpdateController();
 

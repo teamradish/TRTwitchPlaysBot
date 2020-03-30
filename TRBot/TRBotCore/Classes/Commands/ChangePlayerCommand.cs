@@ -26,9 +26,9 @@ namespace TRBot
                 return;
             }
 
-            if (portNum <= 0 || portNum > BotProgram.ControllerMngr.ControllerCount)
+            if (portNum <= 0 || portNum > InputGlobals.ControllerMngr.ControllerCount)
             {
-                BotProgram.QueueMessage($"Please specify a number in the range of 1 through the current controller count ({BotProgram.ControllerMngr.ControllerCount}).");
+                BotProgram.QueueMessage($"Please specify a number in the range of 1 through the current controller count ({InputGlobals.ControllerMngr.ControllerCount}).");
                 return;
             }
 

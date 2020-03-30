@@ -49,5 +49,11 @@ namespace TRBot
         /// The number of joysticks connected. You must have vJoy configured for this many joysticks.
         /// </summary>
         public int JoystickCount = 1;
+        
+        /// <summary>
+        /// The last type of virtual controller used.
+        /// This will be overwritten if on a platform that doesn't support a specific virtual controller.
+        /// </summary>
+        public int LastVControllerType = 0;
     }
 }

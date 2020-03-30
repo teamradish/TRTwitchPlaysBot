@@ -23,7 +23,7 @@ namespace TRBot
 
             if (args.Count != 1)
             {
-                BotProgram.QueueMessage($"Usage: \"# of controllers (min: {BotProgram.ControllerMngr.MinControllers}, max: {BotProgram.ControllerMngr.MaxControllers})\"");
+                BotProgram.QueueMessage($"Usage: \"# of controllers (min: {InputGlobals.ControllerMngr.MinControllers}, max: {InputGlobals.ControllerMngr.MaxControllers})\"");
                 return;
             }
 
@@ -33,15 +33,15 @@ namespace TRBot
                 return;
             }
 
-            if (newJoystickCount < BotProgram.ControllerMngr.MinControllers)
+            if (newJoystickCount < InputGlobals.ControllerMngr.MinControllers)
             {
-                BotProgram.QueueMessage($"Value is less than {BotProgram.ControllerMngr.MinControllers}!");
+                BotProgram.QueueMessage($"Value is less than {InputGlobals.ControllerMngr.MinControllers}!");
                 return;
             }
 
-            if (newJoystickCount > BotProgram.ControllerMngr.MaxControllers)
+            if (newJoystickCount > InputGlobals.ControllerMngr.MaxControllers)
             {
-                BotProgram.QueueMessage($"Value is greater than {BotProgram.ControllerMngr.MaxControllers}, which is the max number of supported controllers!");
+                BotProgram.QueueMessage($"Value is greater than {InputGlobals.ControllerMngr.MaxControllers}, which is the max number of supported controllers!");
                 return;
             }
 
@@ -63,7 +63,7 @@ namespace TRBot
             }
 
             //Reinitialize the virtual controllers
-            BotProgram.ControllerMngr.CleanUp();
+            InputGlobals.ControllerMngr.CleanUp();
 
             //Kimimaru: Time out so we don't softlock everything if all devices cannot be freed
             //While this is an issue if it happens, we'll let the streamer know without permanently suspending inputs
@@ -84,28 +84,28 @@ namespace TRBot
 
                 int freeCount = 0;
 
-                for (int i = 0; i < BotProgram.ControllerMngr.ControllerCount; i++)
+                for (int i = 0; i < InputGlobals.ControllerMngr.ControllerCount; i++)
                 {
-                    if (BotProgram.ControllerMngr.GetController(i).IsAcquired == false)
+                    if (InputGlobals.ControllerMngr.GetController(i).IsAcquired == false)
                     {
                         freeCount++;
                     }
                 }
 
                 //We're done if all are no longer owned
-                if (freeCount == BotProgram.ControllerMngr.ControllerCount)
+                if (freeCount == InputGlobals.ControllerMngr.ControllerCount)
                 {
                     break;
                 }
 
                 if (sw.ElapsedMilliseconds >= timeOut)
                 {
-                    BotProgram.QueueMessage($"ERROR: Unable to free all virtual controllers. {freeCount}/{BotProgram.ControllerMngr.ControllerCount} freed.");
+                    BotProgram.QueueMessage($"ERROR: Unable to free all virtual controllers. {freeCount}/{InputGlobals.ControllerMngr.ControllerCount} freed.");
                     break;
                 }
             }
 
-            int acquiredCount = BotProgram.ControllerMngr.InitControllers(newJoystickCount);
+            int acquiredCount = InputGlobals.ControllerMngr.InitControllers(newJoystickCount);
             Console.WriteLine($"Acquired {acquiredCount} controllers!");
 
             const long wait = 500L;

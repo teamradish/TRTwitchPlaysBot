@@ -18,6 +18,16 @@ namespace TRBot
         }
 
         /// <summary>
+        /// The types of virtual controllers.
+        /// </summary>
+        public enum VControllerTypes
+        {
+            vJoy,
+            uinput,
+            xdotool
+        }
+
+        /// <summary>
         /// The consoles that inputs are supported for.
         /// </summary>
         public enum InputConsoles
@@ -61,6 +71,16 @@ namespace TRBot
         public static ConsoleBase CurrentConsole { get; private set; } = null;
 
         /// <summary>
+        /// The current virtual controller type being used.
+        /// </summary>
+        public static VControllerTypes CurVControllerType { get; private set; } = GetDefaultSupportedVControllerType();
+
+        /// <summary>
+        /// The current virtual controller manager.
+        /// </summary>
+        public static IVirtualControllerManager ControllerMngr { get; private set; } = null;
+
+        /// <summary>
         /// Sets the console for inputs to be sent for.
         /// </summary>
         /// <param name="consoleVal">The console value.</param>
@@ -80,6 +100,81 @@ namespace TRBot
             {
                 Console.WriteLine($"Console {consoleVal} not supported!");
             }
+        }
+
+        /// <summary>
+        /// Sets the virtual controller manager to a different type utilizing a different set of virtual controllers.
+        /// </summary>
+        /// <param name="vControllerType">The type of virtual controllers to use.</param>
+        public static void SetVirtualController(VControllerTypes vControllerType)
+        {
+            if (IsVControllerSupported(vControllerType) == false)
+            {
+                Console.WriteLine($"Virtual controller type {vControllerType} is not supported on this platform.");
+                return;
+            }
+            
+            if (vControllerType == CurVControllerType && ControllerMngr != null)
+            {
+                Console.WriteLine($"Virtual controller {vControllerType} is already in use!");
+                return;
+            }
+            
+            CurVControllerType = vControllerType;
+            BotProgram.BotData.LastVControllerType = (int)CurVControllerType;
+            BotProgram.SaveBotData();
+            
+            //Clean up and reinitialize the controller manager
+            ControllerMngr?.CleanUp();
+            
+            switch (vControllerType)
+            {
+                case VControllerTypes.vJoy:
+                ControllerMngr = new VJoyControllerManager();
+                break;
+                case VControllerTypes.uinput:
+                ControllerMngr = new UInputControllerManager();
+                break;
+                case VControllerTypes.xdotool:
+                ControllerMngr = new XDotoolControllerManager();
+                break;
+            }
+            
+            //We should have a valid controller manager at this point
+            //If we don't, something is wrong
+            ControllerMngr.Initialize();
+        }
+        
+        /// <summary>
+        /// Tells whether a type of virtual controller is supported on the current platform.
+        /// </summary>
+        /// <param name="vControllerType">The type of virtual controller.</param>
+        /// <returns>A bool indicating the type of virtual controller supported.</returns>
+        public static bool IsVControllerSupported(in VControllerTypes vControllerType)
+        {
+            switch (vControllerType)
+            {
+                #if WINDOWS
+                case VControllerTypes.vJoy: return true;
+                #else
+                case VControllerTypes.uinput: return true;
+                case VControllerTypes.xdotool: return true;
+                #endif
+                default: return false;
+            }
+        }
+        
+        /// <summary>
+        /// Returns the default virtual controller type supported on the current platform.
+        /// </summary>
+        /// <returns>The default virtual controller type supported on the current platform.</returns>
+        public static VControllerTypes GetDefaultSupportedVControllerType()
+        {
+            #if WINDOWS
+                return VControllerTypes.vJoy;
+            #else
+                return VControllerTypes.uinput;
+            #endif
         }
 
         /// <summary>

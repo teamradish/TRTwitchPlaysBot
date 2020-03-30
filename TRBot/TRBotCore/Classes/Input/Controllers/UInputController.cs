@@ -80,7 +80,7 @@ namespace TRBot
             { (int)GlobalButtonVals.BTN7,  (int)ButtonCodes.BTN_TL },
             { (int)GlobalButtonVals.BTN8,  (int)ButtonCodes.BTN_TR },
             { (int)GlobalButtonVals.BTN9,  (int)ButtonCodes.BTN_TL2 },
-            { (int)GlobalButtonVals.BTN10,  (int)ButtonCodes.BTN_TR2 },
+            { (int)GlobalButtonVals.BTN10, (int)ButtonCodes.BTN_TR2 },
             { (int)GlobalButtonVals.BTN11, (int)ButtonCodes.BTN_SELECT },
             { (int)GlobalButtonVals.BTN12, (int)ButtonCodes.BTN_START },
             { (int)GlobalButtonVals.BTN13, (int)ButtonCodes.BTN_MODE },

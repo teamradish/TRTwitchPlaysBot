@@ -94,7 +94,7 @@ namespace TRBot
             //Get the input list and controller we're using - this should have been validated beforehand
             InputWrapper inputWrapper = (InputWrapper)obj;
             Parser.Input[][] inputArray = inputWrapper.InputArray;
-            IVirtualController controller = BotProgram.ControllerMngr.GetController(inputWrapper.ControllerNum);
+            IVirtualController controller = InputGlobals.ControllerMngr.GetController(inputWrapper.ControllerNum);
 
             Stopwatch sw = new Stopwatch();
 

@@ -77,6 +77,8 @@ namespace TRBot
                     Joysticks[i]?.Dispose();
                 }
             }
+            
+            VJoyInstance = null;
         }
 
         public int InitControllers(in int controllerCount)

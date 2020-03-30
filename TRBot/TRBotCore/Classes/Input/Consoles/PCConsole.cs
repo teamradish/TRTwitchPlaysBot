@@ -14,6 +14,7 @@ namespace TRBot
             "left", "right", "up", "down",
             "lclick", "mclick", "rclick",
             "return", "space",
+            "q", "w", "e", "r", "a", "s", "d", "p",
             "#", "."
         };
 
@@ -36,6 +37,14 @@ namespace TRBot
             { "rclick", (int)GlobalButtonVals.BTN7 },
             { "return", (int)GlobalButtonVals.BTN8 },
             { "space", (int)GlobalButtonVals.BTN9 },
+            { "q", (int)GlobalButtonVals.BTN10 },
+            { "w", (int)GlobalButtonVals.BTN11 },
+            { "e", (int)GlobalButtonVals.BTN12 },
+            { "r", (int)GlobalButtonVals.BTN13 },
+            { "a", (int)GlobalButtonVals.BTN14 },
+            { "s", (int)GlobalButtonVals.BTN15 },
+            { "d", (int)GlobalButtonVals.BTN16 },
+            { "p", (int)GlobalButtonVals.BTN16 }
         };
 
         public override bool GetAxis(in Parser.Input input, out int axis)

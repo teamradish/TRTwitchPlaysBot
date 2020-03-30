@@ -52,9 +52,9 @@ namespace TRBot
             //Set console and buttons
             InputGlobals.SetConsole(console, args);
             
-            for (int i = 0; i < BotProgram.ControllerMngr.ControllerCount; i++)
+            for (int i = 0; i < InputGlobals.ControllerMngr.ControllerCount; i++)
             {
-                IVirtualController controller = BotProgram.ControllerMngr.GetController(i);
+                IVirtualController controller = InputGlobals.ControllerMngr.GetController(i);
                 if (controller.IsAcquired == true)
                 {
                     controller.Reset();

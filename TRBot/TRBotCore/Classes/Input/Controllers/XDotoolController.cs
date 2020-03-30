@@ -28,7 +28,7 @@ namespace TRBot
             LClick, RClick, MClick,
             
             //Keyboard
-            Return, space
+            Return, space, q, w, e, r, a, s, d, p
         }
         
         /// <summary>
@@ -44,15 +44,23 @@ namespace TRBot
         /// </summary>
         private static readonly Dictionary<int, int> InputCodeMap = new Dictionary<int, int>(32)
         {
-            { (int)GlobalButtonVals.BTN1,  (int)InputCodes.MLeft },
-            { (int)GlobalButtonVals.BTN2,  (int)InputCodes.MRight },
-            { (int)GlobalButtonVals.BTN3,  (int)InputCodes.MUp },
-            { (int)GlobalButtonVals.BTN4,  (int)InputCodes.MDown },
-            { (int)GlobalButtonVals.BTN5,  (int)InputCodes.LClick },
-            { (int)GlobalButtonVals.BTN6,  (int)InputCodes.MClick },
-            { (int)GlobalButtonVals.BTN7,  (int)InputCodes.RClick },
-            { (int)GlobalButtonVals.BTN8,  (int)InputCodes.Return },
-            { (int)GlobalButtonVals.BTN9,  (int)InputCodes.space }
+            { (int)GlobalButtonVals.BTN1,   (int)InputCodes.MLeft },
+            { (int)GlobalButtonVals.BTN2,   (int)InputCodes.MRight },
+            { (int)GlobalButtonVals.BTN3,   (int)InputCodes.MUp },
+            { (int)GlobalButtonVals.BTN4,   (int)InputCodes.MDown },
+            { (int)GlobalButtonVals.BTN5,   (int)InputCodes.LClick },
+            { (int)GlobalButtonVals.BTN6,   (int)InputCodes.MClick },
+            { (int)GlobalButtonVals.BTN7,   (int)InputCodes.RClick },
+            { (int)GlobalButtonVals.BTN8,   (int)InputCodes.Return },
+            { (int)GlobalButtonVals.BTN9,   (int)InputCodes.space },
+            { (int)GlobalButtonVals.BTN10,  (int)InputCodes.q },
+            { (int)GlobalButtonVals.BTN11,  (int)InputCodes.w },
+            { (int)GlobalButtonVals.BTN12,  (int)InputCodes.e },
+            { (int)GlobalButtonVals.BTN13,  (int)InputCodes.r },
+            { (int)GlobalButtonVals.BTN14,  (int)InputCodes.a },
+            { (int)GlobalButtonVals.BTN15,  (int)InputCodes.s },
+            { (int)GlobalButtonVals.BTN16,  (int)InputCodes.d },
+            { (int)GlobalButtonVals.BTN16,  (int)InputCodes.p }
         };
 
         /// <summary>
@@ -127,7 +135,7 @@ namespace TRBot
 
             for (int i = 0; i < axes.Length; i++)
             {
-                MinMaxAxes.Add((int)axes[i], (-100, 100));
+                MinMaxAxes.Add((int)axes[i], (-500, 500));
             }
         }
 
@@ -352,7 +360,19 @@ namespace TRBot
             
             //Console.WriteLine($"BUILT ARG LIST: \"{argList}\"");
             
-            Process.Start(ProcessName, argList);
+            //A lot can go wrong when trying to start the process, so catch exceptions
+            try
+            {
+                using (Process p = Process.Start(ProcessName, argList))
+                {
+                    
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Unable to carry out xdotool inputs: " + e.Message);
+            }
+            
             BuiltArgList.Clear();
         }
         
