@@ -44,7 +44,7 @@ namespace TRBot
             { "a", (int)GlobalButtonVals.BTN14 },
             { "s", (int)GlobalButtonVals.BTN15 },
             { "d", (int)GlobalButtonVals.BTN16 },
-            { "p", (int)GlobalButtonVals.BTN16 }
+            { "p", (int)GlobalButtonVals.BTN17 }
         };
 
         public override bool GetAxis(in Parser.Input input, out int axis)

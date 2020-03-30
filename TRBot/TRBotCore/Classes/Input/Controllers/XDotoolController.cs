@@ -60,7 +60,7 @@ namespace TRBot
             { (int)GlobalButtonVals.BTN14,  (int)InputCodes.a },
             { (int)GlobalButtonVals.BTN15,  (int)InputCodes.s },
             { (int)GlobalButtonVals.BTN16,  (int)InputCodes.d },
-            { (int)GlobalButtonVals.BTN16,  (int)InputCodes.p }
+            { (int)GlobalButtonVals.BTN17,  (int)InputCodes.p }
         };
 
         /// <summary>
