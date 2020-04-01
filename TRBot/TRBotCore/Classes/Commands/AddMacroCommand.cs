@@ -114,9 +114,10 @@ namespace TRBot
                 {
                     string parse_message = Parser.Expandify(Parser.PopulateMacros(parsedVal));
 
-                    var val = Parser.Parse(parse_message);
+                    Parser.InputSequence inputSequence = Parser.ParseInputs(parse_message);
+                    //var val = Parser.Parse(parse_message);
 
-                    if (val.Item1 == false)
+                    if (inputSequence.InputValidationType != Parser.InputValidationTypes.Valid)//val.Item1 == false)
                     {
                         BotProgram.QueueMessage("Invalid macro.");
                         return;

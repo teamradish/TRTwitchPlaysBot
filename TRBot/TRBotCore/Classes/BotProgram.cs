@@ -370,33 +370,36 @@ namespace TRBot
                 }
 
                 //Parser.InputSequence inputSequence = default;
-                (bool, List<List<Parser.Input>>, bool, int) parsedVal = default;
+                //(bool, List<List<Parser.Input>>, bool, int) parsedVal = default;
+                Parser.InputSequence inputSequence = default;
 
                 try
                 {
                     string parse_message = Parser.Expandify(Parser.PopulateMacros(e.ChatMessage.Message));
 
-                    parsedVal = Parser.Parse(parse_message);
+                    inputSequence = Parser.ParseInputs(parse_message);
+
+                    //parsedVal = Parser.Parse(parse_message);
                     //Console.WriteLine(inputSequence.ToString());
                 }
-                catch
+                catch (Exception exception)
                 {
                     //Kimimaru: Sanitize parsing exceptions
                     //Most of these are currently caused by differences in how C# and Python handle slicing strings (Substring() vs string[:])
                     //One example that throws this that shouldn't is "#mash(w234"
                     //BotProgram.QueueMessage($"ERROR: {exception.Message}");
-                    //inputSequence.InputValidationType = Parser.InputValidationTypes.Invalid;
-                    parsedVal.Item1 = false;
+                    inputSequence.InputValidationType = Parser.InputValidationTypes.Invalid;
+                    //parsedVal.Item1 = false;
                 }
 
                 //Check for non-valid messages
-                if (parsedVal.Item1 == false)//inputSequence.InputValidationType != Parser.InputValidationTypes.Valid)
+                if (inputSequence.InputValidationType != Parser.InputValidationTypes.Valid)
                 {
                     //Display error message for invalid inputs
-                    //if (inputSequence.InputValidationType == Parser.InputValidationTypes.Invalid)
-                    //{
-                    //    BotProgram.QueueMessage(inputSequence.Error);
-                    //}
+                    if (inputSequence.InputValidationType == Parser.InputValidationTypes.Invalid)
+                    {
+                        BotProgram.QueueMessage(inputSequence.Error);
+                    }
                 }
                 //It's a valid message, so process it
                 else
@@ -407,14 +410,14 @@ namespace TRBot
                         return;
                     }
 
-                    if (InputGlobals.IsValidPauseInputDuration(parsedVal.Item2, "start", BotData.MaxPauseHoldDuration) == false)
+                    if (InputGlobals.IsValidPauseInputDuration(inputSequence.Inputs, "start", BotData.MaxPauseHoldDuration) == false)
                     {
                         BotProgram.QueueMessage($"Invalid input: Pause button held for longer than the max duration of {BotData.MaxPauseHoldDuration} milliseconds!");
                         return;
                     }
 
                     //Check if the user has permission to perform all the inputs they attempted
-                    ParserPostProcess.InputValidation inputValidation = ParserPostProcess.CheckInputPermissions(userData.Level, parsedVal.Item2, BotData.InputAccess.InputAccessDict);
+                    ParserPostProcess.InputValidation inputValidation = ParserPostProcess.CheckInputPermissions(userData.Level, inputSequence.Inputs, BotData.InputAccess.InputAccessDict);
 
                     //If the input isn't valid, exit
                     if (inputValidation.IsValid == false)
@@ -453,7 +456,7 @@ namespace TRBot
                         //We're okay to perform the input
                         if (shouldPerformInput == true)
                         {
-                            InputHandler.CarryOutInput(parsedVal.Item2, controllerNum);
+                            InputHandler.CarryOutInput(inputSequence.Inputs, controllerNum);
 
                             //If auto whitelist is enabled, the user reached the whitelist message threshold,
                             //the user isn't whitelisted, and the user hasn't ever been whitelisted, whitelist them

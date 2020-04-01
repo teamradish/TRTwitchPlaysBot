@@ -19,10 +19,10 @@ namespace TRBot
             { "rright", (int)GlobalButtonVals.BTN6 },
             { "rup", (int)GlobalButtonVals.BTN7 },
             { "rdown", (int)GlobalButtonVals.BTN8 },
-            { "s", (int)GlobalButtonVals.BTN9 },
-            { "t", (int)GlobalButtonVals.BTN10 },
-            { "o", (int)GlobalButtonVals.BTN11 },
-            { "x", (int)GlobalButtonVals.BTN12 },
+            { "square", (int)GlobalButtonVals.BTN9 },
+            { "triangle", (int)GlobalButtonVals.BTN10 },
+            { "circle", (int)GlobalButtonVals.BTN11 },
+            { "cross", (int)GlobalButtonVals.BTN12 },
             { "select", (int)GlobalButtonVals.BTN13 },
             { "start", (int)GlobalButtonVals.BTN14 },
             { "l1", (int)GlobalButtonVals.BTN15 },
@@ -48,7 +48,7 @@ namespace TRBot
         public override string[] ValidInputs { get; protected set; } = new string[]
         {
             "up", "down", "left", "right", "rup", "rdown", "rleft", "rright",
-            "s", "t", "o", "x", "l1", "r1", "l2", "r2", "l3", "r3", "dup", "ddown", "dleft", "dright", "select", "start",
+            "square", "triangle", "circle", "cross", "l1", "r1", "l2", "r2", "l3", "r3", "dup", "ddown", "dleft", "dright", "select", "start",
             "savestate1", "savestate2", "savestate3", "savestate4", "ss1", "ss2", "ss3", "ss4",
             "loadstate1", "loadstate2", "loadstate3", "loadstate4", "ls1", "ls2", "ls3", "ls4",
             "#", "."

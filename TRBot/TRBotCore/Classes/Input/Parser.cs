@@ -37,7 +37,7 @@ namespace TRBot
         /// <summary>
         /// The end of the input regex string.
         /// </summary>
-        public const string ParseRegexEnd = @"){1}(\d*)(\%?)(\d*)(ms|s)?(\+?)";
+        public const string ParseRegexEnd = @")(\d+%)?((\d+ms)|(\d+s))?(\+)?";
 
         private static Comparison<(string, (int, int), List<string>)> SubCompare = SubComparison;
 
@@ -206,7 +206,7 @@ namespace TRBot
         }
 
         //Returns Input object
-        //[Obsolete("Use GetInputFast with ParseInputs for greatly improved performance and readability.", true)]
+        [Obsolete("Use GetInputFast with ParseInputs for greatly improved performance and readability.", false)]
         private static Input GetInput(string message)
         {
             //Create a default input instance
@@ -334,14 +334,13 @@ namespace TRBot
             message = PopulateSynonyms(message);
 
             //Full Regex:
-            // ([_-])?(left|right|a){1}(\d*)(\%?)(\d*)(ms|s)?(\+?)
+            // ([_-])?(left|right|a)(\d+%)?((\d+ms)|(\d+s))?(\+)?
             //Replace "left", "right", etc. with all the inputs for the console
             //Group 1 = zero or one of '_' or '-' for hold and subtract, respectively
             //Group 2 = the input - exactly one
-            //Group 3 = the number for percentage
-            //Group 4 = the percentage symbol
-            //Group 5 = the number for duration
-            //Group 6 = ms or s - the duration type
+            //Group 3 = the percentage, including the amount
+            //Group 5 = milliseconds, including duration
+            //Group 6 = seconds, including duration
             //Group 7 = + sign for performing inputs simultaneously
 
             string regex = InputGlobals.ValidInputRegexStr;
@@ -352,6 +351,8 @@ namespace TRBot
             //Stopwatch sw = Stopwatch.StartNew();
 
             //New method: Get ALL the matches at once and parse them as we go, instead of matching each time and parsing
+            //The caveat is all longer inputs with the same characters must be before shorter ones at the start of the input sequence
+            //For example: "ls1" must be before "l" or it'll pick up "l" first
             MatchCollection matches = Regex.Matches(message, regex, RegexOptions.IgnoreCase);
 
             //No matches, so invalid input
@@ -424,6 +425,7 @@ namespace TRBot
 
                     inputSequence.TotalDuration = totalDuration;
 
+                    //Check for max duration and break out early if so
                     if (totalDuration > BotProgram.BotData.MaxInputDuration)
                     {
                         inputSequence.InputValidationType = InputValidationTypes.Invalid;
@@ -449,14 +451,13 @@ namespace TRBot
         private static Input GetInputFast(Match regexMatch, ref int prevIndex, ref bool hasPlus)
         {
             //Full Regex:
-            // ([_-])?(left|right|a){1}(\d*)(\%?)(\d*)(ms|s)?(\+?)
+            // ([_-])?(left|right|a)(\d+%)?((\d+ms)|(\d+s))?(\+)?
             //Replace "left", "right", etc. with all the inputs for the console
             //Group 1 = zero or one of '_' or '-' for hold and subtract, respectively
             //Group 2 = the input - exactly one
-            //Group 3 = the number for percentage
-            //Group 4 = the percentage symbol
-            //Group 5 = the number for duration
-            //Group 6 = ms or s - the duration type
+            //Group 3 = the percentage, including the amount
+            //Group 5 = milliseconds, including duration
+            //Group 6 = seconds, including duration
             //Group 7 = + sign for performing inputs simultaneously
 
             Input input = Input.Default;
@@ -484,82 +485,57 @@ namespace TRBot
 
             input.name = regexMatch.Groups[2].Value;
 
-            bool hasPercent = false;
-            int firstNumber = -1;
-
-            //Check the first number, which will either be a duration or percentage
-            //First number succeeded
+            //Check the percentage
             if (regexMatch.Groups[3].Success == true && string.IsNullOrEmpty(regexMatch.Groups[3].Value) == false)
             {
-                if (int.TryParse(regexMatch.Groups[3].Value, out firstNumber) == false)
+                string rawPercentStr = regexMatch.Groups[3].Value;
+                string percent = rawPercentStr.Substring(0, rawPercentStr.Length - 1);
+
+                if (int.TryParse(percent, out int percentage) == false)
                 {
                     input.error = "ERR_INVALID_PERCENTAGE";
                     return input;
                 }
 
-                //Has the percent sign matched? If so, this is a percentage
-                if (regexMatch.Groups[4].Success == true && string.IsNullOrEmpty(regexMatch.Groups[4].Value) == false)
+                //The percentage can't be less than 0 or greater than 100
+                if (percentage < 0 || percentage > 100)
                 {
-                    //The percentage can't be less than 0 or greater than 100
-                    if (firstNumber < 0 || firstNumber > 100)
-                    {
-                        input.error = "ERR_INVALID_PERCENTAGE";
-                        return input;
-                    }
-
-                    input.percent = firstNumber;
-                    hasPercent = true;
-                }
-            }
-            //A percentage sign without a number is invalid
-            else if (regexMatch.Groups[4].Success == true && string.IsNullOrEmpty(regexMatch.Groups[4].Value) == false)
-            {
-                input.error = "ERR_NO_PERCENTAGE";
-                return input;
-            }
-
-            //Check duration type
-            if (regexMatch.Groups[6].Success == true && string.IsNullOrEmpty(regexMatch.Groups[6].Value) == false)
-            {
-                input.duration_type = regexMatch.Groups[6].Value;
-
-                //If there's no percentage, use the number as the duration if it's valid
-                if (hasPercent == false)
-                {
-                    if (firstNumber < 0)
-                    {
-                        input.error = "ERR_NO_DURATION";
-                        return input;
-                    }
-
-                    input.duration = firstNumber;
-                }
-                //Check for the second duration
-                else
-                {
-                    int secondNumber = 0;
-                    //There is a percentage and a duration type, but no valid second number - invalid
-                    if (regexMatch.Groups[5].Success == false || string.IsNullOrEmpty(regexMatch.Groups[5].Value) == true
-                        || int.TryParse(regexMatch.Groups[5].Value, out secondNumber) == false)
-                    {
-                        input.error = "ERR_NO_DURATION";
-                        return input;
-                    }
-                    else
-                    {
-                        input.duration = secondNumber;
-                    }
+                    input.error = "ERR_INVALID_PERCENTAGE";
+                    return input;
                 }
 
-                if (input.duration_type == "s") input.duration *= 1000;
+                input.percent = percentage;
             }
-            //A duration without either a percentage or duration type is invalid
-            else if (hasPercent == false &&
-                ((regexMatch.Groups[3].Success == true && string.IsNullOrEmpty(regexMatch.Groups[3].Value) == false)
-                  || (regexMatch.Groups[5].Success == true && string.IsNullOrEmpty(regexMatch.Groups[5].Value) == false)))
+
+            //Check milliseconds
+            if (regexMatch.Groups[5].Success == true && string.IsNullOrEmpty(regexMatch.Groups[5].Value) == false)
             {
-                input.error = "ERR_NO_PERCENTAGE_OR_DUR_TYPE";
-                return input;
+                string rawmsStr = regexMatch.Groups[5].Value;
+                string msStr = rawmsStr.Substring(0, rawmsStr.Length - 2);
+                
+                if (int.TryParse(msStr, out int msDur) == false)
+                {
+                    input.error = "ERR_INVALID_MS_DURATION";
+                    return input;
+                }
+
+                input.duration = msDur;
+                input.duration_type = "ms";
+            }
+            //Check seconds
+            else if (regexMatch.Groups[6].Success == true && string.IsNullOrEmpty(regexMatch.Groups[6].Value) == false)
+            {
+                string rawsecStr = regexMatch.Groups[6].Value;
+                string secStr = rawsecStr.Substring(0, rawsecStr.Length - 1);
+
+                if (int.TryParse(secStr, out int secDur) == false)
+                {
+                    input.error = "ERR_INVALID_SEC_DURATION";
+                    return input;
+                }
+
+                input.duration = secDur * 1000;
+                input.duration_type = "s";
             }
 
             //Check for a plus sign to perform the next input simultaneously
@@ -572,7 +548,7 @@ namespace TRBot
 
         //Returns list containing: [Valid, input_sequence]
         //Or: [Invalid, input that it failed on]
-        //[Obsolete("Use ParseInputs instead for better type safety and greatly improved performance and readability.", true)]
+        [Obsolete("Use ParseInputs instead for better type safety and greatly improved performance and readability.", false)]
         public static (bool, List<List<Input>>, bool, int) Parse(string message)
         {
             bool contains_start_input = false;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Runtime.CompilerServices;
@@ -98,16 +99,24 @@ namespace TRBot
         public void Initialize()
         {
             //Set up the regex for the console
+            //Add longer inputs first due to how the new parser works
+            //This avoids picking up shorter inputs with the same characters first
+            IOrderedEnumerable<string> sorted = from str in ValidInputs
+                                                orderby str.Length descending
+                                                select str;
+
             StringBuilder sb = new StringBuilder(Parser.ParseRegexStart.Length + Parser.ParseRegexEnd.Length);
+            int i = 0;
 
             sb.Append(Parser.ParseRegexStart);
-            for (int i = 0; i < ValidInputs.Length; i++)
+            foreach (string s in sorted)
             {
-                sb.Append(System.Text.RegularExpressions.Regex.Escape(ValidInputs[i]));
+                sb.Append(System.Text.RegularExpressions.Regex.Escape(s));
                 if (i != (ValidInputs.Length - 1))
                 {
                     sb.Append('|');
                 }
+                i++;
             }
             sb.Append(Parser.ParseRegexEnd);
 

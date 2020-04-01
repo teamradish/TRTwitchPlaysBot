@@ -22,27 +22,29 @@ namespace TRBot
 
             //Parse the input
             //Parser.InputSequence inputSequence = default;
-            (bool, List<List<Parser.Input>>, bool, int) parsedVal = default;
+            //(bool, List<List<Parser.Input>>, bool, int) parsedVal = default;
+            Parser.InputSequence inputSequence = default;
 
             try
             {
                 string parse_message = Parser.Expandify(Parser.PopulateMacros(args));
 
-                parsedVal = Parser.Parse(parse_message);
+                inputSequence = Parser.ParseInputs(parse_message);
+                //parsedVal = Parser.Parse(parse_message);
             }
             catch
             {
-                //inputSequence.InputValidationType = Parser.InputValidationTypes.Invalid;
-                parsedVal.Item1 = false;
+                inputSequence.InputValidationType = Parser.InputValidationTypes.Invalid;
+                //parsedVal.Item1 = false;
             }
 
-            if (parsedVal.Item1 == false)//inputSequence.InputValidationType != Parser.InputValidationTypes.Valid)
+            if (inputSequence.InputValidationType != Parser.InputValidationTypes.Valid)
             {
                 BotProgram.QueueMessage("Invalid input. Note that length cannot be determined for dynamic macros without inputs filled in.");
                 return;
             }
 
-            BotProgram.QueueMessage($"Total length: {parsedVal.Item4}ms");
+            BotProgram.QueueMessage($"Total length: {inputSequence.TotalDuration}ms");
         }
     }
 }
