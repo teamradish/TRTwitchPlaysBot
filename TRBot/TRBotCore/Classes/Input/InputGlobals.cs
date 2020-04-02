@@ -33,11 +33,10 @@ namespace TRBot
         public enum InputConsoles
         {
             NES,
-            SNES,
+            SNES, Genesis,
             N64,
-            GC,
+            GC, PS2,
             Wii,
-            PS2,
             PC,
             Custom
         }
@@ -51,11 +50,10 @@ namespace TRBot
         public static readonly Dictionary<InputConsoles, ConsoleBase> Consoles = new Dictionary<InputConsoles, ConsoleBase>()
         {
             { InputConsoles.NES, new NESConsole() },
-            { InputConsoles.SNES, new SNESConsole() },
+            { InputConsoles.SNES, new SNESConsole() }, { InputConsoles.Genesis, new GenesisConsole() },
             { InputConsoles.N64, new N64Console() },
-            { InputConsoles.GC, new GCConsole() },
+            { InputConsoles.GC, new GCConsole() }, { InputConsoles.PS2, new PS2Console() },
             { InputConsoles.Wii, new WiiConsole() },
-            { InputConsoles.PS2, new PS2Console() },
             { InputConsoles.PC, new PCConsole() },
             { InputConsoles.Custom, new CustomConsole() }
         };
