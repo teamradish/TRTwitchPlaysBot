@@ -116,7 +116,7 @@ int CreateController(int index)
     snprintf(uidev.name, UINPUT_MAX_NAME_SIZE, "TRBot Joypad %d", index); //Name of Gamepad
     
     uidev.id.bustype = BUS_USB;
-    uidev.id.vendor  = 0x3 * (index + 1);
+    uidev.id.vendor  = 0x378 * (index + 1);
     uidev.id.product = 0x3;
     uidev.id.version = 2;
     uidev.absmax[ABS_X] = 32767; //Parameters of thumbsticks
