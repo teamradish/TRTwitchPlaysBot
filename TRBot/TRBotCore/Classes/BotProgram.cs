@@ -49,9 +49,6 @@ namespace TRBot
 
         private List<BaseRoutine> BotRoutines = new List<BaseRoutine>();
 
-        //Throttler
-        private Stopwatch Throttler = new Stopwatch();
-
         /// <summary>
         /// Whether to ignore logging bot messages to the console based on potential console logs from the <see cref="ExecCommand"/>.
         /// </summary>
@@ -202,16 +199,12 @@ namespace TRBot
 
             Client.Connect();
 
-            const int CPUPercentLimit = 10;
+            //Sleep this much for the main thread 
+            const int ThreadSleepTime = 100;
 
             //Run
             while (true)
             {
-                Throttler.Reset();
-                Throttler.Start();
-
-                long start = Throttler.ElapsedTicks;
-
                 DateTime now = DateTime.Now;
 
                 TimeSpan queueDiff = now - CurQueueTime;
@@ -255,12 +248,7 @@ namespace TRBot
                     BotRoutines[i].UpdateRoutine(Client, now);
                 }
 
-                long end = Throttler.ElapsedTicks;
-                long dur = end - start;
-
-                long relativeWaitTime = (int)((1 / (double)CPUPercentLimit) * dur);
-
-                Thread.Sleep((int)((relativeWaitTime / (double)Stopwatch.Frequency) * 1000));
+                Thread.Sleep(ThreadSleepTime);
             }
         }
 
