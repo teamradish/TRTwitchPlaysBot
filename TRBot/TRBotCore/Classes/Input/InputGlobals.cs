@@ -35,7 +35,7 @@ namespace TRBot
             NES,
             SNES, Genesis,
             N64,
-            GC, PS2,
+            GC, PS2, GBA,
             Wii,
             PC,
             Custom
@@ -52,7 +52,7 @@ namespace TRBot
             { InputConsoles.NES, new NESConsole() },
             { InputConsoles.SNES, new SNESConsole() }, { InputConsoles.Genesis, new GenesisConsole() },
             { InputConsoles.N64, new N64Console() },
-            { InputConsoles.GC, new GCConsole() }, { InputConsoles.PS2, new PS2Console() },
+            { InputConsoles.GC, new GCConsole() }, { InputConsoles.PS2, new PS2Console() }, { InputConsoles.GBA, new GBAConsole() },
             { InputConsoles.Wii, new WiiConsole() },
             { InputConsoles.PC, new PCConsole() },
             { InputConsoles.Custom, new CustomConsole() }
