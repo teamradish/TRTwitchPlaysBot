@@ -82,6 +82,7 @@ namespace TRBot
             CommandDict.Add("time", new TimeCommand());
             CommandDict.Add("length", new LengthCommand());
             CommandDict.Add("exec", new ExecCommand());
+            CommandDict.Add("sleep", new SetSleepCommand() { HiddenFromHelp = true });
             CommandDict.Add("setmessage", new SetMessageCommand());
             CommandDict.Add("viewmessage", new ViewMessageCommand());
             CommandDict.Add("silence", new SilenceCommand());

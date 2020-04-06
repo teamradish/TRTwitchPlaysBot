@@ -19,7 +19,8 @@ namespace TRBot
 {
     public sealed class BotProgram : IDisposable
     {
-        private static readonly object LockObj = new object();
+        private static readonly object BotDataLockObj = new object();
+        private static readonly object SettingsLockObj = new object();
 
         private static BotProgram instance = null;
 
@@ -199,9 +200,6 @@ namespace TRBot
 
             Client.Connect();
 
-            //Sleep this much for the main thread 
-            const int ThreadSleepTime = 100;
-
             //Run
             while (true)
             {
@@ -248,7 +246,7 @@ namespace TRBot
                     BotRoutines[i].UpdateRoutine(Client, now);
                 }
 
-                Thread.Sleep(ThreadSleepTime);
+                Thread.Sleep(BotSettings.MainThreadSleep);
             }
         }
 
@@ -552,15 +550,31 @@ namespace TRBot
             return userData;
         }
 
+        public static void SaveSettings()
+        {
+            //Make sure more than one thread doesn't try to save at the same time to prevent potential loss of data and access violations
+            lock (SettingsLockObj)
+            {
+                string text = JsonConvert.SerializeObject(BotSettings, Formatting.Indented);
+                if (string.IsNullOrEmpty(text) == false)
+                {
+                    if (Globals.SaveToTextFile(Globals.SettingsFilename, text) == false)
+                    {
+                        QueueMessage($"CRITICAL - Unable to save settings");
+                    }
+                }
+            }
+        }
+
         public static void SaveBotData()
         {
             //Make sure more than one thread doesn't try to save at the same time to prevent potential loss of data and access violations
-            lock (LockObj)
+            lock (BotDataLockObj)
             {
                 string text = JsonConvert.SerializeObject(BotData, Formatting.Indented);
                 if (string.IsNullOrEmpty(text) == false)
                 {
-                    if (Globals.SaveToTextFile("BotData.txt", text) == false)
+                    if (Globals.SaveToTextFile(Globals.BotDataFilename, text) == false)
                     {
                         QueueMessage($"CRITICAL - Unable to save bot data");
                     }
@@ -570,6 +584,8 @@ namespace TRBot
 
         public static void LoadSettingsAndBotData()
         {
+            bool settingsChanged = false;
+            
             string settingsText = Globals.ReadFromTextFileOrCreate(Globals.SettingsFilename);
             BotSettings = JsonConvert.DeserializeObject<Settings>(settingsText);
 
@@ -578,8 +594,26 @@ namespace TRBot
                 Console.WriteLine("No settings found; attempting to create file template. If created, please manually fill out the information.");
 
                 BotSettings = new Settings();
-                string text = JsonConvert.SerializeObject(BotSettings, Formatting.Indented);
-                Globals.SaveToTextFile(Globals.SettingsFilename, text);
+                settingsChanged = true;
+            }
+
+            if (BotSettings.MainThreadSleep < Globals.MinSleepTime)
+            {
+                BotSettings.MainThreadSleep = Globals.MinSleepTime;
+                Console.WriteLine($"Clamped sleep time to the minimum of {Globals.MinSleepTime}ms!");
+                settingsChanged = true;
+            }
+            else if (BotSettings.MainThreadSleep > Globals.MaxSleepTime)
+            {
+                BotSettings.MainThreadSleep = Globals.MaxSleepTime;
+                Console.WriteLine($"Clamped sleep time to the maximum of {Globals.MinSleepTime}ms!");
+                settingsChanged = true;
+            }
+            
+            //Write only once after checking all the changes
+            if (settingsChanged == true)
+            {
+                SaveSettings();
             }
 
             string dataText = Globals.ReadFromTextFile(Globals.BotDataFilename);
@@ -609,6 +643,12 @@ namespace TRBot
             public double MessageCooldown = 1000d;
             public double CreditsTime = 2d;
             public long CreditsAmount = 100L;
+            
+            /// <summary>
+            /// How long to make the main thread sleep after each iteration.
+            /// Higher values use less CPU at the expense of delaying queued messages and routines.
+            /// </summary>
+            public int MainThreadSleep = 100;
 
             /// <summary>
             /// The message to send when the bot connects to a channel. "{0}" is replaced with the name of the bot and "{1}" is replaced with the command identifier.
