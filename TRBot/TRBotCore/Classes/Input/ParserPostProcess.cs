@@ -77,6 +77,7 @@ namespace TRBot
                 {
                     bool pauseFound = false;
                     int longestSubInput = 0;
+                    int longestPauseDur = 0;
                     
                     List<Parser.Input> inputList = parsedInputs[i];
                     for (int j = 0; j < inputList.Count; j++)
@@ -92,6 +93,12 @@ namespace TRBot
                         //We found the pause input
                         if (input.name == pauseInput)
                         {
+                            //Check for longest duration of this input (Ex. "start+start1s")
+                            if (input.duration > longestPauseDur)
+                            {
+                                longestPauseDur = input.duration;
+                            }
+                            
                             pauseFound = true;
                             
                             //Release
@@ -111,7 +118,16 @@ namespace TRBot
                     //If held or found, add to the total duration
                     if (pauseFound == true || held == true)
                     {
-                        curPauseDuration += longestSubInput;
+                        //If not held, add only the longest pause duration
+                        if (held == false)
+                        {
+                            curPauseDuration += longestPauseDur;
+                        }
+                        //If held, add the longest subduration
+                        else
+                        {
+                            curPauseDuration += longestSubInput;
+                        }
                         
                         //Invalid if over the max duration
                         if (curPauseDuration > maxPauseDuration)
