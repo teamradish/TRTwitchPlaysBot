@@ -215,12 +215,7 @@ namespace TRBot
 
             for (int i = 0; i < buttons.Length; i++)
             {
-                if (ButtonCodeMap.TryGetValue((int)buttons[i], out int uinputBtn) == false)
-                {
-                    continue;
-                }
-
-                NativeWrapperUInput.ReleaseButton(ControllerDescriptor, uinputBtn);
+                ReleaseButton((uint)buttons[i]);
             }
 
             UpdateController();

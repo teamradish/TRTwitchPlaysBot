@@ -9,7 +9,7 @@ namespace TRBot
     /// </summary>
     public sealed class InputAccessData
     {
-        public Dictionary<string, int> InputAccessDict = new Dictionary<string, int>(4)
+        public readonly Dictionary<string, int> InputAccessDict = new Dictionary<string, int>(4)
         {
             { "savestate1", (int)AccessLevels.Levels.Moderator },
             { "savestate2", (int)AccessLevels.Levels.Moderator },

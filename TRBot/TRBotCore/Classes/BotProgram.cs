@@ -396,7 +396,7 @@ namespace TRBot
                         return;
                     }
 
-                    if (InputGlobals.IsValidPauseInputDuration(inputSequence.Inputs, "start", BotData.MaxPauseHoldDuration) == false)
+                    if (ParserPostProcess.IsValidPauseInputDuration(inputSequence.Inputs, "start", BotData.MaxPauseHoldDuration) == false)
                     {
                         BotProgram.QueueMessage($"Invalid input: Pause button held for longer than the max duration of {BotData.MaxPauseHoldDuration} milliseconds!");
                         return;
@@ -414,6 +414,31 @@ namespace TRBot
                         }
 
                         return;
+                    }
+
+                    //Lastly, check for invalid button combos given the current console
+                    if (BotData.InvalidBtnCombos.InvalidCombos.TryGetValue((int)InputGlobals.CurrentConsoleVal, out List<string> invalidCombos) == true)
+                    {
+                        if (ParserPostProcess.ValidateButtonCombos(inputSequence.Inputs, invalidCombos) == false)
+                        {
+                            string msg = "Invalid input: buttons ({0}) are not allowed to be pressed at the same time.";
+                            string combos = string.Empty;
+                            
+                            for (int i = 0; i < invalidCombos.Count; i++)
+                            {
+                                combos += "\"" + invalidCombos[i] + "\"";
+                                
+                                if (i < (invalidCombos.Count - 1))
+                                {
+                                    combos += ", ";
+                                }
+                            }
+                            
+                            msg = string.Format(msg, combos);
+                            BotProgram.QueueMessage(msg);
+                            
+                            return;
+                        }
                     }
 
                     if (InputHandler.StopRunningInputs == false)
