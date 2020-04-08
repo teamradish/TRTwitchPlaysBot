@@ -97,7 +97,7 @@ namespace TRBot
             CommandDict.Add("maxinputdur", new MaxInputDurationCommand());
             CommandDict.Add("sourcecode", new OpenSourceCommand());
             CommandDict.Add("reload", new ReloadCommand());
-            CommandDict.Add("maxpause", new MaxPauseDurationCommand());
+            //CommandDict.Add("maxpause", new MaxPauseDurationCommand());
             CommandDict.Add("vcontroller", new VirtualControllerCommand());
             CommandDict.Add("tutorial", new TutorialCommand());
 

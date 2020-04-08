@@ -396,11 +396,18 @@ namespace TRBot
                         return;
                     }
 
-                    if (ParserPostProcess.IsValidPauseInputDuration(inputSequence.Inputs, "start", BotData.MaxPauseHoldDuration) == false)
-                    {
-                        BotProgram.QueueMessage($"Invalid input: Pause button held for longer than the max duration of {BotData.MaxPauseHoldDuration} milliseconds!");
-                        return;
-                    }
+                    #region Parser Post-Process Validation
+                    
+                    //All this validation is very slow - find a way to speed it up, ideally without integrating it directly into the parser
+
+                    //Kimimaru: Max pause validation is temporarily removed since it should be redundant with the new combo validation
+                    //The primary purpose of it was to prevent players from resetting games with button combos, which the combo validation handles
+                     
+                    //if (ParserPostProcess.IsValidPauseInputDuration(inputSequence.Inputs, "start", BotData.MaxPauseHoldDuration) == false)
+                    //{
+                    //    BotProgram.QueueMessage($"Invalid input: Pause button held for longer than the max duration of {BotData.MaxPauseHoldDuration} milliseconds!");
+                    //    return;
+                    //}
 
                     //Check if the user has permission to perform all the inputs they attempted
                     ParserPostProcess.InputValidation inputValidation = ParserPostProcess.CheckInputPermissions(userData.Level, inputSequence.Inputs, BotData.InputAccess.InputAccessDict);
@@ -419,7 +426,7 @@ namespace TRBot
                     //Lastly, check for invalid button combos given the current console
                     if (BotData.InvalidBtnCombos.InvalidCombos.TryGetValue((int)InputGlobals.CurrentConsoleVal, out List<string> invalidCombos) == true)
                     {
-                        if (ParserPostProcess.ValidateButtonCombos(inputSequence.Inputs, invalidCombos) == false)
+                        if (ParserPostProcess.ValidateButtonCombos(inputSequence.Inputs, invalidCombos, userData.Team) == false)
                         {
                             string msg = "Invalid input: buttons ({0}) are not allowed to be pressed at the same time.";
                             string combos = string.Empty;
@@ -440,6 +447,8 @@ namespace TRBot
                             return;
                         }
                     }
+
+                    #endregion
 
                     if (InputHandler.StopRunningInputs == false)
                     {

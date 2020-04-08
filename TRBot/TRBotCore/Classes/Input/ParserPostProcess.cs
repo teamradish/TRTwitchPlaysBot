@@ -9,10 +9,37 @@ namespace TRBot
     /// </summary>
     public static class ParserPostProcess
     {
-        public static bool ValidateButtonCombos(List<List<Parser.Input>> inputs, List<string> invalidCombo)
+        //Kimimaru: Think of a faster way to do this; it's rather slow
+        //The idea is to look through and see the inputs that would be held at the same time and avoid the given combo
+        //One list is for held inputs with another for pressed inputs - the sum of their counts is compared with the invalid combo list's count
+        //Released inputs do not count
+        
+        public static bool ValidateButtonCombos(List<List<Parser.Input>> inputs, List<string> invalidCombo, in int controllerNum)
         {
+            //This error will be handled later down the road, so simply return true to simplify things
+            if (controllerNum < 0 || controllerNum >= InputGlobals.ControllerMngr.ControllerCount
+                || InputGlobals.ControllerMngr.GetController(controllerNum).IsAcquired == false)
+            {
+                return true;
+            }
+            
             List<string> currentCombo = new List<string>(invalidCombo.Count);
             List<string> subCombo = new List<string>(invalidCombo.Count);
+            
+            IVirtualController controller = InputGlobals.ControllerMngr.GetController(controllerNum);
+            
+            //Add already pressed inputs from the controller
+            for (int i = 0; i < invalidCombo.Count; i++)
+            {
+                if (controller.GetButtonState(InputGlobals.CurrentConsole.ButtonInputMap[invalidCombo[i]]) == ButtonStates.Pressed)
+                {
+                    currentCombo.Add(invalidCombo[i]);
+                }
+            }
+            
+            //If all these inputs are somehow pressed already, whatever we do now doesn't matter 
+            //However, returning false here would prevent any further inputs from working, so
+            //give a chance to check other inputs (such as releasing)
             
             for (int i = 0; i < inputs.Count; i++)
             {
@@ -23,30 +50,37 @@ namespace TRBot
                 {
                     Parser.Input input = inputList[j];
                     
+                    //Check if this input is in the invalid combo
                     if (invalidCombo.Contains(input.name) == true)
                     {
-                        if (input.release == false && subCombo.Contains(input.name) == false)
+                        //If it's not a release input and isn't in the held or current inputs, add it
+                        if (input.release == false && subCombo.Contains(input.name) == false && currentCombo.Contains(input.name) == false)
                         {
                             subCombo.Add(input.name);
                             
+                            //Check the count after adding
                             if ((subCombo.Count + currentCombo.Count) == invalidCombo.Count)
                             {
                                 return false;
                             }
                         }
                         
+                        //For holds, use the held combo
                         if (input.hold == true)
                         {
                             if (currentCombo.Contains(input.name) == false)
                             {
+                                //Remove from the subcombo to avoid duplicates
                                 currentCombo.Add(input.name);
+                                subCombo.Remove(input.name);
                                 
-                                if (currentCombo.Count == invalidCombo.Count)
+                                if ((currentCombo.Count + subCombo.Count) == invalidCombo.Count)
                                 {
                                     return false;
                                 }
                             }
                         }
+                        //If released, remove from the current combo
                         else if (input.release == true)
                         {
                             currentCombo.Remove(input.name);
