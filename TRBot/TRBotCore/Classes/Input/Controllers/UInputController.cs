@@ -140,6 +140,10 @@ namespace TRBot
 
         private Dictionary<int, (long AxisMin, long AxisMax)> MinMaxAxes = new Dictionary<int, (long, long)>(8);
 
+        //Kimimaru: Ideally we get the input's state from the driver, but this should work well enough, for now at least
+        private Dictionary<uint, ButtonStates> ButtonPressStates = new Dictionary<uint, ButtonStates>(32);
+        private Dictionary<uint, ButtonStates> TempBtnStates = new Dictionary<uint, ButtonStates>(32);
+
         public UInputController(in int controllerIndex)
         {
             ControllerIndex = controllerIndex;
@@ -363,6 +367,8 @@ namespace TRBot
                 return;
             }
 
+            TempBtnStates[buttonVal] = ButtonStates.Pressed;
+
             NativeWrapperUInput.PressButton(ControllerDescriptor, button);
         }
 
@@ -374,11 +380,26 @@ namespace TRBot
                 return;
             }
 
+            TempBtnStates[buttonVal] = ButtonStates.Released;
+
             NativeWrapperUInput.ReleaseButton(ControllerDescriptor, button);
+        }
+
+        public ButtonStates GetButtonState(in uint buttonVal)
+        {
+            if (ButtonPressStates.TryGetValue(buttonVal, out ButtonStates btnState) == true)
+            {
+                return btnState;
+            }
+            
+            return ButtonStates.Released;
         }
 
         public void UpdateController()
         {
+            //Copy button states over
+            ButtonPressStates.CopyDictionaryData(TempBtnStates);
+            
             NativeWrapperUInput.UpdateController(ControllerDescriptor);
         }
 

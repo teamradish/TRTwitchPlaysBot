@@ -83,6 +83,10 @@ namespace TRBot
 
         private Dictionary<int, (long AxisMin, long AxisMax)> MinMaxAxes = new Dictionary<int, (long, long)>(8);
 
+        //Kimimaru: Ideally we get the input's state from the driver, but this should work well enough, for now at least
+        private Dictionary<uint, ButtonStates> ButtonPressStates = new Dictionary<uint, ButtonStates>(32);
+        private Dictionary<uint, ButtonStates> TempBtnStates = new Dictionary<uint, ButtonStates>(32);
+
         private vJoy VJoyInstance = null;
 
         public VJoyController(in uint controllerID, vJoy vjoyInstance)
@@ -159,6 +163,11 @@ namespace TRBot
                 {
                     ReleaseAxis(val.Key);
                 }
+            }
+            
+            foreach (KeyValuePair<uint, ButtonStates> btnKV in TempBtnStates)
+            {
+                TempBtnStates[btnKV.Key] = ButtonStates.Released;
             }
 
             UpdateController();
@@ -306,6 +315,8 @@ namespace TRBot
                 return;
             }
 
+            TempBtnStates[buttonVal] = ButtonStates.Pressed;
+
             //Kimimaru: Handle button counts greater than 32
             //Each buttons value contains 32 bits, so choose the appropriate one based on the value of the button pressed
             //Note that not all emulators (such as Dolphin) support more than 32 buttons
@@ -330,6 +341,8 @@ namespace TRBot
                 return;
             }
 
+            TempBtnStates[buttonVal] = ButtonStates.Released;
+
             //Kimimaru: Handle button counts greater than 32
             //Each buttons value contains 32 bits, so choose the appropriate one based on the value of the button pressed
             //Note that not all emulators (such as Dolphin) support more than 32 buttons
@@ -346,9 +359,22 @@ namespace TRBot
             }
         }
 
+        public ButtonStates GetButtonState(in uint buttonVal)
+        {
+            if (ButtonPressStates.TryGetValue(buttonVal, out ButtonStates btnState) == true)
+            {
+                return btnState;
+            }
+            
+            return ButtonStates.Released;
+        }
+
         public void UpdateController()
         {
-            UpdateJoystickEfficient();
+            //Copy button states over
+            ButtonPressStates.CopyDictionaryData(TempBtnStates);
+            
+            VJoyInstance.UpdateVJD(ControllerID, ref JSState);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -363,15 +389,6 @@ namespace TRBot
                 case (int)HID_USAGES.HID_USAGE_RY: JSState.AxisYRot = value; break;
                 case (int)HID_USAGES.HID_USAGE_RZ: JSState.AxisZRot = value; break;
             }
-        }
-
-        /// <summary>
-        /// Updates the joystick.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void UpdateJoystickEfficient()
-        {
-            VJoyInstance.UpdateVJD(ControllerID, ref JSState);
         }
     }
 }

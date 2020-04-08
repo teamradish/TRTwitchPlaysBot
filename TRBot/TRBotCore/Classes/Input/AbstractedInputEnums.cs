@@ -4,6 +4,15 @@ using System.Text;
 
 namespace TRBot
 {
+    /// <summary>
+    /// The states for buttons.
+    /// </summary>
+    public enum ButtonStates
+    {
+        Released = 0,
+        Pressed = 1
+    }
+    
     #region Button Vals
 
     /// <summary>

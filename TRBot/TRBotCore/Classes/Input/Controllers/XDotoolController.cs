@@ -94,6 +94,10 @@ namespace TRBot
 
         private Dictionary<int, (long AxisMin, long AxisMax)> MinMaxAxes = new Dictionary<int, (long, long)>(2);
 
+        //Kimimaru: Ideally we get the input's state from the driver, but this should work well enough, for now at least
+        private Dictionary<uint, ButtonStates> ButtonPressStates = new Dictionary<uint, ButtonStates>(32);
+        private Dictionary<uint, ButtonStates> TempBtnStates = new Dictionary<uint, ButtonStates>(32);
+
         /// <summary>
         /// The built argument list passed into xdotool.
         /// </summary>
@@ -130,7 +134,7 @@ namespace TRBot
             //Reset();
 
             //Initialize axes
-            //Use the global axes values, which will be converted to uinput ones when needing to carry out the inputs
+            //Use the global axes values, which will be converted to xdotool values when needing to carry out the inputs
             GlobalAxisVals[] axes = EnumUtility.GetValues<GlobalAxisVals>.EnumValues;
 
             for (int i = 0; i < axes.Length; i++)
@@ -154,18 +158,7 @@ namespace TRBot
 
             for (int i = 0; i < buttons.Length; i++)
             {
-                if (InputCodeMap.TryGetValue((int)buttons[i], out int inputBtn) == false)
-                {
-                    continue;
-                }
-                
-                if (ClickMap.TryGetValue(inputBtn, out int mouseBtn) == true)
-                {
-                    HandleMouseUp(mouseBtn);
-                    return;
-                }                
-
-                HandleProcessKeyUp(((InputCodes)inputBtn).ToString());
+                ReleaseButton((uint)buttons[i]);
             }
 
             UpdateController();
@@ -261,16 +254,16 @@ namespace TRBot
         public void ReleaseAxis(in int axis)
         {
             //Not a valid axis - defaulting to 0 results in the wrong axis being set
-            if (AxisCodeMap.TryGetValue(axis, out int uinputAxis) == false)
-            {
-                return;
-            }
-            
-            if (MinMaxAxes.TryGetValue(axis, out (long, long) axisVals) == false)
-            {
-                return;
-            }
-
+            //if (AxisCodeMap.TryGetValue(axis, out int xdotoolAxis) == false)
+            //{
+            //    return;
+            //}
+            //
+            //if (MinMaxAxes.TryGetValue(axis, out (long, long) axisVals) == false)
+            //{
+            //    return;
+            //}
+            //
             //Neutral is halfway between the min and max axes
             //long half = (axisVals.Item2 - axisVals.Item1) / 2L;
             //int val = (int)(axisVals.Item1 + half);
@@ -281,7 +274,7 @@ namespace TRBot
         public void PressAbsoluteAxis(in int axis, in int percent)
         {
             ////Not a valid axis - defaulting to 0 results in the wrong axis being set
-            //if (AxisCodeMap.TryGetValue(axis, out int uinputAxis) == false)
+            //if (AxisCodeMap.TryGetValue(axis, out int xdotoolAxis) == false)
             //{
             //    return;
             //}
@@ -299,7 +292,7 @@ namespace TRBot
         public void ReleaseAbsoluteAxis(in int axis)
         {
             ////Not a valid axis - defaulting to 0 results in the wrong axis being set
-            //if (AxisCodeMap.TryGetValue(axis, out int uinputAxis) == false)
+            //if (AxisCodeMap.TryGetValue(axis, out int xdotoolAxis) == false)
             //{
             //    return;
             //}
@@ -320,6 +313,8 @@ namespace TRBot
                 return;
             }
             
+            TempBtnStates[buttonVal] = ButtonStates.Pressed;
+            
             if (ClickMap.TryGetValue(button, out int mouseBtn) == true)
             {
                 HandleMouseDown(mouseBtn);
@@ -338,6 +333,8 @@ namespace TRBot
                 return;
             }
             
+            TempBtnStates[buttonVal] = ButtonStates.Released;
+            
             if (ClickMap.TryGetValue(button, out int mouseBtn) == true)
             {
                 HandleMouseUp(mouseBtn);
@@ -348,12 +345,25 @@ namespace TRBot
             HandleProcessKeyUp(((InputCodes)button).ToString());
         }
 
+        public ButtonStates GetButtonState(in uint buttonVal)
+        {
+            if (ButtonPressStates.TryGetValue(buttonVal, out ButtonStates btnState) == true)
+            {
+                return btnState;
+            }
+            
+            return ButtonStates.Released;
+        }
+
         public void UpdateController()
         {
             if (BuiltArgList.Length == 0)
             {
                 return;
             }
+            
+            //Copy button states over
+            ButtonPressStates.CopyDictionaryData(TempBtnStates);
             
             //Execute all the built up commands at once by passing them as arguments to xdotool
             string argList = BuiltArgList.ToString();

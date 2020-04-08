@@ -61,6 +61,8 @@ namespace TRBot
         void PressButton(in uint buttonVal);
         void ReleaseButton(in uint buttonVal);
 
+        ButtonStates GetButtonState(in uint buttonVal);
+
         /// <summary>
         /// Updates the virtual device by applying all changes.
         /// </summary>
