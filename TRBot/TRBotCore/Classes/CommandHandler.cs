@@ -37,6 +37,7 @@ namespace TRBot
             CommandDict.Add("help", new HelpCommand());
             //CommandDict.Add("schedule", new ScheduleCommand());
             //CommandDict.Add("suggestions", new SuggestionsCommand());
+            CommandDict.Add("chat", new ChatBotCommand());
             CommandDict.Add("credits", new CreditsCommand());
             CommandDict.Add("transfer", new TransferCommand());
             CommandDict.Add("bet", new BetCommand());
@@ -104,6 +105,14 @@ namespace TRBot
             foreach (KeyValuePair<string, BaseCommand> command in CommandDict)
             {
                 command.Value.Initialize(this);
+            }
+        }
+
+        public void CleanUp()
+        {
+            foreach (KeyValuePair<string, BaseCommand> command in CommandDict)
+            {
+                command.Value.CleanUp();
             }
         }
 

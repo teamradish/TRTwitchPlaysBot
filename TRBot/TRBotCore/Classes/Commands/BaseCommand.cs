@@ -30,6 +30,11 @@ namespace TRBot
 
         }
 
+        public virtual void CleanUp()
+        {
+            
+        }
+
         public abstract void ExecuteCommand(object sender, OnChatCommandReceivedArgs e);
     }
 }

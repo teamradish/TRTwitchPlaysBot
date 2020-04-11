@@ -92,6 +92,8 @@ namespace TRBot
                 BotRoutines[i].CleanUp(Client);
             }
 
+            CommandHandler.CleanUp();
+
             ClientMessages.Clear();
 
             if (Client.IsConnected == true)
@@ -175,6 +177,7 @@ namespace TRBot
             AddRoutine(new PeriodicMessageRoutine());
             AddRoutine(new CreditsGiveRoutine());
             AddRoutine(new ReconnectRoutine());
+            AddRoutine(new ChatBotResponseRoutine());
 
             //Initialize controller input - validate the controller type first
             if (InputGlobals.IsVControllerSupported((InputGlobals.VControllerTypes)BotData.LastVControllerType) == false)
@@ -703,6 +706,11 @@ namespace TRBot
             /// The message to send when a user is auto whitelisted. "{0}" is replaced with the name of the user whitelisted.
             /// </summary>
             public string AutoWhitelistMsg = "{0} has been whitelisted! New commands are available.";
+            
+            /// <summary>
+            /// If true, will acknowledge that a chat bot is in use and allow interacting with it, provided it's set up.
+            /// </summary>
+            public bool UseChatBot = false;
         }
     }
 }

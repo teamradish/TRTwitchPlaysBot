@@ -32,6 +32,9 @@ namespace TRBot
         public const int MinSleepTime = 1;
         public const int MaxSleepTime = 10000;
 
+        public const string ChatBotPromptFilename = "ChatBotPrompt.txt";
+        public const string ChatBotResponseFilename = "ChatBotResponse.txt";
+
         public static string GetDataFilePath(in string fileName)
         {
             return $"{DataPath}{fileName}";
