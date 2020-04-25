@@ -399,6 +399,13 @@ namespace TRBot
                         return;
                     }
 
+                    //Ignore based on user level and permissions
+                    if (userData.Level < BotProgram.BotData.InputPermissions)
+                    {
+                        BotProgram.QueueMessage($"Inputs are restricted to levels {(AccessLevels.Levels)BotProgram.BotData.InputPermissions} and above");
+                        return;
+                    }
+
                     #region Parser Post-Process Validation
                     
                     //All this validation is very slow - find a way to speed it up, ideally without integrating it directly into the parser

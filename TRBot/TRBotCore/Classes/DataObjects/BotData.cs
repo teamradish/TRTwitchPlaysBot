@@ -56,5 +56,11 @@ namespace TRBot
         /// This will be overwritten if on a platform that doesn't support a specific virtual controller.
         /// </summary>
         public int LastVControllerType = 0;
+        
+        /// <summary>
+        /// The lowest permission available for inputs.
+        /// Users with levels above this value can perform inputs.
+        /// </summary>
+        public int InputPermissions = (int)AccessLevels.Levels.User;
     }
 }
