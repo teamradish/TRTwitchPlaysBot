@@ -1,6 +1,7 @@
 # This is a Python source file to run a local ChatterBot for chatbot conversations in your stream
-# Place this file in your TRBot instance's Data folder and run this script
-# You will need to install Python and ChatterBot first (https://chatterbot.readthedocs.io/en/stable/setup.html)
+# Run this program separately with "python ChatterBot.py"
+# It's recommended to run this in the TRBot Data folder at first
+# You will need to install Python and ChatterBot as prerequisites (https://chatterbot.readthedocs.io/en/stable/setup.html)
 
 # Overview: This looks for changes in a text file that is used as a bot prompt
 # If it detects a change in the file, it'll send the prompt through ChatterBot and write the response to a response file
@@ -13,9 +14,18 @@ import time
 import os
 import traceback
 
+# This is the root path to the prompt and response files
+# Change this to the TRBot data folder where you want to store the bot's files
+# This allows running this program anywhere
+# Keep it as "." if you want to run the bot in the data folder
+Path = "."
+
 SleepTime = 1
 PromptFileName = "ChatBotPrompt.txt"
 ResponseFileName = "ChatBotResponse.txt"
+
+PromptDir = os.path.join(Path, PromptFileName)
+ResponseDir = os.path.join(Path, ResponseFileName)
 
 chatbot = ChatBot(
         "ChatBot",
@@ -49,10 +59,10 @@ while True:
     # Get the time the prompt file was modified
     mTime = 0
     try:
-        mTime = os.path.getmtime(PromptFileName)
+        mTime = os.path.getmtime(PromptDir)
         #print(mTime)
     except:
-        print("Exception when obtaining file timestamp")
+        print("Exception when obtaining file timestamp: ", traceback.format_exc())
         continue
 
     # If the checked time is less than or equal to the stored time, it hasn't been changed
@@ -68,7 +78,7 @@ while True:
     
     # Read the prompt file
     try:    
-        with open(PromptFileName, "r") as File_obj:
+        with open(PromptDir, "r") as File_obj:
             fileTxt = File_obj.read()
     except:
         print("Exception opening or reading prompt file: ", traceback.format_exc())
@@ -79,7 +89,7 @@ while True:
 
     # Write to the response file
     try:
-        with open(ResponseFileName, "w") as Response_File:
+        with open(ResponseDir, "w") as Response_File:
             Response_File.write(response)
     except:
         print("Exception writing to response file: ", traceback.format_exc())
