@@ -1,6 +1,18 @@
-﻿/* Original Python parser for TPE written in Python by: Jdog, aka TwitchPlays_Everything
- * Converted to C# by: Kimimaru, aka Kimimaru4000
- * */
+﻿/* This file is part of TRBot.
+ *
+ * TRBot is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * TRBot is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with TRBot.  If not, see <https://www.gnu.org/licenses/>.
+*/
 
 using System;
 using System.Collections.Generic;
@@ -205,6 +217,7 @@ namespace TRBot
             return message;
         }
 
+        //This is a C# version of the original Python parser for TPE written by Jdog, aka TwitchPlays_Everything
         //Returns Input object
         [Obsolete("Use GetInputFast with ParseInputs for greatly improved performance and readability.", false)]
         private static Input GetInput(string message)
