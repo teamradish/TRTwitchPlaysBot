@@ -374,6 +374,12 @@ namespace TRBot
                     return;
                 }
 
+                //If there are no valid inputs, don't attempt to parse
+                if (InputGlobals.CurrentConsole.ValidInputs == null || InputGlobals.CurrentConsole.ValidInputs.Length == 0)
+                {
+                    return;
+                }
+
                 //Parser.InputSequence inputSequence = default;
                 //(bool, List<List<Parser.Input>>, bool, int) parsedVal = default;
                 Parser.InputSequence inputSequence = default;

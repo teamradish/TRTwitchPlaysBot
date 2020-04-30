@@ -48,13 +48,13 @@ namespace TRBot
         /// </summary>
         public enum InputConsoles
         {
+            Blank,
             NES,
             SNES, Genesis,
             N64,
             GC, PS2, GBA,
             Wii,
-            PC,
-            Custom
+            PC
         }
 
         public static readonly Dictionary<string, string> INPUT_SYNONYMS = new Dictionary<string, string>()
@@ -65,13 +65,13 @@ namespace TRBot
 
         public static readonly Dictionary<InputConsoles, ConsoleBase> Consoles = new Dictionary<InputConsoles, ConsoleBase>()
         {
+            { InputConsoles.Blank, new BlankConsole() },
             { InputConsoles.NES, new NESConsole() },
             { InputConsoles.SNES, new SNESConsole() }, { InputConsoles.Genesis, new GenesisConsole() },
             { InputConsoles.N64, new N64Console() },
             { InputConsoles.GC, new GCConsole() }, { InputConsoles.PS2, new PS2Console() }, { InputConsoles.GBA, new GBAConsole() },
             { InputConsoles.Wii, new WiiConsole() },
-            { InputConsoles.PC, new PCConsole() },
-            { InputConsoles.Custom, new CustomConsole() }
+            { InputConsoles.PC, new PCConsole() }
         };
 
         /// <summary>

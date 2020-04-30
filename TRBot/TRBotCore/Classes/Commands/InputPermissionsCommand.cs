@@ -50,13 +50,21 @@ namespace TRBot
                 return;
             }
 
-            if ((int)perm == BotProgram.BotData.InputPermissions)
+            int permissionLvl = (int)perm;
+
+            if (permissionLvl == BotProgram.BotData.InputPermissions)
             {
                 BotProgram.QueueMessage($"The permissions are already {(AccessLevels.Levels)BotProgram.BotData.InputPermissions}!");
                 return;
             }
 
-            BotProgram.BotData.InputPermissions = (int)perm;
+            if (permissionLvl < (int)AccessLevels.Levels.User || permissionLvl > (int)AccessLevels.Levels.Admin)
+            {
+                BotProgram.QueueMessage("Invalid permission level!");
+                return;
+            }
+
+            BotProgram.BotData.InputPermissions = permissionLvl;
             BotProgram.SaveBotData();
 
             BotProgram.QueueMessage($"Set input permissions to {(AccessLevels.Levels)BotProgram.BotData.InputPermissions} and above!");
