@@ -40,7 +40,7 @@ namespace TRBot
 
             try
             {
-                string expression = e.Command.ChatMessage.Message.Replace($"{Globals.CommandIdentifier}calculate", string.Empty);
+                string expression = e.Command.ArgumentsAsString;
 
                 exp = new Expression(expression);
                 exp.Options = EvaluateOptions.IgnoreCase;

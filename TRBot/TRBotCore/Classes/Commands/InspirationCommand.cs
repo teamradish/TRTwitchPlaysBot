@@ -49,9 +49,23 @@ namespace TRBot
 
         public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
         {
+            string userName = e.Command.ChatMessage.DisplayName;
+
+            //Allow inspiring another user
+            List<string> args = e.Command.ArgumentsAsList;
+            if (args.Count == 1)
+            {
+                //Check if the name is in the database
+                User user = BotProgram.GetUser(args[0], false);
+                if (user != null)
+                {
+                    userName = user.Name;
+                }
+            }
+
             int randinspiration = Rand.Next(0, RandomInspiration.Length);
 
-            string message = RandomInspiration[randinspiration].Replace("{name}", e.Command.ChatMessage.DisplayName);
+            string message = RandomInspiration[randinspiration].Replace("{name}", userName);
 
             BotProgram.QueueMessage(message);
         }

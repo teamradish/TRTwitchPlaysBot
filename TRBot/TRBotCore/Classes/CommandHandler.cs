@@ -117,6 +117,7 @@ namespace TRBot
             //CommandDict.Add("maxpause", new MaxPauseDurationCommand());
             CommandDict.Add("vcontroller", new VirtualControllerCommand());
             CommandDict.Add("inputperms", new InputPermissionsCommand());
+            CommandDict.Add("reverse", new ReverseCommand());
             CommandDict.Add("tutorial", new TutorialCommand());
 
             foreach (KeyValuePair<string, BaseCommand> command in CommandDict)
