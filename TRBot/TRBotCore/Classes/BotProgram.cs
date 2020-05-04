@@ -359,7 +359,10 @@ namespace TRBot
         {
             User userData = GetOrAddUser(e.ChatMessage.Username, false);
 
-            userData.TotalMessages++;
+            if (userData.OptedOut == false)
+            {
+                userData.IncrementMsgCount();
+            }
 
             string possibleMeme = e.ChatMessage.Message.ToLower();
             if (BotProgram.BotData.Memes.TryGetValue(possibleMeme, out string meme) == true)
@@ -485,7 +488,10 @@ namespace TRBot
                     if (InputHandler.StopRunningInputs == false)
                     {
                         //Mark this as a valid input
-                        userData.ValidInputs++;
+                        if (userData.OptedOut == false)
+                        {
+                            userData.IncrementValidInputCount();
+                        }
 
                         bool shouldPerformInput = true;
 
@@ -516,7 +522,7 @@ namespace TRBot
                                 && userData.AutoWhitelisted == false && userData.ValidInputs >= BotSettings.AutoWhitelistInputCount)
                             {
                                 userData.Level = (int)AccessLevels.Levels.Whitelisted;
-                                userData.AutoWhitelisted = true;
+                                userData.SetAutoWhitelist(true);
 
                                 if (string.IsNullOrEmpty(BotSettings.AutoWhitelistMsg) == false)
                                 {

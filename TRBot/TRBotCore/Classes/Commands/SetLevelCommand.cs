@@ -107,7 +107,7 @@ namespace TRBot
                 return;
             }
 
-            levelUser.Level = levelNum;
+            levelUser.SetLevel(levelNum);
 
             BotProgram.SaveBotData();
 

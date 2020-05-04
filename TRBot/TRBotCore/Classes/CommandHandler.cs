@@ -74,8 +74,8 @@ namespace TRBot
             CommandDict.Add("addmeme", new AddMemeCommand());
             CommandDict.Add("removememe", new RemoveMemeCommand());
             CommandDict.Add("highfive", new HighFiveCommand());
-            CommandDict.Add("groupduel", new GroupDuelCommand());
-            CommandDict.Add("outgroupduel", new OutGroupDuelCommand());
+            CommandDict.Add("groupbet", new GroupBetCommand());
+            CommandDict.Add("outgroupbet", new OutGroupBetCommand());
             CommandDict.Add("crashbot", new CrashBotCommand());
             CommandDict.Add("console", new ConsoleCommand());
             CommandDict.Add("stopall", new StopAllCommand());
@@ -118,6 +118,7 @@ namespace TRBot
             CommandDict.Add("vcontroller", new VirtualControllerCommand());
             CommandDict.Add("inputperms", new InputPermissionsCommand());
             CommandDict.Add("reverse", new ReverseCommand());
+            CommandDict.Add("toggleoptstats", new OptStatsCommand());
             CommandDict.Add("tutorial", new TutorialCommand());
 
             foreach (KeyValuePair<string, BaseCommand> command in CommandDict)

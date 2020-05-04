@@ -79,8 +79,9 @@ namespace TRBot
             {
                 User user = BotProgram.GetUser(nameToLower);
 
-                //If so, check if they're in the credits database and add them for gaining credits
-                if (user != null)
+                //If so, check if they're in the credits database and not opted out,
+                //then add them for gaining credits
+                if (user != null && user.OptedOut == false)
                 {
                     UsersTalked.Add(nameToLower, true);
                 }

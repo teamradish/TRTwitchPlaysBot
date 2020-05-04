@@ -56,9 +56,21 @@ namespace TRBot
             User giverUser = BotProgram.GetOrAddUser(giverToLower);
             User receiverUser = BotProgram.GetUser(receiverToLower);
 
+            if (giverUser.OptedOut == true)
+            {
+                BotProgram.QueueMessage("You're opted out of bot stats, so you can't transfer credits.");
+                return;
+            }
+
             if (receiverUser == null)
             {
                 BotProgram.QueueMessage($"{receiver} is not in the database!");
+                return;
+            }
+
+            if (receiverUser.OptedOut == true)
+            {
+                BotProgram.QueueMessage("The one you're transferring to opted out of bot stats, so they can't receive credits.");
                 return;
             }
 
@@ -76,8 +88,8 @@ namespace TRBot
                 return;
             }
 
-            giverUser.Credits -= transferAmount;
-            receiverUser.Credits += transferAmount;
+            giverUser.SubtractCredits(transferAmount);
+            receiverUser.AddCredits(transferAmount);
             BotProgram.SaveBotData();
 
             BotProgram.QueueMessage($"{giver} has transferred {transferAmount} points to {receiver} :D !");

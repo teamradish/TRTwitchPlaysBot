@@ -54,10 +54,18 @@ namespace TRBot
                 string nameToLower = name.ToLower();
 
                 User user = BotProgram.GetOrAddUser(nameToLower);
+                if (user == null)
+                {
+                    return;
+                }
 
-                long credits = user.Credits;
+                if (user.OptedOut == true)
+                {
+                    BotProgram.QueueMessage("You cannot bet while opted out of bot stats");
+                    return;
+                }
 
-                if (creditBet > credits)
+                if (creditBet > user.Credits)
                 {
                     BotProgram.QueueMessage("Bet amount is greater than credits!");
                 }
@@ -68,18 +76,17 @@ namespace TRBot
 
                     if (success)
                     {
-                        credits += creditBet;
+                        user.AddCredits(creditBet);
                         message = $"{name} won {creditBet} credits :D !";
                     }
                     else
                     {
-                        credits -= creditBet;
+                        user.SubtractCredits(creditBet);
                         message = $"{name} lost {creditBet} credits :(";
                     }
 
                     BotProgram.QueueMessage(message);
 
-                    user.Credits = credits;
                     BotProgram.SaveBotData();
                 }
             }

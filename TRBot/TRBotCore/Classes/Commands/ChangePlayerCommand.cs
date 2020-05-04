@@ -60,7 +60,7 @@ namespace TRBot
             }
 
             //Change team and save data
-            user.Team = controllerNum;
+            user.SetTeam(controllerNum);
 
             BotProgram.SaveBotData();
 

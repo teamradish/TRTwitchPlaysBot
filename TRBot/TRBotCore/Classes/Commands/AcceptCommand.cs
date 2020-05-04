@@ -71,15 +71,15 @@ namespace TRBot
 
                 if (val == 0)
                 {
-                    duelerUser.Credits += betAmount;
-                    dueledUser.Credits -= betAmount;
+                    duelerUser.AddCredits(betAmount);
+                    dueledUser.SubtractCredits(betAmount);
 
                     message = $"{name} won the bet against {dueled} for {betAmount} credit(s)!";
                 }
                 else
                 {
-                    duelerUser.Credits -= betAmount;
-                    dueledUser.Credits += betAmount;
+                    duelerUser.SubtractCredits(betAmount);
+                    dueledUser.AddCredits(betAmount);
 
                     message = $"{dueled} won the bet against {name} for {betAmount} credit(s)!";
                 }

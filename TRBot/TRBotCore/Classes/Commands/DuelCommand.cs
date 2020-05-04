@@ -66,6 +66,18 @@ namespace TRBot
                 return;
             }
 
+            if (cmdUser.OptedOut == true)
+            {
+                BotProgram.QueueMessage("You can't duel if you're opted out of bot stats!");
+                return;
+            }
+
+            if (duelerUser.OptedOut == true)
+            {
+                BotProgram.QueueMessage("The one you're attempting to duel is opted out of bot stats!");
+                return;
+            }
+
             //Check if the duel expired and replace it with this one if so
             if (DuelRequests.ContainsKey(usertoLower) == true)
             {

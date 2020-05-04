@@ -38,7 +38,11 @@ namespace TRBot
 
             for (int i = 0; i < users.Length; i++)
             {
-                average += users[i].Credits;
+                //Don't include opted out users
+                if (users[i].OptedOut == false)
+                {
+                    average += users[i].Credits;
+                }
             }
 
             average /= users.Length;

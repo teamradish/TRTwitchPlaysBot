@@ -46,6 +46,12 @@ namespace TRBot
 
             foreach (var kvPair in BotProgram.BotData.Users)
             {
+                //Don't include opted out users
+                if (kvPair.Value.OptedOut == true)
+                {
+                    continue;
+                }
+
                 allCredits.Add((kvPair.Key, kvPair.Value.Credits));
             }
 

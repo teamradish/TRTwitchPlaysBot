@@ -73,7 +73,7 @@ namespace TRBot
                 return;
             }
 
-            user.Silenced = true;
+            user.SetSilenced(true);
             BotProgram.BotData.SilencedUsers.Add(silencedName);
             BotProgram.SaveBotData();
 

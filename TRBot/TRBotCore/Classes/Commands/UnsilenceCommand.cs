@@ -72,8 +72,8 @@ namespace TRBot
                 BotProgram.QueueMessage($"Cannot unsilence a user at or above your access level!");
                 return;
             }
-
-            user.Silenced = false;
+            
+            user.SetSilenced(false);
             BotProgram.BotData.SilencedUsers.Remove(unsilencedName);
             BotProgram.SaveBotData();
 

@@ -74,6 +74,18 @@ namespace TRBot
                     }
                 }
 
+                User user = BotProgram.BotData.Users[userLower];
+                if (user == null)
+                {
+                    return;
+                }
+
+                if (user.OptedOut == true)
+                {
+                    BotProgram.QueueMessage("This user opted out of bot stats, so you can't see their credits.");
+                    return;
+                }
+
                 BotProgram.QueueMessage($"{userName} has {BotProgram.BotData.Users[userLower].Credits} credit(s)!");
             }
             else
@@ -93,6 +105,15 @@ namespace TRBot
                 if (BotProgram.BotData.Users.ContainsKey(name2Lower) == false)
                 {
                     BotProgram.QueueMessage($"{name2} is not in the database!");
+                    return;
+                }
+
+                User user1 = BotProgram.BotData.Users[name1Lower];
+                User user2 = BotProgram.BotData.Users[name2Lower];
+
+                if (user1.OptedOut == true || user2.OptedOut == true)
+                {
+                    BotProgram.QueueMessage("At least one of these users opted out of bot stats, so you can't see their credits.");
                     return;
                 }
 
