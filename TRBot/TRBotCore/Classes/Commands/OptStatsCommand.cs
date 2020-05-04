@@ -29,8 +29,6 @@ namespace TRBot
     /// </summary>
     public sealed class OptStatsCommand : BaseCommand
     {
-        public Random Rand = new Random();
-
         public OptStatsCommand()
         {
 

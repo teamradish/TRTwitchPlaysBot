@@ -119,6 +119,7 @@ namespace TRBot
             CommandDict.Add("inputperms", new InputPermissionsCommand());
             CommandDict.Add("reverse", new ReverseCommand());
             CommandDict.Add("toggleoptstats", new OptStatsCommand());
+            CommandDict.Add("clearuserstats", new ClearStatsCommand());
             CommandDict.Add("tutorial", new TutorialCommand());
 
             foreach (KeyValuePair<string, BaseCommand> command in CommandDict)
