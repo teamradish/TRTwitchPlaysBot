@@ -36,8 +36,6 @@ namespace TRBot
         {
             MinutesForBet = minutesForDuel;
         }
-groupduel
-        }
 
         public override void CleanUp(in TwitchClient client)
         {

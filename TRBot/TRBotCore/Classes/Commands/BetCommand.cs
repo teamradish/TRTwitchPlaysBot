@@ -61,7 +61,7 @@ namespace TRBot
 
                 if (user.OptedOut == true)
                 {
-                    BotProgram.QueueMessage("You cannot bet while opted out of bot stats");
+                    BotProgram.QueueMessage("You cannot bet while opted out of bot stats.");
                     return;
                 }
 
