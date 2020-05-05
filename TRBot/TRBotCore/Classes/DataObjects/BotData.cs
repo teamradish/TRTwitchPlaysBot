@@ -42,6 +42,13 @@ namespace TRBot
         public readonly HashSet<string> SilencedUsers = new HashSet<string>(16);
         public readonly InputAccessData InputAccess = new InputAccessData();
         public readonly InvalidButtonComboData InvalidBtnCombos = new InvalidButtonComboData();
+
+        /// <summary>
+        /// This data is read from a separate file and is not saved in the JSON.
+        /// </summary>
+        [JsonIgnore]
+        public AchievementData Achievements = new AchievementData();
+
         public string GameMessage = string.Empty;
         public string InfoMessage = string.Empty;
         public int LastConsole = 0;
@@ -63,13 +70,14 @@ namespace TRBot
         public int MaxInputDuration = 60000;
 
         /// <summary>
-        /// The number of joysticks connected. You must have vJoy configured for this many joysticks.
+        /// The number of joysticks connected.
+        /// If using vJoy, you must have it configured to use all of these joysticks.
         /// </summary>
         public int JoystickCount = 1;
         
         /// <summary>
         /// The last type of virtual controller used.
-        /// This will be overwritten if on a platform that doesn't support a specific virtual controller.
+        /// This will be overwritten on a platform that doesn't support a specific virtual controller.
         /// </summary>
         public int LastVControllerType = 0;
         

@@ -698,6 +698,28 @@ namespace TRBot
                 BotData = new BotData();
                 SaveBotData();
             }
+
+            string achievementsText = Globals.ReadFromTextFileOrCreate(Globals.AchievementsFilename);
+            BotData.Achievements = JsonConvert.DeserializeObject<AchievementData>(achievementsText);
+            if (BotData.Achievements == null)
+            {
+                Console.WriteLine("No achievement data found; initializing template.");
+                BotData.Achievements = new AchievementData();
+
+                //Add an example achievement
+                BotData.Achievements.AchievementDict.Add("talkative", new Achievement("Talkative",
+                    "Say 500 messages in chat.", AchievementTypes.MsgCount, 500, 1000L)); 
+
+                //Save the achievement template
+                string text = JsonConvert.SerializeObject(BotData.Achievements, Formatting.Indented);
+                if (string.IsNullOrEmpty(text) == false)
+                {
+                    if (Globals.SaveToTextFile(Globals.AchievementsFilename, text) == false)
+                    {
+                        QueueMessage($"CRITICAL - Unable to save achievement data");
+                    }
+                }
+            }
         }
 
 #endregion

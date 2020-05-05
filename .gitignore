@@ -40,6 +40,9 @@ Generated\ Files/
 *.VisualState.xml
 TestResult.xml
 
+# Visual Studio Code/Codium cache/options directory
+.vscode/
+
 # Build Results of an ATL Project
 [Dd]ebugPS/
 [Rr]eleasePS/

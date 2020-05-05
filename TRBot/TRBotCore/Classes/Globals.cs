@@ -37,6 +37,7 @@ namespace TRBot
 
         public const string LoginInfoFilename = "LoginInfo.txt";
         public const string SettingsFilename = "Settings.txt";
+        public const string AchievementsFilename = "Achievements.txt";
         public const string BotDataFilename = "BotData.txt";
 
         /// <summary>

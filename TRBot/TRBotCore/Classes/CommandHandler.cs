@@ -120,6 +120,8 @@ namespace TRBot
             CommandDict.Add("reverse", new ReverseCommand());
             CommandDict.Add("toggleoptstats", new OptStatsCommand());
             CommandDict.Add("clearuserstats", new ClearStatsCommand());
+            CommandDict.Add("achievements", new ListAchievementsCommand());
+            CommandDict.Add("achinfo", new AchievementInfoCommand());
             CommandDict.Add("tutorial", new TutorialCommand());
 
             foreach (KeyValuePair<string, BaseCommand> command in CommandDict)
