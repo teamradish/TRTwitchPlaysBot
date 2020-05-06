@@ -51,6 +51,7 @@ namespace TRBot
         private CrashHandler crashHandler = null;
 
         private CommandHandler CommandHandler = null;
+        public static EventHandler EvtHandler { get; private set; } = new EventHandler();
 
         public static bool TryReconnect { get; private set; } = false;
         public static bool ChannelJoined { get; private set; } = false;
@@ -96,6 +97,7 @@ namespace TRBot
             thisProcess.PriorityClass = ProcessPriorityClass.Idle;
         }
 
+        //Clean up anything we need to here
         public void Dispose()
         {
             if (Initialized == false)
@@ -109,6 +111,7 @@ namespace TRBot
             }
 
             CommandHandler.CleanUp();
+            EvtHandler.CleanUp(Client);
 
             ClientMessages.Clear();
 
@@ -493,6 +496,8 @@ namespace TRBot
                             userData.IncrementValidInputCount();
                         }
 
+                        EvtHandler.InvokeUserMadeInputEvent(userData, inputSequence);
+
                         bool shouldPerformInput = true;
 
                         //Check the team the user is on for the controller they should be using
@@ -699,27 +704,27 @@ namespace TRBot
                 SaveBotData();
             }
 
-            string achievementsText = Globals.ReadFromTextFileOrCreate(Globals.AchievementsFilename);
-            BotData.Achievements = JsonConvert.DeserializeObject<AchievementData>(achievementsText);
-            if (BotData.Achievements == null)
-            {
-                Console.WriteLine("No achievement data found; initializing template.");
-                BotData.Achievements = new AchievementData();
+            //string achievementsText = Globals.ReadFromTextFileOrCreate(Globals.AchievementsFilename);
+            //BotData.Achievements = JsonConvert.DeserializeObject<AchievementData>(achievementsText);
+            //if (BotData.Achievements == null)
+            //{
+            //    Console.WriteLine("No achievement data found; initializing template.");
+            //    BotData.Achievements = new AchievementData();
 
-                //Add an example achievement
-                BotData.Achievements.AchievementDict.Add("talkative", new Achievement("Talkative",
-                    "Say 500 messages in chat.", AchievementTypes.MsgCount, 500, 1000L)); 
+            //    //Add an example achievement
+            //    BotData.Achievements.AchievementDict.Add("talkative", new Achievement("Talkative",
+            //        "Say 500 messages in chat.", AchievementTypes.MsgCount, 500, 1000L)); 
 
-                //Save the achievement template
-                string text = JsonConvert.SerializeObject(BotData.Achievements, Formatting.Indented);
-                if (string.IsNullOrEmpty(text) == false)
-                {
-                    if (Globals.SaveToTextFile(Globals.AchievementsFilename, text) == false)
-                    {
-                        QueueMessage($"CRITICAL - Unable to save achievement data");
-                    }
-                }
-            }
+            //    //Save the achievement template
+            //    string text = JsonConvert.SerializeObject(BotData.Achievements, Formatting.Indented);
+            //    if (string.IsNullOrEmpty(text) == false)
+            //    {
+            //        if (Globals.SaveToTextFile(Globals.AchievementsFilename, text) == false)
+            //        {
+            //            QueueMessage($"CRITICAL - Unable to save achievement data");
+            //        }
+            //    }
+            //}
         }
 
 #endregion

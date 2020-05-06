@@ -21,6 +21,6 @@ namespace TRBot
     /// </summary>
     public enum AchievementTypes
     {
-        MsgCount, InputCount, CreditCount
+        MsgCount, InputCount, CreditCount, Subscribe
     }
 }

@@ -25,11 +25,16 @@ namespace TRBot
 {
     public sealed class ListAchievementsCommand : BaseCommand
     {
-        private string AchievementListStr = string.Empty;
+        private List<string> AchievementCache = new List<string>(16);
 
         public ListAchievementsCommand()
         {
 
+        }
+
+        public override void Initialize(CommandHandler commandHandler)
+        {
+            CacheAchievementString();
         }
 
         public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
@@ -40,29 +45,46 @@ namespace TRBot
                 return;
             }
 
-            if (string.IsNullOrEmpty(AchievementListStr) == true)
+            for (int i = 0; i < AchievementCache.Count; i++)
             {
-                AchievementListStr = BuildAchievementListStr();
+                BotProgram.QueueMessage(AchievementCache[i]);
             }
-
-            BotProgram.QueueMessage(AchievementListStr);
         }
 
-        private string BuildAchievementListStr()
+        private void CacheAchievementString()
         {
-            Dictionary<string, Achievement> achDict = BotProgram.BotData.Achievements.AchievementDict;
+            AchievementCache.Clear();
 
-            //The capacity is a rough approximation of the average character length of an achievement name
-            StringBuilder strBuilder = new StringBuilder(achDict.Count * 16);
+            string curString = string.Empty;
 
-            foreach (KeyValuePair<string, Achievement> achKV in achDict)
+            //List all achievements
+            int i = 0;
+            foreach (KeyValuePair<string, Achievement> achKVPair in BotProgram.BotData.Achievements.AchievementDict)
             {
-                strBuilder.Append(achKV.Value.Name).Append(',').Append(' ');
+                string achName = achKVPair.Value.Name;
+
+                int length = achName.Length + curString.Length;
+
+                if (length >= Globals.BotCharacterLimit)
+                {
+                    AchievementCache.Add(curString);
+                    curString = string.Empty;
+                }
+
+                curString += achName;
+
+                if (i < (BotProgram.BotData.Achievements.AchievementDict.Count - 1))
+                {
+                    curString += ", ";
+                }
+
+                i++;
             }
 
-            strBuilder.Remove(strBuilder.Length - 2, 2);
-
-            return strBuilder.ToString();
+            if (string.IsNullOrEmpty(curString) == false)
+            {
+                AchievementCache.Add(curString);
+            }
         }
     }
 }
