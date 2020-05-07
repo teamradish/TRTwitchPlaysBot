@@ -45,6 +45,13 @@ namespace TRBot
             
             string question = e.Command.ArgumentsAsString;
             
+            //The user needs to send a prompt to the bot
+            if (string.IsNullOrEmpty(question) == true)
+            {
+                BotProgram.QueueMessage("Usage: \"prompt/question\"");
+                return;
+            }
+
             if (Globals.SaveToTextFile(Globals.ChatBotPromptFilename, question) == false)
             {
                 BotProgram.QueueMessage("Error saving question to prompt file.");

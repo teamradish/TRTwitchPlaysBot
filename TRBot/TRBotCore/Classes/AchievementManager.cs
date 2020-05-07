@@ -26,6 +26,9 @@ namespace TRBot
     /// </summary>
     public class AchievementManager
     {
+        //Used for quicker lookup of achievements
+        private Dictionary<AchievementTypes, Dictionary<string, Achievement>> Achievements = null;
+
         public void Initialize(EventHandler eventHandler)
         {
             eventHandler.UserSentMessageEvent -= OnUserSentMessage;
@@ -39,6 +42,24 @@ namespace TRBot
 
             eventHandler.UserReSubscribedEvent -= OnUserReSubscribed;
             eventHandler.UserReSubscribedEvent += OnUserReSubscribed;
+
+            //Initialize all achievements by type for quicker lookup and faster reference
+            Dictionary<string, Achievement> achDict = BotProgram.BotData.Achievements.AchievementDict;
+
+            Achievements = new Dictionary<AchievementTypes, Dictionary<string, Achievement>>(4);
+
+            foreach (KeyValuePair<string, Achievement> achKVPair in BotProgram.BotData.Achievements.AchievementDict)
+            {
+                AchievementTypes achType = achKVPair.Value.AchType;
+
+                if (Achievements.TryGetValue(achType, out Dictionary<string, Achievement> achs) == false)
+                {
+                    achs = new Dictionary<string, Achievement>(8);
+                    Achievements.Add(achType, achs);
+                }
+
+                achs.Add(achKVPair.Key, achKVPair.Value);
+            }
         }
 
         private void OnUserSentMessage(User user, OnMessageReceivedArgs e)
