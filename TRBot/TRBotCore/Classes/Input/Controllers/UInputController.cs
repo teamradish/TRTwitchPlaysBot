@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Text;
 using System.Runtime.CompilerServices;
 
@@ -157,8 +158,8 @@ namespace TRBot
         private Dictionary<int, (long AxisMin, long AxisMax)> MinMaxAxes = new Dictionary<int, (long, long)>(8);
 
         //Kimimaru: Ideally we get the input's state from the driver, but this should work well enough, for now at least
-        private Dictionary<uint, ButtonStates> ButtonPressStates = new Dictionary<uint, ButtonStates>(32);
-        private Dictionary<uint, ButtonStates> TempBtnStates = new Dictionary<uint, ButtonStates>(32);
+        private ConcurrentDictionary<uint, ButtonStates> ButtonPressStates = new ConcurrentDictionary<uint, ButtonStates>(Environment.ProcessorCount * 2, 32);
+        private ConcurrentDictionary<uint, ButtonStates> TempBtnStates = new ConcurrentDictionary<uint, ButtonStates>(Environment.ProcessorCount * 2, 32);
 
         public UInputController(in int controllerIndex)
         {
