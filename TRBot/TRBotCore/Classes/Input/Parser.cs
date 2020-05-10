@@ -41,15 +41,25 @@ namespace TRBot
             NormalMsg, Valid, Invalid
         }
 
+        public const string ParseRegexHoldInput = @"_";
+        public const string ParseRegexReleaseInput = @"-";
+        public const string ParseRegexPlusInput = @"\+";
+        public const string ParseRegexPercentInput = @"%";
+        public const string ParseRegexMillisecondsInput = @"ms";
+        public const string ParseRegexSecondsInput = @"s";
+
+        public const int ParserDefaultPercent = 100;
+        public const string ParserDefaultDurType = ParseRegexMillisecondsInput;
+
         /// <summary>
         /// The start of the input regex string.
         /// </summary>
-        public const string ParseRegexStart = "([_-])?(";
+        public const string ParseRegexStart = "([" + ParseRegexHoldInput + ParseRegexReleaseInput + "])?(";
 
         /// <summary>
         /// The end of the input regex string.
         /// </summary>
-        public const string ParseRegexEnd = @")(\d+%)?((\d+ms)|(\d+s))?(\+)?";
+        public const string ParseRegexEnd = @")(\d+" + ParseRegexPercentInput + @")?((\d+" + ParseRegexMillisecondsInput + @")|(\d+" + ParseRegexSecondsInput + @"))?(" + ParseRegexPlusInput + ")?";
 
         private static Comparison<(string, (int, int), List<string>)> SubCompare = SubComparison;
 
@@ -533,7 +543,7 @@ namespace TRBot
                 }
 
                 input.duration = msDur;
-                input.duration_type = "ms";
+                input.duration_type = ParseRegexMillisecondsInput;
             }
             //Check seconds
             else if (regexMatch.Groups[6].Success == true && string.IsNullOrEmpty(regexMatch.Groups[6].Value) == false)
@@ -548,7 +558,7 @@ namespace TRBot
                 }
 
                 input.duration = secDur * 1000;
-                input.duration_type = "s";
+                input.duration_type = ParseRegexSecondsInput;
             }
 
             //Check for a plus sign to perform the next input simultaneously
@@ -658,7 +668,7 @@ namespace TRBot
             /// <summary>
             /// Returns a default Input.
             /// </summary>
-            public static Input Default => new Input(string.Empty, false, false, 100, BotProgram.BotData.DefaultInputDuration, "ms", 0, string.Empty);
+            public static Input Default => new Input(string.Empty, false, false, Parser.ParserDefaultPercent, BotProgram.BotData.DefaultInputDuration, Parser.ParserDefaultDurType, 0, string.Empty);
 
             public Input(string nme, in bool hld, in bool relse, in int percnt, in int dur, string durType, in int len, in string err)
             {

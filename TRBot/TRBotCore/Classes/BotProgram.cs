@@ -398,6 +398,8 @@ namespace TRBot
 
                     //parsedVal = Parser.Parse(parse_message);
                     //Console.WriteLine(inputSequence.ToString());
+
+                    //Console.WriteLine("\nReverse Parsed: " + ReverseParser.ReverseParse(inputSequence));
                 }
                 catch (Exception exception)
                 {
