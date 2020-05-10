@@ -400,6 +400,7 @@ namespace TRBot
                     //Console.WriteLine(inputSequence.ToString());
 
                     //Console.WriteLine("\nReverse Parsed: " + ReverseParser.ReverseParse(inputSequence));
+                    //Console.WriteLine("\nReverse Parsed Natural:\n" + ReverseParser.ReverseParseNatural(inputSequence));
                 }
                 catch (Exception exception)
                 {
