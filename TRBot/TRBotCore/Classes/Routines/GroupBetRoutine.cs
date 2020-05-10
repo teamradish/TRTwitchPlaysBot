@@ -32,9 +32,13 @@ namespace TRBot
         private DateTime CurGroupBetTime;
         private DateTime CurMinute;
 
-        public GroupBetRoutine(int minutesForDuel)
+        public GroupBetRoutine(int minutesForBet)
         {
-            MinutesForBet = minutesForDuel;
+            MinutesForBet = minutesForBet;
+
+            DateTime now = DateTime.Now;
+            CurGroupBetTime = now;
+            CurMinute = now;
         }
 
         public override void CleanUp(in TwitchClient client)
