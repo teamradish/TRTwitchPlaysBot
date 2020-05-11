@@ -122,6 +122,7 @@ namespace TRBot
             CommandDict.Add("clearuserstats", new ClearStatsCommand());
             //CommandDict.Add("achievements", new ListAchievementsCommand());
             //CommandDict.Add("achinfo", new AchievementInfoCommand());
+            CommandDict.Add("exercise", new ExerciseCommand());
             CommandDict.Add("tutorial", new TutorialCommand());
 
             foreach (KeyValuePair<string, BaseCommand> command in CommandDict)

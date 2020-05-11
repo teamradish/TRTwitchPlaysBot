@@ -593,9 +593,7 @@ namespace TRBot
                 username = username.ToLowerInvariant();
             }
 
-            User userData = null;
-
-            BotData.Users.TryGetValue(username, out userData);
+            BotData.Users.TryGetValue(username, out User userData);
 
             return userData;
         }

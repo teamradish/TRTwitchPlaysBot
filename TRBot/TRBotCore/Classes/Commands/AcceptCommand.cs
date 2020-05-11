@@ -25,7 +25,7 @@ namespace TRBot
 {
     public sealed class AcceptCommand : BaseCommand
     {
-        public Random Rand = new Random();
+        private Random Rand = new Random();
 
         public AcceptCommand()
         {

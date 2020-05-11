@@ -46,7 +46,7 @@ namespace TRBot
                 string macroName = macros[i];
 
                 int newLength = StrBuilder.Length + macroName.Length + 3;
-                int maxLength = Globals.BotCharacterLimit;
+                int maxLength = Globals.TwitchCharacterLimit;
                 if (MultiMessageCache.Count == 0)
                 {
                     maxLength -= InitMessage.Length;

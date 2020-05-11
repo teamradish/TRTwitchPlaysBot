@@ -65,7 +65,7 @@ namespace TRBot
 
                 int length = achName.Length + curString.Length;
 
-                if (length >= Globals.BotCharacterLimit)
+                if (length >= Globals.TwitchCharacterLimit)
                 {
                     AchievementCache.Add(curString);
                     curString = string.Empty;

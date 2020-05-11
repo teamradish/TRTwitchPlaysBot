@@ -41,10 +41,9 @@ namespace TRBot
         public const string BotDataFilename = "BotData.txt";
 
         /// <summary>
-        /// Kimimaru: The bot can only output 495 characters in a message.
-        /// If it contains more, it might trim the end automatically (Ex. 'say' command) or not, for currently unknown reasons.
+        /// Kimimaru: Twitch's character limit.
         /// </summary>
-        public const int BotCharacterLimit = 495;
+        public const int TwitchCharacterLimit = 500;
 
         public const int MinSleepTime = 1;
         public const int MaxSleepTime = 10000;

@@ -115,6 +115,7 @@ namespace TRBot
         /// </summary>
         /// <param name="inputSequence">The input sequence.</param>
         /// <returns>A string of the natural sentence.</returns>
+        /// <remarks>Wording is cut back to balance readability with Twitch's character limit.</remarks>
         public static string ReverseParseNatural(in Parser.InputSequence inputSequence)
         {
             List<List<Parser.Input>> inputsDList = inputSequence.Inputs;
@@ -173,20 +174,20 @@ namespace TRBot
                             || InputGlobals.CurrentConsole.IsAxis(input) == true
                             || InputGlobals.CurrentConsole.IsAbsoluteAxis(input) == true))
                         {
-                            strBuilder.Append(input.percent).Append(" percent ");
+                            strBuilder.Append(input.percent).Append("% ");
                         }
                     }
                     
                     //Divide by 1000 to display seconds properly
                     int duration = input.duration;
-                    string durTypeStr = "millisecond";
+                    string durTypeStr = "msec";
                     if (input.duration_type == Parser.ParseRegexSecondsInput)
                     {
                         duration /= 1000;
-                        durTypeStr = "second";
+                        durTypeStr = "sec";
                     }
 
-                    strBuilder.Append("for ").Append(duration).Append(' ').Append(durTypeStr);
+                    strBuilder.Append(duration).Append(' ').Append(durTypeStr);
 
                     //Handle 1 (Ex. "second" instead of "seconds")
                     if (duration != 1)

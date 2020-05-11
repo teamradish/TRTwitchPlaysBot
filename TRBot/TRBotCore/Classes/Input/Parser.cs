@@ -662,6 +662,7 @@ namespace TRBot
             public int percent;
             public int duration;
             public string duration_type;
+            [Obsolete("length is the total string length of the input, which is no longer necessary for the new parser.", false)]
             public int length;
             public string error;
 
