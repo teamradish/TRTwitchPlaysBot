@@ -154,8 +154,9 @@ namespace TRBot
 
             try
             {
+                //Ignore max duration
                 string parse_message = Parser.Expandify(Parser.PopulateMacros(userCommand));
-                inputSequence = Parser.ParseInputs(parse_message);
+                inputSequence = Parser.ParseInputs(parse_message, false);
             }
             catch
             {
@@ -362,6 +363,9 @@ namespace TRBot
 
         #endregion
 
+        /// <summary>
+        /// Represents an input exercise containing an input sequence and a credit reward for matching it.
+        /// </summary>
         private struct InputExercise
         {
             public Parser.InputSequence Sequence;

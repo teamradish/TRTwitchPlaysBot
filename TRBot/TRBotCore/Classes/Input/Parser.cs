@@ -349,8 +349,10 @@ namespace TRBot
         /// Parses inputs from an expanded message.
         /// </summary>
         /// <param name="message">The expanded message.</param>
+        /// <param name="checkMaxDur">If true, will render the input invalid if
+        /// the total duration exceeds the maximum input duration.</param>
         /// <returns>An InputSequence containing information about the parsed inputs.</returns>
-        public static InputSequence ParseInputs(string message)
+        public static InputSequence ParseInputs(string message, in bool checkMaxDur)
         {
             //Remove all whitespace and populate synonyms
             message = message.Replace(" ", string.Empty).ToLower();
@@ -449,7 +451,7 @@ namespace TRBot
                     inputSequence.TotalDuration = totalDuration;
 
                     //Check for max duration and break out early if so
-                    if (totalDuration > BotProgram.BotData.MaxInputDuration)
+                    if (checkMaxDur == true && totalDuration > BotProgram.BotData.MaxInputDuration)
                     {
                         inputSequence.InputValidationType = InputValidationTypes.Invalid;
                         inputSequence.Error = "ERR_MAX_DURATION";

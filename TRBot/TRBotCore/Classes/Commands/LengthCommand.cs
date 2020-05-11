@@ -45,7 +45,7 @@ namespace TRBot
             {
                 string parse_message = Parser.Expandify(Parser.PopulateMacros(args));
 
-                inputSequence = Parser.ParseInputs(parse_message);
+                inputSequence = Parser.ParseInputs(parse_message, true);
                 //parsedVal = Parser.Parse(parse_message);
             }
             catch
