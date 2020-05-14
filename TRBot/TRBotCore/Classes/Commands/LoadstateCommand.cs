@@ -48,7 +48,7 @@ namespace TRBot
                 return;
             }
 
-            string loadStateStr = $"loadstate{stateNum}";
+            string loadStateStr = $"ls{stateNum}";
             if (InputGlobals.CurrentConsole.ButtonInputMap.ContainsKey(loadStateStr) == false)
             {
                 BotProgram.QueueMessage($"Invalid state number.");

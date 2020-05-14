@@ -27,8 +27,6 @@ namespace TRBot
     {
         public readonly Dictionary<string, int> InputAccessDict = new Dictionary<string, int>(4)
         {
-            { "savestate1", (int)AccessLevels.Levels.Moderator },
-            { "savestate2", (int)AccessLevels.Levels.Moderator },
             { "ss1", (int)AccessLevels.Levels.Moderator },
             { "ss2", (int)AccessLevels.Levels.Moderator }
         };

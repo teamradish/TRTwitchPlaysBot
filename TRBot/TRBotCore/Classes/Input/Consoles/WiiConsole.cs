@@ -26,19 +26,26 @@ namespace TRBot
     public sealed class WiiConsole : ConsoleBase
     {
         /// <summary>
-        /// The various input modes for the Wii.
-        /// This is not a bit field to make defining inputs easier.
+        /// The various extensions for the Wii.
         /// </summary>
-        public enum InputModes
+        /// <remarks>Some peripherals, such as the Wii Balance Board, currently cannot be emulated at all (see Dolphin wiki).</remarks>
+        public enum WiiInputExtensions
         {
-            Remote = 0,
-            RemoteNunchuk = 1
+            None = 0,
+            Nunchuk = 1,
+            ClassicController = 2,
+            Guitar = 3,
+            DrumKit = 4,
+            DJTurntable = 5,
+            uDrawGameTablet = 6,
+            DrawsomeTablet = 7,
+            TaikoDrum = 8
         }
 
         /// <summary>
         /// The current input mode for the Wii.
         /// </summary>
-        public InputModes InputMode = InputModes.RemoteNunchuk;
+        public WiiInputExtensions InputExtension = WiiInputExtensions.Nunchuk;
 
         public override string[] ValidInputs { get; protected set; } = new string[]
         {
@@ -49,8 +56,8 @@ namespace TRBot
             "a", "b", "one", "two", "minus", "plus",
             "c", "z",
             "shake", "point",
-            "savestate1", "savestate2", "savestate3", "savestate4", "savestate5", "savestate6", "ss1", "ss2", "ss3", "ss4", "ss5", "ss6",
-            "loadstate1", "loadstate2", "loadstate3", "loadstate4", "loadstate5", "loadstate6", "ls1", "ls2", "ls3", "ls4", "ls5", "ls6",
+            "ss1", "ss2", "ss3", "ss4", "ss5", "ss6",
+            "ls1", "ls2", "ls3", "ls4", "ls5", "ls6",
             "#", "."
         };
         
@@ -70,15 +77,15 @@ namespace TRBot
             { "pdown",      (int)GlobalAxisVals.AXIS_Z }
         };
 
-        //Kimimaru: NOTE - Though vJoy supports up to 128 buttons, Dolphin supports only 32 max
+        //Kimimaru: NOTE - Though some virtual controllers support up to 128 buttons, Dolphin supports only 32 max
         //The Wii Remote + Nunchuk has more than 32 inputs, so since we can't fit them all, we'll need some modes to toggle
         //and change the input map based on the input scheme
         //We might have to make some sacrifices, such as fewer savestates or disallowing use of the D-pad if a Nunchuk is being used
         public override Dictionary<string, uint> ButtonInputMap { get; protected set; } = new Dictionary<string, uint>() {
-            { "left",       (int)GlobalButtonVals.BTN1 }, { "c",        (int)GlobalButtonVals.BTN1 },
-            { "right",      (int)GlobalButtonVals.BTN2 }, { "z",        (int)GlobalButtonVals.BTN2 },
-            { "up",         (int)GlobalButtonVals.BTN3 }, { "tleft",    (int)GlobalButtonVals.BTN3 },
-            { "down",       (int)GlobalButtonVals.BTN4 }, { "tright",   (int)GlobalButtonVals.BTN4 },
+            { "left",       (int)GlobalButtonVals.BTN1 }, { "c",          (int)GlobalButtonVals.BTN1 },
+            { "right",      (int)GlobalButtonVals.BTN2 }, { "z",          (int)GlobalButtonVals.BTN2 },
+            { "up",         (int)GlobalButtonVals.BTN3 }, { "tleft",      (int)GlobalButtonVals.BTN3 },
+            { "down",       (int)GlobalButtonVals.BTN4 }, { "tright",     (int)GlobalButtonVals.BTN4 },
             { "a",          (int)GlobalButtonVals.BTN5 },
             { "b",          (int)GlobalButtonVals.BTN6 },
             { "one",        (int)GlobalButtonVals.BTN7 },
@@ -93,18 +100,18 @@ namespace TRBot
             { "dright",     (int)GlobalButtonVals.BTN16 },
             { "dup",        (int)GlobalButtonVals.BTN17 },
             { "ddown",      (int)GlobalButtonVals.BTN18 },
-            { "savestate1", (int)GlobalButtonVals.BTN19 }, { "ss1",     (int)GlobalButtonVals.BTN19 }, { "tforward",    (int)GlobalButtonVals.BTN19 },
-            { "savestate2", (int)GlobalButtonVals.BTN20 }, { "ss2",     (int)GlobalButtonVals.BTN20 }, { "tback",       (int)GlobalButtonVals.BTN20 },
-            { "savestate3", (int)GlobalButtonVals.BTN21 }, { "ss3",     (int)GlobalButtonVals.BTN21 },
-            { "savestate4", (int)GlobalButtonVals.BTN22 }, { "ss4",     (int)GlobalButtonVals.BTN22 },
-            { "savestate5", (int)GlobalButtonVals.BTN23 }, { "ss5",     (int)GlobalButtonVals.BTN23 },
-            { "savestate6", (int)GlobalButtonVals.BTN24 }, { "ss6",     (int)GlobalButtonVals.BTN24 },
-            { "loadstate1", (int)GlobalButtonVals.BTN25 }, { "ls1",     (int)GlobalButtonVals.BTN25 },
-            { "loadstate2", (int)GlobalButtonVals.BTN26 }, { "ls2",     (int)GlobalButtonVals.BTN26 },
-            { "loadstate3", (int)GlobalButtonVals.BTN27 }, { "ls3",     (int)GlobalButtonVals.BTN27 },
-            { "loadstate4", (int)GlobalButtonVals.BTN28 }, { "ls4",     (int)GlobalButtonVals.BTN28 },
-            { "loadstate5", (int)GlobalButtonVals.BTN29 }, { "ls5",     (int)GlobalButtonVals.BTN29 },
-            { "loadstate6", (int)GlobalButtonVals.BTN30 }, { "ls6",     (int)GlobalButtonVals.BTN30 },
+            { "ss1",        (int)GlobalButtonVals.BTN19 }, { "tforward",  (int)GlobalButtonVals.BTN19 },
+            { "ss2",        (int)GlobalButtonVals.BTN20 }, { "tback",     (int)GlobalButtonVals.BTN20 },
+            { "ss3",        (int)GlobalButtonVals.BTN21 },
+            { "ss4",        (int)GlobalButtonVals.BTN22 },
+            { "ss5",        (int)GlobalButtonVals.BTN23 },
+            { "ss6",        (int)GlobalButtonVals.BTN24 },
+            { "ls1",        (int)GlobalButtonVals.BTN25 },
+            { "ls2",        (int)GlobalButtonVals.BTN26 },
+            { "ls3",        (int)GlobalButtonVals.BTN27 },
+            { "ls4",        (int)GlobalButtonVals.BTN28 },
+            { "ls5",        (int)GlobalButtonVals.BTN29 },
+            { "ls6",        (int)GlobalButtonVals.BTN30 },
             { "shake",      (int)GlobalButtonVals.BTN31 },
             { "point",      (int)GlobalButtonVals.BTN32 }
         };
@@ -116,19 +123,22 @@ namespace TRBot
             for (int i = 0; i < arguments.Count; i++)
             {
                 //Check for enum mode
-                if (Enum.TryParse(arguments[i], true, out InputModes mode) == true)
+                if (Enum.TryParse(arguments[i], true, out WiiInputExtensions extension) == false)
                 {
-                    InputMode = mode;
-                    BotProgram.QueueMessage($"Changed Wii input mode to {mode}!");
+                    BotProgram.QueueMessage("Invalid input extension argument for the Wii.");
+                    break;
                 }
 
-                //Kimimaru: I'm debating including the ability to set it by number, so we'll keep it commented until a decision is made
-                //if (int.TryParse(arguments[i], out int inputMode) == true)
-                //{
-                //    InputModes newInputMode = (InputModes)inputMode;
-                //    InputMode = (InputModes)inputMode;
-                //    Console.WriteLine($"Changed Wii input mode to {newInputMode}");
-                //}
+                int extensionInt = (int)extension;
+
+                if (extensionInt < 0 || extensionInt > (int)WiiInputExtensions.TaikoDrum)
+                {
+                    BotProgram.QueueMessage("Invalid input extension argument for the Wii.");
+                    return;
+                }
+
+                InputExtension = extension;
+                BotProgram.QueueMessage($"Changed Wii input extension to {extension}!");
             }
         }
 

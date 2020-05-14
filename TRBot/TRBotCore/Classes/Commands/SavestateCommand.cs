@@ -51,7 +51,7 @@ namespace TRBot
                 return;
             }
 
-            string saveStateStr = $"savestate{stateNum}";
+            string saveStateStr = $"ss{stateNum}";
             if (InputGlobals.CurrentConsole.ButtonInputMap.ContainsKey(saveStateStr) == false)
             {
                 BotProgram.QueueMessage("Invalid state number.");

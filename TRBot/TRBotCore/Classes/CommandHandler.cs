@@ -83,9 +83,6 @@ namespace TRBot
             CommandDict.Add("addmacro", new AddMacroCommand());
             CommandDict.Add("removemacro", new RemoveMacroCommand());
             CommandDict.Add("show", new ShowCommand());
-            CommandDict.Add("savestate", new SavestateCommand() { HiddenFromHelp = true });
-            CommandDict.Add("loadstate", new LoadstateCommand() { HiddenFromHelp = true });
-            CommandDict.Add("viewstate", new ViewstateCommand() { HiddenFromHelp = true });
             CommandDict.Add("ss", new SavestateCommand() { HiddenFromHelp = true });
             CommandDict.Add("ls", new LoadstateCommand() { HiddenFromHelp = true });
             CommandDict.Add("vs", new ViewstateCommand() { HiddenFromHelp = true });

@@ -50,8 +50,6 @@ namespace TRBot
         private readonly string[] InvalidExerciseInputs = new string[]
         {
             "ss1", "ss2", "ss3", "ss4", "ss5", "ss6", "ls1", "ls2", "ls3", "ls4", "ls5", "ls6",
-            "savestate1", "savestate2", "savestate3", "savestate4", "savestate5", "savestate6",
-            "loadstate1", "loadstate2", "loadstate3", "loadstate4", "loadstate5", "loadstate6",
             "."
         };
 
@@ -94,7 +92,7 @@ namespace TRBot
 
             //There's more than one argument and the user has an exercise; so it has to be the input
             //Let's validate it!
-            ExecuteValidateInput(user, e.Command.ArgumentsAsString);
+            ExecuteValidateInput(user, e.Command.ArgumentsAsString, InputGlobals.CurrentConsole);
         }
 
         private void ExecuteNoArgs(User user)
@@ -112,7 +110,7 @@ namespace TRBot
         private void ExecuteNewArg(User user)
         {
             //Generate the exercise 
-            Parser.InputSequence newSequence = GenerateExercise();
+            Parser.InputSequence newSequence = GenerateExercise(InputGlobals.CurrentConsole);
 
             //Give greater credit rewards for longer input sequences
             long creditReward = newSequence.Inputs.Count * BaseCreditReward;
@@ -146,7 +144,7 @@ namespace TRBot
             BotProgram.QueueMessage($"Put your input as an argument to this command. To generate a new exercise, pass \"{GenerateNewArg}\" as an argument.");
         }
 
-        private void ExecuteValidateInput(User user, string userCommand)
+        private void ExecuteValidateInput(User user, string userCommand, ConsoleBase currentConsole)
         {
             /* We don't need any parser post processing done here, as these inputs don't affect the game itself */
             
@@ -200,7 +198,7 @@ namespace TRBot
                     Parser.Input userInp = userSubInputs[j];
 
                     //For simplicity for comparing, if the user put a wait input, use the same one all the time
-                    if (InputGlobals.CurrentConsole.IsWait(userInp) == true)
+                    if (currentConsole.IsWait(userInp) == true)
                     {
                         userInp.name = "#";
                     }
@@ -243,7 +241,7 @@ namespace TRBot
 
         #region Exercise Generation
 
-        private Parser.InputSequence GenerateExercise()
+        private Parser.InputSequence GenerateExercise(ConsoleBase currentConsole)
         {
             int numInputs = Rand.Next(MinInputs, MaxInputs);
 
@@ -259,19 +257,19 @@ namespace TRBot
                 bool haveSubSequence = (Rand.Next(0, 2) == 0);
                 int subSequences = (haveSubSequence == false) ? 1 : Rand.Next(MinSubSequences, MaxSubSequences);
 
-                List<Parser.Input> subSequence = GenerateSubSequence(subSequences, heldInputs);
+                List<Parser.Input> subSequence = GenerateSubSequence(subSequences, heldInputs, currentConsole);
                 exerciseInputs.Add(subSequence);
             }
 
             return inputSequence;
         }
 
-        private List<Parser.Input> GenerateSubSequence(in int numSubSequences, List<string> heldInputs)
+        private List<Parser.Input> GenerateSubSequence(in int numSubSequences, List<string> heldInputs, ConsoleBase currentConsole)
         {
             List<Parser.Input> subSequence = new List<Parser.Input>(numSubSequences);
 
             //Trim inputs that shouldn't be chosen in exercises
-            List<string> validInputs = TrimInvalidExerciseInputs(InputGlobals.CurrentConsole.ValidInputs);
+            List<string> validInputs = TrimInvalidExerciseInputs(currentConsole.ValidInputs);
 
             //If there's more than one subsequence, remove wait inputs since they're largely redundant in this case
             if (numSubSequences > 1)
@@ -309,7 +307,7 @@ namespace TRBot
                 }
 
                 //Decide whether to hold or release this input if it's not a wait input
-                if (InputGlobals.CurrentConsole.IsWait(input) == false)
+                if (currentConsole.IsWait(input) == false)
                 {
                     bool holdRelease = (Rand.Next(0, 2) == 0);
                     if (holdRelease == true)
@@ -329,8 +327,8 @@ namespace TRBot
                 }
 
                 //Check for choosing a percent if the input is an axes
-                if (InputGlobals.CurrentConsole.IsAxis(input) == true 
-                    || InputGlobals.CurrentConsole.IsAbsoluteAxis(input) == true)
+                if (currentConsole.IsAxis(input) == true 
+                    || currentConsole.IsAbsoluteAxis(input) == true)
                 {
                     bool usePercent = (Rand.Next(0, 2) == 0);
 

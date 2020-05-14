@@ -51,22 +51,22 @@ namespace TRBot
             { "ddown", (int)GlobalButtonVals.BTN22 },
             { "dleft", (int)GlobalButtonVals.BTN23 },
             { "dright", (int)GlobalButtonVals.BTN24 },
-            { "savestate1", (int)GlobalButtonVals.BTN25 }, { "ss1", (int)GlobalButtonVals.BTN25 },
-            { "savestate2", (int)GlobalButtonVals.BTN26 }, { "ss2", (int)GlobalButtonVals.BTN26 },
-            { "savestate3", (int)GlobalButtonVals.BTN27 }, { "ss3", (int)GlobalButtonVals.BTN27 },
-            { "savestate4", (int)GlobalButtonVals.BTN28 }, { "ss4", (int)GlobalButtonVals.BTN28 },
-            { "loadstate1", (int)GlobalButtonVals.BTN29 }, { "ls1", (int)GlobalButtonVals.BTN29 },
-            { "loadstate2", (int)GlobalButtonVals.BTN30 }, { "ls2", (int)GlobalButtonVals.BTN30 },
-            { "loadstate3", (int)GlobalButtonVals.BTN31 }, { "ls3", (int)GlobalButtonVals.BTN31 },
-            { "loadstate4", (int)GlobalButtonVals.BTN32 }, { "ls4", (int)GlobalButtonVals.BTN32 },
+            { "ss1", (int)GlobalButtonVals.BTN25 },
+            { "ss2", (int)GlobalButtonVals.BTN26 },
+            { "ss3", (int)GlobalButtonVals.BTN27 },
+            { "ss4", (int)GlobalButtonVals.BTN28 },
+            { "ls1", (int)GlobalButtonVals.BTN29 },
+            { "ls2", (int)GlobalButtonVals.BTN30 },
+            { "ls3", (int)GlobalButtonVals.BTN31 },
+            { "ls4", (int)GlobalButtonVals.BTN32 },
         };
 
         public override string[] ValidInputs { get; protected set; } = new string[]
         {
             "up", "down", "left", "right", "rup", "rdown", "rleft", "rright",
             "square", "triangle", "circle", "cross", "l1", "r1", "l2", "r2", "l3", "r3", "dup", "ddown", "dleft", "dright", "select", "start",
-            "savestate1", "savestate2", "savestate3", "savestate4", "ss1", "ss2", "ss3", "ss4",
-            "loadstate1", "loadstate2", "loadstate3", "loadstate4", "ls1", "ls2", "ls3", "ls4",
+            "ss1", "ss2", "ss3", "ss4",
+            "ls1", "ls2", "ls3", "ls4",
             "#", "."
         };
 
