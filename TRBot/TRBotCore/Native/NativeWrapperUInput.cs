@@ -136,7 +136,7 @@ namespace TRBot
         /// The return value is a controller description number to be used by uinput.
         /// </summary>
         /// <param name="index">The index to create the new virtual controller at.</param>
-        /// <returns>A con</returns>
+        /// <returns>An integer representing the controller description value. -1 if one failed to be created.</returns>
         public static int CreateVirtualController(in int index)
         {
             return CreateController(index);

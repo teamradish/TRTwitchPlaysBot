@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -32,13 +33,13 @@ namespace TRBot
         /// </summary>
         [JsonIgnore]
         public readonly Dictionary<char, List<string>> ParserMacroLookup = new Dictionary<char, List<string>>(16);
-
-        public readonly Dictionary<string, string> Macros = new Dictionary<string, string>(64);
-        public readonly Dictionary<string, string> Memes = new Dictionary<string, string>(64);
-        public readonly Dictionary<string, User> Users = new Dictionary<string, User>(128);
+        
+        public readonly ConcurrentDictionary<string, string> Macros = new ConcurrentDictionary<string, string>(Environment.ProcessorCount * 2, 64);
+        public readonly ConcurrentDictionary<string, string> Memes = new ConcurrentDictionary<string, string>(Environment.ProcessorCount * 2, 64);
+        public readonly ConcurrentDictionary<string, User> Users = new ConcurrentDictionary<string, User>(Environment.ProcessorCount * 2, 128);
         public readonly List<GameLog> Logs = new List<GameLog>(32);
         public readonly JumpRopeData JRData = new JumpRopeData();
-        public readonly Dictionary<int, GameLog> SavestateLogs = new Dictionary<int, GameLog>(8);
+        public readonly ConcurrentDictionary<int, GameLog> SavestateLogs = new ConcurrentDictionary<int, GameLog>(Environment.ProcessorCount * 2, 8);
         public readonly HashSet<string> SilencedUsers = new HashSet<string>(16);
         public readonly InputAccessData InputAccess = new InputAccessData();
         public readonly InvalidButtonComboData InvalidBtnCombos = new InvalidButtonComboData();

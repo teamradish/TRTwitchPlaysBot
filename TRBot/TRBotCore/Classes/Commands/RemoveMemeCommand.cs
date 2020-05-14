@@ -43,7 +43,7 @@ namespace TRBot
             string meme = args[0].ToLower();
             if (BotProgram.BotData.Memes.ContainsKey(meme) == true)
             {
-                BotProgram.BotData.Memes.Remove(meme);
+                BotProgram.BotData.Memes.TryRemove(meme, out string removedMeme);
                 BotProgram.SaveBotData();
                 MemesCommand.CacheMemesString();
             }

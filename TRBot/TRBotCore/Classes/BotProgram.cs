@@ -157,7 +157,7 @@ namespace TRBot
                     botUser = new User();
                     botUser.Name = botName;
                     botUser.Level = (int)AccessLevels.Levels.Admin;
-                    BotData.Users.Add(botName, botUser);
+                    BotData.Users.TryAdd(botName, botUser);
 
                     SaveBotData();
                 }
@@ -620,7 +620,7 @@ namespace TRBot
             {
                 userData = new User();
                 userData.Name = username;
-                BotData.Users.Add(username, userData);
+                BotData.Users.TryAdd(username, userData);
 
                 BotProgram.QueueMessage($"Welcome to the stream, {origName} :D ! We hope you enjoy your stay!");
             }

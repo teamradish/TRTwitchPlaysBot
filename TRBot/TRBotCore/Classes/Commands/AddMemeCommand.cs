@@ -71,13 +71,13 @@ namespace TRBot
 
             if (BotProgram.BotData.Memes.ContainsKey(memeToLower) == true)
             {
-                BotProgram.BotData.Memes.Remove(memeToLower);
+                BotProgram.BotData.Memes.TryRemove(memeToLower, out string meme);
                 sendOverwritten = true;
             }
 
             string actualMeme = e.Command.ArgumentsAsString.Remove(0, args[0].Length + 1);
 
-            BotProgram.BotData.Memes.Add(memeToLower, actualMeme);
+            BotProgram.BotData.Memes.TryAdd(memeToLower, actualMeme);
 
             BotProgram.SaveBotData();
 

@@ -56,7 +56,7 @@ namespace TRBot
                     BotProgram.BotData.ParserMacroLookup.Remove(macroFirstChar);
                 }
 
-                BotProgram.BotData.Macros.Remove(macroName);
+                BotProgram.BotData.Macros.TryRemove(macroName, out string removedMacro);
                 BotProgram.SaveBotData();
 
                 BotProgram.QueueMessage($"Removed macro {macroName}.");
