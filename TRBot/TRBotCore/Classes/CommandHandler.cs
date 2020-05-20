@@ -40,11 +40,8 @@ namespace TRBot
             "mrmacrobot"
         };
 
-        private TwitchClient Client = null;
-
-        public CommandHandler(TwitchClient client)
+        public CommandHandler()
         {
-            Client = client;
             Initialize();
         }
 

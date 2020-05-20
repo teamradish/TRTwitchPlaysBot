@@ -28,12 +28,12 @@ namespace TRBot
     {
         private DateTime CurMsgTime;
 
-        public override void Initialize(in TwitchClient client)
+        public override void Initialize()
         {
             CurMsgTime = DateTime.Now;
         }
 
-        public override void CleanUp(in TwitchClient client)
+        public override void CleanUp()
         {
             
         }

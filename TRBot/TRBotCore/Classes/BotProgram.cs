@@ -51,7 +51,7 @@ namespace TRBot
         private CrashHandler crashHandler = null;
 
         private CommandHandler CommandHandler = null;
-        public static EventHandler EvtHandler { get; private set; } = new EventHandler();
+        public static IEventHandler EvtHandler { get; private set; } = null;
 
         public static bool TryReconnect { get; private set; } = false;
         public static bool ChannelJoined { get; private set; } = false;
@@ -107,7 +107,7 @@ namespace TRBot
 
             for (int i = 0; i < BotRoutines.Count; i++)
             {
-                BotRoutines[i].CleanUp(Client);
+                BotRoutines[i].CleanUp();
             }
 
             CommandHandler.CleanUp();
@@ -178,10 +178,16 @@ namespace TRBot
             Client.Initialize(Credentials, LoginInformation.ChannelName, Globals.CommandIdentifier, Globals.CommandIdentifier, true);
             Client.OverrideBeingHostedCheck = true;
 
+            //Set up event handler
+            EvtHandler = new TwitchEventHandler();
+            EvtHandler.Initialize(Client);
+
             UnsubscribeEvents();
 
+            EvtHandler.UserSentMessageEvent += OnUserSentMessage;
+            EvtHandler.UserMadeInputEvent += OnUserMadeInput;
+
             Client.OnJoinedChannel += OnJoinedChannel;
-            Client.OnMessageReceived += OnMessageReceived;
             Client.OnWhisperReceived += OnWhisperReceived;
             Client.OnNewSubscriber += OnNewSubscriber;
             Client.OnReSubscriber += OnReSubscriber;
@@ -282,13 +288,13 @@ namespace TRBot
 
         public static void AddRoutine(BaseRoutine routine)
         {
-            routine.Initialize(instance.Client);
+            routine.Initialize();
             instance.BotRoutines.Add(routine);
         }
 
         public static void RemoveRoutine(BaseRoutine routine)
         {
-            routine.CleanUp(instance.Client);
+            routine.CleanUp();
             instance.BotRoutines.Remove(routine);
         }
 
@@ -299,15 +305,17 @@ namespace TRBot
 
         private void UnsubscribeEvents()
         {
+            EvtHandler.UserSentMessageEvent -= OnUserSentMessage;
+            EvtHandler.UserMadeInputEvent -= OnUserMadeInput;
+
             Client.OnJoinedChannel -= OnJoinedChannel;
-            Client.OnMessageReceived -= OnMessageReceived;
             Client.OnWhisperReceived -= OnWhisperReceived;
             Client.OnNewSubscriber -= OnNewSubscriber;
             Client.OnReSubscriber -= OnReSubscriber;
             Client.OnChatCommandReceived -= OnChatCommandReceived;
             Client.OnConnected -= OnConnected;
             Client.OnConnectionError -= OnConnectionError;
-            Client.OnReconnected += OnReconnected;
+            Client.OnReconnected -= OnReconnected;
             Client.OnDisconnected -= OnDisconnected;
             Client.OnBeingHosted -= OnBeingHosted;
         }
@@ -349,7 +357,7 @@ namespace TRBot
 
             if (CommandHandler == null)
             {
-                CommandHandler = new CommandHandler(Client);
+                CommandHandler = new CommandHandler();
             }
         }
 
@@ -358,13 +366,11 @@ namespace TRBot
             CommandHandler.HandleCommand(sender, e);
         }
 
-        private void OnMessageReceived(object sender, OnMessageReceivedArgs e)
+        private void OnUserSentMessage(User user, OnMessageReceivedArgs e)
         {
-            User userData = GetOrAddUser(e.ChatMessage.Username, false);
-
-            if (userData.OptedOut == false)
+            if (user.OptedOut == false)
             {
-                userData.IncrementMsgCount();
+                user.IncrementMsgCount();
             }
 
             string possibleMeme = e.ChatMessage.Message.ToLower();
@@ -372,184 +378,52 @@ namespace TRBot
             {
                 BotProgram.QueueMessage(meme);
             }
-            else
+        }
+
+        private void OnUserMadeInput(User user, in Parser.InputSequence validInputSeq)
+        {
+            //Mark this as a valid input
+            if (user.OptedOut == false)
             {
-                //Ignore commands as inputs
-                if (possibleMeme.StartsWith(Globals.CommandIdentifier) == true)
+                user.IncrementValidInputCount();
+            }
+
+            bool shouldPerformInput = true;
+
+            //Check the team the user is on for the controller they should be using
+            //Validate that the controller is acquired and exists
+            int controllerNum = user.Team;
+            if (controllerNum < 0 || controllerNum >= InputGlobals.ControllerMngr.ControllerCount)
+            {
+                BotProgram.QueueMessage($"ERROR: Invalid joystick number {controllerNum + 1}. # of joysticks: {InputGlobals.ControllerMngr.ControllerCount}. Please change your controller port to a valid number to perform inputs.");
+                shouldPerformInput = false;
+            }
+            //Now verify that the controller has been acquired
+            else if (InputGlobals.ControllerMngr.GetController(controllerNum).IsAcquired == false)
+            {
+                BotProgram.QueueMessage($"ERROR: Joystick number {controllerNum + 1} with controller ID of {InputGlobals.ControllerMngr.GetController(controllerNum).ControllerID} has not been acquired! Ensure you (the streamer) have a virtual device set up at this ID.");
+                shouldPerformInput = false;
+            }
+            //We're okay to perform the input
+            if (shouldPerformInput == true)
+            {
+                InputHandler.CarryOutInput(validInputSeq.Inputs, controllerNum);
+
+                //If auto whitelist is enabled, the user reached the whitelist message threshold,
+                //the user isn't whitelisted, and the user hasn't ever been whitelisted, whitelist them
+                if (BotSettings.AutoWhitelistEnabled == true && user.Level < (int)AccessLevels.Levels.Whitelisted
+                    && user.AutoWhitelisted == false && user.ValidInputs >= BotSettings.AutoWhitelistInputCount)
                 {
-                    return;
-                }
-
-                //If there are no valid inputs, don't attempt to parse
-                if (InputGlobals.CurrentConsole.ValidInputs == null || InputGlobals.CurrentConsole.ValidInputs.Length == 0)
-                {
-                    return;
-                }
-
-                //Parser.InputSequence inputSequence = default;
-                //(bool, List<List<Parser.Input>>, bool, int) parsedVal = default;
-                Parser.InputSequence inputSequence = default;
-
-                try
-                {
-                    string parse_message = Parser.Expandify(Parser.PopulateMacros(e.ChatMessage.Message));
-
-                    inputSequence = Parser.ParseInputs(parse_message, true);
-
-                    //parsedVal = Parser.Parse(parse_message);
-                    //Console.WriteLine(inputSequence.ToString());
-
-                    //Console.WriteLine("\nReverse Parsed: " + ReverseParser.ReverseParse(inputSequence));
-                    //Console.WriteLine("\nReverse Parsed Natural:\n" + ReverseParser.ReverseParseNatural(inputSequence));
-                }
-                catch (Exception exception)
-                {
-                    //Kimimaru: Sanitize parsing exceptions
-                    //Most of these are currently caused by differences in how C# and Python handle slicing strings (Substring() vs string[:])
-                    //One example that throws this that shouldn't is "#mash(w234"
-                    //BotProgram.QueueMessage($"ERROR: {exception.Message}");
-                    inputSequence.InputValidationType = Parser.InputValidationTypes.Invalid;
-                    //parsedVal.Item1 = false;
-                }
-
-                //Check for non-valid messages
-                if (inputSequence.InputValidationType != Parser.InputValidationTypes.Valid)
-                {
-                    //Display error message for invalid inputs
-                    if (inputSequence.InputValidationType == Parser.InputValidationTypes.Invalid)
+                    user.Level = (int)AccessLevels.Levels.Whitelisted;
+                    user.SetAutoWhitelist(true);
+                    if (string.IsNullOrEmpty(BotSettings.AutoWhitelistMsg) == false)
                     {
-                        BotProgram.QueueMessage(inputSequence.Error);
-                    }
-                }
-                //It's a valid message, so process it
-                else
-                {
-                    //Ignore if user is silenced
-                    if (userData.Silenced == true)
-                    {
-                        return;
-                    }
-
-                    //Ignore based on user level and permissions
-                    if (userData.Level < BotProgram.BotData.InputPermissions)
-                    {
-                        BotProgram.QueueMessage($"Inputs are restricted to levels {(AccessLevels.Levels)BotProgram.BotData.InputPermissions} and above");
-                        return;
-                    }
-
-                    #region Parser Post-Process Validation
-                    
-                    //All this validation is very slow - find a way to speed it up, ideally without integrating it directly into the parser
-
-                    //Kimimaru: Max pause validation is temporarily removed since it should be redundant with the new combo validation
-                    //The primary purpose of it was to prevent players from resetting games with button combos, which the combo validation handles
-                     
-                    //if (ParserPostProcess.IsValidPauseInputDuration(inputSequence.Inputs, "start", BotData.MaxPauseHoldDuration) == false)
-                    //{
-                    //    BotProgram.QueueMessage($"Invalid input: Pause button held for longer than the max duration of {BotData.MaxPauseHoldDuration} milliseconds!");
-                    //    return;
-                    //}
-
-                    //Check if the user has permission to perform all the inputs they attempted
-                    ParserPostProcess.InputValidation inputValidation = ParserPostProcess.CheckInputPermissions(userData.Level, inputSequence.Inputs, BotData.InputAccess.InputAccessDict);
-
-                    //If the input isn't valid, exit
-                    if (inputValidation.IsValid == false)
-                    {
-                        if (string.IsNullOrEmpty(inputValidation.Message) == false)
-                        {
-                            QueueMessage(inputValidation.Message);
-                        }
-
-                        return;
-                    }
-
-                    //Lastly, check for invalid button combos given the current console
-                    if (BotData.InvalidBtnCombos.InvalidCombos.TryGetValue((int)InputGlobals.CurrentConsoleVal, out List<string> invalidCombos) == true)
-                    {
-                        if (ParserPostProcess.ValidateButtonCombos(inputSequence.Inputs, invalidCombos, userData.Team) == false)
-                        {
-                            string msg = "Invalid input: buttons ({0}) are not allowed to be pressed at the same time.";
-                            string combos = string.Empty;
-                            
-                            for (int i = 0; i < invalidCombos.Count; i++)
-                            {
-                                combos += "\"" + invalidCombos[i] + "\"";
-                                
-                                if (i < (invalidCombos.Count - 1))
-                                {
-                                    combos += ", ";
-                                }
-                            }
-                            
-                            msg = string.Format(msg, combos);
-                            BotProgram.QueueMessage(msg);
-                            
-                            return;
-                        }
-                    }
-
-                    #endregion
-
-                    if (InputHandler.StopRunningInputs == false)
-                    {
-                        //Mark this as a valid input
-                        if (userData.OptedOut == false)
-                        {
-                            userData.IncrementValidInputCount();
-                        }
-
-                        EvtHandler.InvokeUserMadeInputEvent(userData, inputSequence);
-
-                        bool shouldPerformInput = true;
-
-                        //Check the team the user is on for the controller they should be using
-                        //Validate that the controller is acquired and exists
-                        int controllerNum = userData.Team;
-
-                        if (controllerNum < 0 || controllerNum >= InputGlobals.ControllerMngr.ControllerCount)
-                        {
-                            BotProgram.QueueMessage($"ERROR: Invalid joystick number {controllerNum + 1}. # of joysticks: {InputGlobals.ControllerMngr.ControllerCount}. Please change your controller port to a valid number to perform inputs.");
-                            shouldPerformInput = false;
-                        }
-                        //Now verify that the controller has been acquired
-                        else if (InputGlobals.ControllerMngr.GetController(controllerNum).IsAcquired == false)
-                        {
-                            BotProgram.QueueMessage($"ERROR: Joystick number {controllerNum + 1} with controller ID of {InputGlobals.ControllerMngr.GetController(controllerNum).ControllerID} has not been acquired! Ensure you (the streamer) have a virtual device set up at this ID.");
-                            shouldPerformInput = false;
-                        }
-
-                        //We're okay to perform the input
-                        if (shouldPerformInput == true)
-                        {
-                            InputHandler.CarryOutInput(inputSequence.Inputs, controllerNum);
-
-                            //If auto whitelist is enabled, the user reached the whitelist message threshold,
-                            //the user isn't whitelisted, and the user hasn't ever been whitelisted, whitelist them
-                            if (BotSettings.AutoWhitelistEnabled == true && userData.Level < (int)AccessLevels.Levels.Whitelisted
-                                && userData.AutoWhitelisted == false && userData.ValidInputs >= BotSettings.AutoWhitelistInputCount)
-                            {
-                                userData.Level = (int)AccessLevels.Levels.Whitelisted;
-                                userData.SetAutoWhitelist(true);
-
-                                if (string.IsNullOrEmpty(BotSettings.AutoWhitelistMsg) == false)
-                                {
-                                    //Replace the user's name with the message
-                                    string msg = BotSettings.AutoWhitelistMsg.Replace("{0}", e.ChatMessage.Username);
-                                    QueueMessage(msg);
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        QueueMessage("New inputs cannot be processed until all other inputs have stopped.");
+                        //Replace the user's name with the message
+                        string msg = BotSettings.AutoWhitelistMsg.Replace("{0}", user.Name);
+                        QueueMessage(msg);
                     }
                 }
             }
-
-            //Kimimaru: For testing this will work, but we shouldn't save after each message
-            SaveBotData();
         }
 
         private void OnWhisperReceived(object sender, OnWhisperReceivedArgs e)

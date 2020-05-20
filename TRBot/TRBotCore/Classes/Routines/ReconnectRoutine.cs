@@ -42,12 +42,12 @@ namespace TRBot
 
         private bool InReconnection = false;
 
-        public override void Initialize(in TwitchClient client)
+        public override void Initialize()
         {
 
         }
 
-        public override void CleanUp(in TwitchClient client)
+        public override void CleanUp()
         {
 
         }

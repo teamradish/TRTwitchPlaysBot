@@ -29,7 +29,7 @@ namespace TRBot
         //Used for quicker lookup of achievements
         private Dictionary<AchievementTypes, Dictionary<string, Achievement>> Achievements = null;
 
-        public void Initialize(EventHandler eventHandler)
+        public void Initialize(IEventHandler eventHandler)
         {
             eventHandler.UserSentMessageEvent -= OnUserSentMessage;
             eventHandler.UserSentMessageEvent += OnUserSentMessage;

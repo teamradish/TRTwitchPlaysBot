@@ -41,7 +41,7 @@ namespace TRBot
             CurMinute = now;
         }
 
-        public override void CleanUp(in TwitchClient client)
+        public override void CleanUp()
         {
             
         }

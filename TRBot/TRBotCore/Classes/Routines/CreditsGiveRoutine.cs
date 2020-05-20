@@ -36,17 +36,17 @@ namespace TRBot
 
         }
 
-        public override void Initialize(in TwitchClient client)
+        public override void Initialize()
         {
             CurCreditsTime = DateTime.Now;
 
-            client.OnMessageReceived -= MessageReceived;
-            client.OnMessageReceived += MessageReceived;
+            BotProgram.EvtHandler.UserSentMessageEvent -= MessageReceived;
+            BotProgram.EvtHandler.UserSentMessageEvent += MessageReceived;
         }
 
-        public override void CleanUp(in TwitchClient client)
+        public override void CleanUp()
         {
-            client.OnMessageReceived -= MessageReceived;
+            BotProgram.EvtHandler.UserSentMessageEvent -= MessageReceived;
         }
 
         public override void UpdateRoutine(in TwitchClient client, in DateTime currentTime)
@@ -61,6 +61,8 @@ namespace TRBot
                 {
                     User user = BotProgram.GetOrAddUser(talkedNames[i]);
                     user.Credits += BotProgram.BotSettings.CreditsAmount;
+
+                    //Console.WriteLine($"Gave {user.Name} credits!");
                 }
 
                 BotProgram.SaveBotData();
@@ -70,15 +72,13 @@ namespace TRBot
             }
         }
 
-        private void MessageReceived(object sender, OnMessageReceivedArgs e)
+        private void MessageReceived(User user, OnMessageReceivedArgs e)
         {
             string nameToLower = e.ChatMessage.DisplayName.ToLower();
 
             //Check if the user talked before
             if (UsersTalked.ContainsKey(nameToLower) == false)
             {
-                User user = BotProgram.GetUser(nameToLower);
-
                 //If so, check if they're in the credits database and not opted out,
                 //then add them for gaining credits
                 if (user != null && user.OptedOut == false)

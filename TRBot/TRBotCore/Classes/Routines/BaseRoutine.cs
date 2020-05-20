@@ -31,12 +31,12 @@ namespace TRBot
 
         }
 
-        public virtual void Initialize(in TwitchClient client)
+        public virtual void Initialize()
         {
 
         }
 
-        public virtual void CleanUp(in TwitchClient client)
+        public virtual void CleanUp()
         {
 
         }

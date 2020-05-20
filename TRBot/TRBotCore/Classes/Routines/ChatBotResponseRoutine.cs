@@ -34,7 +34,7 @@ namespace TRBot
 
         private string FullFilePath = string.Empty;
 
-        public override void Initialize(in TwitchClient client)
+        public override void Initialize()
         {
             FullFilePath = Globals.GetDataFilePath(Globals.ChatBotResponseFilename);
             
