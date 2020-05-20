@@ -36,23 +36,30 @@ namespace TRBot
 
         public event UserReSubscribed UserReSubscribedEvent = null;
 
-        public void Initialize(TwitchClient client)
-        {
-            client.OnMessageReceived -= OnMessageReceived;
-            client.OnMessageReceived += OnMessageReceived;
+        private TwitchClient twitchClient = null;
 
-            client.OnNewSubscriber -= OnNewSubscriber;
-            client.OnNewSubscriber += OnNewSubscriber;
-            
-            client.OnReSubscriber -= OnReSubscriber;
-            client.OnReSubscriber += OnReSubscriber;
+        public TwitchEventHandler(TwitchClient client)
+        {
+            twitchClient = client;
         }
 
-        public void CleanUp(TwitchClient client)
+        public void Initialize()
         {
-            client.OnMessageReceived -= OnMessageReceived;
-            client.OnNewSubscriber -= OnNewSubscriber;
-            client.OnReSubscriber -= OnReSubscriber;
+            twitchClient.OnMessageReceived -= OnMessageReceived;
+            twitchClient.OnMessageReceived += OnMessageReceived;
+
+            twitchClient.OnNewSubscriber -= OnNewSubscriber;
+            twitchClient.OnNewSubscriber += OnNewSubscriber;
+            
+            twitchClient.OnReSubscriber -= OnReSubscriber;
+            twitchClient.OnReSubscriber += OnReSubscriber;
+        }
+
+        public void CleanUp()
+        {
+            twitchClient.OnMessageReceived -= OnMessageReceived;
+            twitchClient.OnNewSubscriber -= OnNewSubscriber;
+            twitchClient.OnReSubscriber -= OnReSubscriber;
 
             UserSentMessageEvent = null;
             UserMadeInputEvent = null;

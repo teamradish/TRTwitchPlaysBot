@@ -17,44 +17,59 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using TwitchLib.Client;
-using TwitchLib.Client.Events;
 
 namespace TRBot
 {
     /// <summary>
-    /// Interface for handling events.
+    /// Handles client interaction with a service.
     /// </summary>
-    public interface IEventHandler
+    /// <remarks>Examples of such services are Twitch and Mixer.
+    /// You can also create your own service, allowing the bot to run however you wish.
+    /// </remarks>
+    public interface IClientService
     {
         /// <summary>
-        /// An event invoked whenever a user sends a message to chat.
+        /// The event handler associated with the service.
         /// </summary>
-        event EventDelegates.UserSentMessage UserSentMessageEvent;
+        IEventHandler EventHandler { get; }
 
         /// <summary>
-        /// An event invoked whenever a user makes a valid input.
-        /// This should be invoked after all post processing validation.
+        /// Tells if the client is initialized.
         /// </summary>
-        event EventDelegates.UserMadeInput UserMadeInputEvent;
+        bool IsInitialized { get; }
 
         /// <summary>
-        /// An event invoked whenever a user newly subscribed to the channel.
+        /// Tells if the client is connected.
         /// </summary>
-        event EventDelegates.UserNewlySubscribed UserNewlySubscribedEvent;
+        bool IsConnected { get; }
 
         /// <summary>
-        /// An event invoked whenever a user resubscribed to the channel.
-        /// </summary>
-        event EventDelegates.UserReSubscribed UserReSubscribedEvent;
-
-        /// <summary>
-        /// Initializes the IEventHandler.
+        /// Initializes the client.
         /// </summary>
         void Initialize();
 
         /// <summary>
-        /// Cleans up the IEventHandler.
+        /// Connects the client.
+        /// </summary>
+        void Connect();
+
+        /// <summary>
+        /// Disconnects the client.
+        /// </summary>
+        void Disconnect();
+
+        /// <summary>
+        /// Reconnects the client.
+        /// </summary>
+        void Reconnect();
+
+        /// <summary>
+        /// Send a message through the client.
+        /// </summary>
+        void SendMessage(string channel, string message);
+
+        /// <summary>
+        /// Cleans up the client.
         /// </summary>
         void CleanUp();
     }

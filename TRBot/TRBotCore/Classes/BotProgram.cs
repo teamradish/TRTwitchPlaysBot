@@ -111,7 +111,7 @@ namespace TRBot
             }
 
             CommandHandler.CleanUp();
-            EvtHandler.CleanUp(Client);
+            EvtHandler.CleanUp();
 
             ClientMessages.Clear();
 
@@ -173,14 +173,14 @@ namespace TRBot
                 Console.WriteLine("Cannot proceed. Please double check the login information in the data folder");
                 return;
             }
-
+            
             Client = new TwitchClient();
             Client.Initialize(Credentials, LoginInformation.ChannelName, Globals.CommandIdentifier, Globals.CommandIdentifier, true);
             Client.OverrideBeingHostedCheck = true;
 
             //Set up event handler
-            EvtHandler = new TwitchEventHandler();
-            EvtHandler.Initialize(Client);
+            EvtHandler = new TwitchEventHandler(Client);
+            EvtHandler.Initialize();
 
             UnsubscribeEvents();
 
