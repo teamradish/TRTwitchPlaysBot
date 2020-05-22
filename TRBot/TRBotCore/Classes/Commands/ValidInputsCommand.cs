@@ -28,7 +28,7 @@ namespace TRBot
     {
         private StringBuilder StrBuilder = new StringBuilder(500);
 
-        public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
         {
             string[] validInputs = InputGlobals.CurrentConsole.ValidInputs;
 

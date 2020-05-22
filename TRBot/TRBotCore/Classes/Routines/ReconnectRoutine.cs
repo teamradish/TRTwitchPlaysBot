@@ -42,20 +42,20 @@ namespace TRBot
 
         private bool InReconnection = false;
 
-        public override void Initialize()
+        public override void Initialize(IClientService clientService)
         {
 
         }
 
-        public override void CleanUp()
+        public override void CleanUp(IClientService clientService)
         {
 
         }
 
-        public override void UpdateRoutine(in TwitchClient client, in DateTime currentTime)
+        public override void UpdateRoutine(IClientService clientService, in DateTime currentTime)
         {
             //If connected, simply return
-            if (client.IsConnected == true)
+            if (clientService.IsConnected == true)
             {
                 InReconnection = false;
                 CurReconnectionAttempts = 0;
@@ -63,7 +63,7 @@ namespace TRBot
             }
 
             //Check if we should attempt to reconnect
-            if (client.IsConnected == false && InReconnection == false)
+            if (clientService.IsConnected == false && InReconnection == false)
             {
                 InReconnection = true;
 
@@ -93,10 +93,10 @@ namespace TRBot
                 }
 
                 //Double check yet again just to make sure the client isn't already connected before trying to reconnect
-                if (client.IsConnected == false)
+                if (clientService.IsConnected == false)
                 {
                     //Attempt a reconnect
-                    client.Connect();
+                    clientService.Connect();
                 }
             }
         }

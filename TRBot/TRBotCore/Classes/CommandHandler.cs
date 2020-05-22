@@ -133,7 +133,7 @@ namespace TRBot
             }
         }
 
-        public void HandleCommand(object sender, OnChatCommandReceivedArgs e)
+        public void HandleCommand(OnChatCommandReceivedArgs e)
         {
             if (e == null || e.Command == null || e.Command.ChatMessage == null)
             {
@@ -159,7 +159,7 @@ namespace TRBot
                 //Handle permissions
                 if (user.Level >= command.AccessLevel)
                 {
-                    command.ExecuteCommand(sender, e);
+                    command.ExecuteCommand(e);
                 }
                 else
                 {

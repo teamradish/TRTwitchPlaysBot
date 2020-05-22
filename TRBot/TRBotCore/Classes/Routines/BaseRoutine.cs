@@ -31,16 +31,16 @@ namespace TRBot
 
         }
 
-        public virtual void Initialize()
+        public virtual void Initialize(IClientService clientService)
         {
 
         }
 
-        public virtual void CleanUp()
+        public virtual void CleanUp(IClientService clientService)
         {
 
         }
 
-        public abstract void UpdateRoutine(in TwitchClient client, in DateTime currentTime);
+        public abstract void UpdateRoutine(IClientService client, in DateTime currentTime);
     }
 }

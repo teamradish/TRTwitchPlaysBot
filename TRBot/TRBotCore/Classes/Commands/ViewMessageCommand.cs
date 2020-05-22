@@ -26,7 +26,7 @@ namespace TRBot
     /// </summary>
     public sealed class ViewMessageCommand : BaseCommand
     {
-        public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
         {
             BotProgram.QueueMessage($"Current game message: \"{BotProgram.BotData.GameMessage}\"");
         }

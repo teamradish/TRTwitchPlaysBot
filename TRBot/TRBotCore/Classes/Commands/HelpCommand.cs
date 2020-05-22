@@ -43,7 +43,7 @@ namespace TRBot
             CommandCache = commandHandler.CommandDict.ToArray();
         }
 
-        public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
         {
             //Have to do this on first execute since not every command would have been initialized by the time Initialize is called
             if (Sorted == false)

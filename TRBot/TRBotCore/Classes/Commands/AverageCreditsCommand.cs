@@ -30,7 +30,7 @@ namespace TRBot
 
         }
 
-        public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
         {
             User[] users = BotProgram.BotData.Users.Values.ToArray();
 

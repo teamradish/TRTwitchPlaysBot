@@ -31,7 +31,7 @@ namespace TRBot
 
         }
 
-        public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
         {
             if (BotProgram.BotData != null && BotProgram.BotData.JRData != null)
             {

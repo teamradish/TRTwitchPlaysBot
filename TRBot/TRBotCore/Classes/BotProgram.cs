@@ -46,17 +46,16 @@ namespace TRBot
         public static Settings BotSettings { get; private set; } = null;
         public static BotData BotData { get; private set; } = null;
 
-        private TwitchClient Client;
+        public static IClientService ClientService { get; private set; } = null;
         private ConnectionCredentials Credentials = null;
         private CrashHandler crashHandler = null;
 
         private CommandHandler CommandHandler = null;
-        public static IEventHandler EvtHandler { get; private set; } = null;
 
         public static bool TryReconnect { get; private set; } = false;
         public static bool ChannelJoined { get; private set; } = false;
 
-        public bool IsInChannel => (Client?.IsConnected == true && ChannelJoined == true);
+        public bool IsInChannel => (ClientService?.IsConnected == true && ChannelJoined == true);
 
         private DateTime CurQueueTime;
 
@@ -107,16 +106,16 @@ namespace TRBot
 
             for (int i = 0; i < BotRoutines.Count; i++)
             {
-                BotRoutines[i].CleanUp();
+                BotRoutines[i].CleanUp(ClientService);
             }
 
             CommandHandler.CleanUp();
-            EvtHandler.CleanUp();
+            ClientService?.CleanUp();
 
             ClientMessages.Clear();
 
-            if (Client.IsConnected == true)
-                Client.Disconnect();
+            if (ClientService?.IsConnected == true)
+                ClientService.Disconnect();
 
             //Clean up and relinquish the devices when we're done
             InputGlobals.ControllerMngr?.CleanUp();
@@ -174,30 +173,26 @@ namespace TRBot
                 return;
             }
             
-            Client = new TwitchClient();
-            Client.Initialize(Credentials, LoginInformation.ChannelName, Globals.CommandIdentifier, Globals.CommandIdentifier, true);
-            Client.OverrideBeingHostedCheck = true;
+            //Set up client service
+            ClientService = new TwitchClientService(Credentials, LoginInformation.ChannelName, Globals.CommandIdentifier,
+                Globals.CommandIdentifier, true);
 
-            //Set up event handler
-            EvtHandler = new TwitchEventHandler(Client);
-            EvtHandler.Initialize();
+            ClientService.Initialize();
 
             UnsubscribeEvents();
 
-            EvtHandler.UserSentMessageEvent += OnUserSentMessage;
-            EvtHandler.UserMadeInputEvent += OnUserMadeInput;
-
-            Client.OnJoinedChannel += OnJoinedChannel;
-            Client.OnWhisperReceived += OnWhisperReceived;
-            Client.OnNewSubscriber += OnNewSubscriber;
-            Client.OnReSubscriber += OnReSubscriber;
-            Client.OnChatCommandReceived += OnChatCommandReceived;
-            Client.OnBeingHosted += OnBeingHosted;
-            
-            Client.OnConnected += OnConnected;
-            Client.OnConnectionError += OnConnectionError;
-            Client.OnReconnected += OnReconnected;
-            Client.OnDisconnected += OnDisconnected;
+            ClientService.EventHandler.UserSentMessageEvent += OnUserSentMessage;
+            ClientService.EventHandler.UserMadeInputEvent += OnUserMadeInput;
+            ClientService.EventHandler.UserNewlySubscribedEvent += OnNewSubscriber;
+            ClientService.EventHandler.UserReSubscribedEvent += OnReSubscriber;
+            ClientService.EventHandler.WhisperReceivedEvent += OnWhisperReceived;
+            ClientService.EventHandler.ChatCommandReceivedEvent += OnChatCommandReceived;
+            ClientService.EventHandler.OnJoinedChannelEvent += OnJoinedChannel;
+            ClientService.EventHandler.ChannelHostedEvent += OnBeingHosted;
+            ClientService.EventHandler.OnConnectedEvent += OnConnected;
+            ClientService.EventHandler.OnConnectionErrorEvent += OnConnectionError;
+            ClientService.EventHandler.OnReconnectedEvent += OnReconnected;
+            ClientService.EventHandler.OnDisconnectedEvent += OnDisconnected;
 
             AddRoutine(new PeriodicMessageRoutine());
             AddRoutine(new CreditsGiveRoutine());
@@ -220,13 +215,13 @@ namespace TRBot
 
         public void Run()
         {
-            if (Client.IsConnected == true)
+            if (ClientService.IsConnected == true)
             {
                 Console.WriteLine("Client is already connected and running!");
                 return;
             }
 
-            Client.Connect();
+            ClientService.Connect();
 
             //Run
             while (true)
@@ -246,7 +241,7 @@ namespace TRBot
                         try
                         {
                             //Send the message
-                            Client.SendMessage(LoginInformation.ChannelName, message);
+                            ClientService.SendMessage(LoginInformation.ChannelName, message);
                         }
                         catch (TwitchLib.Client.Exceptions.BadStateException e)
                         {
@@ -271,7 +266,7 @@ namespace TRBot
                         continue;
                     }
 
-                    BotRoutines[i].UpdateRoutine(Client, now);
+                    BotRoutines[i].UpdateRoutine(ClientService, now);
                 }
 
                 Thread.Sleep(BotSettings.MainThreadSleep);
@@ -288,13 +283,13 @@ namespace TRBot
 
         public static void AddRoutine(BaseRoutine routine)
         {
-            routine.Initialize();
+            routine.Initialize(ClientService);
             instance.BotRoutines.Add(routine);
         }
 
         public static void RemoveRoutine(BaseRoutine routine)
         {
-            routine.CleanUp();
+            routine.CleanUp(ClientService);
             instance.BotRoutines.Remove(routine);
         }
 
@@ -305,24 +300,23 @@ namespace TRBot
 
         private void UnsubscribeEvents()
         {
-            EvtHandler.UserSentMessageEvent -= OnUserSentMessage;
-            EvtHandler.UserMadeInputEvent -= OnUserMadeInput;
-
-            Client.OnJoinedChannel -= OnJoinedChannel;
-            Client.OnWhisperReceived -= OnWhisperReceived;
-            Client.OnNewSubscriber -= OnNewSubscriber;
-            Client.OnReSubscriber -= OnReSubscriber;
-            Client.OnChatCommandReceived -= OnChatCommandReceived;
-            Client.OnConnected -= OnConnected;
-            Client.OnConnectionError -= OnConnectionError;
-            Client.OnReconnected -= OnReconnected;
-            Client.OnDisconnected -= OnDisconnected;
-            Client.OnBeingHosted -= OnBeingHosted;
+            ClientService.EventHandler.UserSentMessageEvent -= OnUserSentMessage;
+            ClientService.EventHandler.UserMadeInputEvent -= OnUserMadeInput;
+            ClientService.EventHandler.UserNewlySubscribedEvent -= OnNewSubscriber;
+            ClientService.EventHandler.UserReSubscribedEvent -= OnReSubscriber;
+            ClientService.EventHandler.WhisperReceivedEvent -= OnWhisperReceived;
+            ClientService.EventHandler.ChatCommandReceivedEvent -= OnChatCommandReceived;
+            ClientService.EventHandler.OnJoinedChannelEvent -= OnJoinedChannel;
+            ClientService.EventHandler.ChannelHostedEvent -= OnBeingHosted;
+            ClientService.EventHandler.OnConnectedEvent -= OnConnected;
+            ClientService.EventHandler.OnConnectionErrorEvent -= OnConnectionError;
+            ClientService.EventHandler.OnReconnectedEvent -= OnReconnected;
+            ClientService.EventHandler.OnDisconnectedEvent -= OnDisconnected;
         }
 
 #region Events
 
-        private void OnConnected(object sender, OnConnectedArgs e)
+        private void OnConnected(OnConnectedArgs e)
         {
             TryReconnect = false;
             ChannelJoined = false;
@@ -330,7 +324,7 @@ namespace TRBot
             Console.WriteLine($"{LoginInformation.BotName} connected!");
         }
 
-        private void OnConnectionError(object sender, OnConnectionErrorArgs e)
+        private void OnConnectionError(OnConnectionErrorArgs e)
         {
             ChannelJoined = false;
 
@@ -342,7 +336,7 @@ namespace TRBot
             }
         }
 
-        private void OnJoinedChannel(object sender, OnJoinedChannelArgs e)
+        private void OnJoinedChannel(OnJoinedChannelArgs e)
         {
             if (string.IsNullOrEmpty(BotSettings.ConnectMessage) == false)
             {
@@ -361,9 +355,9 @@ namespace TRBot
             }
         }
 
-        private void OnChatCommandReceived(object sender, OnChatCommandReceivedArgs e)
+        private void OnChatCommandReceived(OnChatCommandReceivedArgs e)
         {
-            CommandHandler.HandleCommand(sender, e);
+            CommandHandler.HandleCommand(e);
         }
 
         private void OnUserSentMessage(User user, OnMessageReceivedArgs e)
@@ -426,34 +420,34 @@ namespace TRBot
             }
         }
 
-        private void OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
+        private void OnWhisperReceived(OnWhisperReceivedArgs e)
         {
             
         }
 
-        private void OnBeingHosted(object sender, OnBeingHostedArgs e)
+        private void OnBeingHosted(OnBeingHostedArgs e)
         {
             QueueMessage($"Thank you for hosting, {e.BeingHostedNotification.HostedByChannel}!!");
         }
 
-        private void OnNewSubscriber(object sender, OnNewSubscriberArgs e)
+        private void OnNewSubscriber(User user, OnNewSubscriberArgs e)
         {
             QueueMessage($"Thank you for subscribing, {e.Subscriber.DisplayName} :D !!");
         }
 
-        private void OnReSubscriber(object sender, OnReSubscriberArgs e)
+        private void OnReSubscriber(User user, OnReSubscriberArgs e)
         {
             QueueMessage($"Thank you for subscribing for {e.ReSubscriber.Months} months, {e.ReSubscriber.DisplayName} :D !!");
         }
 
-        private void OnReconnected(object sender, OnReconnectedEventArgs e)
+        private void OnReconnected(OnReconnectedEventArgs e)
         {
             QueueMessage("Successfully reconnected to chat!");
 
             TryReconnect = false;
         }
 
-        private void OnDisconnected(object sender, OnDisconnectedEventArgs e)
+        private void OnDisconnected(OnDisconnectedEventArgs e)
         {
             Console.WriteLine("Disconnected!");
 

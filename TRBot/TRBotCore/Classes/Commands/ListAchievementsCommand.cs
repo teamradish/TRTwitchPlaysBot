@@ -37,7 +37,7 @@ namespace TRBot
             CacheAchievementString();
         }
 
-        public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
         {
             if (BotProgram.BotData.Achievements.AchievementDict.Count == 0)
             {

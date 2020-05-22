@@ -37,7 +37,7 @@ namespace TRBot
             RandJumpRopeChance = Rand.Next(4, 9);
         }
 
-        public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
         {
             int randNum = 1;
             try

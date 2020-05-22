@@ -41,12 +41,12 @@ namespace TRBot
             CurMinute = now;
         }
 
-        public override void CleanUp()
+        public override void CleanUp(IClientService clientService)
         {
             
         }
 
-        public override void UpdateRoutine(in TwitchClient client, in DateTime currentTime)
+        public override void UpdateRoutine(IClientService clientService, in DateTime currentTime)
         {
             TimeSpan diff = currentTime - CurGroupBetTime;
             TimeSpan minuteDiff = currentTime - CurMinute;

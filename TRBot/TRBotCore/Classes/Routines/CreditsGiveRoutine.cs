@@ -36,20 +36,20 @@ namespace TRBot
 
         }
 
-        public override void Initialize()
+        public override void Initialize(IClientService clientService)
         {
             CurCreditsTime = DateTime.Now;
 
-            BotProgram.EvtHandler.UserSentMessageEvent -= MessageReceived;
-            BotProgram.EvtHandler.UserSentMessageEvent += MessageReceived;
+            clientService.EventHandler.UserSentMessageEvent -= MessageReceived;
+            clientService.EventHandler.UserSentMessageEvent += MessageReceived;
         }
 
-        public override void CleanUp()
+        public override void CleanUp(IClientService clientService)
         {
-            BotProgram.EvtHandler.UserSentMessageEvent -= MessageReceived;
+            clientService.EventHandler.UserSentMessageEvent -= MessageReceived;
         }
 
-        public override void UpdateRoutine(in TwitchClient client, in DateTime currentTime)
+        public override void UpdateRoutine(IClientService client, in DateTime currentTime)
         {
             TimeSpan creditsDiff = currentTime - CurCreditsTime;
 

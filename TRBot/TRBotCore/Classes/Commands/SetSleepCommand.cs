@@ -32,7 +32,7 @@ namespace TRBot
             AccessLevel = (int)AccessLevels.Levels.Admin;
         }
         
-        public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
         {
             List<string> args = e.Command.ArgumentsAsList;
 

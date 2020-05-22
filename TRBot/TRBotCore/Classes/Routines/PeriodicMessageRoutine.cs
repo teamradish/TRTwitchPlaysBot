@@ -28,23 +28,23 @@ namespace TRBot
     {
         private DateTime CurMsgTime;
 
-        public override void Initialize()
+        public override void Initialize(IClientService clientService)
         {
             CurMsgTime = DateTime.Now;
         }
 
-        public override void CleanUp()
+        public override void CleanUp(IClientService clientService)
         {
             
         }
 
-        public override void UpdateRoutine(in TwitchClient client, in DateTime currentTime)
+        public override void UpdateRoutine(IClientService clientService, in DateTime currentTime)
         {
             TimeSpan msgDiff = currentTime - CurMsgTime;
 
             if (msgDiff.TotalMinutes >= BotProgram.BotSettings.MessageTime)
             {
-                if (client.IsConnected == true)
+                if (clientService.IsConnected == true)
                 {
                     BotProgram.QueueMessage($"Hi! I'm {BotProgram.BotName} :D ! Use {Globals.CommandIdentifier}help to display a list of commands!");
                     CurMsgTime = currentTime;

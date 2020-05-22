@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Text;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
+using TwitchLib.Communication.Events;
 using static TRBot.EventDelegates;
 
 namespace TRBot
@@ -35,6 +36,22 @@ namespace TRBot
         public event UserNewlySubscribed UserNewlySubscribedEvent = null;
 
         public event UserReSubscribed UserReSubscribedEvent = null;
+
+        public event OnWhisperReceived WhisperReceivedEvent = null;
+
+        public event ChatCommandReceived ChatCommandReceivedEvent = null;
+
+        public event OnJoinedChannel OnJoinedChannelEvent = null;
+
+        public event ChannelBeingHosted ChannelHostedEvent = null;
+
+        public event OnConnected OnConnectedEvent = null;
+
+        public event OnConnectionError OnConnectionErrorEvent = null;
+
+        public event OnReconnected OnReconnectedEvent = null;
+
+        public event OnDisconnected OnDisconnectedEvent = null;
 
         private TwitchClient twitchClient = null;
 
@@ -53,6 +70,30 @@ namespace TRBot
             
             twitchClient.OnReSubscriber -= OnReSubscriber;
             twitchClient.OnReSubscriber += OnReSubscriber;
+
+            twitchClient.OnWhisperReceived -= OnWhisperReceived;
+            twitchClient.OnWhisperReceived += OnWhisperReceived;
+
+            twitchClient.OnChatCommandReceived -= OnChatCommandReceived;
+            twitchClient.OnChatCommandReceived += OnChatCommandReceived;
+
+            twitchClient.OnJoinedChannel -= OnJoinedChannel;
+            twitchClient.OnJoinedChannel += OnJoinedChannel;
+
+            twitchClient.OnBeingHosted -= OnChannelHosted;
+            twitchClient.OnBeingHosted += OnChannelHosted;
+
+            twitchClient.OnConnected -= OnConnected;
+            twitchClient.OnConnected += OnConnected;
+
+            twitchClient.OnConnectionError -= OnConnectionError;
+            twitchClient.OnConnectionError += OnConnectionError;
+
+            twitchClient.OnReconnected -= OnReconnected;
+            twitchClient.OnReconnected += OnReconnected;
+
+            twitchClient.OnDisconnected -= OnDisconnected;
+            twitchClient.OnDisconnected += OnDisconnected;
         }
 
         public void CleanUp()
@@ -60,6 +101,14 @@ namespace TRBot
             twitchClient.OnMessageReceived -= OnMessageReceived;
             twitchClient.OnNewSubscriber -= OnNewSubscriber;
             twitchClient.OnReSubscriber -= OnReSubscriber;
+            twitchClient.OnWhisperReceived -= OnWhisperReceived;
+            twitchClient.OnChatCommandReceived -= OnChatCommandReceived;
+            twitchClient.OnJoinedChannel -= OnJoinedChannel;
+            twitchClient.OnBeingHosted -= OnChannelHosted;
+            twitchClient.OnConnected -= OnConnected;
+            twitchClient.OnConnectionError -= OnConnectionError;
+            twitchClient.OnReconnected -= OnReconnected;
+            twitchClient.OnDisconnected -= OnDisconnected;
 
             UserSentMessageEvent = null;
             UserMadeInputEvent = null;
@@ -90,6 +139,46 @@ namespace TRBot
             User user = BotProgram.GetOrAddUser(e.ReSubscriber.DisplayName, false);
 
             UserReSubscribedEvent?.Invoke(user, e);
+        }
+
+        private void OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
+        {
+            WhisperReceivedEvent?.Invoke(e);
+        }
+
+        private void OnChatCommandReceived(object sender, OnChatCommandReceivedArgs e)
+        {
+            ChatCommandReceivedEvent?.Invoke(e);
+        }
+
+        private void OnJoinedChannel(object sender, OnJoinedChannelArgs e)
+        {
+            OnJoinedChannelEvent?.Invoke(e);
+        }
+
+        private void OnChannelHosted(object sender, OnBeingHostedArgs e)
+        {
+            ChannelHostedEvent?.Invoke(e);
+        }
+
+        private void OnConnected(object sender, OnConnectedArgs e)
+        {
+            OnConnectedEvent?.Invoke(e);
+        }
+
+        private void OnConnectionError(object sender, OnConnectionErrorArgs e)
+        {
+            OnConnectionErrorEvent?.Invoke(e);
+        }
+
+        private void OnReconnected(object sender, OnReconnectedEventArgs e)
+        {
+            OnReconnectedEvent?.Invoke(e);
+        }
+
+        private void OnDisconnected(object sender, OnDisconnectedEventArgs e)
+        {
+            OnDisconnectedEvent?.Invoke(e);
         }
 
         //NOTE: This would result in lots of code duplication if other streaming services were integrated

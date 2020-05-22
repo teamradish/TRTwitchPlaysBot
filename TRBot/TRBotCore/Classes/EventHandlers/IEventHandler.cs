@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Text;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
+using static TRBot.EventDelegates;
 
 namespace TRBot
 {
@@ -30,23 +31,63 @@ namespace TRBot
         /// <summary>
         /// An event invoked whenever a user sends a message to chat.
         /// </summary>
-        event EventDelegates.UserSentMessage UserSentMessageEvent;
+        event UserSentMessage UserSentMessageEvent;
 
         /// <summary>
         /// An event invoked whenever a user makes a valid input.
         /// This should be invoked after all post processing validation.
         /// </summary>
-        event EventDelegates.UserMadeInput UserMadeInputEvent;
+        event UserMadeInput UserMadeInputEvent;
 
         /// <summary>
         /// An event invoked whenever a user newly subscribed to the channel.
         /// </summary>
-        event EventDelegates.UserNewlySubscribed UserNewlySubscribedEvent;
+        event UserNewlySubscribed UserNewlySubscribedEvent;
 
         /// <summary>
         /// An event invoked whenever a user resubscribed to the channel.
         /// </summary>
-        event EventDelegates.UserReSubscribed UserReSubscribedEvent;
+        event UserReSubscribed UserReSubscribedEvent;
+
+        /// <summary>
+        /// An event invoked when the bot receives a whisper.
+        /// </summary>
+        event OnWhisperReceived WhisperReceivedEvent;
+
+        /// <summary>
+        /// An event invoked when the bot receives a chat command.
+        /// </summary>
+        event ChatCommandReceived ChatCommandReceivedEvent;
+
+        /// <summary>
+        /// An event invoked when the bot joins a channel.
+        /// </summary>
+        event OnJoinedChannel OnJoinedChannelEvent;
+
+        /// <summary>
+        /// An event invoked when a channel the bot is on is being hosted by another.
+        /// </summary>
+        event ChannelBeingHosted ChannelHostedEvent;
+
+        /// <summary>
+        /// An event invoked when the bot connects to the service.
+        /// </summary>
+        event OnConnected OnConnectedEvent;
+
+        /// <summary>
+        /// An event invoked when the bot fails to connect to the service.
+        /// </summary>
+        event OnConnectionError OnConnectionErrorEvent;
+
+        /// <summary>
+        /// An event invoked when the bot reconnects to the service.
+        /// </summary>
+        event OnReconnected OnReconnectedEvent;
+
+        /// <summary>
+        /// An event invoked when the bot disconnects from the service.
+        /// </summary>
+        event OnDisconnected OnDisconnectedEvent;
 
         /// <summary>
         /// Initializes the IEventHandler.

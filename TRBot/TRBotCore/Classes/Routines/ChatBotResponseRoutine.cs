@@ -34,7 +34,7 @@ namespace TRBot
 
         private string FullFilePath = string.Empty;
 
-        public override void Initialize()
+        public override void Initialize(IClientService clientService)
         {
             FullFilePath = Globals.GetDataFilePath(Globals.ChatBotResponseFilename);
             
@@ -43,7 +43,7 @@ namespace TRBot
             CurCheckTimestamp = DateTime.Now;
         }
 
-        public override void UpdateRoutine(in TwitchClient client, in DateTime currentTime)
+        public override void UpdateRoutine(IClientService client, in DateTime currentTime)
         {
             //We're not using the chatbot, so return
             if (BotProgram.BotSettings.UseChatBot == false)

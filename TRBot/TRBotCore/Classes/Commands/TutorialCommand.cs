@@ -23,7 +23,7 @@ namespace TRBot
 {
     public sealed class TutorialCommand : BaseCommand
     {
-        public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
         {
             BotProgram.QueueMessage($"Hi {e.Command.ChatMessage.Username}, here's how to play: https://twitchplays.fandom.com/wiki/Welcome_to_TPE");
         }

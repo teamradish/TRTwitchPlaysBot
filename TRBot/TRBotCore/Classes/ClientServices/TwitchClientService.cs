@@ -51,6 +51,10 @@ namespace TRBot
         /// </summary>
         public bool IsConnected => (twitchClient?.IsConnected == true);
 
+        //Cached joined channels list to avoid generating too much garbage from TwitchClient.JoinedChannels
+        //This is updated accordingly
+        private IReadOnlyList<JoinedChannel> JoinedChannels = null;
+
         public TwitchClientService(ConnectionCredentials credentials, string channelName, in char chatCommandIdentifier,
             in char whisperCommandIdentifier, in bool autoRelistenOnExceptions)
         {
@@ -74,6 +78,9 @@ namespace TRBot
 
             EventHandler = new TwitchEventHandler(twitchClient);
             EventHandler.Initialize();
+
+            EventHandler.OnJoinedChannelEvent -= OnClientJoinedChannel;
+            EventHandler.OnJoinedChannelEvent += OnClientJoinedChannel;
         }
 
         /// <summary>
@@ -91,7 +98,10 @@ namespace TRBot
         public void Disconnect()
         {
             if (twitchClient.IsConnected == true)
+            {
                 twitchClient.Disconnect();
+                JoinedChannels = null;
+            }
         }
 
         /// <summary>
@@ -108,7 +118,10 @@ namespace TRBot
         /// </summary>
         public void SendMessage(string channel, string message)
         {
-            
+            if (twitchClient.IsConnected == true && JoinedChannels?.Count > 0)
+            {
+                twitchClient.SendMessage(channel, message);
+            }
         }
 
         /// <summary>
@@ -119,7 +132,17 @@ namespace TRBot
             if (twitchClient.IsConnected == true)
                 twitchClient.Disconnect();
             
+            JoinedChannels = null;
+
+            EventHandler.OnJoinedChannelEvent -= OnClientJoinedChannel;
+
             EventHandler.CleanUp();
+        }
+
+        private void OnClientJoinedChannel(OnJoinedChannelArgs e)
+        {
+            //When joining a channel, cache the joined channels list
+            JoinedChannels = twitchClient.JoinedChannels;
         }
     }
 }

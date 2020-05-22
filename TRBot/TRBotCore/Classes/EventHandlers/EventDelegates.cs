@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Text;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
+using TwitchLib.Communication.Events;
 
 namespace TRBot
 {
@@ -34,5 +35,21 @@ namespace TRBot
         public delegate void UserNewlySubscribed(User user, OnNewSubscriberArgs e);
 
         public delegate void UserReSubscribed(User user, OnReSubscriberArgs e);
+
+        public delegate void OnWhisperReceived(OnWhisperReceivedArgs e);
+
+        public delegate void ChatCommandReceived(OnChatCommandReceivedArgs e);
+
+        public delegate void OnJoinedChannel(OnJoinedChannelArgs e);
+
+        public delegate void ChannelBeingHosted(OnBeingHostedArgs e);
+            
+        public delegate void OnConnected(OnConnectedArgs e);
+
+        public delegate void OnConnectionError(OnConnectionErrorArgs e);
+
+        public delegate void OnReconnected(OnReconnectedEventArgs e);
+
+        public delegate void OnDisconnected(OnDisconnectedEventArgs e);
     }
 }

@@ -37,7 +37,7 @@ namespace TRBot
 
         }
 
-        public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
         {
             List<string> arguments = e.Command.ArgumentsAsList;
 

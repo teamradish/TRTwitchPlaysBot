@@ -58,7 +58,7 @@ namespace TRBot
             UserExercises = new ConcurrentDictionary<string, InputExercise>(Environment.ProcessorCount * 2, 32);
         }
 
-        public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
         {
             List<string> args = e.Command.ArgumentsAsList;
             string userName = e.Command.ChatMessage.DisplayName.ToLowerInvariant();

@@ -30,7 +30,7 @@ namespace TRBot
 
         }
 
-        public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
         {
             string args = e.Command.ArgumentsAsString.ToLower();
             if (BotProgram.BotData.Achievements.AchievementDict.TryGetValue(args, out Achievement achievement) == false)

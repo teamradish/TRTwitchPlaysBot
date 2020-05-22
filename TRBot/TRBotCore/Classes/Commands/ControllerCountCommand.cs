@@ -10,7 +10,7 @@ namespace TRBot
     /// </summary>
     public sealed class ControllerCountCommand : BaseCommand
     {
-        public override void ExecuteCommand(object sender, OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
         {
             BotProgram.QueueMessage($"There are {BotProgram.BotData.JoystickCount} controller(s) plugged in!");
         }
