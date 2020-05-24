@@ -374,6 +374,37 @@ namespace TRBot
                 Sequence = sequence;
                 CreditReward = creditReward;
             }
+
+            public override bool Equals(object obj)
+            {
+                if (obj is InputExercise inpExc)
+                {
+                    return (this == inpExc);
+                }
+
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hash = 11;
+                    hash = (hash * 37) + Sequence.GetHashCode();
+                    hash = (hash * 37) + CreditReward.GetHashCode();
+                    return hash;
+                }
+            }
+
+            public static bool operator==(InputExercise a, InputExercise b)
+            {
+                return (a.CreditReward == b.CreditReward && a.Sequence == b.Sequence);
+            }
+
+            public static bool operator!=(InputExercise a, InputExercise b)
+            {
+                return !(a == b);
+            }
         }
     }
 }

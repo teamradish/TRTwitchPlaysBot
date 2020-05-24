@@ -126,6 +126,39 @@ namespace TRBot
                 BetAmount = betAmount;
                 CurDuelTime = curDuelTime;
             }
+
+            public override bool Equals(object obj)
+            {
+                if (obj is DuelData dd)
+                {
+                    return (this == dd);
+                }
+
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hash = 23;
+                    hash = (hash * 37) + ((UserDueling == null) ? 0 : UserDueling.GetHashCode());
+                    hash = (hash * 37) + BetAmount.GetHashCode();
+                    hash = (hash * 37) + CurDuelTime.GetHashCode();
+                    return hash;
+                } 
+            }
+
+            public static bool operator==(DuelData a, DuelData b)
+            {
+                return (a.BetAmount == b.BetAmount && a.CurDuelTime == b.CurDuelTime
+                        && a.UserDueling == b.UserDueling);
+            }
+
+            public static bool operator!=(DuelData a, DuelData b)
+            {
+                return !(a == b);
+            }
         }
     }
 }

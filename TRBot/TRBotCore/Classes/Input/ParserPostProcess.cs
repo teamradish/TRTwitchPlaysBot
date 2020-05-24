@@ -262,6 +262,37 @@ namespace TRBot
                 IsValid = isValid;
                 Message = message;
             }
+
+            public override bool Equals(object obj)
+            {
+                if (obj is InputValidation inpVald)
+                {
+                    return (this == inpVald);
+                }
+
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hash = 13;
+                    hash = (hash * 37) + IsValid.GetHashCode();
+                    hash = (hash * 37) + ((Message == null) ? 0 : Message.GetHashCode());
+                    return hash;
+                }
+            }
+
+            public static bool operator==(InputValidation a, InputValidation b)
+            {
+                return (a.IsValid == b.IsValid && a.Message == b.Message);
+            }
+
+            public static bool operator!=(InputValidation a, InputValidation b)
+            {
+                return !(a == b);
+            }
         }
     }
 }

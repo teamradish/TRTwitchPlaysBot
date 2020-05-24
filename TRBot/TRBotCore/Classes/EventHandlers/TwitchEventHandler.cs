@@ -293,10 +293,12 @@ namespace TRBot
             }
             catch (Exception exception)
             {
+                string excMsg = exception.Message;
+
                 //Kimimaru: Sanitize parsing exceptions
                 //Most of these are currently caused by differences in how C# and Python handle slicing strings (Substring() vs string[:])
                 //One example that throws this that shouldn't is "#mash(w234"
-                //BotProgram.QueueMessage($"ERROR: {exception.Message}");
+                //BotProgram.QueueMessage($"ERROR: {excMsg}");
                 inputSequence.InputValidationType = Parser.InputValidationTypes.Invalid;
                 //parsedVal.Item1 = false;
             }

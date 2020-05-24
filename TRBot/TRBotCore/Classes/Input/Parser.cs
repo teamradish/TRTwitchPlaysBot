@@ -229,7 +229,7 @@ namespace TRBot
 
         //This is a C# version of the original Python parser for TPE written by Jdog, aka TwitchPlays_Everything
         //Returns Input object
-        [Obsolete("Use GetInputFast with ParseInputs for greatly improved performance and readability.", false)]
+        /*[Obsolete("Use GetInputFast with ParseInputs for greatly improved performance and readability.", false)]
         private static Input GetInput(string message)
         {
             //Create a default input instance
@@ -343,7 +343,7 @@ namespace TRBot
                 }
             }
             return current_input;
-        }
+        }*/
 
         /// <summary>
         /// Parses inputs from an expanded message.
@@ -573,7 +573,7 @@ namespace TRBot
 
         //Returns list containing: [Valid, input_sequence]
         //Or: [Invalid, input that it failed on]
-        [Obsolete("Use ParseInputs instead for better type safety and greatly improved performance and readability.", false)]
+        /*[Obsolete("Use ParseInputs instead for better type safety and greatly improved performance and readability.", false)]
         public static (bool, List<List<Input>>, bool, int) Parse(string message)
         {
             bool contains_start_input = false;
@@ -612,10 +612,10 @@ namespace TRBot
 
                         current_input = GetInput(message);
 
-                        /*
-                         * if (current_input.name == "plus")
-                         *     contains_start_input = true;
-                         */
+                        //
+                        // if (current_input.name == "plus")
+                        //     contains_start_input = true;
+                        //
 
                         if (string.IsNullOrEmpty(current_input.error) == false)
                             return (false, new List<List<Input>>(1) { new List<Input>(1) { current_input }  }, false, subduration_max);
@@ -646,7 +646,7 @@ namespace TRBot
             //Console.WriteLine($"Elapsed: {sw.ElapsedMilliseconds}");
 
             return (true, input_sequence, contains_start_input, duration_counter);
-        }
+        }*/
 
         private static int SubComparison((string, (int, int), List<string>) val1, (string, (int, int), List<string>) val2)
         {
@@ -664,16 +664,16 @@ namespace TRBot
             public int percent;
             public int duration;
             public string duration_type;
-            [Obsolete("length is the total string length of the input, which is no longer necessary for the new parser.", false)]
-            public int length;
+            //[Obsolete("length is the total string length of the input, which is no longer necessary for the new parser.", false)]
+            //public int length;
             public string error;
 
             /// <summary>
             /// Returns a default Input.
             /// </summary>
-            public static Input Default => new Input(string.Empty, false, false, Parser.ParserDefaultPercent, BotProgram.BotData.DefaultInputDuration, Parser.ParserDefaultDurType, 0, string.Empty);
+            public static Input Default => new Input(string.Empty, false, false, Parser.ParserDefaultPercent, BotProgram.BotData.DefaultInputDuration, Parser.ParserDefaultDurType, /*0,*/ string.Empty);
 
-            public Input(string nme, in bool hld, in bool relse, in int percnt, in int dur, string durType, in int len, in string err)
+            public Input(string nme, in bool hld, in bool relse, in int percnt, in int dur, string durType, /*in int len,*/ in string err)
             {
                 this.name = nme;
                 this.hold = hld;
@@ -681,8 +681,47 @@ namespace TRBot
                 this.percent = percnt;
                 this.duration = dur;
                 this.duration_type = durType;
-                this.length = 0;
+                //this.length = 0;
                 this.error = string.Empty;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj is Input inp)
+                {
+                    return (this == inp);
+                }
+
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hash = 19;
+                    hash = (hash * 37) + ((name == null) ? 0 : name.GetHashCode());
+                    hash = (hash * 37) + hold.GetHashCode();
+                    hash = (hash * 37) + release.GetHashCode();
+                    hash = (hash * 37) + percent.GetHashCode();
+                    hash = (hash * 37) + duration.GetHashCode();
+                    hash = (hash * 37) + ((duration_type == null) ? 0 : duration_type.GetHashCode());
+                    //hash = (hash * 37) + length.GetHashCode();
+                    hash = (hash * 37) + ((error == null) ? 0 : error.GetHashCode());
+                    return hash;
+                }
+            }
+
+            public static bool operator ==(Input a, Input b)
+            {
+                return (a.hold == b.hold && a.release == b.release && a.percent == b.percent
+                        && a.duration_type == b.duration_type && a.duration_type == b.duration_type
+                        && a.name == b.name /*&& a.length == b.length*/ && a.error == b.error);
+            }
+
+            public static bool operator !=(Input a, Input b)
+            {
+                return !(a == b);
             }
 
             public override string ToString()
@@ -707,6 +746,40 @@ namespace TRBot
                 Inputs = inputs;
                 TotalDuration = totalDuration;
                 Error = error;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj is InputSequence inpSeq)
+                {
+                    return (this == inpSeq);
+                }
+
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hash = 17;
+                    hash = (hash * 37) + InputValidationType.GetHashCode();
+                    hash = (hash * 37) + ((Inputs == null) ? 0 : Inputs.GetHashCode());
+                    hash = (hash * 37) + TotalDuration.GetHashCode();
+                    hash = (hash * 37) + ((Error == null) ? 0 : Error.GetHashCode());
+                    return hash;
+                }
+            }
+
+            public static bool operator ==(InputSequence a, InputSequence b)
+            {
+                return (a.InputValidationType == b.InputValidationType
+                        && a.Inputs == b.Inputs && a.TotalDuration == b.TotalDuration && a.Error == b.Error);
+            }
+
+            public static bool operator !=(InputSequence a, InputSequence b)
+            {
+                return !(a == b);
             }
 
             public override string ToString()
