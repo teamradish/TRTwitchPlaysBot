@@ -60,7 +60,7 @@ namespace TRBot
             "up", "down", "left", "right", "a", "b", "x", "y", "l", "r", "select", "start",
             "ss1", "ss2", "ss3", "ss4", "ss5", "ss6",
             "ls1", "ls2", "ls3", "ls4", "ls5", "ls6",
-            "#", "."
+            "#"
         };
 
         public override bool GetAxis(in Parser.Input input, out int axis)

@@ -46,7 +46,7 @@ namespace TRBot
         {
             "up", "u", "down", "d", "left", "l", "right", "r", "grab", "g",
             "select", "s", "pause", "p", "start", "restart", "undo", "back", "b", "viewmap", "v", 
-            "#", "."
+            "#"
         };
 
         public override bool GetAxis(in Parser.Input input, out int axis)

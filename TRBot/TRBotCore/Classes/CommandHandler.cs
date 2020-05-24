@@ -80,9 +80,9 @@ namespace TRBot
             CommandDict.Add("addmacro", new AddMacroCommand());
             CommandDict.Add("removemacro", new RemoveMacroCommand());
             CommandDict.Add("show", new ShowCommand());
-            CommandDict.Add("ss", new SavestateCommand() { HiddenFromHelp = true });
-            CommandDict.Add("ls", new LoadstateCommand() { HiddenFromHelp = true });
-            CommandDict.Add("vs", new ViewstateCommand() { HiddenFromHelp = true });
+            //CommandDict.Add("ss", new SavestateCommand() { HiddenFromHelp = true });
+            //CommandDict.Add("ls", new LoadstateCommand() { HiddenFromHelp = true });
+            //CommandDict.Add("vs", new ViewstateCommand() { HiddenFromHelp = true });
             CommandDict.Add("info", new InfoCommand());
             CommandDict.Add("setinfo", new SetInfoCommand());
             CommandDict.Add("setlevel", new SetLevelCommand());
@@ -117,6 +117,8 @@ namespace TRBot
             //CommandDict.Add("achievements", new ListAchievementsCommand());
             //CommandDict.Add("achinfo", new AchievementInfoCommand());
             CommandDict.Add("exercise", new ExerciseCommand());
+            CommandDict.Add("addsyn", new AddInputSynonymCommand() { HiddenFromHelp = true });
+            CommandDict.Add("removesyn", new RemoveInputSynonymCommand() { HiddenFromHelp = true });
             CommandDict.Add("tutorial", new TutorialCommand());
 
             foreach (KeyValuePair<string, BaseCommand> command in CommandDict)

@@ -31,7 +31,7 @@ namespace TRBot
             "lclick", "mclick", "rclick",
             "return", "space",
             "q", "w", "e", "r", "a", "s", "d", "p",
-            "#", "."
+            "#"
         };
 
         public override Dictionary<string, int> InputAxes { get; protected set; } = new Dictionary<string, int>()

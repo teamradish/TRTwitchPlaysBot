@@ -58,7 +58,7 @@ namespace TRBot
             "shake", "point",
             "ss1", "ss2", "ss3", "ss4", "ss5", "ss6",
             "ls1", "ls2", "ls3", "ls4", "ls5", "ls6",
-            "#", "."
+            "#"
         };
         
         public override Dictionary<string, int> InputAxes { get; protected set; } = new Dictionary<string, int>()

@@ -108,9 +108,9 @@ namespace TRBot
         /// Tells whether the input is a wait input.
         /// </summary>
         /// <param name="input">The input to check.</param>
-        /// <returns>true if the input is one of the wait characters, otherwise false.</returns>
+        /// <returns>true if the input is a wait character, otherwise false.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsWait(in Parser.Input input) => (input.name == "#" || input.name == ".");
+        public bool IsWait(in Parser.Input input) => (input.name == "#");
 
         public void Initialize()
         {

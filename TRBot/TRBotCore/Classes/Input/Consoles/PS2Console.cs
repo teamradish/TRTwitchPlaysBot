@@ -67,7 +67,7 @@ namespace TRBot
             "square", "triangle", "circle", "cross", "l1", "r1", "l2", "r2", "l3", "r3", "dup", "ddown", "dleft", "dright", "select", "start",
             "ss1", "ss2", "ss3", "ss4",
             "ls1", "ls2", "ls3", "ls4",
-            "#", "."
+            "#"
         };
 
         public override Dictionary<string, int> InputAxes { get; protected set; } = new Dictionary<string, int>()
