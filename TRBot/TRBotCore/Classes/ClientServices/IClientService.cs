@@ -44,9 +44,9 @@ namespace TRBot
         bool IsConnected { get; }
 
         /// <summary>
-        /// The number of channels the client joined.
+        /// The channels the client joined.
         /// </summary>
-        int JoinedChannelCount { get; }
+        List<string> JoinedChannels { get; }
 
         /// <summary>
         /// Initializes the client.

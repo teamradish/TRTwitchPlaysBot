@@ -217,11 +217,14 @@ namespace TRBot
             return message;
         }
 
-        public static string PopulateSynonyms(string message)
+        public static string PopulateSynonyms(string message, Dictionary<string, string> inputSynonyms)
         {
-            foreach (string synonym in InputGlobals.INPUT_SYNONYMS.Keys)
+            if (inputSynonyms != null)
             {
-                message = message.Replace(synonym, InputGlobals.INPUT_SYNONYMS[synonym]);
+                foreach (string synonym in inputSynonyms.Keys)
+                {
+                    message = message.Replace(synonym, inputSynonyms[synonym]);
+                }
             }
 
             return message;
@@ -356,7 +359,7 @@ namespace TRBot
         {
             //Remove all whitespace and populate synonyms
             message = message.Replace(" ", string.Empty).ToLower();
-            message = PopulateSynonyms(message);
+            message = PopulateSynonyms(message, InputGlobals.InputSynonyms);
 
             //Full Regex:
             // ([_-])?(left|right|a)(\d+%)?((\d+ms)|(\d+s))?(\+)?

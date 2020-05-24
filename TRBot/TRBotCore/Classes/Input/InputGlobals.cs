@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Text;
 using System.Runtime.CompilerServices;
 
@@ -57,11 +58,16 @@ namespace TRBot
             PC
         }
 
-        public static readonly Dictionary<string, string> INPUT_SYNONYMS = new Dictionary<string, string>()
+        public static Dictionary<string, string> InputSynonyms
         {
-            //{ "pause", "start" }
-            { "kappa", "#" }
-        };
+            get
+            {
+                Dictionary<string, string> dict = null;
+                BotProgram.BotData.InputSynonyms?.SynonymDict?.TryGetValue(CurrentConsoleVal, out dict);
+                
+                return dict;
+            }
+        }
 
         public static readonly Dictionary<InputConsoles, ConsoleBase> Consoles = new Dictionary<InputConsoles, ConsoleBase>()
         {

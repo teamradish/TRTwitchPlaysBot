@@ -43,6 +43,7 @@ namespace TRBot
         public readonly HashSet<string> SilencedUsers = new HashSet<string>(16);
         public readonly InputAccessData InputAccess = new InputAccessData();
         public readonly InvalidButtonComboData InvalidBtnCombos = new InvalidButtonComboData();
+        public readonly InputSynonymData InputSynonyms = new InputSynonymData();
 
         /// <summary>
         /// This data is read from a separate file and is not saved in the JSON.

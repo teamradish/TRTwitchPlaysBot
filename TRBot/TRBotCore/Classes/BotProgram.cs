@@ -52,19 +52,16 @@ namespace TRBot
 
         private CommandHandler CommandHandler = null;
 
-        public static bool TryReconnect { get; private set; } = false;
-        public static bool ChannelJoined { get; private set; } = false;
-
-        public bool IsInChannel => (ClientService?.IsConnected == true && ChannelJoined == true);
+        public bool IsInChannel => (ClientService?.IsConnected == true && ClientService.JoinedChannels?.Count >= 1);
 
         private DateTime CurQueueTime;
 
         /// <summary>
         /// Queued messages.
         /// </summary>
-        private Queue<string> ClientMessages = new Queue<string>();
+        private Queue<string> ClientMessages = new Queue<string>(16);
 
-        private List<BaseRoutine> BotRoutines = new List<BaseRoutine>();
+        private List<BaseRoutine> BotRoutines = new List<BaseRoutine>(8);
 
         /// <summary>
         /// Whether to ignore logging bot messages to the console based on potential console logs from the <see cref="ExecCommand"/>.
@@ -298,6 +295,11 @@ namespace TRBot
             return instance.BotRoutines.Find((routine) => routine is T);
         }
 
+        public static BaseRoutine FindRoutine(Predicate<BaseRoutine> predicate)
+        {
+            return instance.BotRoutines.Find(predicate);
+        }
+
         private void UnsubscribeEvents()
         {
             ClientService.EventHandler.UserSentMessageEvent -= OnUserSentMessage;
@@ -318,22 +320,12 @@ namespace TRBot
 
         private void OnConnected(EvtConnectedArgs e)
         {
-            TryReconnect = false;
-            ChannelJoined = false;
-
             Console.WriteLine($"{LoginInformation.BotName} connected!");
         }
 
         private void OnConnectionError(EvtConnectionErrorArgs e)
         {
-            ChannelJoined = false;
-
-            if (TryReconnect == false)
-            {
-                Console.WriteLine($"Failed to connect: {e.Error.Message}");
-
-                TryReconnect = true;
-            }
+            Console.WriteLine($"Failed to connect: {e.Error.Message}");
         }
 
         private void OnJoinedChannel(EvtJoinedChannelArgs e)
@@ -345,9 +337,6 @@ namespace TRBot
             }
 
             Console.WriteLine($"Joined channel \"{e.Channel}\"");
-
-            TryReconnect = false;
-            ChannelJoined = true;
 
             if (CommandHandler == null)
             {
@@ -443,15 +432,11 @@ namespace TRBot
         private void OnReconnected(EvtReconnectedArgs e)
         {
             QueueMessage("Successfully reconnected to chat!");
-
-            TryReconnect = false;
         }
 
         private void OnDisconnected(EvtDisconnectedArgs e)
         {
             Console.WriteLine("Disconnected!");
-
-            TryReconnect = true;
         }
 
         public static User GetUser(string username, bool isLower = true)

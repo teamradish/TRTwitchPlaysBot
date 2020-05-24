@@ -52,13 +52,9 @@ namespace TRBot
         public bool IsConnected => (twitchClient?.IsConnected == true);
 
         /// <summary>
-        /// The number of channels the client joined.
+        /// The channels the client has joined.
         /// </summary>
-        public int JoinedChannelCount => (JoinedChannels == null ? 0 : JoinedChannels.Count);
-
-        //Cached joined channels list to avoid generating too much garbage from TwitchClient.JoinedChannels
-        //This is updated accordingly
-        private IReadOnlyList<JoinedChannel> JoinedChannels = null;
+        public List<string> JoinedChannels { get; private set; } = new List<string>(8);
 
         public TwitchClientService(ConnectionCredentials credentials, string channelName, in char chatCommandIdentifier,
             in char whisperCommandIdentifier, in bool autoRelistenOnExceptions)
@@ -93,8 +89,13 @@ namespace TRBot
         /// </summary>
         public void Connect()
         {
-            if (twitchClient.IsConnected == false)
-                twitchClient.Connect();
+            if (twitchClient.IsConnected == true)
+            {
+                Console.WriteLine("Attempting to connect while already connected!");
+                return;
+            }
+            
+            twitchClient.Connect();
         }
 
         /// <summary>
@@ -102,11 +103,14 @@ namespace TRBot
         /// </summary>
         public void Disconnect()
         {
-            if (twitchClient.IsConnected == true)
+            if (twitchClient.IsConnected == false)
             {
-                twitchClient.Disconnect();
-                JoinedChannels = null;
+                Console.WriteLine("Attempting to disconnect while not connected!");
+                return;
             }
+
+            twitchClient.Disconnect();
+            JoinedChannels?.Clear();
         }
 
         /// <summary>
@@ -114,8 +118,13 @@ namespace TRBot
         /// </summary>
         public void Reconnect()
         {
-            if (twitchClient.IsConnected == true)
-                twitchClient.Reconnect();
+            if (twitchClient.IsConnected == false)
+            {
+                Console.WriteLine("Attempting to reconnect while not connected!");
+                return;
+            }
+
+            twitchClient.Reconnect();
         }
 
         /// <summary>
@@ -146,8 +155,21 @@ namespace TRBot
 
         private void OnClientJoinedChannel(EvtJoinedChannelArgs e)
         {
-            //When joining a channel, cache the joined channels list
-            JoinedChannels = twitchClient.JoinedChannels;
+            //When joining a channel, set the joined channels list
+            IReadOnlyList<JoinedChannel> twitchJoinedChannels = twitchClient.JoinedChannels;
+
+            //Instantiate if needed
+            if (JoinedChannels == null)
+            {
+                JoinedChannels = new List<string>(twitchJoinedChannels.Count);
+            }
+            
+            JoinedChannels.Clear();
+
+            foreach (JoinedChannel channel in twitchJoinedChannels)
+            {
+                JoinedChannels.Add(channel.Channel);
+            }
         }
     }
 }
