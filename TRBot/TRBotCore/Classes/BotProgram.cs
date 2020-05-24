@@ -316,7 +316,7 @@ namespace TRBot
 
 #region Events
 
-        private void OnConnected(OnConnectedArgs e)
+        private void OnConnected(EvtConnectedArgs e)
         {
             TryReconnect = false;
             ChannelJoined = false;
@@ -324,7 +324,7 @@ namespace TRBot
             Console.WriteLine($"{LoginInformation.BotName} connected!");
         }
 
-        private void OnConnectionError(OnConnectionErrorArgs e)
+        private void OnConnectionError(EvtConnectionErrorArgs e)
         {
             ChannelJoined = false;
 
@@ -336,7 +336,7 @@ namespace TRBot
             }
         }
 
-        private void OnJoinedChannel(OnJoinedChannelArgs e)
+        private void OnJoinedChannel(EvtJoinedChannelArgs e)
         {
             if (string.IsNullOrEmpty(BotSettings.ConnectMessage) == false)
             {
@@ -355,26 +355,26 @@ namespace TRBot
             }
         }
 
-        private void OnChatCommandReceived(OnChatCommandReceivedArgs e)
+        private void OnChatCommandReceived(EvtChatCommandArgs e)
         {
             CommandHandler.HandleCommand(e);
         }
 
-        private void OnUserSentMessage(User user, OnMessageReceivedArgs e)
+        private void OnUserSentMessage(User user, EvtUserMessageArgs e)
         {
             if (user.OptedOut == false)
             {
                 user.IncrementMsgCount();
             }
 
-            string possibleMeme = e.ChatMessage.Message.ToLower();
+            string possibleMeme = e.UsrMessage.Message.ToLower();
             if (BotProgram.BotData.Memes.TryGetValue(possibleMeme, out string meme) == true)
             {
                 BotProgram.QueueMessage(meme);
             }
         }
 
-        private void OnUserMadeInput(User user, in Parser.InputSequence validInputSeq)
+        private void OnUserMadeInput(User user, EvtUserMessageArgs e, in Parser.InputSequence validInputSeq)
         {
             //Mark this as a valid input
             if (user.OptedOut == false)
@@ -420,34 +420,34 @@ namespace TRBot
             }
         }
 
-        private void OnWhisperReceived(OnWhisperReceivedArgs e)
+        private void OnWhisperReceived(EvtWhisperMessageArgs e)
         {
             
         }
 
-        private void OnBeingHosted(OnBeingHostedArgs e)
+        private void OnBeingHosted(EvtOnHostedArgs e)
         {
-            QueueMessage($"Thank you for hosting, {e.BeingHostedNotification.HostedByChannel}!!");
+            QueueMessage($"Thank you for hosting, {e.HostedData.HostedByChannel}!!");
         }
 
-        private void OnNewSubscriber(User user, OnNewSubscriberArgs e)
+        private void OnNewSubscriber(User user, EvtOnSubscriptionArgs e)
         {
-            QueueMessage($"Thank you for subscribing, {e.Subscriber.DisplayName} :D !!");
+            QueueMessage($"Thank you for subscribing, {e.SubscriptionData.DisplayName} :D !!");
         }
 
-        private void OnReSubscriber(User user, OnReSubscriberArgs e)
+        private void OnReSubscriber(User user, EvtOnReSubscriptionArgs e)
         {
-            QueueMessage($"Thank you for subscribing for {e.ReSubscriber.Months} months, {e.ReSubscriber.DisplayName} :D !!");
+            QueueMessage($"Thank you for subscribing for {e.ReSubscriptionData.Months} months, {e.ReSubscriptionData.DisplayName} :D !!");
         }
 
-        private void OnReconnected(OnReconnectedEventArgs e)
+        private void OnReconnected(EvtReconnectedArgs e)
         {
             QueueMessage("Successfully reconnected to chat!");
 
             TryReconnect = false;
         }
 
-        private void OnDisconnected(OnDisconnectedEventArgs e)
+        private void OnDisconnected(EvtDisconnectedArgs e)
         {
             Console.WriteLine("Disconnected!");
 

@@ -26,7 +26,7 @@ namespace TRBot
     /// </summary>
     public sealed class TimeCommand : BaseCommand
     {
-        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(EvtChatCommandArgs e)
         {
             DateTime curTime = DateTime.UtcNow;
 

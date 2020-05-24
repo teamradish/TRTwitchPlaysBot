@@ -26,7 +26,7 @@ namespace TRBot
     /// </summary>
     public sealed class LengthCommand : BaseCommand
     {
-        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(EvtChatCommandArgs e)
         {
             string args = e.Command.ArgumentsAsString;
 

@@ -26,7 +26,7 @@ namespace TRBot
     /// </summary>
     public sealed class ViewLogCommand : BaseCommand
     {
-        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(EvtChatCommandArgs e)
         {
             List<string> args = e.Command.ArgumentsAsList;
 

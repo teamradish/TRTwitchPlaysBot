@@ -36,7 +36,7 @@ namespace TRBot
             AccessLevel = (int)AccessLevels.Levels.Moderator;
         }
 
-        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(EvtChatCommandArgs e)
         {
             if (string.IsNullOrEmpty(BotProgram.BotData.InfoMessage) == true)
             {

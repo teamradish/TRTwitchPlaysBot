@@ -44,7 +44,7 @@ namespace TRBot
                 WithReferences(References).WithImports(Imports);
         }
 
-        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(EvtChatCommandArgs e)
         {
             string code = e.Command.ArgumentsAsString;
 

@@ -30,7 +30,7 @@ namespace TRBot
 
         }
 
-        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(EvtChatCommandArgs e)
         {
             BotProgram.QueueMessage("Game Suggestions: https://docs.google.com/document/d/1Em-Lq4BKyvBICX1RF-4Ndt-P2mZeY4x9VZ1k63miMb8/edit?usp=sharing");
         }

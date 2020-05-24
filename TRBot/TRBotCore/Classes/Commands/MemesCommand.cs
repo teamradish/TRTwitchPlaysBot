@@ -78,7 +78,7 @@ namespace TRBot
             }
         }
 
-        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(EvtChatCommandArgs e)
         {
             if (MemesCache.Count == 0)
             {

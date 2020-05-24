@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Text;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
+using TwitchLib.Client.Models;
 using TwitchLib.Communication.Events;
 using static TRBot.EventDelegates;
 
@@ -121,73 +122,145 @@ namespace TRBot
         {
             User user = BotProgram.GetOrAddUser(e.ChatMessage.DisplayName, false);
 
-            UserSentMessageEvent?.Invoke(user, e);
+            EvtUserMessageArgs umArgs = new EvtUserMessageArgs()
+            {
+                UsrMessage = new EvtUserMsgData(e.ChatMessage.UserId, e.ChatMessage.Username,
+                    e.ChatMessage.DisplayName, e.ChatMessage.Channel, e.ChatMessage.Message)
+            };
+
+            UserSentMessageEvent?.Invoke(user, umArgs);
 
             //Attempt to parse the message as an input
-            ProcessMsgAsInput(user, e);
+            ProcessMsgAsInput(user, umArgs);
         }
 
         private void OnNewSubscriber(object sender, OnNewSubscriberArgs e)
         {
             User user = BotProgram.GetOrAddUser(e.Subscriber.DisplayName, false);
 
-            UserNewlySubscribedEvent?.Invoke(user, e);
+            EvtOnSubscriptionArgs subArgs = new EvtOnSubscriptionArgs
+            {
+                SubscriptionData = new EvtSubscriptionData(e.Subscriber.UserId, e.Subscriber.DisplayName,
+                    e.Subscriber.DisplayName)
+            };
+
+            UserNewlySubscribedEvent?.Invoke(user, subArgs);
         }
 
         private void OnReSubscriber(object sender, OnReSubscriberArgs e)
         {
             User user = BotProgram.GetOrAddUser(e.ReSubscriber.DisplayName, false);
 
-            UserReSubscribedEvent?.Invoke(user, e);
+            EvtOnReSubscriptionArgs reSubArgs = new EvtOnReSubscriptionArgs
+            {
+                ReSubscriptionData = new EvtReSubscriptionData(e.ReSubscriber.UserId, e.ReSubscriber.DisplayName,
+                    e.ReSubscriber.DisplayName, e.ReSubscriber.Months)
+            };
+
+            UserReSubscribedEvent?.Invoke(user, reSubArgs);
         }
 
         private void OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
         {
-            WhisperReceivedEvent?.Invoke(e);
+            EvtWhisperMessageArgs whisperMsg = new EvtWhisperMessageArgs()
+            {
+                WhsprMessage = new EvtWhisperMsgData(e.WhisperMessage.UserId, e.WhisperMessage.Username,
+                    e.WhisperMessage.DisplayName, e.WhisperMessage.MessageId, e.WhisperMessage.ThreadId,
+                    e.WhisperMessage.Message)
+            };
+
+            WhisperReceivedEvent?.Invoke(whisperMsg);
         }
 
         private void OnChatCommandReceived(object sender, OnChatCommandReceivedArgs e)
         {
-            ChatCommandReceivedEvent?.Invoke(e);
+            ChatMessage cMsg = e.Command.ChatMessage;
+
+            EvtUserMsgData msgData = new EvtUserMsgData(cMsg.UserId, cMsg.Username, cMsg.DisplayName,
+                cMsg.Channel, cMsg.Message);
+
+            EvtChatCommandArgs chatCmdArgs = new EvtChatCommandArgs
+            {
+                Command = new EvtChatCommandData(e.Command.ArgumentsAsList, e.Command.ArgumentsAsString,
+                    msgData, e.Command.CommandIdentifier, e.Command.CommandText)
+            };
+
+            ChatCommandReceivedEvent?.Invoke(chatCmdArgs);
         }
 
         private void OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
-            OnJoinedChannelEvent?.Invoke(e);
+            EvtJoinedChannelArgs jcArgs = new EvtJoinedChannelArgs()
+            {
+                BotUsername = e.BotUsername,
+                Channel = e.Channel
+            };
+
+            OnJoinedChannelEvent?.Invoke(jcArgs);
         }
 
         private void OnChannelHosted(object sender, OnBeingHostedArgs e)
         {
-            ChannelHostedEvent?.Invoke(e);
+            BeingHostedNotification bHNotif = e.BeingHostedNotification;
+
+            EvtOnHostedArgs hostedArgs = new EvtOnHostedArgs
+            {
+                HostedData = new EvtHostedData(bHNotif.Channel, bHNotif.HostedByChannel,
+                bHNotif.Viewers, bHNotif.IsAutoHosted)
+            };
+
+            ChannelHostedEvent?.Invoke(hostedArgs);
         }
 
         private void OnConnected(object sender, OnConnectedArgs e)
         {
-            OnConnectedEvent?.Invoke(e);
+            EvtConnectedArgs connectedArgs = new EvtConnectedArgs()
+            {
+                BotUsername = e.BotUsername,
+                AutoJoinChannel = e.AutoJoinChannel
+            };
+
+            OnConnectedEvent?.Invoke(connectedArgs);
         }
 
         private void OnConnectionError(object sender, OnConnectionErrorArgs e)
         {
-            OnConnectionErrorEvent?.Invoke(e);
+            EvtConnectionErrorArgs cErrArgs = new EvtConnectionErrorArgs()
+            {
+                Error = new EvtErrorData(e.Error.Message),
+                BotUsername = e.BotUsername
+            };
+
+            OnConnectionErrorEvent?.Invoke(cErrArgs);
         }
 
         private void OnReconnected(object sender, OnReconnectedEventArgs e)
         {
-            OnReconnectedEvent?.Invoke(e);
+            EvtReconnectedArgs recArgs = new EvtReconnectedArgs()
+            {
+
+            };
+
+            OnReconnectedEvent?.Invoke(recArgs);
         }
 
         private void OnDisconnected(object sender, OnDisconnectedEventArgs e)
         {
-            OnDisconnectedEvent?.Invoke(e);
+            EvtDisconnectedArgs disArgs = new EvtDisconnectedArgs()
+            {
+
+            };
+
+            OnDisconnectedEvent?.Invoke(disArgs);
         }
 
         //NOTE: This would result in lots of code duplication if other streaming services were integrated
         //Is there a better way to do this?
 
-        private void ProcessMsgAsInput(User userData, OnMessageReceivedArgs e)
+        private void ProcessMsgAsInput(User userData, EvtUserMessageArgs e)
         {
             //Don't process for inputs if a meme
-            string possibleMeme = e.ChatMessage.Message.ToLower();
+            string possibleMeme = e.UsrMessage.Message.ToLower();
             if (BotProgram.BotData.Memes.TryGetValue(possibleMeme, out string meme) == true)
             {
                 return;
@@ -211,7 +284,7 @@ namespace TRBot
 
             try
             {
-                string parse_message = Parser.Expandify(Parser.PopulateMacros(e.ChatMessage.Message));
+                string parse_message = Parser.Expandify(Parser.PopulateMacros(e.UsrMessage.Message));
                 inputSequence = Parser.ParseInputs(parse_message, true);
                 //parsedVal = Parser.Parse(parse_message);
                 //Console.WriteLine(inputSequence.ToString());
@@ -305,7 +378,7 @@ namespace TRBot
             if (InputHandler.StopRunningInputs == false)
             {
                 //Invoke input event
-                UserMadeInputEvent?.Invoke(userData, inputSequence);
+                UserMadeInputEvent?.Invoke(userData, e, inputSequence);
             }
             else
             {

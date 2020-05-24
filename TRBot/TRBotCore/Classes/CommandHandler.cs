@@ -133,11 +133,11 @@ namespace TRBot
             }
         }
 
-        public void HandleCommand(OnChatCommandReceivedArgs e)
+        public void HandleCommand(EvtChatCommandArgs e)
         {
             if (e == null || e.Command == null || e.Command.ChatMessage == null)
             {
-                Console.WriteLine($"{nameof(OnChatCommandReceivedArgs)} or its Command or ChatMessage is null! Not parsing command");
+                Console.WriteLine($"{nameof(EvtChatCommandArgs)} or its Command or ChatMessage is null! Not parsing command");
                 return;
             }
 

@@ -57,7 +57,7 @@ namespace TRBot
 
         }
 
-        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(EvtChatCommandArgs e)
         {
             BotProgram.QueueMessage(Messages[Attempts]);
 

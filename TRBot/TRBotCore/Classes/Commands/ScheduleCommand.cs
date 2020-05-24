@@ -31,7 +31,7 @@ namespace TRBot
 
         }
 
-        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(EvtChatCommandArgs e)
         {
             BotProgram.QueueMessage("http://twitchplays.wikia.com/wiki/Hiatus_Programming");
         }

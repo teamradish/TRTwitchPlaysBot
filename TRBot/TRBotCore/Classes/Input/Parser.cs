@@ -496,9 +496,9 @@ namespace TRBot
 
             if (regexMatch.Groups[1].Success == true)
             {
-                if (regexMatch.Groups[1].Value == "_")
+                if (regexMatch.Groups[1].Value == Parser.ParseRegexHoldInput)
                     input.hold = true;
-                else if (regexMatch.Groups[1].Value == "-")
+                else if (regexMatch.Groups[1].Value == Parser.ParseRegexReleaseInput)
                     input.release = true;
             }
 

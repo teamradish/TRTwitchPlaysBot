@@ -31,7 +31,7 @@ namespace TRBot
 
         }
 
-        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(EvtChatCommandArgs e)
         {
             string[] stuff = e.Command.ChatMessage.Message.Split(' ');
             if (stuff.Length > 1)

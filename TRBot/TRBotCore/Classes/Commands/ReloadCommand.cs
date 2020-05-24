@@ -31,7 +31,7 @@ namespace TRBot
             AccessLevel = (int)AccessLevels.Levels.Admin;
         }
 
-        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(EvtChatCommandArgs e)
         {
             //Reload settings and bot data
             BotProgram.LoadSettingsAndBotData();

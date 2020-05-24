@@ -28,28 +28,28 @@ namespace TRBot
     /// </summary>
     public static class EventDelegates
     {
-        public delegate void UserSentMessage(User user, OnMessageReceivedArgs e);
+        public delegate void UserSentMessage(User user, EvtUserMessageArgs e);
 
-        public delegate void UserMadeInput(User user, in Parser.InputSequence validInputSeq);
+        public delegate void UserMadeInput(User user, EvtUserMessageArgs e, in Parser.InputSequence validInputSeq);
 
-        public delegate void UserNewlySubscribed(User user, OnNewSubscriberArgs e);
+        public delegate void UserNewlySubscribed(User user, EvtOnSubscriptionArgs e);
 
-        public delegate void UserReSubscribed(User user, OnReSubscriberArgs e);
+        public delegate void UserReSubscribed(User user, EvtOnReSubscriptionArgs e);
 
-        public delegate void OnWhisperReceived(OnWhisperReceivedArgs e);
+        public delegate void OnWhisperReceived(EvtWhisperMessageArgs e);
 
-        public delegate void ChatCommandReceived(OnChatCommandReceivedArgs e);
+        public delegate void ChatCommandReceived(EvtChatCommandArgs e);
 
-        public delegate void OnJoinedChannel(OnJoinedChannelArgs e);
+        public delegate void OnJoinedChannel(EvtJoinedChannelArgs e);
 
-        public delegate void ChannelBeingHosted(OnBeingHostedArgs e);
+        public delegate void ChannelBeingHosted(EvtOnHostedArgs e);
             
-        public delegate void OnConnected(OnConnectedArgs e);
+        public delegate void OnConnected(EvtConnectedArgs e);
 
-        public delegate void OnConnectionError(OnConnectionErrorArgs e);
+        public delegate void OnConnectionError(EvtConnectionErrorArgs e);
 
-        public delegate void OnReconnected(OnReconnectedEventArgs e);
+        public delegate void OnReconnected(EvtReconnectedArgs e);
 
-        public delegate void OnDisconnected(OnDisconnectedEventArgs e);
+        public delegate void OnDisconnected(EvtDisconnectedArgs e);
     }
 }

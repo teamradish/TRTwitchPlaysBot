@@ -35,7 +35,7 @@ namespace TRBot
 
         }
 
-        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(EvtChatCommandArgs e)
         {
             string name = e.Command.ChatMessage.DisplayName;
             string nameToLower = name.ToLower();

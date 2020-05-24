@@ -51,6 +51,11 @@ namespace TRBot
         /// </summary>
         public bool IsConnected => (twitchClient?.IsConnected == true);
 
+        /// <summary>
+        /// The number of channels the client joined.
+        /// </summary>
+        public int JoinedChannelCount => (JoinedChannels == null ? 0 : JoinedChannels.Count);
+
         //Cached joined channels list to avoid generating too much garbage from TwitchClient.JoinedChannels
         //This is updated accordingly
         private IReadOnlyList<JoinedChannel> JoinedChannels = null;
@@ -139,7 +144,7 @@ namespace TRBot
             EventHandler.CleanUp();
         }
 
-        private void OnClientJoinedChannel(OnJoinedChannelArgs e)
+        private void OnClientJoinedChannel(EvtJoinedChannelArgs e)
         {
             //When joining a channel, cache the joined channels list
             JoinedChannels = twitchClient.JoinedChannels;

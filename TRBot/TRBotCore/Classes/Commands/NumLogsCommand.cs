@@ -26,7 +26,7 @@ namespace TRBot
     /// </summary>
     public sealed class NumLogsCommand : BaseCommand
     {
-        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(EvtChatCommandArgs e)
         {
             int numLogs = BotProgram.BotData.Logs.Count;
 

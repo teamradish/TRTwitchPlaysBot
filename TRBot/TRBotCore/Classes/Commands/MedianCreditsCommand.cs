@@ -40,7 +40,7 @@ namespace TRBot
             CreditsCompare = CompareKeyVal;
         }
 
-        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(EvtChatCommandArgs e)
         {
             List<(string, long)> allCredits = new List<(string, long)>(BotProgram.BotData.Users.Count);
 

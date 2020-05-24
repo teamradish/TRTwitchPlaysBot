@@ -62,28 +62,28 @@ namespace TRBot
             }
         }
 
-        private void OnUserSentMessage(User user, OnMessageReceivedArgs e)
+        private void OnUserSentMessage(User user, EvtUserMessageArgs e)
         {
             if (user.OptedOut == true) return;
 
             
         }
 
-        private void OnUserMadeInput(User user, in Parser.InputSequence validInputSeq)
+        private void OnUserMadeInput(User user, EvtUserMessageArgs e, in Parser.InputSequence validInputSeq)
         {
             if (user.OptedOut == true) return;
 
 
         }
 
-        private void OnUserNewlySubscribed(User user, OnNewSubscriberArgs e)
+        private void OnUserNewlySubscribed(User user, EvtOnSubscriptionArgs e)
         {
             if (user.OptedOut == true) return;
 
 
         }
 
-        private void OnUserReSubscribed(User user, OnReSubscriberArgs e)
+        private void OnUserReSubscribed(User user, EvtOnReSubscriptionArgs e)
         {
             if (user.OptedOut == true) return;
 

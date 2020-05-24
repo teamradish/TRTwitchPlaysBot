@@ -51,6 +51,6 @@ namespace TRBot
             
         }
 
-        public abstract void ExecuteCommand(OnChatCommandReceivedArgs e);
+        public abstract void ExecuteCommand(EvtChatCommandArgs e);
     }
 }

@@ -72,9 +72,9 @@ namespace TRBot
             }
         }
 
-        private void MessageReceived(User user, OnMessageReceivedArgs e)
+        private void MessageReceived(User user, EvtUserMessageArgs e)
         {
-            string nameToLower = e.ChatMessage.DisplayName.ToLower();
+            string nameToLower = e.UsrMessage.DisplayName.ToLower();
 
             //Check if the user talked before
             if (UsersTalked.ContainsKey(nameToLower) == false)

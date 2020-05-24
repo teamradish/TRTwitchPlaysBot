@@ -28,7 +28,7 @@ namespace TRBot
         private List<string> MultiMessageCache = new List<string>(16);
         private const string InitMessage = "Macros: ";
 
-        public override void ExecuteCommand(OnChatCommandReceivedArgs e)
+        public override void ExecuteCommand(EvtChatCommandArgs e)
         {
             if (BotProgram.BotData.Macros.Count == 0)
             {
