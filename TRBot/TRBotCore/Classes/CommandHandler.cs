@@ -117,6 +117,7 @@ namespace TRBot
             //CommandDict.Add("achievements", new ListAchievementsCommand());
             //CommandDict.Add("achinfo", new AchievementInfoCommand());
             CommandDict.Add("exercise", new ExerciseCommand());
+            CommandDict.Add("listsyn", new ListInputSynonymCommand() { HiddenFromHelp = true });
             CommandDict.Add("addsyn", new AddInputSynonymCommand() { HiddenFromHelp = true });
             CommandDict.Add("removesyn", new RemoveInputSynonymCommand() { HiddenFromHelp = true });
             CommandDict.Add("tutorial", new TutorialCommand());
