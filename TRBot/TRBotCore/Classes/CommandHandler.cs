@@ -82,7 +82,7 @@ namespace TRBot
             CommandDict.Add("show", new ShowCommand());
             //CommandDict.Add("ss", new SavestateCommand() { HiddenFromHelp = true });
             //CommandDict.Add("ls", new LoadstateCommand() { HiddenFromHelp = true });
-            //CommandDict.Add("vs", new ViewstateCommand() { HiddenFromHelp = true });
+            CommandDict.Add("vs", new ViewstateCommand());
             CommandDict.Add("info", new InfoCommand());
             CommandDict.Add("setinfo", new SetInfoCommand());
             CommandDict.Add("setlevel", new SetLevelCommand());

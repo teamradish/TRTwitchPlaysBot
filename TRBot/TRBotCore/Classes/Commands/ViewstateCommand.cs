@@ -65,11 +65,11 @@ namespace TRBot
             //Show the log message if one was input
             if (string.IsNullOrEmpty(stateLog.LogMessage) == false)
             {
-                message = $"State {stateNum}, \"{stateLog.LogMessage}\", saved by {stateLog.User} on {stateLog.DateTimeString} (UTC)";
+                message = $"State {stateNum}, \"{stateLog.LogMessage}\", saved on {stateLog.DateTimeString} (UTC)";
             }
             else
             {
-                message = $"State {stateNum}, saved by {stateLog.User} on {stateLog.DateTimeString} (UTC)";
+                message = $"State {stateNum}, saved on {stateLog.DateTimeString} (UTC)";
             }
 
             BotProgram.QueueMessage(message);

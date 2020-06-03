@@ -39,6 +39,7 @@ namespace TRBot
         public const string SettingsFilename = "Settings.txt";
         public const string AchievementsFilename = "Achievements.txt";
         public const string BotDataFilename = "BotData.txt";
+        public const string InputCallbacksFileName = "InputCallbacks.txt";
 
         /// <summary>
         /// Kimimaru: Twitch's character limit.

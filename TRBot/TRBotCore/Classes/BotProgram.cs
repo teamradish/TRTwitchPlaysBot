@@ -36,15 +36,16 @@ namespace TRBot
     public sealed class BotProgram : IDisposable
     {
         private static readonly object BotDataLockObj = new object();
-        private static readonly object SettingsLockObj = new object();
 
         private static BotProgram instance = null;
 
         public bool Initialized { get; private set; } = false;
 
+        //NOTE: Potentially move all these to a separate data storage class
         private LoginInfo LoginInformation = null;
         public static Settings BotSettings { get; private set; } = null;
         public static BotData BotData { get; private set; } = null;
+        public static InputCallbackData InputCBData { get; private set; } = null;
 
         public static IClientService ClientService { get; private set; } = null;
         private ConnectionCredentials Credentials = null;
@@ -481,36 +482,30 @@ namespace TRBot
             return userData;
         }
 
-        public static void SaveSettings()
+        public static void SaveDataToFile(object value, string filename)
         {
             //Make sure more than one thread doesn't try to save at the same time to prevent potential loss of data and access violations
-            lock (SettingsLockObj)
+            lock (BotDataLockObj)
             {
-                string text = JsonConvert.SerializeObject(BotSettings, Formatting.Indented);
+                string text = JsonConvert.SerializeObject(value, Formatting.Indented);
                 if (string.IsNullOrEmpty(text) == false)
                 {
-                    if (Globals.SaveToTextFile(Globals.SettingsFilename, text) == false)
+                    if (Globals.SaveToTextFile(filename, text) == false)
                     {
-                        QueueMessage($"CRITICAL - Unable to save settings");
+                        QueueMessage($"CRITICAL - Unable to save data");
                     }
                 }
             }
         }
 
+        public static void SaveSettings()
+        {
+            SaveDataToFile(BotSettings, Globals.SettingsFilename);
+        }
+
         public static void SaveBotData()
         {
-            //Make sure more than one thread doesn't try to save at the same time to prevent potential loss of data and access violations
-            lock (BotDataLockObj)
-            {
-                string text = JsonConvert.SerializeObject(BotData, Formatting.Indented);
-                if (string.IsNullOrEmpty(text) == false)
-                {
-                    if (Globals.SaveToTextFile(Globals.BotDataFilename, text) == false)
-                    {
-                        QueueMessage($"CRITICAL - Unable to save bot data");
-                    }
-                }
-            }
+            SaveDataToFile(BotData, Globals.BotDataFilename);
         }
 
         public static void LoadSettingsAndBotData()
@@ -557,6 +552,19 @@ namespace TRBot
                 BotData = new BotData();
                 SaveBotData();
             }
+
+            //Input callbacks
+            string inputCBText = Globals.ReadFromTextFileOrCreate(Globals.InputCallbacksFileName);
+            InputCBData = JsonConvert.DeserializeObject<InputCallbackData>(inputCBText);
+
+            if (InputCBData == null)
+            {
+                InputCBData = new InputCallbackData();
+                SaveDataToFile(InputCBData, Globals.InputCallbacksFileName);
+            }
+
+            //Populate callbacks using the given data
+            InputCBData.PopulateCBWithData();
 
             //string achievementsText = Globals.ReadFromTextFileOrCreate(Globals.AchievementsFilename);
             //BotData.Achievements = JsonConvert.DeserializeObject<AchievementData>(achievementsText);

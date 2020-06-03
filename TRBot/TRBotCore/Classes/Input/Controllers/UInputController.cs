@@ -265,6 +265,23 @@ namespace TRBot
                     ReleaseAbsoluteAxis(value);
                 }
             }
+
+            //Invoke input callbacks
+            if (BotProgram.InputCBData.Callbacks.TryGetValue(input.name, out InputCallback cbData) == true)
+            {
+                long invocation = (long)cbData.InvocationType;
+
+                //Invoke on press
+                if (input.hold == false && EnumUtility.HasEnumVal(invocation, (long)InputCBInvocation.Press) == true)
+                {
+                    cbData.Callback?.Invoke();
+                }
+                //Invoke on hold
+                else if (input.hold == true && EnumUtility.HasEnumVal(invocation,(long)InputCBInvocation.Hold) == true)
+                {
+                    cbData.Callback?.Invoke();
+                }
+            }
         }
 
         public void ReleaseInput(in Parser.Input input)
@@ -288,6 +305,16 @@ namespace TRBot
                 if (InputGlobals.CurrentConsole.InputAxes.TryGetValue(input.name, out int value) == true)
                 {
                     ReleaseAbsoluteAxis(value);
+                }
+            }
+
+            //Invoke input callbacks
+            if (BotProgram.InputCBData.Callbacks.TryGetValue(input.name, out InputCallback cbData) == true)
+            {
+                //Invoke on release
+                if (EnumUtility.HasEnumVal((long)cbData.InvocationType, (long)InputCBInvocation.Release) == true)
+                {
+                    cbData.Callback?.Invoke();
                 }
             }
         }
