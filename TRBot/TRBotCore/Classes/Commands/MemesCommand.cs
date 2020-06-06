@@ -52,7 +52,7 @@ namespace TRBot
             for (int i = 0; i < memes.Length; i++)
             {
                 int length = memes[i].Length + curString.Length;
-                int maxLength = Globals.TwitchCharacterLimit;
+                int maxLength = BotProgram.BotSettings.BotMessageCharLimit;
                 if (MemesCache.Count == 0)
                 {
                     maxLength -= InitMessage.Length;

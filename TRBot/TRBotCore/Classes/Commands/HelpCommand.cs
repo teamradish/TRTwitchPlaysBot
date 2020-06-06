@@ -68,7 +68,7 @@ namespace TRBot
                 if (user.Level >= cmd.Value.AccessLevel)
                 {
                     int newLength = StrBuilder.Length + cmd.Key.Length + 3;
-                    int maxLength = Globals.TwitchCharacterLimit;
+                    int maxLength = BotProgram.BotSettings.BotMessageCharLimit;
                     if (MultiMessageCache.Count == 0)
                     {
                         maxLength -= InitMessage.Length;

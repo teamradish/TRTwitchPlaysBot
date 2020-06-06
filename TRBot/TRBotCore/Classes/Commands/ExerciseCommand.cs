@@ -130,7 +130,7 @@ namespace TRBot
             string creditRewardMsg = inputExercise.CreditReward + " credit reward.";
             int totalMsgLength = reverseSentence.Length + creditRewardMsg.Length + 3;
 
-            if (totalMsgLength > Globals.TwitchCharacterLimit)
+            if (totalMsgLength > BotProgram.BotSettings.BotMessageCharLimit)
             {
                 BotProgram.QueueMessage(reverseSentence);
                 BotProgram.QueueMessage(creditRewardMsg);

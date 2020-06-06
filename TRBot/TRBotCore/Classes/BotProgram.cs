@@ -461,6 +461,12 @@ namespace TRBot
         /// <returns>A User object associated with <paramref name="username"/>.</returns>
         public static User GetOrAddUser(string username, bool isLower = true)
         {
+            //Cannot use a user with no valid name
+            if (string.IsNullOrEmpty(username) == true)
+            {
+                return null;
+            }
+
             string origName = username;
             if (isLower == false)
             {
@@ -474,7 +480,11 @@ namespace TRBot
             {
                 userData = new User();
                 userData.Name = username;
-                BotData.Users.TryAdd(username, userData);
+                if (BotData.Users.TryAdd(username, userData) == false)
+                {
+                    Console.WriteLine($"An error occurred - failed to add user {username}");
+                    return null;
+                }
 
                 BotProgram.QueueMessage($"Welcome to the stream, {origName} :D ! We hope you enjoy your stay!");
             }
@@ -604,6 +614,13 @@ namespace TRBot
             public double MessageCooldown = 1000d;
             public double CreditsTime = 2d;
             public long CreditsAmount = 100L;
+
+            /// <summary>
+            /// The character limit for bot messages. The default is the client service's character limit (Ex. Twitch).
+            /// <para>Some messages that naturally go over this limit will be split into multiple messages.
+            /// Examples include listing memes and macros.</para>
+            /// </summary>
+            public int BotMessageCharLimit = Globals.TwitchCharacterLimit;
             
             /// <summary>
             /// How long to make the main thread sleep after each iteration.

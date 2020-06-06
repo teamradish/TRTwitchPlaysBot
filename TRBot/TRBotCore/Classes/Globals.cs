@@ -41,10 +41,14 @@ namespace TRBot
         public const string BotDataFilename = "BotData.txt";
         public const string InputCallbacksFileName = "InputCallbacks.txt";
 
+        #region Platform Message Character Limits
+
         /// <summary>
-        /// Kimimaru: Twitch's character limit.
+        /// Twitch's character limit.
         /// </summary>
         public const int TwitchCharacterLimit = 500;
+
+        #endregion
 
         public const int MinSleepTime = 1;
         public const int MaxSleepTime = 10000;
