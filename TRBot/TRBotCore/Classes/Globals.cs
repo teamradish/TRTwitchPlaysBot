@@ -28,6 +28,8 @@ namespace TRBot
     /// </summary>
     public static class Globals
     {
+        public static readonly object BotDataLockObj = new object();
+
         //Kimimaru: We should link the data folder so that it's referenced from the executable dir, but .NET Core projects don't yet support it from the IDE
         //Do it manually via editing the .csproj file
         public static string RootDir => Environment.CurrentDirectory;
@@ -40,6 +42,7 @@ namespace TRBot
         public const string AchievementsFilename = "Achievements.txt";
         public const string BotDataFilename = "BotData.txt";
         public const string InputCallbacksFileName = "InputCallbacks.txt";
+        public const string GameMessageFilename = "GameMessage.txt";
 
         #region Platform Message Character Limits
 

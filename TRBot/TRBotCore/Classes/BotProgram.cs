@@ -35,8 +35,6 @@ namespace TRBot
 {
     public sealed class BotProgram : IDisposable
     {
-        private static readonly object BotDataLockObj = new object();
-
         private static BotProgram instance = null;
 
         public bool Initialized { get; private set; } = false;
@@ -495,7 +493,7 @@ namespace TRBot
         public static void SaveDataToFile(object value, string filename)
         {
             //Make sure more than one thread doesn't try to save at the same time to prevent potential loss of data and access violations
-            lock (BotDataLockObj)
+            lock (Globals.BotDataLockObj)
             {
                 string text = JsonConvert.SerializeObject(value, Formatting.Indented);
                 if (string.IsNullOrEmpty(text) == false)

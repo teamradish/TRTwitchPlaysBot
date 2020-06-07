@@ -27,8 +27,6 @@ namespace TRBot
     /// </summary>
     public sealed class SetMessageCommand : BaseCommand
     {
-        public const string MessageFile = "GameMessage.txt";
-
         public override void Initialize(CommandHandler commandHandler)
         {
             base.Initialize(commandHandler);
@@ -53,7 +51,7 @@ namespace TRBot
               2. Check the box labeled "Read from file"
               3. Browse and select the file
              */
-            if (Globals.SaveToTextFile(MessageFile, BotProgram.BotData.GameMessage) == false)
+            if (Globals.SaveToTextFile(Globals.GameMessageFilename, BotProgram.BotData.GameMessage) == false)
             {
                 BotProgram.QueueMessage($"Unable to save message to file");
             }

@@ -52,7 +52,17 @@ namespace TRBot
             /// <returns>A string representing current time.</returns>
             public static string GetFileFriendlyTimeStamp()
             {
-                string time = DateTime.Now.ToUniversalTime().ToString();
+                return GetFileFriendlyTimeStamp(DateTime.Now);
+            }
+
+            /// <summary>
+            /// Returns a file friendly time stamp of a given time.
+            /// </summary>
+            /// <param name="dateTime">The time stamp.</param>
+            /// <returns>A string representing current time.</returns>
+            public static string GetFileFriendlyTimeStamp(DateTime dateTime)
+            {
+                string time = dateTime.ToUniversalTime().ToString();
                 time = time.Replace(':', '-');
                 time = time.Replace('/', '-');
 

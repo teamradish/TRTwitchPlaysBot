@@ -88,11 +88,11 @@ namespace TRBot
             CommandDict.Add("log", new LogCommand());
             CommandDict.Add("viewlog", new ViewLogCommand());
             CommandDict.Add("numlogs", new NumLogsCommand());
-            CommandDict.Add("clearlogs", new ClearGameLogsCommand() { HiddenFromHelp = true });
+            CommandDict.Add("clearlogs", new ClearGameLogsCommand());
             CommandDict.Add("time", new TimeCommand());
             CommandDict.Add("length", new LengthCommand());
             CommandDict.Add("exec", new ExecCommand());
-            CommandDict.Add("sleep", new SetSleepCommand() { HiddenFromHelp = true });
+            CommandDict.Add("sleep", new SetSleepCommand());
             CommandDict.Add("setmessage", new SetMessageCommand());
             CommandDict.Add("viewmessage", new ViewMessageCommand());
             CommandDict.Add("silence", new SilenceCommand());
@@ -116,9 +116,10 @@ namespace TRBot
             //CommandDict.Add("achievements", new ListAchievementsCommand());
             //CommandDict.Add("achinfo", new AchievementInfoCommand());
             CommandDict.Add("exercise", new ExerciseCommand());
-            CommandDict.Add("listsyn", new ListInputSynonymCommand() { HiddenFromHelp = true });
-            CommandDict.Add("addsyn", new AddInputSynonymCommand() { HiddenFromHelp = true });
-            CommandDict.Add("removesyn", new RemoveInputSynonymCommand() { HiddenFromHelp = true });
+            CommandDict.Add("listsyn", new ListInputSynonymCommand());
+            CommandDict.Add("addsyn", new AddInputSynonymCommand());
+            CommandDict.Add("removesyn", new RemoveInputSynonymCommand());
+            CommandDict.Add("exportbotdata", new ExportBotDataCommand());
             CommandDict.Add("tutorial", new TutorialCommand());
 
             foreach (KeyValuePair<string, BaseCommand> command in CommandDict)
