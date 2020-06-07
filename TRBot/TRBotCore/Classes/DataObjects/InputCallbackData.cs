@@ -35,12 +35,12 @@ namespace TRBot
         {
             CallbackData = new Dictionary<string, InputCBWrapper>(16);
 
-            CallbackData["ss1"] = new InputCBWrapper(InputCBInvocation.Press | InputCBInvocation.Hold, InputCBTypes.SavestateLog1);
-            CallbackData["ss2"] = new InputCBWrapper(InputCBInvocation.Press | InputCBInvocation.Hold, InputCBTypes.SavestateLog2);
-            CallbackData["ss3"] = new InputCBWrapper(InputCBInvocation.Press | InputCBInvocation.Hold, InputCBTypes.SavestateLog3);
-            CallbackData["ss4"] = new InputCBWrapper(InputCBInvocation.Press | InputCBInvocation.Hold, InputCBTypes.SavestateLog4);
-            CallbackData["ss5"] = new InputCBWrapper(InputCBInvocation.Press | InputCBInvocation.Hold, InputCBTypes.SavestateLog5);
-            CallbackData["ss6"] = new InputCBWrapper(InputCBInvocation.Press | InputCBInvocation.Hold, InputCBTypes.SavestateLog6);
+            CallbackData["ss1"] = new InputCBWrapper(InputCBInvocation.Press | InputCBInvocation.Hold, InputCBTypes.SavestateLog, 1);
+            CallbackData["ss2"] = new InputCBWrapper(InputCBInvocation.Press | InputCBInvocation.Hold, InputCBTypes.SavestateLog, 2);
+            CallbackData["ss3"] = new InputCBWrapper(InputCBInvocation.Press | InputCBInvocation.Hold, InputCBTypes.SavestateLog, 3);
+            CallbackData["ss4"] = new InputCBWrapper(InputCBInvocation.Press | InputCBInvocation.Hold, InputCBTypes.SavestateLog, 4);
+            CallbackData["ss5"] = new InputCBWrapper(InputCBInvocation.Press | InputCBInvocation.Hold, InputCBTypes.SavestateLog, 5);
+            CallbackData["ss6"] = new InputCBWrapper(InputCBInvocation.Press | InputCBInvocation.Hold, InputCBTypes.SavestateLog, 6);
         }
 
         public void PopulateCBWithData()
@@ -69,7 +69,7 @@ namespace TRBot
                 string inputName = kvPair.Key;
                 InputCBWrapper cbWrapper = kvPair.Value;
 
-                Callbacks[inputName] = new InputCallback(inputName, cbWrapper.Invocation,
+                Callbacks[inputName] = new InputCallback(inputName, cbWrapper.Invocation, cbWrapper.CBValue,
                     InputCallback.GetCallbackForCBType(cbWrapper.CBType));
             }
         }
@@ -78,11 +78,17 @@ namespace TRBot
         {
             public InputCBInvocation Invocation;
             public InputCBTypes CBType;
+            
+            /// <summary>
+            /// The value associated with the callback.
+            /// </summary>
+            public object CBValue;
 
-            public InputCBWrapper(in InputCBInvocation invocation, in InputCBTypes cbType)
+            public InputCBWrapper(in InputCBInvocation invocation, in InputCBTypes cbType, object cbValue)
             {
                 Invocation = invocation;
                 CBType = cbType;
+                CBValue = cbValue;
             }
 
             public override bool Equals(object obj)
@@ -102,13 +108,14 @@ namespace TRBot
                     int hash = 31;
                     hash = (hash * 37) + Invocation.GetHashCode();
                     hash = (hash * 37) + CBType.GetHashCode();
+                    hash = (hash * 37) + ((CBValue == null) ? 0 : CBValue.GetHashCode());
                     return hash;
                 } 
             }
 
             public static bool operator==(InputCBWrapper a, InputCBWrapper b)
             {
-                return (a.Invocation == b.Invocation && a.CBType == b.CBType);
+                return (a.Invocation == b.Invocation && a.CBType == b.CBType && a.CBValue == b.CBValue);
             }
 
             public static bool operator!=(InputCBWrapper a, InputCBWrapper b)

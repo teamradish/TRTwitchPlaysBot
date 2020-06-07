@@ -25,16 +25,18 @@ namespace TRBot
     /// </summary>
     public class InputCallback
     {
-        public delegate void InputCB();
+        public delegate void InputCB(object cbValue);
 
         public readonly string Input = string.Empty;
         public readonly InputCBInvocation InvocationType = InputCBInvocation.None;
+        public readonly object CBValue = null;
         public readonly InputCB Callback = null;
 
-        public InputCallback(string input, in InputCBInvocation invocation, InputCB callback)
+        public InputCallback(string input, in InputCBInvocation invocation, object cbValue, InputCB callback)
         {
             Input = input;
             InvocationType = invocation;
+            CBValue = cbValue;
             Callback = callback;
         }
 
@@ -42,48 +44,21 @@ namespace TRBot
         {
             switch (cbType)
             {
-                case InputCBTypes.SavestateLog1: return SavestateLog1;
-                case InputCBTypes.SavestateLog2: return SavestateLog2;
-                case InputCBTypes.SavestateLog3: return SavestateLog3;
-                case InputCBTypes.SavestateLog4: return SavestateLog4;
-                case InputCBTypes.SavestateLog5: return SavestateLog5;
-                case InputCBTypes.SavestateLog6: return SavestateLog6;
+                case InputCBTypes.SavestateLog: return SavestateLog;
+                case InputCBTypes.BotMessage: return BotMessage;
                 default: return null;
             }
         }
 
-        public static void SavestateLog1()
+        public static void SavestateLog(object cbValue)
         {
-            SavestateLog(1);
-        }
+            if (cbValue == null || (cbValue is int) == false)
+            {
+                return;
+            } 
 
-        public static void SavestateLog2()
-        {
-            SavestateLog(2);
-        }
+            int stateNum = (int)cbValue;
 
-        public static void SavestateLog3()
-        {
-            SavestateLog(3);
-        }
-
-        public static void SavestateLog4()
-        {
-            SavestateLog(4);
-        }
-
-        public static void SavestateLog5()
-        {
-            SavestateLog(5);
-        }
-
-        public static void SavestateLog6()
-        {
-            SavestateLog(6);
-        }
-
-        public static void SavestateLog(in int stateNum)
-        {
             //Track the time of the savestate
             DateTime curTime = DateTime.UtcNow;
 
@@ -100,6 +75,18 @@ namespace TRBot
             //Add or replace the log and save the bot data
             BotProgram.BotData.SavestateLogs[stateNum] = newStateLog;
             BotProgram.SaveBotData();
+        }
+
+        public static void BotMessage(object cbValue)
+        {
+            string strVal = cbValue as string;
+
+            if (string.IsNullOrEmpty(strVal) == true)
+            {
+                return;
+            } 
+
+            BotProgram.QueueMessage(strVal);
         }
     }
 }

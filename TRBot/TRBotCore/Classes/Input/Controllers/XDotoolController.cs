@@ -213,12 +213,12 @@ namespace TRBot
                 //Invoke on press
                 if (input.hold == false && EnumUtility.HasEnumVal(invocation, (long)InputCBInvocation.Press) == true)
                 {
-                    cbData.Callback?.Invoke();
+                    cbData.Callback?.Invoke(cbData.CBValue);
                 }
                 //Invoke on hold
                 else if (input.hold == true && EnumUtility.HasEnumVal(invocation,(long)InputCBInvocation.Hold) == true)
                 {
-                    cbData.Callback?.Invoke();
+                    cbData.Callback?.Invoke(cbData.CBValue);
                 }
             }
         }
@@ -253,7 +253,7 @@ namespace TRBot
                 //Invoke on release
                 if (EnumUtility.HasEnumVal((long)cbData.InvocationType, (long)InputCBInvocation.Release) == true)
                 {
-                    cbData.Callback?.Invoke();
+                    cbData.Callback?.Invoke(cbData.CBValue);
                 }
             }
         }

@@ -37,11 +37,7 @@ namespace TRBot
     /// </summary>
     public enum InputCBTypes
     {
-        SavestateLog1 = 0,
-        SavestateLog2 = 1,
-        SavestateLog3 = 2,
-        SavestateLog4 = 3,
-        SavestateLog5 = 4,
-        SavestateLog6 = 5
+        SavestateLog = 0,
+        BotMessage = 1
     }
 }
