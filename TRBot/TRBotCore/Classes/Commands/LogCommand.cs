@@ -43,10 +43,21 @@ namespace TRBot
 
             DateTime curTime = DateTime.UtcNow;
 
+            User user = BotProgram.GetUser(e.Command.ChatMessage.Username, false);
+
+            string username = string.Empty;
+
             //Add a new log
             GameLog newLog = new GameLog();
             newLog.LogMessage = logMessage;
-            newLog.User = e.Command.ChatMessage.Username;
+
+            //If the user exists and isn't opted out of bot stats, add their name
+            if (user != null && user.OptedOut == false)
+            {
+                username = e.Command.ChatMessage.Username;
+            }
+
+            newLog.User = username;
 
             string date = curTime.ToShortDateString();
             string time = curTime.ToLongTimeString();

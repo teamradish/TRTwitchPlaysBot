@@ -63,7 +63,14 @@ namespace TRBot
 
             GameLog log = BotProgram.BotData.Logs[logNum];
 
-            BotProgram.QueueMessage($"{log.DateTimeString} (UTC) --> {log.User} : {log.LogMessage}");
+            if (string.IsNullOrEmpty(log.User) == false)
+            {
+                BotProgram.QueueMessage($"{log.DateTimeString} (UTC) --> {log.User} : {log.LogMessage}");
+            }
+            else
+            {
+                BotProgram.QueueMessage($"{log.DateTimeString} (UTC) --> {log.LogMessage}");
+            }
         }
     }
 }

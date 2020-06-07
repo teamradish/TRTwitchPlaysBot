@@ -48,8 +48,6 @@ namespace TRBot
         private void Initialize()
         {
             CommandDict.Add("help", new HelpCommand());
-            //CommandDict.Add("schedule", new ScheduleCommand());
-            //CommandDict.Add("suggestions", new SuggestionsCommand());
             CommandDict.Add("chat", new ChatBotCommand());
             CommandDict.Add("credits", new CreditsCommand());
             CommandDict.Add("transfer", new TransferCommand());
@@ -90,6 +88,7 @@ namespace TRBot
             CommandDict.Add("log", new LogCommand());
             CommandDict.Add("viewlog", new ViewLogCommand());
             CommandDict.Add("numlogs", new NumLogsCommand());
+            CommandDict.Add("clearlogs", new ClearGameLogsCommand() { HiddenFromHelp = true });
             CommandDict.Add("time", new TimeCommand());
             CommandDict.Add("length", new LengthCommand());
             CommandDict.Add("exec", new ExecCommand());
