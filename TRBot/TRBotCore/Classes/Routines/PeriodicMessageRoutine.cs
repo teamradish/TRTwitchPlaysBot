@@ -46,7 +46,12 @@ namespace TRBot
             {
                 if (clientService.IsConnected == true)
                 {
-                    BotProgram.MsgHandler.QueueMessage($"Hi! I'm {BotProgram.BotName} :D ! Use {Globals.CommandIdentifier}help to display a list of commands!");
+                    if (string.IsNullOrEmpty(BotProgram.BotSettings.PeriodicMessage) == false)
+                    {
+                        string finalMsg = BotProgram.BotSettings.PeriodicMessage.Replace("{0}", BotProgram.BotName).Replace("{1}", Globals.CommandIdentifier.ToString());
+                        BotProgram.MsgHandler.QueueMessage(finalMsg);
+                    }
+                    
                     CurMsgTime = currentTime;
                 }
             }

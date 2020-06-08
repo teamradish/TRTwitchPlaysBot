@@ -130,7 +130,7 @@ namespace TRBot
                 return;
             }
 
-            BotProgram.AddRoutine(new GroupBetRoutine(GroupBetMinutes));
+            BotProgram.RoutineHandler.AddRoutine(new GroupBetRoutine(GroupBetMinutes));
 
             BetStarted = true;
         }
@@ -143,7 +143,7 @@ namespace TRBot
                 return;
             }
 
-            BotProgram.RemoveRoutine(BotProgram.FindRoutine<GroupBetRoutine>());
+            BotProgram.RoutineHandler.RemoveRoutine(BotProgram.RoutineHandler.FindRoutine<GroupBetRoutine>());
 
             BetStarted = false;
         }

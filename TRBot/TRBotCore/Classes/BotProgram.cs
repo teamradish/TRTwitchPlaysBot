@@ -51,8 +51,7 @@ namespace TRBot
 
         private CommandHandler CommandHandler = null;
         public static BotMessageHandler MsgHandler { get; private set; } = null;
-
-        private List<BaseRoutine> BotRoutines = new List<BaseRoutine>(8);
+        public static BotRoutineHandler RoutineHandler { get; private set; } = null;
 
         public static string BotName
         {
@@ -88,10 +87,7 @@ namespace TRBot
 
             UnsubscribeEvents();
 
-            for (int i = 0; i < BotRoutines.Count; i++)
-            {
-                BotRoutines[i].CleanUp(ClientService);
-            }
+            RoutineHandler?.CleanUp();
 
             CommandHandler.CleanUp();
             ClientService?.CleanUp();
@@ -101,7 +97,7 @@ namespace TRBot
             if (ClientService?.IsConnected == true)
                 ClientService.Disconnect();
 
-            //Clean up and relinquish the devices when we're done
+            //Clean up and relinquish the virtual controllers when we're done
             InputGlobals.ControllerMngr?.CleanUp();
 
             instance = null;
@@ -164,27 +160,16 @@ namespace TRBot
             ClientService.Initialize();
 
             UnsubscribeEvents();
-
-            ClientService.EventHandler.UserSentMessageEvent += OnUserSentMessage;
-            ClientService.EventHandler.UserMadeInputEvent += OnUserMadeInput;
-            ClientService.EventHandler.UserNewlySubscribedEvent += OnNewSubscriber;
-            ClientService.EventHandler.UserReSubscribedEvent += OnReSubscriber;
-            ClientService.EventHandler.WhisperReceivedEvent += OnWhisperReceived;
-            ClientService.EventHandler.ChatCommandReceivedEvent += OnChatCommandReceived;
-            ClientService.EventHandler.OnJoinedChannelEvent += OnJoinedChannel;
-            ClientService.EventHandler.ChannelHostedEvent += OnBeingHosted;
-            ClientService.EventHandler.OnConnectedEvent += OnConnected;
-            ClientService.EventHandler.OnConnectionErrorEvent += OnConnectionError;
-            ClientService.EventHandler.OnReconnectedEvent += OnReconnected;
-            ClientService.EventHandler.OnDisconnectedEvent += OnDisconnected;
+            SubscribeEvents();
 
             //Set up message handler
             MsgHandler = new BotMessageHandler(ClientService, LoginInformation.ChannelName, BotSettings.MessageCooldown);
 
-            AddRoutine(new PeriodicMessageRoutine());
-            AddRoutine(new CreditsGiveRoutine());
-            AddRoutine(new ReconnectRoutine());
-            AddRoutine(new ChatBotResponseRoutine());
+            RoutineHandler = new BotRoutineHandler(ClientService);
+            RoutineHandler.AddRoutine(new PeriodicMessageRoutine());
+            RoutineHandler.AddRoutine(new CreditsGiveRoutine());
+            RoutineHandler.AddRoutine(new ReconnectRoutine());
+            RoutineHandler.AddRoutine(new ChatBotResponseRoutine());
 
             //Initialize controller input - validate the controller type first
             if (InputGlobals.IsVControllerSupported((InputGlobals.VControllerTypes)BotData.LastVControllerType) == false)
@@ -219,41 +204,10 @@ namespace TRBot
                 MsgHandler.Update(now);
 
                 //Update routines
-                for (int i = 0; i < BotRoutines.Count; i++)
-                {
-                    if (BotRoutines[i] == null)
-                    {
-                        Console.WriteLine($"NULL BOT ROUTINE AT {i} SOMEHOW!!");
-                        continue;
-                    }
-
-                    BotRoutines[i].UpdateRoutine(ClientService, now);
-                }
+                RoutineHandler.Update(now);
 
                 Thread.Sleep(BotSettings.MainThreadSleep);
             }
-        }
-
-        public static void AddRoutine(BaseRoutine routine)
-        {
-            routine.Initialize(ClientService);
-            instance.BotRoutines.Add(routine);
-        }
-
-        public static void RemoveRoutine(BaseRoutine routine)
-        {
-            routine.CleanUp(ClientService);
-            instance.BotRoutines.Remove(routine);
-        }
-
-        public static BaseRoutine FindRoutine<T>()
-        {
-            return instance.BotRoutines.Find((routine) => routine is T);
-        }
-
-        public static BaseRoutine FindRoutine(Predicate<BaseRoutine> predicate)
-        {
-            return instance.BotRoutines.Find(predicate);
         }
 
         private void UnsubscribeEvents()
@@ -270,6 +224,22 @@ namespace TRBot
             ClientService.EventHandler.OnConnectionErrorEvent -= OnConnectionError;
             ClientService.EventHandler.OnReconnectedEvent -= OnReconnected;
             ClientService.EventHandler.OnDisconnectedEvent -= OnDisconnected;
+        }
+
+        private void SubscribeEvents()
+        {
+            ClientService.EventHandler.UserSentMessageEvent += OnUserSentMessage;
+            ClientService.EventHandler.UserMadeInputEvent += OnUserMadeInput;
+            ClientService.EventHandler.UserNewlySubscribedEvent += OnNewSubscriber;
+            ClientService.EventHandler.UserReSubscribedEvent += OnReSubscriber;
+            ClientService.EventHandler.WhisperReceivedEvent += OnWhisperReceived;
+            ClientService.EventHandler.ChatCommandReceivedEvent += OnChatCommandReceived;
+            ClientService.EventHandler.OnJoinedChannelEvent += OnJoinedChannel;
+            ClientService.EventHandler.ChannelHostedEvent += OnBeingHosted;
+            ClientService.EventHandler.OnConnectedEvent += OnConnected;
+            ClientService.EventHandler.OnConnectionErrorEvent += OnConnectionError;
+            ClientService.EventHandler.OnReconnectedEvent += OnReconnected;
+            ClientService.EventHandler.OnDisconnectedEvent += OnDisconnected;
         }
 
 #region Events
@@ -542,11 +512,11 @@ namespace TRBot
             //{
             //    Console.WriteLine("No achievement data found; initializing template.");
             //    BotData.Achievements = new AchievementData();
-
+            //        
             //    //Add an example achievement
             //    BotData.Achievements.AchievementDict.Add("talkative", new Achievement("Talkative",
             //        "Say 500 messages in chat.", AchievementTypes.MsgCount, 500, 1000L)); 
-
+            //        
             //    //Save the achievement template
             //    string text = JsonConvert.SerializeObject(BotData.Achievements, Formatting.Indented);
             //    if (string.IsNullOrEmpty(text) == false)
@@ -570,6 +540,9 @@ namespace TRBot
 
         public class Settings
         {
+            /// <summary>
+            /// The time, in minutes, for outputting the periodic message.
+            /// </summary>
             public int MessageTime = 30;
             public double MessageCooldown = 1000d;
             public double CreditsTime = 2d;
@@ -591,7 +564,15 @@ namespace TRBot
             /// <summary>
             /// The message to send when the bot connects to a channel. "{0}" is replaced with the name of the bot and "{1}" is replaced with the command identifier.
             /// </summary>
+            /// <para>Set empty to display no message upon connecting.</para>
             public string ConnectMessage = "{0} has connected :D ! Use {1}help to display a list of commands and {1}tutorial to see how to play! Original input parser by Jdog, aka TwitchPlays_Everything, converted to C# & improved by the community.";
+
+            /// <summary>
+            /// The message to send periodically according to <see cref="MessageTime"/>.
+            /// "{0}" is replaced with the name of the bot and "{1}" is replaced with the command identifier.
+            /// </summary>
+            /// <para>Set empty to display no messages in the interval.</para>
+            public string PeriodicMessage = "Hi! I'm {0} :D ! Use {1}help to display a list of commands!";
 
             /// <summary>
             /// If true, automatically whitelists users if conditions are met, including the command count.
