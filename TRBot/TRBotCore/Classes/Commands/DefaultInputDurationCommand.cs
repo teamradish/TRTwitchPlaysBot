@@ -34,7 +34,7 @@ namespace TRBot
 
             if (args.Count == 0)
             {
-                BotProgram.QueueMessage($"The default duration of an input is {BotProgram.BotData.DefaultInputDuration} milliseconds!");
+                BotProgram.MsgHandler.QueueMessage($"The default duration of an input is {BotProgram.BotData.DefaultInputDuration} milliseconds!");
                 return;
             }
 
@@ -43,38 +43,38 @@ namespace TRBot
             //Disallow setting the duration if the user doesn't have a sufficient access level
             if (user.Level < SetAccessLevel)
             {
-                BotProgram.QueueMessage(CommandHandler.INVALID_ACCESS_MESSAGE);
+                BotProgram.MsgHandler.QueueMessage(CommandHandler.INVALID_ACCESS_MESSAGE);
                 return;
             }
 
             if (args.Count > 1)
             {
-                BotProgram.QueueMessage($"Usage: \"duration (ms)\"");
+                BotProgram.MsgHandler.QueueMessage($"Usage: \"duration (ms)\"");
                 return;
             }
 
             if (int.TryParse(args[0], out int newDefaultDur) == false)
             {
-                BotProgram.QueueMessage("Please enter a valid number!");
+                BotProgram.MsgHandler.QueueMessage("Please enter a valid number!");
                 return;
             }
 
             if (newDefaultDur < 0)
             {
-                BotProgram.QueueMessage("Cannot set a negative duration!");
+                BotProgram.MsgHandler.QueueMessage("Cannot set a negative duration!");
                 return;
             }
 
             if (newDefaultDur == BotProgram.BotData.DefaultInputDuration)
             {
-                BotProgram.QueueMessage("The duration is already this value!");
+                BotProgram.MsgHandler.QueueMessage("The duration is already this value!");
                 return;
             }
 
             BotProgram.BotData.DefaultInputDuration = newDefaultDur;
             BotProgram.SaveBotData();
 
-            BotProgram.QueueMessage($"Set default input duration to {newDefaultDur} milliseconds!");
+            BotProgram.MsgHandler.QueueMessage($"Set default input duration to {newDefaultDur} milliseconds!");
         }
     }
 }

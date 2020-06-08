@@ -61,13 +61,13 @@ namespace TRBot
 
             if (medianIndex >= allCredits.Count)
             {
-                BotProgram.QueueMessage("Sorry, there's not enough data in the credits database for that!");
+                BotProgram.MsgHandler.QueueMessage("Sorry, there's not enough data in the credits database for that!");
             }
             else
             {
                 long median = allCredits[medianIndex].Item2;
 
-                BotProgram.QueueMessage($"The median number of credits in the database is {median}!");
+                BotProgram.MsgHandler.QueueMessage($"The median number of credits in the database is {median}!");
             }
         }
 

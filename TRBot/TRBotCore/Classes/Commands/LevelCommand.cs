@@ -32,7 +32,7 @@ namespace TRBot
 
             if (args.Count > 1)
             {
-                BotProgram.QueueMessage($"{Globals.CommandIdentifier}level usage: \"username (optional)\"");
+                BotProgram.MsgHandler.QueueMessage($"{Globals.CommandIdentifier}level usage: \"username (optional)\"");
                 return;
             }
 
@@ -41,11 +41,11 @@ namespace TRBot
 
             if (levelUser == null)
             {
-                BotProgram.QueueMessage($"User does not exist in database!");
+                BotProgram.MsgHandler.QueueMessage($"User does not exist in database!");
                 return;
             }
 
-            BotProgram.QueueMessage($"{levelUsername} is level {levelUser.Level}, {((AccessLevels.Levels)levelUser.Level)}!");
+            BotProgram.MsgHandler.QueueMessage($"{levelUsername} is level {levelUser.Level}, {((AccessLevels.Levels)levelUser.Level)}!");
         }
     }
 }

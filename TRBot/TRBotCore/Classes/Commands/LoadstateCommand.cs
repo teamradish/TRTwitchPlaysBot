@@ -36,7 +36,7 @@ namespace TRBot
 
             if (args.Count != 1)
             {
-                BotProgram.QueueMessage("Usage: state #");
+                BotProgram.MsgHandler.QueueMessage("Usage: state #");
                 return;
             }
 
@@ -44,14 +44,14 @@ namespace TRBot
 
             if (int.TryParse(stateNumStr, out int stateNum) == false)
             {
-                BotProgram.QueueMessage($"Invalid state number.");
+                BotProgram.MsgHandler.QueueMessage($"Invalid state number.");
                 return;
             }
 
             string loadStateStr = $"ls{stateNum}";
             if (InputGlobals.CurrentConsole.ButtonInputMap.ContainsKey(loadStateStr) == false)
             {
-                BotProgram.QueueMessage($"Invalid state number.");
+                BotProgram.MsgHandler.QueueMessage($"Invalid state number.");
                 return;
             }
 
@@ -65,7 +65,7 @@ namespace TRBot
             {
                 if (string.IsNullOrEmpty(inputValidation.Message) == false)
                 {
-                    BotProgram.QueueMessage(inputValidation.Message);
+                    BotProgram.MsgHandler.QueueMessage(inputValidation.Message);
                 }
 
                 return;
@@ -76,7 +76,7 @@ namespace TRBot
             joystick.PressButton(InputGlobals.CurrentConsole.ButtonInputMap[loadStateStr]);
             joystick.UpdateController();
 
-            BotProgram.QueueMessage($"Loaded state {stateNum}!");
+            BotProgram.MsgHandler.QueueMessage($"Loaded state {stateNum}!");
 
             //Wait a bit before releasing the input
             const float wait = 50f;

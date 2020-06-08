@@ -48,7 +48,7 @@ namespace TRBot
 
             if (args.Count != 1)
             {
-                BotProgram.QueueMessage($"Enter \"{ConfirmationArg}\" as an argument to confirm exporting a copy of the bot data.");
+                BotProgram.MsgHandler.QueueMessage($"Enter \"{ConfirmationArg}\" as an argument to confirm exporting a copy of the bot data.");
                 return;
             }
 
@@ -56,7 +56,7 @@ namespace TRBot
 
             if (arg != ConfirmationArg)
             {
-                BotProgram.QueueMessage($"Enter \"{ConfirmationArg}\" as an argument to confirm exporting a copy of the bot data.");
+                BotProgram.MsgHandler.QueueMessage($"Enter \"{ConfirmationArg}\" as an argument to confirm exporting a copy of the bot data.");
                 return;
             }
 
@@ -73,7 +73,7 @@ namespace TRBot
                     //Double check if the directory exists - don't overwrite anything if it does
                     if (Directory.Exists(dirPath) == true)
                     {
-                        BotProgram.QueueMessage("ERROR - Path for bot data export already exists, not overwriting.");
+                        BotProgram.MsgHandler.QueueMessage("ERROR - Path for bot data export already exists, not overwriting.");
                         return;
                     }
 
@@ -90,7 +90,7 @@ namespace TRBot
                 }
                 catch (Exception exc)
                 {
-                    BotProgram.QueueMessage($"ERROR - Failed to export bot data: {exc.Message}");
+                    BotProgram.MsgHandler.QueueMessage($"ERROR - Failed to export bot data: {exc.Message}");
                     return;
                 }
             }

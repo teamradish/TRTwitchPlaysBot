@@ -39,7 +39,7 @@ namespace TRBot
         {
             if (BotProgram.BotSettings.UseChatBot == false)
             {
-                BotProgram.QueueMessage("The streamer is not currently using a chatbot!");
+                BotProgram.MsgHandler.QueueMessage("The streamer is not currently using a chatbot!");
                 return;
             }
             
@@ -48,13 +48,13 @@ namespace TRBot
             //The user needs to send a prompt to the bot
             if (string.IsNullOrEmpty(question) == true)
             {
-                BotProgram.QueueMessage("Usage: \"prompt/question\"");
+                BotProgram.MsgHandler.QueueMessage("Usage: \"prompt/question\"");
                 return;
             }
 
             if (Globals.SaveToTextFile(Globals.ChatBotPromptFilename, question) == false)
             {
-                BotProgram.QueueMessage("Error saving question to prompt file.");
+                BotProgram.MsgHandler.QueueMessage("Error saving question to prompt file.");
                 return;
             }
         }

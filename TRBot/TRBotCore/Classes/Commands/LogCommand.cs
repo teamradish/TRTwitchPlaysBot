@@ -37,7 +37,7 @@ namespace TRBot
 
             if (string.IsNullOrEmpty(logMessage) == true)
             {
-                BotProgram.QueueMessage("Please enter a message for the log.");
+                BotProgram.MsgHandler.QueueMessage("Please enter a message for the log.");
                 return;
             }
 
@@ -66,7 +66,7 @@ namespace TRBot
             BotProgram.BotData.Logs.Add(newLog);
             BotProgram.SaveBotData();
 
-            BotProgram.QueueMessage("Successfully logged message!");
+            BotProgram.MsgHandler.QueueMessage("Successfully logged message!");
         }
     }
 }

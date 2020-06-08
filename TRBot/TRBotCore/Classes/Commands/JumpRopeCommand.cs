@@ -57,11 +57,11 @@ namespace TRBot
                     BotProgram.BotData.JRData.Streak = JumpRopeCount;
                     BotProgram.SaveBotData();
 
-                    BotProgram.QueueMessage($"Ouch! I tripped and fell after {JumpRopeCount} attempt(s) at Jump Rope! Wow, it's a new record!");
+                    BotProgram.MsgHandler.QueueMessage($"Ouch! I tripped and fell after {JumpRopeCount} attempt(s) at Jump Rope! Wow, it's a new record!");
                 }
                 else
                 {
-                    BotProgram.QueueMessage($"Ouch! I tripped and fell after {JumpRopeCount} attempt(s) at Jump Rope!");
+                    BotProgram.MsgHandler.QueueMessage($"Ouch! I tripped and fell after {JumpRopeCount} attempt(s) at Jump Rope!");
                 }
 
                 JumpRopeCount = 0;
@@ -71,7 +71,7 @@ namespace TRBot
             else
             {
                 JumpRopeCount++;
-                BotProgram.QueueMessage($"Yay :D I succeeded in Jump Rope {JumpRopeCount} time(s) in a row!");
+                BotProgram.MsgHandler.QueueMessage($"Yay :D I succeeded in Jump Rope {JumpRopeCount} time(s) in a row!");
             }
         }
     }

@@ -100,11 +100,11 @@ namespace TRBot
             {
                 if (i == 0)
                 {
-                    BotProgram.QueueMessage($"{InitMessage}{MultiMessageCache[i]}");
+                    BotProgram.MsgHandler.QueueMessage($"{InitMessage}{MultiMessageCache[i]}");
                 }
                 else
                 {
-                    BotProgram.QueueMessage(MultiMessageCache[i]);
+                    BotProgram.MsgHandler.QueueMessage(MultiMessageCache[i]);
                 }
             }
         }

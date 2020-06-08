@@ -166,7 +166,7 @@ namespace TRBot
                 startMessage = "A vJoy device has been added!";
             }
 
-            BotProgram.QueueMessage($"{startMessage} {nameof(first)}: {first} | {nameof(userData)}: {userData}");
+            BotProgram.MsgHandler.QueueMessage($"{startMessage} {nameof(first)}: {first} | {nameof(userData)}: {userData}");
         }
 
         public void CheckDeviceIDState(in uint deviceID)

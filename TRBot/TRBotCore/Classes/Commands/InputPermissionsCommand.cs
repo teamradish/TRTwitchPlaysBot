@@ -38,7 +38,7 @@ namespace TRBot
             //See the permissions
             if (args.Count == 0)
             {
-                BotProgram.QueueMessage($"Inputs are allowed for {(AccessLevels.Levels)BotProgram.BotData.InputPermissions} and above. To set the permissions, add one as an argument: {GetValidPermsStr()}");
+                BotProgram.MsgHandler.QueueMessage($"Inputs are allowed for {(AccessLevels.Levels)BotProgram.BotData.InputPermissions} and above. To set the permissions, add one as an argument: {GetValidPermsStr()}");
                 return;
             }
 
@@ -46,7 +46,7 @@ namespace TRBot
 
             if (Enum.TryParse<AccessLevels.Levels>(permsStr, true, out AccessLevels.Levels perm) == false)
             {
-                BotProgram.QueueMessage($"Please enter a valid permission: {GetValidPermsStr()}");
+                BotProgram.MsgHandler.QueueMessage($"Please enter a valid permission: {GetValidPermsStr()}");
                 return;
             }
 
@@ -54,20 +54,20 @@ namespace TRBot
 
             if (permissionLvl == BotProgram.BotData.InputPermissions)
             {
-                BotProgram.QueueMessage($"The permissions are already {(AccessLevels.Levels)BotProgram.BotData.InputPermissions}!");
+                BotProgram.MsgHandler.QueueMessage($"The permissions are already {(AccessLevels.Levels)BotProgram.BotData.InputPermissions}!");
                 return;
             }
 
             if (permissionLvl < (int)AccessLevels.Levels.User || permissionLvl > (int)AccessLevels.Levels.Admin)
             {
-                BotProgram.QueueMessage("Invalid permission level!");
+                BotProgram.MsgHandler.QueueMessage("Invalid permission level!");
                 return;
             }
 
             BotProgram.BotData.InputPermissions = permissionLvl;
             BotProgram.SaveBotData();
 
-            BotProgram.QueueMessage($"Set input permissions to {(AccessLevels.Levels)BotProgram.BotData.InputPermissions} and above!");
+            BotProgram.MsgHandler.QueueMessage($"Set input permissions to {(AccessLevels.Levels)BotProgram.BotData.InputPermissions} and above!");
         }
 
         private string GetValidPermsStr()

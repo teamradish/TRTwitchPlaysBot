@@ -39,7 +39,7 @@ namespace TRBot
 
             if (args.Count != 1)
             {
-                BotProgram.QueueMessage("Usage: \"username\"");
+                BotProgram.MsgHandler.QueueMessage("Usage: \"username\"");
                 return;
             }
 
@@ -47,7 +47,7 @@ namespace TRBot
             string selfName = e.Command.ChatMessage.Username.ToLowerInvariant();
             if (silencedName == selfName)
             {
-                BotProgram.QueueMessage("No use in silencing yourself, silly!");
+                BotProgram.MsgHandler.QueueMessage("No use in silencing yourself, silly!");
                 return;
             }
 
@@ -55,13 +55,13 @@ namespace TRBot
 
             if (user == null)
             {
-                BotProgram.QueueMessage($"User does not exist in database!");
+                BotProgram.MsgHandler.QueueMessage($"User does not exist in database!");
                 return;
             }
 
             if (user.Silenced == true)
             {
-                BotProgram.QueueMessage($"User {silencedName} is already silenced!");
+                BotProgram.MsgHandler.QueueMessage($"User {silencedName} is already silenced!");
                 return;
             }
 
@@ -69,7 +69,7 @@ namespace TRBot
             User selfUser = BotProgram.GetUser(selfName);
             if (selfUser.Level <= user.Level)
             {
-                BotProgram.QueueMessage($"Cannot silence a user at or above your access level!");
+                BotProgram.MsgHandler.QueueMessage($"Cannot silence a user at or above your access level!");
                 return;
             }
 
@@ -77,7 +77,7 @@ namespace TRBot
             BotProgram.BotData.SilencedUsers.Add(silencedName);
             BotProgram.SaveBotData();
 
-            BotProgram.QueueMessage($"User {silencedName} has been silenced and thus prevented from performing inputs.");
+            BotProgram.MsgHandler.QueueMessage($"User {silencedName} has been silenced and thus prevented from performing inputs.");
         }
     }
 }

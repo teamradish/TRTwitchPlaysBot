@@ -71,7 +71,7 @@ namespace TRBot
                 
                 if (string.IsNullOrEmpty(text) == false)
                 {
-                    BotProgram.QueueMessage(text);
+                    BotProgram.MsgHandler.QueueMessage(text);
                 }
             }
         }

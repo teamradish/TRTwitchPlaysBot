@@ -40,11 +40,11 @@ namespace TRBot
         {
             if (string.IsNullOrEmpty(BotProgram.BotData.InfoMessage) == true)
             {
-                BotProgram.QueueMessage(EmptyMessage);
+                BotProgram.MsgHandler.QueueMessage(EmptyMessage);
                 return;
             }
 
-            BotProgram.QueueMessage(BotProgram.BotData.InfoMessage);
+            BotProgram.MsgHandler.QueueMessage(BotProgram.BotData.InfoMessage);
         }
     }
 }

@@ -39,7 +39,7 @@ namespace TRBot
 
             if (args.Count != 1)
             {
-                BotProgram.QueueMessage("Usage: \"username\"");
+                BotProgram.MsgHandler.QueueMessage("Usage: \"username\"");
                 return;
             }
 
@@ -47,7 +47,7 @@ namespace TRBot
             string selfName = e.Command.ChatMessage.Username.ToLowerInvariant();
             if (unsilencedName == selfName)
             {
-                BotProgram.QueueMessage("Nice try.");
+                BotProgram.MsgHandler.QueueMessage("Nice try.");
                 return;
             }
 
@@ -55,13 +55,13 @@ namespace TRBot
 
             if (user == null)
             {
-                BotProgram.QueueMessage($"User does not exist in database!");
+                BotProgram.MsgHandler.QueueMessage($"User does not exist in database!");
                 return;
             }
 
             if (user.Silenced == false)
             {
-                BotProgram.QueueMessage($"User {unsilencedName} is not silenced!");
+                BotProgram.MsgHandler.QueueMessage($"User {unsilencedName} is not silenced!");
                 return;
             }
 
@@ -69,7 +69,7 @@ namespace TRBot
             User selfUser = BotProgram.GetUser(selfName);
             if (selfUser.Level <= user.Level)
             {
-                BotProgram.QueueMessage($"Cannot unsilence a user at or above your access level!");
+                BotProgram.MsgHandler.QueueMessage($"Cannot unsilence a user at or above your access level!");
                 return;
             }
             
@@ -77,7 +77,7 @@ namespace TRBot
             BotProgram.BotData.SilencedUsers.Remove(unsilencedName);
             BotProgram.SaveBotData();
 
-            BotProgram.QueueMessage($"User {unsilencedName} has been unsilenced and can perform inputs once again.");
+            BotProgram.MsgHandler.QueueMessage($"User {unsilencedName} has been unsilenced and can perform inputs once again.");
         }
     }
 }

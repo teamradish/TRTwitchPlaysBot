@@ -39,36 +39,36 @@ namespace TRBot
 
             if (args.Count != 1)
             {
-                BotProgram.QueueMessage($"Usage: \"# of controllers (min: {InputGlobals.ControllerMngr.MinControllers}, max: {InputGlobals.ControllerMngr.MaxControllers})\"");
+                BotProgram.MsgHandler.QueueMessage($"Usage: \"# of controllers (min: {InputGlobals.ControllerMngr.MinControllers}, max: {InputGlobals.ControllerMngr.MaxControllers})\"");
                 return;
             }
 
             if (int.TryParse(args[0], out int newJoystickCount) == false)
             {
-                BotProgram.QueueMessage("Invalid number of controllers!");
+                BotProgram.MsgHandler.QueueMessage("Invalid number of controllers!");
                 return;
             }
 
             if (newJoystickCount < InputGlobals.ControllerMngr.MinControllers)
             {
-                BotProgram.QueueMessage($"Value is less than {InputGlobals.ControllerMngr.MinControllers}!");
+                BotProgram.MsgHandler.QueueMessage($"Value is less than {InputGlobals.ControllerMngr.MinControllers}!");
                 return;
             }
 
             if (newJoystickCount > InputGlobals.ControllerMngr.MaxControllers)
             {
-                BotProgram.QueueMessage($"Value is greater than {InputGlobals.ControllerMngr.MaxControllers}, which is the max number of supported controllers!");
+                BotProgram.MsgHandler.QueueMessage($"Value is greater than {InputGlobals.ControllerMngr.MaxControllers}, which is the max number of supported controllers!");
                 return;
             }
 
             if (newJoystickCount == BotProgram.BotData.JoystickCount)
             {
-                BotProgram.QueueMessage("There are already that many controllers plugged in!");
+                BotProgram.MsgHandler.QueueMessage("There are already that many controllers plugged in!");
                 return;
             }
 
             //We changed count, so let's stop all inputs and reinitialize the devices
-            BotProgram.QueueMessage($"Changing controller count from {BotProgram.BotData.JoystickCount} to {newJoystickCount}. Stopping all inputs and reinitializing.");
+            BotProgram.MsgHandler.QueueMessage($"Changing controller count from {BotProgram.BotData.JoystickCount} to {newJoystickCount}. Stopping all inputs and reinitializing.");
 
             InputHandler.CancelRunningInputs();
 
@@ -116,7 +116,7 @@ namespace TRBot
 
                 if (sw.ElapsedMilliseconds >= timeOut)
                 {
-                    BotProgram.QueueMessage($"ERROR: Unable to free all virtual controllers. {freeCount}/{InputGlobals.ControllerMngr.ControllerCount} freed.");
+                    BotProgram.MsgHandler.QueueMessage($"ERROR: Unable to free all virtual controllers. {freeCount}/{InputGlobals.ControllerMngr.ControllerCount} freed.");
                     break;
                 }
             }
@@ -140,7 +140,7 @@ namespace TRBot
             BotProgram.BotData.JoystickCount = newJoystickCount;
             BotProgram.SaveBotData();
 
-            BotProgram.QueueMessage("Controllers reinitialized and inputs resumed!");
+            BotProgram.MsgHandler.QueueMessage("Controllers reinitialized and inputs resumed!");
         }
     }
 }

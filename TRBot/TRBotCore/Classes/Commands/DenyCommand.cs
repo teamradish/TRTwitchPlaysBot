@@ -44,15 +44,15 @@ namespace TRBot
 
                 if (diff.TotalMinutes >= DuelCommand.DUEL_MINUTES)
                 {
-                    BotProgram.QueueMessage("You are not in a duel or your duel has expired!");
+                    BotProgram.MsgHandler.QueueMessage("You are not in a duel or your duel has expired!");
                     return;
                 }
 
-                BotProgram.QueueMessage($"{name} has denied to duel with {data.UserDueling} and miss out on a potential {data.BetAmount} credit(s)!");
+                BotProgram.MsgHandler.QueueMessage($"{name} has denied to duel with {data.UserDueling} and miss out on a potential {data.BetAmount} credit(s)!");
             }
             else
             {
-                BotProgram.QueueMessage("You are not in a duel or your duel has expired!");
+                BotProgram.MsgHandler.QueueMessage("You are not in a duel or your duel has expired!");
             }
         }
     }

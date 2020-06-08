@@ -39,7 +39,7 @@ namespace TRBot
 
             if (argList.Count <= 1 || argList.Count >= 3)
             {
-                BotProgram.QueueMessage("I'm sorry; please enter a range of two whole numbers!");
+                BotProgram.MsgHandler.QueueMessage("I'm sorry; please enter a range of two whole numbers!");
             }
             else
             {
@@ -49,11 +49,11 @@ namespace TRBot
                     int max = Math.Max(num1, num2);
 
                     int randNum = Rand.Next(min, max);
-                    BotProgram.QueueMessage($"The random number between {min} and {max} is: {randNum}! Play again!");
+                    BotProgram.MsgHandler.QueueMessage($"The random number between {min} and {max} is: {randNum}! Play again!");
                 }
                 else
                 {
-                    BotProgram.QueueMessage("I'm sorry; please enter a range of two whole numbers!");
+                    BotProgram.MsgHandler.QueueMessage("I'm sorry; please enter a range of two whole numbers!");
                 }
             }
         }

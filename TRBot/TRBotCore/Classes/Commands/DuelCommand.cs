@@ -39,7 +39,7 @@ namespace TRBot
 
             if (args == null || args.Count != 2)
             {
-                BotProgram.QueueMessage("Please specify a single user to duel followed by the bet amount!");
+                BotProgram.MsgHandler.QueueMessage("Please specify a single user to duel followed by the bet amount!");
                 return;
             }
 
@@ -51,7 +51,7 @@ namespace TRBot
 
             if (duelerToLower == usertoLower)
             {
-                BotProgram.QueueMessage("You cannot duel yourself!");
+                BotProgram.MsgHandler.QueueMessage("You cannot duel yourself!");
                 return;
             }
 
@@ -62,19 +62,19 @@ namespace TRBot
 
             if (cmdUser == null)
             {
-                BotProgram.QueueMessage($"{user} is not in the database!");
+                BotProgram.MsgHandler.QueueMessage($"{user} is not in the database!");
                 return;
             }
 
             if (duelerUser.OptedOut == true)
             {
-                BotProgram.QueueMessage("You can't duel if you're opted out of bot stats!");
+                BotProgram.MsgHandler.QueueMessage("You can't duel if you're opted out of bot stats!");
                 return;
             }
 
             if (cmdUser.OptedOut == true)
             {
-                BotProgram.QueueMessage("The one you're attempting to duel is opted out of bot stats!");
+                BotProgram.MsgHandler.QueueMessage("The one you're attempting to duel is opted out of bot stats!");
                 return;
             }
 
@@ -89,7 +89,7 @@ namespace TRBot
                 }
                 else
                 {
-                    BotProgram.QueueMessage($"You're still waiting on a duel response from {user}!");
+                    BotProgram.MsgHandler.QueueMessage($"You're still waiting on a duel response from {user}!");
                     return;
                 }
             }
@@ -98,20 +98,20 @@ namespace TRBot
             bool success = long.TryParse(args[1], out betAmount);
             if (success == false || betAmount <= 0)
             {
-                BotProgram.QueueMessage("Please specify a positive whole number of credits greater than 0!");
+                BotProgram.MsgHandler.QueueMessage("Please specify a positive whole number of credits greater than 0!");
                 return;
             }
 
             if (duelerUser.Credits < betAmount || cmdUser.Credits < betAmount)
             {
-                BotProgram.QueueMessage("Either you or the one you're dueling does not have enough credits for this duel!");
+                BotProgram.MsgHandler.QueueMessage("Either you or the one you're dueling does not have enough credits for this duel!");
                 return;
             }
 
             //Add to the duel requests
             DuelRequests.Add(usertoLower, new DuelData(dueler, betAmount, DateTime.Now));
 
-            BotProgram.QueueMessage($"{dueler} has requested to duel {user} for {betAmount} credit(s)! Type {Globals.CommandIdentifier}accept to duel or {Globals.CommandIdentifier}deny to refuse. The duel expires in {DUEL_MINUTES} minute(s)!");
+            BotProgram.MsgHandler.QueueMessage($"{dueler} has requested to duel {user} for {betAmount} credit(s)! Type {Globals.CommandIdentifier}accept to duel or {Globals.CommandIdentifier}deny to refuse. The duel expires in {DUEL_MINUTES} minute(s)!");
         }
 
         public struct DuelData

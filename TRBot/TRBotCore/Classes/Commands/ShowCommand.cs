@@ -32,7 +32,7 @@ namespace TRBot
 
             if (args.Count != 1)
             {
-                BotProgram.QueueMessage($"{Globals.CommandIdentifier}show usage: \"macroname\"");
+                BotProgram.MsgHandler.QueueMessage($"{Globals.CommandIdentifier}show usage: \"macroname\"");
                 return;
             }
 
@@ -40,11 +40,11 @@ namespace TRBot
 
             if (BotProgram.BotData.Macros.TryGetValue(macroName, out string macroVal) == false)
             {
-                BotProgram.QueueMessage($"{macroName} not found.");
+                BotProgram.MsgHandler.QueueMessage($"{macroName} not found.");
                 return;
             }
 
-            BotProgram.QueueMessage($"{macroName} = {macroVal}");
+            BotProgram.MsgHandler.QueueMessage($"{macroName} = {macroVal}");
         }
     }
 }

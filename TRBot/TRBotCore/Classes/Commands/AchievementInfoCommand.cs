@@ -35,7 +35,7 @@ namespace TRBot
             string args = e.Command.ArgumentsAsString.ToLower();
             if (BotProgram.BotData.Achievements.AchievementDict.TryGetValue(args, out Achievement achievement) == false)
             {
-                BotProgram.QueueMessage("There are no achievements with that name!");
+                BotProgram.MsgHandler.QueueMessage("There are no achievements with that name!");
                 return;
             }
 
@@ -53,7 +53,7 @@ namespace TRBot
                 achStr += " | " + achievement.CreditReward.ToString() + " credit reward.";
             }
 
-            BotProgram.QueueMessage(achStr);
+            BotProgram.MsgHandler.QueueMessage(achStr);
         }
     }
 }

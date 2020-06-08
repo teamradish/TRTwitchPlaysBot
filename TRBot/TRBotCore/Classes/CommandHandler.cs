@@ -166,7 +166,7 @@ namespace TRBot
                 }
                 else
                 {
-                    BotProgram.QueueMessage(INVALID_ACCESS_MESSAGE);
+                    BotProgram.MsgHandler.QueueMessage(INVALID_ACCESS_MESSAGE);
                 }
             }
         }

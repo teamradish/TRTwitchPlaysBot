@@ -32,7 +32,7 @@ namespace TRBot
 
             if (args.Count > 1)
             {
-                BotProgram.QueueMessage("Usage: \"username\"");
+                BotProgram.MsgHandler.QueueMessage("Usage: \"username\"");
                 return;
             }
 
@@ -52,18 +52,18 @@ namespace TRBot
 
             if (user == null)
             {
-                BotProgram.QueueMessage("User does not exist in database!");
+                BotProgram.MsgHandler.QueueMessage("User does not exist in database!");
                 return;
             }
 
             if (user.OptedOut == true)
             {
-                BotProgram.QueueMessage($"User: {user.Name} | Level: {user.Level}");
+                BotProgram.MsgHandler.QueueMessage($"User: {user.Name} | Level: {user.Level}");
                 return;
             }
 
             //Print the user's information
-            BotProgram.QueueMessage($"User: {user.Name} | Level: {user.Level} | Total Inputs: {user.ValidInputs} | Total Messages: {user.TotalMessages}");
+            BotProgram.MsgHandler.QueueMessage($"User: {user.Name} | Level: {user.Level} | Total Inputs: {user.ValidInputs} | Total Messages: {user.TotalMessages}");
         }
     }
 }

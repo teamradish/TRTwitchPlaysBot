@@ -15,7 +15,7 @@ The bot is inspired by TwitchPlays_Everything; the input syntax allows for great
 * Several additional bot goodies and games, such as dueling, jump rope, and memes
 
 ## Getting Started
-Instructions for building and setting up the bot can be found on the [wiki](https://github.com/teamradish/TRTwitchPlaysBot/wiki).
+Instructions for building and setting up the bot can be found on the [wiki](https://github.com/teamradish/TRTwitchPlaysBot/wiki/Getting-Started).
 
 ## See it in action
 Want to see what players can do with TRBot? Head over to the wiki's [examples](https://github.com/teamradish/TRTwitchPlaysBot/wiki/Real-Usage-Examples) page to see clips from real playthroughs.

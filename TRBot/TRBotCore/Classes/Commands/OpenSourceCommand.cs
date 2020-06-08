@@ -25,7 +25,7 @@ namespace TRBot
     {
         public override void ExecuteCommand(EvtChatCommandArgs e)
         {
-            BotProgram.QueueMessage("This bot is libre software licensed under AGPL v3.0. The source code repository and full license terms are here: https://github.com/teamradish/TRTwitchPlaysBot - Ask the streamer to learn about their bot modifications, if any.");
+            BotProgram.MsgHandler.QueueMessage("This bot is libre software licensed under AGPL v3.0. The source code repository and full license terms are here: https://github.com/teamradish/TRTwitchPlaysBot - Ask the streamer to learn about their bot modifications, if any.");
         }
     }
 }

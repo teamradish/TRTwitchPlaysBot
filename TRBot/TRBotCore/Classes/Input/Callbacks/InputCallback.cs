@@ -86,7 +86,7 @@ namespace TRBot
                 return;
             } 
 
-            BotProgram.QueueMessage(strVal);
+            BotProgram.MsgHandler.QueueMessage(strVal);
         }
     }
 }

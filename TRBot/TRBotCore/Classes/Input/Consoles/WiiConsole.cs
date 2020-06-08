@@ -125,7 +125,7 @@ namespace TRBot
                 //Check for enum mode
                 if (Enum.TryParse(arguments[i], true, out WiiInputExtensions extension) == false)
                 {
-                    BotProgram.QueueMessage("Invalid input extension argument for the Wii.");
+                    BotProgram.MsgHandler.QueueMessage("Invalid input extension argument for the Wii.");
                     break;
                 }
 
@@ -133,12 +133,12 @@ namespace TRBot
 
                 if (extensionInt < 0 || extensionInt > (int)WiiInputExtensions.TaikoDrum)
                 {
-                    BotProgram.QueueMessage("Invalid input extension argument for the Wii.");
+                    BotProgram.MsgHandler.QueueMessage("Invalid input extension argument for the Wii.");
                     return;
                 }
 
                 InputExtension = extension;
-                BotProgram.QueueMessage($"Changed Wii input extension to {extension}!");
+                BotProgram.MsgHandler.QueueMessage($"Changed Wii input extension to {extension}!");
             }
         }
 

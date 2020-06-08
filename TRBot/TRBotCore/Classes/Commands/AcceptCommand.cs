@@ -46,7 +46,7 @@ namespace TRBot
 
                 if (diff.TotalMinutes >= DuelCommand.DUEL_MINUTES)
                 {
-                    BotProgram.QueueMessage("You are not in a duel or your duel has expired!");
+                    BotProgram.MsgHandler.QueueMessage("You are not in a duel or your duel has expired!");
                     return;
                 }
 
@@ -60,7 +60,7 @@ namespace TRBot
                 //First confirm both users have enough credits for the duel, as they could've lost some in that time
                 if (duelerUser.Credits < betAmount || dueledUser.Credits < betAmount)
                 {
-                    BotProgram.QueueMessage("At least one user involved in the duel no longer has enough points for the duel! The duel is off!");
+                    BotProgram.MsgHandler.QueueMessage("At least one user involved in the duel no longer has enough points for the duel! The duel is off!");
                     return;
                 }
 
@@ -86,11 +86,11 @@ namespace TRBot
 
                 BotProgram.SaveBotData();
 
-                BotProgram.QueueMessage(message);
+                BotProgram.MsgHandler.QueueMessage(message);
             }
             else
             {
-                BotProgram.QueueMessage("You are not in a duel or your duel has expired!");
+                BotProgram.MsgHandler.QueueMessage("You are not in a duel or your duel has expired!");
             }
         }
     }

@@ -298,7 +298,7 @@ namespace TRBot
                 //Kimimaru: Sanitize parsing exceptions
                 //Most of these are currently caused by differences in how C# and Python handle slicing strings (Substring() vs string[:])
                 //One example that throws this that shouldn't is "#mash(w234"
-                //BotProgram.QueueMessage($"ERROR: {excMsg}");
+                //BotProgram.MsgHandler.QueueMessage($"ERROR: {excMsg}");
                 inputSequence.InputValidationType = Parser.InputValidationTypes.Invalid;
                 //parsedVal.Item1 = false;
             }
@@ -309,7 +309,7 @@ namespace TRBot
                 //Display error message for invalid inputs
                 if (inputSequence.InputValidationType == Parser.InputValidationTypes.Invalid)
                 {
-                    BotProgram.QueueMessage(inputSequence.Error);
+                    BotProgram.MsgHandler.QueueMessage(inputSequence.Error);
                 }
 
                 return;
@@ -326,7 +326,7 @@ namespace TRBot
             //Ignore based on user level and permissions
             if (userData.Level < BotProgram.BotData.InputPermissions)
             {
-                BotProgram.QueueMessage($"Inputs are restricted to levels {(AccessLevels.Levels)BotProgram.BotData.InputPermissions} and above");
+                BotProgram.MsgHandler.QueueMessage($"Inputs are restricted to levels {(AccessLevels.Levels)BotProgram.BotData.InputPermissions} and above");
                 return;
             }
 
@@ -345,7 +345,7 @@ namespace TRBot
             {
                 if (string.IsNullOrEmpty(inputValidation.Message) == false)
                 {
-                    BotProgram.QueueMessage(inputValidation.Message);
+                    BotProgram.MsgHandler.QueueMessage(inputValidation.Message);
                 }
                 return;
             }
@@ -369,7 +369,7 @@ namespace TRBot
                     }
                     
                     msg = string.Format(msg, combos);
-                    BotProgram.QueueMessage(msg);
+                    BotProgram.MsgHandler.QueueMessage(msg);
                     
                     return;
                 }
@@ -384,7 +384,7 @@ namespace TRBot
             }
             else
             {
-                BotProgram.QueueMessage("New inputs cannot be processed until all other inputs have stopped.");
+                BotProgram.MsgHandler.QueueMessage("New inputs cannot be processed until all other inputs have stopped.");
             }
         }
     }

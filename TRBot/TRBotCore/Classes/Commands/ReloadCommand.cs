@@ -36,7 +36,7 @@ namespace TRBot
             //Reload settings and bot data
             BotProgram.LoadSettingsAndBotData();
 
-            BotProgram.QueueMessage("Reloaded bot settings and data!");
+            BotProgram.MsgHandler.QueueMessage("Reloaded bot settings and data!");
         }
     }
 }

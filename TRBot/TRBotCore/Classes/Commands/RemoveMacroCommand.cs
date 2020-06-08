@@ -38,7 +38,7 @@ namespace TRBot
 
             if (args.Count != 1)
             {
-                BotProgram.QueueMessage($"{Globals.CommandIdentifier}removemacro usage: \"#macroname\"");
+                BotProgram.MsgHandler.QueueMessage($"{Globals.CommandIdentifier}removemacro usage: \"#macroname\"");
                 return;
             }
 
@@ -59,11 +59,11 @@ namespace TRBot
                 BotProgram.BotData.Macros.TryRemove(macroName, out string removedMacro);
                 BotProgram.SaveBotData();
 
-                BotProgram.QueueMessage($"Removed macro {macroName}.");
+                BotProgram.MsgHandler.QueueMessage($"Removed macro {macroName}.");
             }
             else
             {
-                BotProgram.QueueMessage($"Macro \"{macroName}\" could not be found.");
+                BotProgram.MsgHandler.QueueMessage($"Macro \"{macroName}\" could not be found.");
             }
         }
     }

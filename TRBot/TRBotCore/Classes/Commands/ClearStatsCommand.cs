@@ -44,7 +44,7 @@ namespace TRBot
             
             if (ConfirmClearedStatsUsers.Contains(nameToLower) == false)
             {
-                BotProgram.QueueMessage($"WARNING {name}: this clears all miscellaneous user stats, such as credits and message/input counts. If you're sure, retype this command with \"{ConfirmClearStr}\" as an argument to clear or \"{ConfirmStopStr}\" to ignore.");
+                BotProgram.MsgHandler.QueueMessage($"WARNING {name}: this clears all miscellaneous user stats, such as credits and message/input counts. If you're sure, retype this command with \"{ConfirmClearStr}\" as an argument to clear or \"{ConfirmStopStr}\" to ignore.");
                 ConfirmClearedStatsUsers.Add(nameToLower);
                 return;
             }
@@ -68,13 +68,13 @@ namespace TRBot
 
                     BotProgram.SaveBotData();
                     ConfirmClearedStatsUsers.Remove(nameToLower);
-                    BotProgram.QueueMessage("Successfully cleared stats!");
+                    BotProgram.MsgHandler.QueueMessage("Successfully cleared stats!");
                 }
                 //Ignore
                 else if (confirmation == ConfirmStopStr)
                 {
                     ConfirmClearedStatsUsers.Remove(nameToLower);
-                    BotProgram.QueueMessage("Cancelled clearing stats!");
+                    BotProgram.MsgHandler.QueueMessage("Cancelled clearing stats!");
                 }
             }
         }

@@ -59,11 +59,11 @@ namespace TRBot
 
         public override void ExecuteCommand(EvtChatCommandArgs e)
         {
-            BotProgram.QueueMessage(Messages[Attempts]);
+            BotProgram.MsgHandler.QueueMessage(Messages[Attempts]);
 
             if (Attempts >= (Messages.Count - 2))
             {
-                BotProgram.QueueMessage(Messages[Attempts + 1]);
+                BotProgram.MsgHandler.QueueMessage(Messages[Attempts + 1]);
 
                 Attempts = 0;
             }

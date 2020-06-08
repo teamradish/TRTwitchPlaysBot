@@ -36,7 +36,7 @@ namespace TRBot
 
             if (GroupBetCommand.UsersInBet.ContainsKey(displayLower) == false)
             {
-                BotProgram.QueueMessage("You're not in the group bet!");
+                BotProgram.MsgHandler.QueueMessage("You're not in the group bet!");
                 return;
             }
             else
@@ -44,7 +44,7 @@ namespace TRBot
                 long betAmt = GroupBetCommand.UsersInBet[displayLower];
                 GroupBetCommand.UsersInBet.Remove(displayLower);
 
-                BotProgram.QueueMessage($"{e.Command.ChatMessage.DisplayName} has backed out of the group bet and retained their {betAmt} credit(s)!");
+                BotProgram.MsgHandler.QueueMessage($"{e.Command.ChatMessage.DisplayName} has backed out of the group bet and retained their {betAmt} credit(s)!");
 
                 //Check for ending the group bet if there are no longer enough participants
                 if (GroupBetCommand.BetStarted == true && GroupBetCommand.UsersInBet.Count < GroupBetCommand.MinUsersForBet)
@@ -53,7 +53,7 @@ namespace TRBot
 
                     int count = GroupBetCommand.UsersInBet.Count;
 
-                    BotProgram.QueueMessage($"Oh no! The group bet has ended since there are no longer enough participants. {GroupBetCommand.MinUsersForBet - count} more is/are required to start it up again!");
+                    BotProgram.MsgHandler.QueueMessage($"Oh no! The group bet has ended since there are no longer enough participants. {GroupBetCommand.MinUsersForBet - count} more is/are required to start it up again!");
                 }
             }
         }

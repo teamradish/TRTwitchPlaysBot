@@ -50,22 +50,9 @@ namespace TRBot
         private CrashHandler crashHandler = null;
 
         private CommandHandler CommandHandler = null;
-
-        public bool IsInChannel => (ClientService?.IsConnected == true && ClientService.JoinedChannels?.Count >= 1);
-
-        private DateTime CurQueueTime;
-
-        /// <summary>
-        /// Queued messages.
-        /// </summary>
-        private Queue<string> ClientMessages = new Queue<string>(16);
+        public static BotMessageHandler MsgHandler { get; private set; } = null;
 
         private List<BaseRoutine> BotRoutines = new List<BaseRoutine>(8);
-
-        /// <summary>
-        /// Whether to ignore logging bot messages to the console based on potential console logs from the <see cref="ExecCommand"/>.
-        /// </summary>
-        public static bool IgnoreConsoleLog = false;
 
         public static string BotName
         {
@@ -87,6 +74,7 @@ namespace TRBot
             instance = this;
 
             //Below normal priority
+            //NOTE: Perhaps have a setting to set the priority
             Process thisProcess = Process.GetCurrentProcess();
             thisProcess.PriorityBoostEnabled = false;
             thisProcess.PriorityClass = ProcessPriorityClass.Idle;
@@ -108,7 +96,7 @@ namespace TRBot
             CommandHandler.CleanUp();
             ClientService?.CleanUp();
 
-            ClientMessages.Clear();
+            MsgHandler?.CleanUp();
 
             if (ClientService?.IsConnected == true)
                 ClientService.Disconnect();
@@ -170,8 +158,8 @@ namespace TRBot
             }
             
             //Set up client service
-            ClientService = new TwitchClientService(Credentials, LoginInformation.ChannelName, Globals.CommandIdentifier,
-                Globals.CommandIdentifier, true);
+            ClientService = new TwitchClientService(Credentials, LoginInformation.ChannelName,
+                Globals.CommandIdentifier, Globals.CommandIdentifier, true);
 
             ClientService.Initialize();
 
@@ -189,6 +177,9 @@ namespace TRBot
             ClientService.EventHandler.OnConnectionErrorEvent += OnConnectionError;
             ClientService.EventHandler.OnReconnectedEvent += OnReconnected;
             ClientService.EventHandler.OnDisconnectedEvent += OnDisconnected;
+
+            //Set up message handler
+            MsgHandler = new BotMessageHandler(ClientService, LoginInformation.ChannelName, BotSettings.MessageCooldown);
 
             AddRoutine(new PeriodicMessageRoutine());
             AddRoutine(new CreditsGiveRoutine());
@@ -224,34 +215,8 @@ namespace TRBot
             {
                 DateTime now = DateTime.Now;
 
-                TimeSpan queueDiff = now - CurQueueTime;
-
-                //Queued messages
-                if (ClientMessages.Count > 0 && queueDiff.TotalMilliseconds >= BotSettings.MessageCooldown)
-                {
-                    if (IsInChannel == true)
-                    {
-                        string message = ClientMessages.Dequeue();
-
-                        //There's a chance the bot could be disconnected from the channel between the conditional and now
-                        try
-                        {
-                            //Send the message
-                            ClientService.SendMessage(LoginInformation.ChannelName, message);
-                        }
-                        catch (TwitchLib.Client.Exceptions.BadStateException e)
-                        {
-                            Console.WriteLine($"Could not send message due to bad state: {e.Message}");
-                        }
-
-                        if (IgnoreConsoleLog == false)
-                        {
-                            Console.WriteLine(message);
-                        }
-
-                        CurQueueTime = now;
-                    }
-                }
+                //Update queued messages
+                MsgHandler.Update(now);
 
                 //Update routines
                 for (int i = 0; i < BotRoutines.Count; i++)
@@ -266,14 +231,6 @@ namespace TRBot
                 }
 
                 Thread.Sleep(BotSettings.MainThreadSleep);
-            }
-        }
-
-        public static void QueueMessage(string message)
-        {
-            if (string.IsNullOrEmpty(message) == false)
-            {
-                instance.ClientMessages.Enqueue(message);
             }
         }
 
@@ -332,7 +289,7 @@ namespace TRBot
             if (string.IsNullOrEmpty(BotSettings.ConnectMessage) == false)
             {
                 string finalMsg = BotSettings.ConnectMessage.Replace("{0}", LoginInformation.BotName).Replace("{1}", Globals.CommandIdentifier.ToString());
-                QueueMessage(finalMsg);
+                MsgHandler.QueueMessage(finalMsg);
             }
 
             Console.WriteLine($"Joined channel \"{e.Channel}\"");
@@ -358,7 +315,7 @@ namespace TRBot
             string possibleMeme = e.UsrMessage.Message.ToLower();
             if (BotProgram.BotData.Memes.TryGetValue(possibleMeme, out string meme) == true)
             {
-                BotProgram.QueueMessage(meme);
+                BotProgram.MsgHandler.QueueMessage(meme);
             }
         }
 
@@ -377,13 +334,13 @@ namespace TRBot
             int controllerNum = user.Team;
             if (controllerNum < 0 || controllerNum >= InputGlobals.ControllerMngr.ControllerCount)
             {
-                BotProgram.QueueMessage($"ERROR: Invalid joystick number {controllerNum + 1}. # of joysticks: {InputGlobals.ControllerMngr.ControllerCount}. Please change your controller port to a valid number to perform inputs.");
+                BotProgram.MsgHandler.QueueMessage($"ERROR: Invalid joystick number {controllerNum + 1}. # of joysticks: {InputGlobals.ControllerMngr.ControllerCount}. Please change your controller port to a valid number to perform inputs.");
                 shouldPerformInput = false;
             }
             //Now verify that the controller has been acquired
             else if (InputGlobals.ControllerMngr.GetController(controllerNum).IsAcquired == false)
             {
-                BotProgram.QueueMessage($"ERROR: Joystick number {controllerNum + 1} with controller ID of {InputGlobals.ControllerMngr.GetController(controllerNum).ControllerID} has not been acquired! Ensure you (the streamer) have a virtual device set up at this ID.");
+                BotProgram.MsgHandler.QueueMessage($"ERROR: Joystick number {controllerNum + 1} with controller ID of {InputGlobals.ControllerMngr.GetController(controllerNum).ControllerID} has not been acquired! Ensure you (the streamer) have a virtual device set up at this ID.");
                 shouldPerformInput = false;
             }
             //We're okay to perform the input
@@ -402,7 +359,7 @@ namespace TRBot
                     {
                         //Replace the user's name with the message
                         string msg = BotSettings.AutoWhitelistMsg.Replace("{0}", user.Name);
-                        QueueMessage(msg);
+                        MsgHandler.QueueMessage(msg);
                     }
                 }
             }
@@ -415,22 +372,22 @@ namespace TRBot
 
         private void OnBeingHosted(EvtOnHostedArgs e)
         {
-            QueueMessage($"Thank you for hosting, {e.HostedData.HostedByChannel}!!");
+            MsgHandler.QueueMessage($"Thank you for hosting, {e.HostedData.HostedByChannel}!!");
         }
 
         private void OnNewSubscriber(User user, EvtOnSubscriptionArgs e)
         {
-            QueueMessage($"Thank you for subscribing, {e.SubscriptionData.DisplayName} :D !!");
+            MsgHandler.QueueMessage($"Thank you for subscribing, {e.SubscriptionData.DisplayName} :D !!");
         }
 
         private void OnReSubscriber(User user, EvtOnReSubscriptionArgs e)
         {
-            QueueMessage($"Thank you for subscribing for {e.ReSubscriptionData.Months} months, {e.ReSubscriptionData.DisplayName} :D !!");
+            MsgHandler.QueueMessage($"Thank you for subscribing for {e.ReSubscriptionData.Months} months, {e.ReSubscriptionData.DisplayName} :D !!");
         }
 
         private void OnReconnected(EvtReconnectedArgs e)
         {
-            QueueMessage("Successfully reconnected to chat!");
+            MsgHandler.QueueMessage("Successfully reconnected to chat!");
         }
 
         private void OnDisconnected(EvtDisconnectedArgs e)
@@ -484,7 +441,7 @@ namespace TRBot
                     return null;
                 }
 
-                BotProgram.QueueMessage($"Welcome to the stream, {origName} :D ! We hope you enjoy your stay!");
+                BotProgram.MsgHandler.QueueMessage($"Welcome to the stream, {origName} :D ! We hope you enjoy your stay!");
             }
 
             return userData;
@@ -500,7 +457,7 @@ namespace TRBot
                 {
                     if (Globals.SaveToTextFile(filename, text) == false)
                     {
-                        QueueMessage($"CRITICAL - Unable to save data");
+                        MsgHandler.QueueMessage($"CRITICAL - Unable to save data");
                     }
                 }
             }
@@ -573,6 +530,11 @@ namespace TRBot
 
             //Populate callbacks using the given data
             InputCBData.PopulateCBWithData();
+
+            if (MsgHandler != null)
+            {
+                MsgHandler.SetMessageCooldown(BotSettings.MessageCooldown);
+            }
 
             //string achievementsText = Globals.ReadFromTextFileOrCreate(Globals.AchievementsFilename);
             //BotData.Achievements = JsonConvert.DeserializeObject<AchievementData>(achievementsText);

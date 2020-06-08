@@ -82,7 +82,7 @@ namespace TRBot
         {
             if (MemesCache.Count == 0)
             {
-                BotProgram.QueueMessage("There are none!");
+                BotProgram.MsgHandler.QueueMessage("There are none!");
                 return;
             }
 
@@ -90,7 +90,7 @@ namespace TRBot
             {
                 string message = (i == 0) ? InitMessage : string.Empty;
                 message += MemesCache[i];
-                BotProgram.QueueMessage(message);
+                BotProgram.MsgHandler.QueueMessage(message);
             }
         }
     }

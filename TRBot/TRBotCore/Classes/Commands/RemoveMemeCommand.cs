@@ -36,7 +36,7 @@ namespace TRBot
 
             if (args.Count != 1)
             {
-                BotProgram.QueueMessage($"{Globals.CommandIdentifier}removememe usage: memename");
+                BotProgram.MsgHandler.QueueMessage($"{Globals.CommandIdentifier}removememe usage: memename");
                 return;
             }
 

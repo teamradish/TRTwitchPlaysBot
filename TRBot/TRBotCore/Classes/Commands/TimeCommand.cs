@@ -30,7 +30,7 @@ namespace TRBot
         {
             DateTime curTime = DateTime.UtcNow;
 
-            BotProgram.QueueMessage($"The current time is {curTime.ToLongTimeString()} on {curTime.ToShortDateString()} (UTC)!");
+            BotProgram.MsgHandler.QueueMessage($"The current time is {curTime.ToLongTimeString()} on {curTime.ToShortDateString()} (UTC)!");
         }
     }
 }

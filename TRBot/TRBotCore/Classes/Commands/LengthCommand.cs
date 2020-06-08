@@ -32,7 +32,7 @@ namespace TRBot
 
             if (string.IsNullOrEmpty(args) == true)
             {
-                BotProgram.QueueMessage("Usage: \"Input\"");
+                BotProgram.MsgHandler.QueueMessage("Usage: \"Input\"");
                 return;
             }
 
@@ -56,11 +56,11 @@ namespace TRBot
 
             if (inputSequence.InputValidationType != Parser.InputValidationTypes.Valid)
             {
-                BotProgram.QueueMessage("Invalid input. Note that length cannot be determined for dynamic macros without inputs filled in.");
+                BotProgram.MsgHandler.QueueMessage("Invalid input. Note that length cannot be determined for dynamic macros without inputs filled in.");
                 return;
             }
 
-            BotProgram.QueueMessage($"Total length: {inputSequence.TotalDuration}ms");
+            BotProgram.MsgHandler.QueueMessage($"Total length: {inputSequence.TotalDuration}ms");
         }
     }
 }

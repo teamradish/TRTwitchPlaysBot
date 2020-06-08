@@ -47,14 +47,14 @@ namespace TRBot
 
             if (args.Count < 2)
             {
-                BotProgram.QueueMessage($"{Globals.CommandIdentifier}addmacro usage: \"#macroname\" \"command\"");
+                BotProgram.MsgHandler.QueueMessage($"{Globals.CommandIdentifier}addmacro usage: \"#macroname\" \"command\"");
                 return;
             }
 
             //Make sure the first argument has at least two characters
             if (args[0].Length < 2)
             {
-                BotProgram.QueueMessage("Macros need to be at least two characters!");
+                BotProgram.MsgHandler.QueueMessage("Macros need to be at least two characters!");
                 return;
             }
 
@@ -62,20 +62,20 @@ namespace TRBot
 
             if (macroName[0] != Globals.MacroIdentifier)
             {
-                BotProgram.QueueMessage($"Macros must start with '{Globals.MacroIdentifier}'.");
+                BotProgram.MsgHandler.QueueMessage($"Macros must start with '{Globals.MacroIdentifier}'.");
                 return;
             }
 
             //For simplicity with wait inputs, force the first character in the macro name to be alphanumeric
             if (char.IsLetterOrDigit(args[0][1]) == false)
             {
-                BotProgram.QueueMessage("The first character in macro names must be alphanumeric!");
+                BotProgram.MsgHandler.QueueMessage("The first character in macro names must be alphanumeric!");
                 return;
             }
 
             if (macroName.Length > MAX_MACRO_LENGTH)
             {
-                BotProgram.QueueMessage($"The max macro length is {MAX_MACRO_LENGTH} characters!");
+                BotProgram.MsgHandler.QueueMessage($"The max macro length is {MAX_MACRO_LENGTH} characters!");
                 return;
             }
 
@@ -104,7 +104,7 @@ namespace TRBot
                 //}
                 //catch (Exception exception)
                 //{
-                //    BotProgram.QueueMessage("Invalid dynamic macro. Ensure that variables are listed in order (Ex. (*,*,...) = <0>, <1>,...)");
+                //    BotProgram.MsgHandler.QueueMessage("Invalid dynamic macro. Ensure that variables are listed in order (Ex. (*,*,...) = <0>, <1>,...)");
                 //    Console.WriteLine(exception.Message);
                 //    return;
                 //}
@@ -135,13 +135,13 @@ namespace TRBot
 
                     if (inputSequence.InputValidationType != Parser.InputValidationTypes.Valid)//val.Item1 == false)
                     {
-                        BotProgram.QueueMessage("Invalid macro.");
+                        BotProgram.MsgHandler.QueueMessage("Invalid macro.");
                         return;
                     }
                 }
                 catch
                 {
-                    BotProgram.QueueMessage("Invalid macro.");
+                    BotProgram.MsgHandler.QueueMessage("Invalid macro.");
                     return;
                 }
             }
@@ -159,11 +159,11 @@ namespace TRBot
             //{
             //    if (isDynamic == false)
             //    {
-            //        BotProgram.QueueMessage("Invalid macro.");
+            //        BotProgram.MsgHandler.QueueMessage("Invalid macro.");
             //    }
             //    else
             //    {
-            //        BotProgram.QueueMessage("Invalid dynamic macro. Ensure that variables are listed in order (Ex. (*,*,...) = <0>, <1>,...)");
+            //        BotProgram.MsgHandler.QueueMessage("Invalid dynamic macro. Ensure that variables are listed in order (Ex. (*,*,...) = <0>, <1>,...)");
             //    }
             //    return;
             //}
@@ -172,11 +172,11 @@ namespace TRBot
             //{
             //    if (isDynamic == false)
             //    {
-            //        BotProgram.QueueMessage("Invalid macro.");
+            //        BotProgram.MsgHandler.QueueMessage("Invalid macro.");
             //    }
             //    else
             //    {
-            //        BotProgram.QueueMessage("Invalid dynamic macro. Ensure that variables are listed in order (Ex. (*,*,...) = <0>, <1>,...)");
+            //        BotProgram.MsgHandler.QueueMessage("Invalid dynamic macro. Ensure that variables are listed in order (Ex. (*,*,...) = <0>, <1>,...)");
             //    }
             //}
             //else
@@ -201,7 +201,7 @@ namespace TRBot
                 BotProgram.BotData.Macros[macroName] = macroVal;
                 BotProgram.SaveBotData();
 
-                BotProgram.QueueMessage(message);
+                BotProgram.MsgHandler.QueueMessage(message);
             //}
         }
 

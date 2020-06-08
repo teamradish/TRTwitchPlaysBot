@@ -51,7 +51,7 @@ namespace TRBot
                 user.SetOptOut(true);
 
                 BotProgram.SaveBotData();
-                BotProgram.QueueMessage("Opted out of bot stats!");
+                BotProgram.MsgHandler.QueueMessage("Opted out of bot stats!");
                 return;
             }
             else if (user.OptedOut == true)
@@ -59,7 +59,7 @@ namespace TRBot
                 user.SetOptOut(false);
 
                 BotProgram.SaveBotData();
-                BotProgram.QueueMessage("Opted back into bot stats!");
+                BotProgram.MsgHandler.QueueMessage("Opted back into bot stats!");
                 return;
             }
         }

@@ -47,7 +47,7 @@ namespace TRBot
 
             average /= users.Length;
 
-            BotProgram.QueueMessage($"The average number of credits in the database is {average}!");
+            BotProgram.MsgHandler.QueueMessage($"The average number of credits in the database is {average}!");
         }
     }
 }

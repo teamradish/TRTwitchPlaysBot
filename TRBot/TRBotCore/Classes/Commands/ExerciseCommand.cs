@@ -103,7 +103,7 @@ namespace TRBot
             }
             else
             {
-                BotProgram.QueueMessage($"No input exercise found. Generate a new one with \"{GenerateNewArg}\" as an argument to this command.");
+                BotProgram.MsgHandler.QueueMessage($"No input exercise found. Generate a new one with \"{GenerateNewArg}\" as an argument to this command.");
             }
         }
 
@@ -132,16 +132,16 @@ namespace TRBot
 
             if (totalMsgLength > BotProgram.BotSettings.BotMessageCharLimit)
             {
-                BotProgram.QueueMessage(reverseSentence);
-                BotProgram.QueueMessage(creditRewardMsg);
+                BotProgram.MsgHandler.QueueMessage(reverseSentence);
+                BotProgram.MsgHandler.QueueMessage(creditRewardMsg);
             }
             else
             {
-                BotProgram.QueueMessage(reverseSentence + " | " + creditRewardMsg);
+                BotProgram.MsgHandler.QueueMessage(reverseSentence + " | " + creditRewardMsg);
             }
 
             //Add another message for what to do
-            BotProgram.QueueMessage($"Put your input as an argument to this command. To generate a new exercise, pass \"{GenerateNewArg}\" as an argument.");
+            BotProgram.MsgHandler.QueueMessage($"Put your input as an argument to this command. To generate a new exercise, pass \"{GenerateNewArg}\" as an argument.");
         }
 
         private void ExecuteValidateInput(User user, string userCommand, ConsoleBase currentConsole)
@@ -158,13 +158,13 @@ namespace TRBot
             }
             catch
             {
-                BotProgram.QueueMessage("Sorry, I couldn't parse your input.");
+                BotProgram.MsgHandler.QueueMessage("Sorry, I couldn't parse your input.");
                 return;
             }
 
             if (inputSequence.InputValidationType != Parser.InputValidationTypes.Valid)
             {
-                BotProgram.QueueMessage("Sorry, I couldn't parse your input.");
+                BotProgram.MsgHandler.QueueMessage("Sorry, I couldn't parse your input.");
                 return;
             }
 
@@ -176,7 +176,7 @@ namespace TRBot
             //Compare input lengths - this has some downsides, but it's a quick check
             if (userInputs.Count != exerciseInputs.Count)
             {
-                BotProgram.QueueMessage("Incorrect input! Try again!");
+                BotProgram.MsgHandler.QueueMessage("Incorrect input! Try again!");
                 return;
             }
 
@@ -187,7 +187,7 @@ namespace TRBot
 
                 if (exerciseSubInputs.Count != userSubInputs.Count)
                 {
-                    BotProgram.QueueMessage("Incorrect input! Try again!");
+                    BotProgram.MsgHandler.QueueMessage("Incorrect input! Try again!");
                     return;
                 }
 
@@ -205,7 +205,7 @@ namespace TRBot
 
                     if (CompareInputs(excInp, userInp) == false)
                     {
-                        BotProgram.QueueMessage("Incorrect input! Try again!");
+                        BotProgram.MsgHandler.QueueMessage("Incorrect input! Try again!");
                         return;
                     }
                 }
@@ -218,11 +218,11 @@ namespace TRBot
                 user.AddCredits(creditReward);
 
                 BotProgram.SaveBotData();
-                BotProgram.QueueMessage($"Correct input! Awesome job! You've earned your {creditReward} credits!");
+                BotProgram.MsgHandler.QueueMessage($"Correct input! Awesome job! You've earned your {creditReward} credits!");
             }
             else
             {
-                BotProgram.QueueMessage("Correct input! Awesome job!");
+                BotProgram.MsgHandler.QueueMessage("Correct input! Awesome job!");
             }
 
             //Remove the entry

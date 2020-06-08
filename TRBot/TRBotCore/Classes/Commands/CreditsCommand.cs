@@ -69,7 +69,7 @@ namespace TRBot
                     }
                     else
                     {
-                        BotProgram.QueueMessage($"{userName} is not in the database.");
+                        BotProgram.MsgHandler.QueueMessage($"{userName} is not in the database.");
                         return;
                     }
                 }
@@ -82,11 +82,11 @@ namespace TRBot
 
                 if (user.OptedOut == true)
                 {
-                    BotProgram.QueueMessage("This user opted out of bot stats, so you can't see their credits.");
+                    BotProgram.MsgHandler.QueueMessage("This user opted out of bot stats, so you can't see their credits.");
                     return;
                 }
 
-                BotProgram.QueueMessage($"{userName} has {BotProgram.BotData.Users[userLower].Credits} credit(s)!");
+                BotProgram.MsgHandler.QueueMessage($"{userName} has {BotProgram.BotData.Users[userLower].Credits} credit(s)!");
             }
             else
             {
@@ -99,12 +99,12 @@ namespace TRBot
 
                 if (BotProgram.BotData.Users.ContainsKey(name1Lower) == false)
                 {
-                    BotProgram.QueueMessage($"{name1} is not in the database!");
+                    BotProgram.MsgHandler.QueueMessage($"{name1} is not in the database!");
                     return;
                 }
                 if (BotProgram.BotData.Users.ContainsKey(name2Lower) == false)
                 {
-                    BotProgram.QueueMessage($"{name2} is not in the database!");
+                    BotProgram.MsgHandler.QueueMessage($"{name2} is not in the database!");
                     return;
                 }
 
@@ -113,7 +113,7 @@ namespace TRBot
 
                 if (user1.OptedOut == true || user2.OptedOut == true)
                 {
-                    BotProgram.QueueMessage("At least one of these users opted out of bot stats, so you can't see their credits.");
+                    BotProgram.MsgHandler.QueueMessage("At least one of these users opted out of bot stats, so you can't see their credits.");
                     return;
                 }
 
@@ -136,7 +136,7 @@ namespace TRBot
                     message = $"{name1} and {name2} have an equal number of credits!";
                 }
 
-                BotProgram.QueueMessage(message);
+                BotProgram.MsgHandler.QueueMessage(message);
             }
         }
     }

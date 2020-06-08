@@ -39,7 +39,7 @@ namespace TRBot
 
             if (args.Count == 0)
             {
-                BotProgram.QueueMessage($"The max pause duration is {BotProgram.BotData.MaxPauseHoldDuration} milliseconds.");
+                BotProgram.MsgHandler.QueueMessage($"The max pause duration is {BotProgram.BotData.MaxPauseHoldDuration} milliseconds.");
                 return;
             }
 
@@ -48,13 +48,13 @@ namespace TRBot
             //Disallow setting the duration if the user doesn't have a sufficient access level
             if (user.Level < SetAccessLevel)
             {
-                BotProgram.QueueMessage(CommandHandler.INVALID_ACCESS_MESSAGE);
+                BotProgram.MsgHandler.QueueMessage(CommandHandler.INVALID_ACCESS_MESSAGE);
                 return;
             }
 
             if (args.Count > 1)
             {
-                BotProgram.QueueMessage("Usage: \"duration (ms) (-1 to disable)\"");
+                BotProgram.MsgHandler.QueueMessage("Usage: \"duration (ms) (-1 to disable)\"");
                 return;
             }
 
@@ -62,7 +62,7 @@ namespace TRBot
 
             if (int.TryParse(value, out int duration) == false)
             {
-                BotProgram.QueueMessage("Invalid value! Usage: \"duration (ms) (-1 to disable)\"");
+                BotProgram.MsgHandler.QueueMessage("Invalid value! Usage: \"duration (ms) (-1 to disable)\"");
                 return;
             }
 
@@ -76,11 +76,11 @@ namespace TRBot
 
             if (BotProgram.BotData.MaxPauseHoldDuration > 0)
             {
-                BotProgram.QueueMessage($"Set max pause duration to {duration} milliseconds!");
+                BotProgram.MsgHandler.QueueMessage($"Set max pause duration to {duration} milliseconds!");
             }
             else
             {
-                BotProgram.QueueMessage("Disabled max pause duration!");
+                BotProgram.MsgHandler.QueueMessage("Disabled max pause duration!");
             }
         }
     }

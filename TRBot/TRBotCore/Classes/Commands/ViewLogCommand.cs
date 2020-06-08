@@ -42,7 +42,7 @@ namespace TRBot
                 string num = args[0];
                 if (int.TryParse(num, out logNum) == false)
                 {
-                    BotProgram.QueueMessage("Invalid log number!");
+                    BotProgram.MsgHandler.QueueMessage("Invalid log number!");
                     return;
                 }
 
@@ -51,13 +51,13 @@ namespace TRBot
             }
             else
             {
-                BotProgram.QueueMessage($"Usage: \"recent log number (optional)\"");
+                BotProgram.MsgHandler.QueueMessage($"Usage: \"recent log number (optional)\"");
                 return;
             }
 
             if (logNum < 0 || logNum >= BotProgram.BotData.Logs.Count)
             {
-                BotProgram.QueueMessage($"No log found!");
+                BotProgram.MsgHandler.QueueMessage($"No log found!");
                 return;
             }
 
@@ -65,11 +65,11 @@ namespace TRBot
 
             if (string.IsNullOrEmpty(log.User) == false)
             {
-                BotProgram.QueueMessage($"{log.DateTimeString} (UTC) --> {log.User} : {log.LogMessage}");
+                BotProgram.MsgHandler.QueueMessage($"{log.DateTimeString} (UTC) --> {log.User} : {log.LogMessage}");
             }
             else
             {
-                BotProgram.QueueMessage($"{log.DateTimeString} (UTC) --> {log.LogMessage}");
+                BotProgram.MsgHandler.QueueMessage($"{log.DateTimeString} (UTC) --> {log.LogMessage}");
             }
         }
     }

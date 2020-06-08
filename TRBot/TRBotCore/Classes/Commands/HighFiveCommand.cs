@@ -36,7 +36,7 @@ namespace TRBot
 
             if (args == null || args.Count <= 0)
             {
-                BotProgram.QueueMessage("Choose one or more people to high five!");
+                BotProgram.MsgHandler.QueueMessage("Choose one or more people to high five!");
                 return;
             }
 
@@ -57,7 +57,7 @@ namespace TRBot
                 highFive += args[i];
             }
 
-            BotProgram.QueueMessage($"{e.Command.ChatMessage.DisplayName} high fives {highFive}!");
+            BotProgram.MsgHandler.QueueMessage($"{e.Command.ChatMessage.DisplayName} high fives {highFive}!");
         }
     }
 }

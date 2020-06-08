@@ -12,7 +12,7 @@ namespace TRBot
     {
         public override void ExecuteCommand(EvtChatCommandArgs e)
         {
-            BotProgram.QueueMessage($"There are {BotProgram.BotData.JoystickCount} controller(s) plugged in!");
+            BotProgram.MsgHandler.QueueMessage($"There are {BotProgram.BotData.JoystickCount} controller(s) plugged in!");
         }
     }
 }

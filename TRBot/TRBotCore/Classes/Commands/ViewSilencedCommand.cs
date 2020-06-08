@@ -48,17 +48,17 @@ namespace TRBot
 
                 if (user == null)
                 {
-                    BotProgram.QueueMessage($"User does not exist in database!");
+                    BotProgram.MsgHandler.QueueMessage($"User does not exist in database!");
                 }
                 else
                 {
                     if (user.Silenced == false)
                     {
-                        BotProgram.QueueMessage($"User {username} is not currently silenced and can perform inputs.");
+                        BotProgram.MsgHandler.QueueMessage($"User {username} is not currently silenced and can perform inputs.");
                     }
                     else
                     {
-                        BotProgram.QueueMessage($"User {username} is currently silenced and cannot perform inputs.");
+                        BotProgram.MsgHandler.QueueMessage($"User {username} is currently silenced and cannot perform inputs.");
                     }
                 }
 
@@ -68,7 +68,7 @@ namespace TRBot
             //No arguments, so print all users who are silenced
             if (BotProgram.BotData.SilencedUsers.Count == 0)
             {
-                BotProgram.QueueMessage("No users are silenced. Hurray!");
+                BotProgram.MsgHandler.QueueMessage("No users are silenced. Hurray!");
                 return;
             }
 
@@ -90,7 +90,7 @@ namespace TRBot
 
             string silencedStr = StrBuilder.ToString();
 
-            BotProgram.QueueMessage(silencedStr);
+            BotProgram.MsgHandler.QueueMessage(silencedStr);
         }
     }
 }

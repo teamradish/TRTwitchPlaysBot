@@ -40,7 +40,7 @@ namespace TRBot
             //See the virtual controller
             if (args.Count == 0)
             {
-                BotProgram.QueueMessage($"The current virtual controller is {InputGlobals.CurVControllerType}. To set the virtual controller, add one as an argument: {GetValidControllerStr()}");
+                BotProgram.MsgHandler.QueueMessage($"The current virtual controller is {InputGlobals.CurVControllerType}. To set the virtual controller, add one as an argument: {GetValidControllerStr()}");
                 return;
             }
 
@@ -48,19 +48,19 @@ namespace TRBot
 
             if (Enum.TryParse<InputGlobals.VControllerTypes>(vControllerStr, true, out InputGlobals.VControllerTypes vCType) == false)
             {
-                BotProgram.QueueMessage($"Please enter a valid virtual controller: {GetValidControllerStr()}");
+                BotProgram.MsgHandler.QueueMessage($"Please enter a valid virtual controller: {GetValidControllerStr()}");
                 return;
             }
 
             if (vCType == InputGlobals.CurVControllerType)
             {
-                BotProgram.QueueMessage($"The current virtual controller is already {InputGlobals.CurVControllerType}!");
+                BotProgram.MsgHandler.QueueMessage($"The current virtual controller is already {InputGlobals.CurVControllerType}!");
                 return;
             }
             
             if (InputGlobals.IsVControllerSupported(vCType) == false)
             {
-                BotProgram.QueueMessage($"{vCType} virtual controllers are not supported on your operating system.");
+                BotProgram.MsgHandler.QueueMessage($"{vCType} virtual controllers are not supported on your operating system.");
                 return;
             }
             
@@ -78,7 +78,7 @@ namespace TRBot
             //Resume inputs
             InputHandler.ResumeRunningInputs();
             
-            BotProgram.QueueMessage($"Set virtual controller to {InputGlobals.CurVControllerType} and reset all running inputs!");
+            BotProgram.MsgHandler.QueueMessage($"Set virtual controller to {InputGlobals.CurVControllerType} and reset all running inputs!");
         }
         
         private string GetValidControllerStr()

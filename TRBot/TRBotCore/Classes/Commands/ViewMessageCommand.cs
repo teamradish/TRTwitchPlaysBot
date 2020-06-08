@@ -28,7 +28,7 @@ namespace TRBot
     {
         public override void ExecuteCommand(EvtChatCommandArgs e)
         {
-            BotProgram.QueueMessage($"Current game message: \"{BotProgram.BotData.GameMessage}\"");
+            BotProgram.MsgHandler.QueueMessage($"Current game message: \"{BotProgram.BotData.GameMessage}\"");
         }
     }
 }

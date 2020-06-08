@@ -42,7 +42,7 @@ namespace TRBot
 
             if (args.Count != 1)
             {
-                BotProgram.QueueMessage("Please specify a bet amount!");
+                BotProgram.MsgHandler.QueueMessage("Please specify a bet amount!");
                 return;
             }
 
@@ -61,13 +61,13 @@ namespace TRBot
             bool success = long.TryParse(args[0], out betAmount);
             if (success == false || betAmount <= 0)
             {
-                BotProgram.QueueMessage("Please specify a positive whole number of credits greater than 0!");
+                BotProgram.MsgHandler.QueueMessage("Please specify a positive whole number of credits greater than 0!");
                 return;
             }
 
             if (user.Credits < betAmount)
             {
-                BotProgram.QueueMessage("You don't have enough credits to bet this much!");
+                BotProgram.MsgHandler.QueueMessage("You don't have enough credits to bet this much!");
                 return;
             }
 
@@ -80,7 +80,7 @@ namespace TRBot
             {
                 if (user.OptedOut == true)
                 {
-                    BotProgram.QueueMessage("You can't participate in the group bet since you opted out of bot stats.");
+                    BotProgram.MsgHandler.QueueMessage("You can't participate in the group bet since you opted out of bot stats.");
                     return;
                 }
                 
@@ -114,11 +114,11 @@ namespace TRBot
                 UsersInBet[displayLower] = betAmount;
             }
 
-            BotProgram.QueueMessage(message);
+            BotProgram.MsgHandler.QueueMessage(message);
 
             if (prevStarted == false && BetStarted == true)
             {
-                BotProgram.QueueMessage($"The group bet has enough participants and will start in {GroupBetMinutes} minute(s), so join before then if you want in!");
+                BotProgram.MsgHandler.QueueMessage($"The group bet has enough participants and will start in {GroupBetMinutes} minute(s), so join before then if you want in!");
             }
         }
 

@@ -38,11 +38,11 @@ namespace TRBot
                 string realMsg = e.Command.ChatMessage.Message.Remove(0, 5).Trim();// + ". The statement said to me expresses the views of the one instructing me, not myself :D";
                 if (realMsg.StartsWith("/") == true)
                 {
-                    BotProgram.QueueMessage("I can't say any Twitch chat commands for you - no hard feelings!");
+                    BotProgram.MsgHandler.QueueMessage("I can't say any Twitch chat commands for you - no hard feelings!");
                 }
                 else
                 {
-                    BotProgram.QueueMessage(realMsg);
+                    BotProgram.MsgHandler.QueueMessage(realMsg);
                 }
             }
         }

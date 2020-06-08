@@ -34,7 +34,7 @@ namespace TRBot
 
             if (validInputs == null || validInputs.Length == 0)
             {
-                BotProgram.QueueMessage($"Interesting! There are no valid inputs for the {InputGlobals.CurrentConsoleVal} console!");
+                BotProgram.MsgHandler.QueueMessage($"Interesting! There are no valid inputs for the {InputGlobals.CurrentConsoleVal} console!");
                 return;
             }
 
@@ -52,7 +52,7 @@ namespace TRBot
 
             string validInputsStr = StrBuilder.ToString();
 
-            BotProgram.QueueMessage(validInputsStr);
+            BotProgram.MsgHandler.QueueMessage(validInputsStr);
         }
     }
 }

@@ -44,7 +44,7 @@ namespace TRBot
             //Resume inputs
             InputHandler.ResumeRunningInputs();
 
-            BotProgram.QueueMessage("Stopped all running inputs!");
+            BotProgram.MsgHandler.QueueMessage("Stopped all running inputs!");
         }
     }
 }

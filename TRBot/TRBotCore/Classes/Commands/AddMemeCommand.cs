@@ -38,31 +38,31 @@ namespace TRBot
 
             if (args.Count < 2)
             {
-                BotProgram.QueueMessage($"{Globals.CommandIdentifier}addmeme usage: memename memevalue");
+                BotProgram.MsgHandler.QueueMessage($"{Globals.CommandIdentifier}addmeme usage: memename memevalue");
                 return;
             }
 
             if (args[0].ElementAt(0) == '/' || args[1].ElementAt(0) == '/')
             {
-                BotProgram.QueueMessage("Memes cannot start with Twitch chat commands!");
+                BotProgram.MsgHandler.QueueMessage("Memes cannot start with Twitch chat commands!");
                 return;
             }
 
             if (args[0].ElementAt(0) == Globals.CommandIdentifier)
             {
-                BotProgram.QueueMessage($"Memes cannot start with \'{Globals.CommandIdentifier}\'");
+                BotProgram.MsgHandler.QueueMessage($"Memes cannot start with \'{Globals.CommandIdentifier}\'");
                 return;
             }
 
             if (args[0].ElementAt(0) == Globals.MacroIdentifier)
             {
-                BotProgram.QueueMessage($"Memes cannot start with \'{Globals.MacroIdentifier}\'");
+                BotProgram.MsgHandler.QueueMessage($"Memes cannot start with \'{Globals.MacroIdentifier}\'");
                 return;
             }
 
             if (args[0].Length > MAX_MEME_LENGTH)
             {
-                BotProgram.QueueMessage($"The max meme length is {MAX_MEME_LENGTH} characters!");
+                BotProgram.MsgHandler.QueueMessage($"The max meme length is {MAX_MEME_LENGTH} characters!");
                 return;
             }
 
@@ -83,7 +83,7 @@ namespace TRBot
 
             if (sendOverwritten == true)
             {
-                BotProgram.QueueMessage("Meme overwritten!");
+                BotProgram.MsgHandler.QueueMessage("Meme overwritten!");
             }
             else
             {

@@ -36,7 +36,7 @@ namespace TRBot
 
             if (args == null || args.Count != 2)
             {
-                BotProgram.QueueMessage("Please specify a single user followed by the amount of credits you wish to transfer!");
+                BotProgram.MsgHandler.QueueMessage("Please specify a single user followed by the amount of credits you wish to transfer!");
                 return;
             }
 
@@ -48,7 +48,7 @@ namespace TRBot
 
             if (giverToLower == receiverToLower)
             {
-                BotProgram.QueueMessage("You cannot transfer points to yourself!");
+                BotProgram.MsgHandler.QueueMessage("You cannot transfer points to yourself!");
                 return;
             }
 
@@ -58,19 +58,19 @@ namespace TRBot
 
             if (giverUser.OptedOut == true)
             {
-                BotProgram.QueueMessage("You're opted out of bot stats, so you can't transfer credits.");
+                BotProgram.MsgHandler.QueueMessage("You're opted out of bot stats, so you can't transfer credits.");
                 return;
             }
 
             if (receiverUser == null)
             {
-                BotProgram.QueueMessage($"{receiver} is not in the database!");
+                BotProgram.MsgHandler.QueueMessage($"{receiver} is not in the database!");
                 return;
             }
 
             if (receiverUser.OptedOut == true)
             {
-                BotProgram.QueueMessage("The one you're transferring to opted out of bot stats, so they can't receive credits.");
+                BotProgram.MsgHandler.QueueMessage("The one you're transferring to opted out of bot stats, so they can't receive credits.");
                 return;
             }
 
@@ -78,13 +78,13 @@ namespace TRBot
             bool success = long.TryParse(args[1], out transferAmount);
             if (success == false || transferAmount <= 0)
             {
-                BotProgram.QueueMessage("Please specify a positive whole number of credits greater than 0!");
+                BotProgram.MsgHandler.QueueMessage("Please specify a positive whole number of credits greater than 0!");
                 return;
             }
 
             if (giverUser.Credits < transferAmount)
             {
-                BotProgram.QueueMessage("The transfer amount is greater than your credits!");
+                BotProgram.MsgHandler.QueueMessage("The transfer amount is greater than your credits!");
                 return;
             }
 
@@ -92,7 +92,7 @@ namespace TRBot
             receiverUser.AddCredits(transferAmount);
             BotProgram.SaveBotData();
 
-            BotProgram.QueueMessage($"{giver} has transferred {transferAmount} points to {receiver} :D !");
+            BotProgram.MsgHandler.QueueMessage($"{giver} has transferred {transferAmount} points to {receiver} :D !");
         }
     }
 }

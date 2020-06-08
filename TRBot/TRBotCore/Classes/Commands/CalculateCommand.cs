@@ -53,17 +53,17 @@ namespace TRBot
                 //Ignore any output starting with a "/" to avoid exploiting this
                 if (finalExpr.StartsWith('/') == true)
                 {
-                    BotProgram.QueueMessage("Very clever, but I'm one step ahead of you.");
+                    BotProgram.MsgHandler.QueueMessage("Very clever, but I'm one step ahead of you.");
                     return;
                 }
 
-                BotProgram.QueueMessage(finalExpr);
+                BotProgram.MsgHandler.QueueMessage(finalExpr);
             }
             catch (Exception exc)
             {
                 Console.WriteLine(exc.Message);
 
-                BotProgram.QueueMessage(exc.Message);//"Sorry, I can't calculate that!");
+                BotProgram.MsgHandler.QueueMessage(exc.Message);//"Sorry, I can't calculate that!");
             }
             finally
             {

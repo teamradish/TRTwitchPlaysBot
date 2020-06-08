@@ -38,13 +38,13 @@ namespace TRBot
 
             if (args.Count == 0)
             {
-                BotProgram.QueueMessage($"The sleep time of the main thread is {BotProgram.BotSettings.MainThreadSleep}ms.");
+                BotProgram.MsgHandler.QueueMessage($"The sleep time of the main thread is {BotProgram.BotSettings.MainThreadSleep}ms.");
                 return;
             }
             
             if (args.Count > 1)
             {
-                BotProgram.QueueMessage("Usage: sleep time in ms");
+                BotProgram.MsgHandler.QueueMessage("Usage: sleep time in ms");
                 return;
             }
 
@@ -52,25 +52,25 @@ namespace TRBot
 
             if (int.TryParse(sleepStr, out int sleepNum) == false)
             {
-                BotProgram.QueueMessage("Invalid number.");
+                BotProgram.MsgHandler.QueueMessage("Invalid number.");
                 return;
             }
 
             if (sleepNum < Globals.MinSleepTime)
             {
-                BotProgram.QueueMessage($"The sleep time must be greater than or equal to the minimum of {Globals.MinSleepTime}ms!");
+                BotProgram.MsgHandler.QueueMessage($"The sleep time must be greater than or equal to the minimum of {Globals.MinSleepTime}ms!");
                 return;
             }
             else if (sleepNum > Globals.MaxSleepTime)
             {
-                BotProgram.QueueMessage($"The sleep time must be less than or equal to the maximum of {Globals.MaxSleepTime}ms!");
+                BotProgram.MsgHandler.QueueMessage($"The sleep time must be less than or equal to the maximum of {Globals.MaxSleepTime}ms!");
                 return;
             }
 
             BotProgram.BotSettings.MainThreadSleep = sleepNum;
             BotProgram.SaveSettings();
 
-            BotProgram.QueueMessage($"Set sleep time to {sleepNum}ms!");
+            BotProgram.MsgHandler.QueueMessage($"Set sleep time to {sleepNum}ms!");
         }
     }
 }

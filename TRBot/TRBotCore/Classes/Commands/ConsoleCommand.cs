@@ -38,7 +38,7 @@ namespace TRBot
             //See the console
             if (args.Count == 0)
             {
-                BotProgram.QueueMessage($"The current console is {InputGlobals.CurrentConsoleVal}. To set the console, add one as an argument: {GetValidConsoleStr()}");
+                BotProgram.MsgHandler.QueueMessage($"The current console is {InputGlobals.CurrentConsoleVal}. To set the console, add one as an argument: {GetValidConsoleStr()}");
                 return;
             }
 
@@ -46,13 +46,13 @@ namespace TRBot
 
             if (Enum.TryParse<InputGlobals.InputConsoles>(consoleStr, true, out InputGlobals.InputConsoles console) == false)
             {
-                BotProgram.QueueMessage($"Please enter a valid console: {GetValidConsoleStr()}");
+                BotProgram.MsgHandler.QueueMessage($"Please enter a valid console: {GetValidConsoleStr()}");
                 return;
             }
 
             if (console == InputGlobals.CurrentConsoleVal)
             {
-                BotProgram.QueueMessage($"The current console is already {InputGlobals.CurrentConsoleVal}!");
+                BotProgram.MsgHandler.QueueMessage($"The current console is already {InputGlobals.CurrentConsoleVal}!");
                 return;
             }
 
@@ -80,7 +80,7 @@ namespace TRBot
             //Resume inputs
             InputHandler.ResumeRunningInputs();
 
-            BotProgram.QueueMessage($"Set console to {InputGlobals.CurrentConsoleVal} and reset all running inputs!");
+            BotProgram.MsgHandler.QueueMessage($"Set console to {InputGlobals.CurrentConsoleVal} and reset all running inputs!");
         }
 
         private string GetValidConsoleStr()

@@ -34,7 +34,7 @@ namespace TRBot
         {
             if (BotProgram.BotData.Users == null || BotProgram.BotData.Users.Count == 0)
             {
-                BotProgram.QueueMessage("Sorry, the credits database is missing or empty!");
+                BotProgram.MsgHandler.QueueMessage("Sorry, the credits database is missing or empty!");
                 return;
             }
 
@@ -89,7 +89,7 @@ namespace TRBot
                 users += " have";
             }
 
-            BotProgram.QueueMessage($"{users} the most number of credits with a credit total of {highestCredits}!");
+            BotProgram.MsgHandler.QueueMessage($"{users} the most number of credits with a credit total of {highestCredits}!");
         }
     }
 }

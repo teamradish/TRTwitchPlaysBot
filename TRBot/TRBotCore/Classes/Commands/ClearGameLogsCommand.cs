@@ -46,7 +46,7 @@ namespace TRBot
 
             if (args.Count != 1)
             {
-                BotProgram.QueueMessage($"Enter \"{ConfirmationArg}\" as an argument to confirm clearing all game logs.");
+                BotProgram.MsgHandler.QueueMessage($"Enter \"{ConfirmationArg}\" as an argument to confirm clearing all game logs.");
                 return;
             }
 
@@ -54,7 +54,7 @@ namespace TRBot
 
             if (arg != ConfirmationArg)
             {
-                BotProgram.QueueMessage($"Enter \"{ConfirmationArg}\" as an argument to confirm clearing all game logs.");
+                BotProgram.MsgHandler.QueueMessage($"Enter \"{ConfirmationArg}\" as an argument to confirm clearing all game logs.");
                 return;
             }
 
@@ -62,7 +62,7 @@ namespace TRBot
             BotProgram.BotData.Logs.Clear();
             BotProgram.SaveBotData();
 
-            BotProgram.QueueMessage("Successfully cleared all game logs!");
+            BotProgram.MsgHandler.QueueMessage("Successfully cleared all game logs!");
         }
     }
 }

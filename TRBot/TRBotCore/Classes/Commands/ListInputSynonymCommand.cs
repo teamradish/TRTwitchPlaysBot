@@ -41,7 +41,7 @@ namespace TRBot
 
             if (args.Count == 0)
             {
-                BotProgram.QueueMessage("Usage: \"console\"");
+                BotProgram.MsgHandler.QueueMessage("Usage: \"console\"");
                 return;
             }
 
@@ -51,7 +51,7 @@ namespace TRBot
             if (Enum.TryParse<InputGlobals.InputConsoles>(consoleStr, true, out InputGlobals.InputConsoles console) == false
                 || InputGlobals.Consoles.ContainsKey(console) == false)
             {
-                BotProgram.QueueMessage($"Please specify a valid console.");
+                BotProgram.MsgHandler.QueueMessage($"Please specify a valid console.");
                 return;
             }
 
@@ -60,7 +60,7 @@ namespace TRBot
             //Add to the dictionary if it doesn't exist
             if (inputSyns.SynonymDict.TryGetValue(console, out Dictionary<string, string> dict) == false)
             {
-                BotProgram.QueueMessage($"No input synonyms available for console {console}");
+                BotProgram.MsgHandler.QueueMessage($"No input synonyms available for console {console}");
                 return;
             }
 
@@ -77,7 +77,7 @@ namespace TRBot
 
             string message = sb.ToString();
 
-            BotProgram.QueueMessage(message);
+            BotProgram.MsgHandler.QueueMessage(message);
         }
     }
 }

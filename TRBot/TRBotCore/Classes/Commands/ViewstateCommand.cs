@@ -32,7 +32,7 @@ namespace TRBot
 
             if (args.Count < 1)
             {
-                BotProgram.QueueMessage("Usage: state #");
+                BotProgram.MsgHandler.QueueMessage("Usage: state #");
                 return;
             }
 
@@ -40,14 +40,14 @@ namespace TRBot
 
             if (int.TryParse(stateNumStr, out int stateNum) == false)
             {
-                BotProgram.QueueMessage("Invalid state number.");
+                BotProgram.MsgHandler.QueueMessage("Invalid state number.");
                 return;
             }
 
             string saveStateStr = $"ss{stateNum}";
             if (InputGlobals.CurrentConsole.ButtonInputMap.ContainsKey(saveStateStr) == false)
             {
-                BotProgram.QueueMessage("Invalid state number.");
+                BotProgram.MsgHandler.QueueMessage("Invalid state number.");
                 return;
             }
 
@@ -56,7 +56,7 @@ namespace TRBot
 
             if (BotProgram.BotData.SavestateLogs.TryGetValue(stateNum, out stateLog) == false)
             {
-                BotProgram.QueueMessage("This state has not yet been saved!");
+                BotProgram.MsgHandler.QueueMessage("This state has not yet been saved!");
                 return;
             }
 
@@ -72,7 +72,7 @@ namespace TRBot
                 message = $"State {stateNum}, saved on {stateLog.DateTimeString} (UTC)";
             }
 
-            BotProgram.QueueMessage(message);
+            BotProgram.MsgHandler.QueueMessage(message);
         }
     }
 }

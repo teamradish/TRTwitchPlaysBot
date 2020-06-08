@@ -32,15 +32,15 @@ namespace TRBot
 
             if (numLogs == 1)
             {
-                BotProgram.QueueMessage("There is 1 game log!");
+                BotProgram.MsgHandler.QueueMessage("There is 1 game log!");
             }
             else if (numLogs > 0)
             {
-                BotProgram.QueueMessage($"There are {numLogs} game logs!");
+                BotProgram.MsgHandler.QueueMessage($"There are {numLogs} game logs!");
             }
             else
             {
-                BotProgram.QueueMessage("There are no game logs!");
+                BotProgram.MsgHandler.QueueMessage("There are no game logs!");
             }
         }
     }

@@ -39,7 +39,7 @@ namespace TRBot
 
             if (args.Count < 1)
             {
-                BotProgram.QueueMessage("Usage: state #");
+                BotProgram.MsgHandler.QueueMessage("Usage: state #");
                 return;
             }
 
@@ -47,14 +47,14 @@ namespace TRBot
 
             if (int.TryParse(stateNumStr, out int stateNum) == false)
             {
-                BotProgram.QueueMessage("Invalid state number.");
+                BotProgram.MsgHandler.QueueMessage("Invalid state number.");
                 return;
             }
 
             string saveStateStr = $"ss{stateNum}";
             if (InputGlobals.CurrentConsole.ButtonInputMap.ContainsKey(saveStateStr) == false)
             {
-                BotProgram.QueueMessage("Invalid state number.");
+                BotProgram.MsgHandler.QueueMessage("Invalid state number.");
                 return;
             }
 
@@ -68,7 +68,7 @@ namespace TRBot
             {
                 if (string.IsNullOrEmpty(inputValidation.Message) == false)
                 {
-                    BotProgram.QueueMessage(inputValidation.Message);
+                    BotProgram.MsgHandler.QueueMessage(inputValidation.Message);
                 }
 
                 return;
@@ -104,7 +104,7 @@ namespace TRBot
             BotProgram.BotData.SavestateLogs[stateNum] = newStateLog;
             BotProgram.SaveBotData();
 
-            BotProgram.QueueMessage($"Saved state {stateNum}!");
+            BotProgram.MsgHandler.QueueMessage($"Saved state {stateNum}!");
 
             //Wait a bit before releasing the input
             const float wait = 50f;

@@ -38,7 +38,7 @@ namespace TRBot
 
             if (amount.Count != 1)
             {
-                BotProgram.QueueMessage($"Sorry, please enter a valid bet amount!");
+                BotProgram.MsgHandler.QueueMessage($"Sorry, please enter a valid bet amount!");
                 return;
             }
 
@@ -46,7 +46,7 @@ namespace TRBot
             {
                 if (creditBet <= 0)
                 {
-                    BotProgram.QueueMessage("Bet amount must be greater than 0!");
+                    BotProgram.MsgHandler.QueueMessage("Bet amount must be greater than 0!");
                     return;
                 }
 
@@ -61,13 +61,13 @@ namespace TRBot
 
                 if (user.OptedOut == true)
                 {
-                    BotProgram.QueueMessage("You cannot bet while opted out of bot stats.");
+                    BotProgram.MsgHandler.QueueMessage("You cannot bet while opted out of bot stats.");
                     return;
                 }
 
                 if (creditBet > user.Credits)
                 {
-                    BotProgram.QueueMessage("Bet amount is greater than credits!");
+                    BotProgram.MsgHandler.QueueMessage("Bet amount is greater than credits!");
                 }
                 else
                 {
@@ -85,14 +85,14 @@ namespace TRBot
                         message = $"{name} lost {creditBet} credits :(";
                     }
 
-                    BotProgram.QueueMessage(message);
+                    BotProgram.MsgHandler.QueueMessage(message);
 
                     BotProgram.SaveBotData();
                 }
             }
             else
             {
-                BotProgram.QueueMessage($"Sorry, please enter a valid bet amount!");
+                BotProgram.MsgHandler.QueueMessage($"Sorry, please enter a valid bet amount!");
             }
         }
     }

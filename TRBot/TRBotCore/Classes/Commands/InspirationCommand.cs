@@ -67,7 +67,7 @@ namespace TRBot
 
             string message = RandomInspiration[randinspiration].Replace("{name}", userName);
 
-            BotProgram.QueueMessage(message);
+            BotProgram.MsgHandler.QueueMessage(message);
         }
     }
 }

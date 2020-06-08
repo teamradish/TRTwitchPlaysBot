@@ -41,13 +41,13 @@ namespace TRBot
         {
             if (BotProgram.BotData.Achievements.AchievementDict.Count == 0)
             {
-                BotProgram.QueueMessage("There are no achievements :(");
+                BotProgram.MsgHandler.QueueMessage("There are no achievements :(");
                 return;
             }
 
             for (int i = 0; i < AchievementCache.Count; i++)
             {
-                BotProgram.QueueMessage(AchievementCache[i]);
+                BotProgram.MsgHandler.QueueMessage(AchievementCache[i]);
             }
         }
 

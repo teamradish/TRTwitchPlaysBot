@@ -34,7 +34,7 @@ namespace TRBot
 
             if (args.Count == 0)
             {
-                BotProgram.QueueMessage($"The max duration of an input sequence is {BotProgram.BotData.MaxInputDuration} milliseconds!");
+                BotProgram.MsgHandler.QueueMessage($"The max duration of an input sequence is {BotProgram.BotData.MaxInputDuration} milliseconds!");
                 return;
             }
 
@@ -43,38 +43,38 @@ namespace TRBot
             //Disallow setting the duration if the user doesn't have a sufficient access level
             if (user.Level < SetAccessLevel)
             {
-                BotProgram.QueueMessage(CommandHandler.INVALID_ACCESS_MESSAGE);
+                BotProgram.MsgHandler.QueueMessage(CommandHandler.INVALID_ACCESS_MESSAGE);
                 return;
             }
 
             if (args.Count > 1)
             {
-                BotProgram.QueueMessage($"Usage: \"duration (ms)\"");
+                BotProgram.MsgHandler.QueueMessage($"Usage: \"duration (ms)\"");
                 return;
             }
 
             if (int.TryParse(args[0], out int newMaxDur) == false)
             {
-                BotProgram.QueueMessage("Please enter a valid number!");
+                BotProgram.MsgHandler.QueueMessage("Please enter a valid number!");
                 return;
             }
 
             if (newMaxDur < 0)
             {
-                BotProgram.QueueMessage("Cannot set a negative duration!");
+                BotProgram.MsgHandler.QueueMessage("Cannot set a negative duration!");
                 return;
             }
 
             if (newMaxDur == BotProgram.BotData.MaxInputDuration)
             {
-                BotProgram.QueueMessage("The duration is already this value!");
+                BotProgram.MsgHandler.QueueMessage("The duration is already this value!");
                 return;
             }
 
             BotProgram.BotData.MaxInputDuration = newMaxDur;
             BotProgram.SaveBotData();
 
-            BotProgram.QueueMessage($"Set max input sequence duration to {newMaxDur} milliseconds!");
+            BotProgram.MsgHandler.QueueMessage($"Set max input sequence duration to {newMaxDur} milliseconds!");
         }
     }
 }

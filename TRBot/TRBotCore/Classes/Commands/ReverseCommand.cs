@@ -43,7 +43,7 @@ namespace TRBot
 
             if (args.Count == 0)
             {
-                BotProgram.QueueMessage("Usage: \"message\"");
+                BotProgram.MsgHandler.QueueMessage("Usage: \"message\"");
                 return;
             }
 
@@ -55,11 +55,11 @@ namespace TRBot
             //Ignore any output starting with a "/" to avoid exploiting Twitch chat commands
             if (msg.StartsWith('/') == true)
             {
-                BotProgram.QueueMessage("!uoy rof sdnammoc tahc hctiwT oN");
+                BotProgram.MsgHandler.QueueMessage("!uoy rof sdnammoc tahc hctiwT oN");
                 return;
             }
 
-            BotProgram.QueueMessage(msg);
+            BotProgram.MsgHandler.QueueMessage(msg);
         }
     }
 }

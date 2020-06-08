@@ -35,11 +35,11 @@ namespace TRBot
         {
             if (BotProgram.BotData != null && BotProgram.BotData.JRData != null)
             {
-                BotProgram.QueueMessage($"The biggest jump rope streak is {BotProgram.BotData.JRData.Streak}!");
+                BotProgram.MsgHandler.QueueMessage($"The biggest jump rope streak is {BotProgram.BotData.JRData.Streak}!");
             }
             else
             {
-                BotProgram.QueueMessage("Something went wrong - I can't find the highest Jump Rope streak!");
+                BotProgram.MsgHandler.QueueMessage("Something went wrong - I can't find the highest Jump Rope streak!");
             }
         }
     }

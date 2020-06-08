@@ -53,7 +53,7 @@ namespace TRBot
              */
             if (Globals.SaveToTextFile(Globals.GameMessageFilename, BotProgram.BotData.GameMessage) == false)
             {
-                BotProgram.QueueMessage($"Unable to save message to file");
+                BotProgram.MsgHandler.QueueMessage($"Unable to save message to file");
             }
 
             BotProgram.SaveBotData();

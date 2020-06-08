@@ -49,7 +49,7 @@ namespace TRBot
 
                 if (food.Length > 40)
                 {
-                    BotProgram.QueueMessage("That's too long; I don't know what kind of food that is!");
+                    BotProgram.MsgHandler.QueueMessage("That's too long; I don't know what kind of food that is!");
                     return;
                 }
 
@@ -59,16 +59,16 @@ namespace TRBot
                 {
                     if (item.Value.Contains(foodToLower) == true)
                     {
-                        BotProgram.QueueMessage(item.Key);
+                        BotProgram.MsgHandler.QueueMessage(item.Key);
                         return;
                     }
                 }
 
-                BotProgram.QueueMessage($"I'm indifferent on {food}. Give me something else to eat!");
+                BotProgram.MsgHandler.QueueMessage($"I'm indifferent on {food}. Give me something else to eat!");
             }
             else
             {
-                BotProgram.QueueMessage("Sorry, I don't recognize that! Feed me something with {Globals.CommandIdentifier}feed");
+                BotProgram.MsgHandler.QueueMessage("Sorry, I don't recognize that! Feed me something with {Globals.CommandIdentifier}feed");
             }
         }
 

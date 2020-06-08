@@ -32,19 +32,19 @@ namespace TRBot
 
             if (args.Count == 0 || args.Count > 1)
             {
-                BotProgram.QueueMessage("Usage: \"controllerPort (starting from 1)\"");
+                BotProgram.MsgHandler.QueueMessage("Usage: \"controllerPort (starting from 1)\"");
                 return;
             }
 
             if (int.TryParse(args[0], out int portNum) == false)
             {
-                BotProgram.QueueMessage("That is not a valid number!");
+                BotProgram.MsgHandler.QueueMessage("That is not a valid number!");
                 return;
             }
 
             if (portNum <= 0 || portNum > InputGlobals.ControllerMngr.ControllerCount)
             {
-                BotProgram.QueueMessage($"Please specify a number in the range of 1 through the current controller count ({InputGlobals.ControllerMngr.ControllerCount}).");
+                BotProgram.MsgHandler.QueueMessage($"Please specify a number in the range of 1 through the current controller count ({InputGlobals.ControllerMngr.ControllerCount}).");
                 return;
             }
 
@@ -55,7 +55,7 @@ namespace TRBot
 
             if (user.Team == controllerNum)
             {
-                BotProgram.QueueMessage("You're already on this controller port!");
+                BotProgram.MsgHandler.QueueMessage("You're already on this controller port!");
                 return;
             }
 
@@ -64,7 +64,7 @@ namespace TRBot
 
             BotProgram.SaveBotData();
 
-            BotProgram.QueueMessage($"Changed controller port to {portNum}!");
+            BotProgram.MsgHandler.QueueMessage($"Changed controller port to {portNum}!");
         }
     }
 }

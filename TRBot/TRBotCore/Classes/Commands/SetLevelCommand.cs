@@ -38,7 +38,7 @@ namespace TRBot
 
             if (args.Count != 2)
             {
-                BotProgram.QueueMessage($"{Globals.CommandIdentifier}setlevel usage: \"username\" \"level\"");
+                BotProgram.MsgHandler.QueueMessage($"{Globals.CommandIdentifier}setlevel usage: \"username\" \"level\"");
                 return;
             }
 
@@ -48,7 +48,7 @@ namespace TRBot
             string curUserName = e.Command.ChatMessage.Username.ToLowerInvariant();
             if (levelUsername == curUserName)
             {
-                BotProgram.QueueMessage("You cannot set your own level!");
+                BotProgram.MsgHandler.QueueMessage("You cannot set your own level!");
                 return;
             }
 
@@ -56,7 +56,7 @@ namespace TRBot
 
             if (levelUser == null)
             {
-                BotProgram.QueueMessage($"User does not exist in database!");
+                BotProgram.MsgHandler.QueueMessage($"User does not exist in database!");
                 return;
             }
 
@@ -64,19 +64,19 @@ namespace TRBot
 
             if (curUser == null)
             {
-                BotProgram.QueueMessage("Invalid user of this command; something went wrong?!");
+                BotProgram.MsgHandler.QueueMessage("Invalid user of this command; something went wrong?!");
                 return;
             }
 
             if (levelUser.Level >= curUser.Level)
             {
-                BotProgram.QueueMessage("You can't set the level of a user with a level equal to or greater than yours!");
+                BotProgram.MsgHandler.QueueMessage("You can't set the level of a user with a level equal to or greater than yours!");
                 return;
             }
 
             if (int.TryParse(levelStr, out int levelNum) == false)
             {
-                BotProgram.QueueMessage("Invalid level specified.");
+                BotProgram.MsgHandler.QueueMessage("Invalid level specified.");
                 return;
             }
 
@@ -97,13 +97,13 @@ namespace TRBot
 
             if (found == false)
             {
-                BotProgram.QueueMessage("Invalid level specified.");
+                BotProgram.MsgHandler.QueueMessage("Invalid level specified.");
                 return;
             }
 
             if (levelNum > curUser.Level)
             {
-                BotProgram.QueueMessage("You cannot set a level greater than your own!");
+                BotProgram.MsgHandler.QueueMessage("You cannot set a level greater than your own!");
                 return;
             }
 
@@ -111,7 +111,7 @@ namespace TRBot
 
             BotProgram.SaveBotData();
 
-            BotProgram.QueueMessage($"Set {levelUsername}'s level to {levelNum}, {lvlName}!");
+            BotProgram.MsgHandler.QueueMessage($"Set {levelUsername}'s level to {levelNum}, {lvlName}!");
         }
     }
 }

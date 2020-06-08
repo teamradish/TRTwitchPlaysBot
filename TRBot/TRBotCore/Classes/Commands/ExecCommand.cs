@@ -50,7 +50,7 @@ namespace TRBot
 
             if (string.IsNullOrEmpty(code) == true)
             {
-                BotProgram.QueueMessage($"Usage: \"C# code\"");
+                BotProgram.MsgHandler.QueueMessage($"Usage: \"C# code\"");
                 return;
             }
 
@@ -69,23 +69,23 @@ namespace TRBot
                 using (BotWriter writer = new BotWriter())
                 {
                     Console.SetOut(writer);
-                    BotProgram.IgnoreConsoleLog = true;
+                    BotProgram.MsgHandler.SetIgnoreConsoleLog(true);
 
                     var script = await CSharpScript.RunAsync(code, ScriptCompileOptions);
 
                     Console.SetOut(defaultOut);
-                    BotProgram.IgnoreConsoleLog = false;
+                    BotProgram.MsgHandler.SetIgnoreConsoleLog(false);
                 }
             }
             catch (CompilationErrorException exception)
             {
-                BotProgram.QueueMessage($"Compiler error: {exception.Message}");
+                BotProgram.MsgHandler.QueueMessage($"Compiler error: {exception.Message}");
             }
             //Regardless of what happens, return the output stream to the default
             finally
             {
                 Console.SetOut(defaultOut);
-                BotProgram.IgnoreConsoleLog = false;
+                BotProgram.MsgHandler.SetIgnoreConsoleLog(false);
             }
         }
 
@@ -98,12 +98,12 @@ namespace TRBot
 
             public override void Write(string value)
             {
-                BotProgram.QueueMessage(value);
+                BotProgram.MsgHandler.QueueMessage(value);
             }
 
             public override void WriteLine(string value)
             {
-                BotProgram.QueueMessage(value);
+                BotProgram.MsgHandler.QueueMessage(value);
             }
         }
     }

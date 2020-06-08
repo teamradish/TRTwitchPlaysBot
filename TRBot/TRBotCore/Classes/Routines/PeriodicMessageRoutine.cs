@@ -46,7 +46,7 @@ namespace TRBot
             {
                 if (clientService.IsConnected == true)
                 {
-                    BotProgram.QueueMessage($"Hi! I'm {BotProgram.BotName} :D ! Use {Globals.CommandIdentifier}help to display a list of commands!");
+                    BotProgram.MsgHandler.QueueMessage($"Hi! I'm {BotProgram.BotName} :D ! Use {Globals.CommandIdentifier}help to display a list of commands!");
                     CurMsgTime = currentTime;
                 }
             }

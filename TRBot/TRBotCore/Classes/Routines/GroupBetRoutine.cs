@@ -57,7 +57,7 @@ namespace TRBot
 
                 if (minutesRemaining >= 1)
                 {
-                    BotProgram.QueueMessage($"{minutesRemaining} minute(s) remaining for the group bet! Join while you still can!");
+                    BotProgram.MsgHandler.QueueMessage($"{minutesRemaining} minute(s) remaining for the group bet! Join while you still can!");
                 }
 
                 CurMinute = currentTime;
@@ -108,7 +108,7 @@ namespace TRBot
                     invalid = invalid.Remove(invalid.Length - 2, 2);
 
                     //Mention who was disqualified
-                    BotProgram.QueueMessage($"{invalid} was/were disqualified from the group bet since their credits are now lower than their bet(s)!");
+                    BotProgram.MsgHandler.QueueMessage($"{invalid} was/were disqualified from the group bet since their credits are now lower than their bet(s)!");
                 }
 
                 if (total > 0)
@@ -117,11 +117,11 @@ namespace TRBot
                     BotProgram.BotData.Users[winner.Key].AddCredits(total);
                     BotProgram.SaveBotData();
 
-                    BotProgram.QueueMessage($"{winner.Key} won the group bet and {total} credit(s) :D! Nice!");
+                    BotProgram.MsgHandler.QueueMessage($"{winner.Key} won the group bet and {total} credit(s) :D! Nice!");
 
                     if (participants.Count == 1)
                     {
-                        BotProgram.QueueMessage("What a bummer! Everyone else was disqualified from the group bet, so the winner only won their bet!");
+                        BotProgram.MsgHandler.QueueMessage("What a bummer! Everyone else was disqualified from the group bet, so the winner only won their bet!");
                     }
                 }
 

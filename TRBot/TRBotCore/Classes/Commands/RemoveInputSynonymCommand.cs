@@ -41,7 +41,7 @@ namespace TRBot
 
             if (args.Count != 2)
             {
-                BotProgram.QueueMessage("Usage: \"console\" \"synonymName\"");
+                BotProgram.MsgHandler.QueueMessage("Usage: \"console\" \"synonymName\"");
                 return;
             }
 
@@ -51,7 +51,7 @@ namespace TRBot
             if (Enum.TryParse<InputGlobals.InputConsoles>(consoleStr, true, out InputGlobals.InputConsoles console) == false
                 || InputGlobals.Consoles.ContainsKey(console) == false)
             {
-                BotProgram.QueueMessage($"Please specify a valid console.");
+                BotProgram.MsgHandler.QueueMessage($"Please specify a valid console.");
                 return;
             }
 
@@ -62,21 +62,21 @@ namespace TRBot
             //Check if input synonyms exist for this console
             if (inputSyns.SynonymDict.TryGetValue(console, out Dictionary<string, string> dict) == false)
             {
-                BotProgram.QueueMessage($"No input synonyms exist for console {console}!");
+                BotProgram.MsgHandler.QueueMessage($"No input synonyms exist for console {console}!");
                 return;
             }
 
             //Remove the synonym
             if (dict.Remove(synonymName) == false)
             {
-                BotProgram.QueueMessage($"No input synonym \"{synonymName}\" exists for console {console}!");
+                BotProgram.MsgHandler.QueueMessage($"No input synonym \"{synonymName}\" exists for console {console}!");
                 return;
             }
 
             //Save bot data
             BotProgram.SaveBotData();
 
-            BotProgram.QueueMessage($"Successfully removed input synonym \"{synonymName}\"!");
+            BotProgram.MsgHandler.QueueMessage($"Successfully removed input synonym \"{synonymName}\"!");
         }
     }
 }
