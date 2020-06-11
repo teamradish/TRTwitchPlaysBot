@@ -85,11 +85,11 @@ namespace TRBot
                 CurReconnectionAttempts++;
                 CurReconnectTimeStamp = currentTime;
 
-                Console.WriteLine($"Attempting reconnect #{CurReconnectionAttempts}");
+                Console.WriteLine($"Attempting reconnect #{CurReconnectionAttempts} to channel.");
 
                 if (CurReconnectionAttempts >= MaxReconnectAttempts)
                 {
-                    Console.WriteLine($"Exceeded max reconnection attempts of {MaxReconnectAttempts}");
+                    Console.WriteLine($"Exceeded max reconnection attempts of {MaxReconnectAttempts}. Please check your internet connection and restart the bot.");
                 }
 
                 //Double check yet again just to make sure the client isn't already connected before trying to reconnect

@@ -362,7 +362,7 @@ namespace TRBot
 
         private void OnDisconnected(EvtDisconnectedArgs e)
         {
-            Console.WriteLine("Disconnected!");
+            Console.WriteLine("Bot disconnected! Please check your internet connection.");
         }
 
         public static User GetUser(string username, bool isLower = true)
