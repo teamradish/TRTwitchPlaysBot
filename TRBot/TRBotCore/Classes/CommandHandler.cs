@@ -120,6 +120,7 @@ namespace TRBot
             CommandDict.Add("addsyn", new AddInputSynonymCommand());
             CommandDict.Add("removesyn", new RemoveInputSynonymCommand());
             CommandDict.Add("exportbotdata", new ExportBotDataCommand());
+            CommandDict.Add("pressedinputs", new ListPressedInputsCommand());
             CommandDict.Add("tutorial", new TutorialCommand());
 
             foreach (KeyValuePair<string, BaseCommand> command in CommandDict)

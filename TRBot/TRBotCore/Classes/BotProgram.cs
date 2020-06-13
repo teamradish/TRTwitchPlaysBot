@@ -272,7 +272,15 @@ namespace TRBot
 
         private void OnChatCommandReceived(EvtChatCommandArgs e)
         {
-            CommandHandler.HandleCommand(e);
+            //If an exception is unhandled in a command, the entire bot will hang up (potential internal TwitchLib issue)
+            try
+            {
+                CommandHandler.HandleCommand(e);
+            }
+            catch (Exception exc)
+            {
+                BotProgram.MsgHandler.QueueMessage($"Error handling command \"{e.Command.CommandText}\": {exc.Message}");
+            }
         }
 
         private void OnUserSentMessage(User user, EvtUserMessageArgs e)
