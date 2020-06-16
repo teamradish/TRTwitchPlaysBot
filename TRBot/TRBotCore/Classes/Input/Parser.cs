@@ -357,9 +357,9 @@ namespace TRBot
         /// <returns>An InputSequence containing information about the parsed inputs.</returns>
         public static InputSequence ParseInputs(string message, in bool checkMaxDur)
         {
-            //Remove all whitespace and populate synonyms
-            message = message.Replace(" ", string.Empty).ToLower();
+            //Populate synonyms and remove all whitespace
             message = PopulateSynonyms(message, InputGlobals.InputSynonyms);
+            message = message.Replace(" ", string.Empty).ToLower();
 
             //Full Regex:
             // ([_-])?(left|right|a)(\d+%)?((\d+ms)|(\d+s))?(\+)?

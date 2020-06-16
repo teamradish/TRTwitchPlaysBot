@@ -39,18 +39,22 @@ namespace TRBot
             { "x", (int)GlobalButtonVals.BTN8 },
             { "y", (int)GlobalButtonVals.BTN9 },
             { "z", (int)GlobalButtonVals.BTN10 },
-            { "ss1", (int)GlobalButtonVals.BTN19 },
-            { "ss2", (int)GlobalButtonVals.BTN20 },
-            { "ss3", (int)GlobalButtonVals.BTN21 },
-            { "ss4", (int)GlobalButtonVals.BTN22 },
-            { "ss5", (int)GlobalButtonVals.BTN23 },
-            { "ss6", (int)GlobalButtonVals.BTN24 },
-            { "ls1", (int)GlobalButtonVals.BTN25 },
-            { "ls2", (int)GlobalButtonVals.BTN26 },
-            { "ls3", (int)GlobalButtonVals.BTN27 },
-            { "ls4", (int)GlobalButtonVals.BTN28 },
-            { "ls5", (int)GlobalButtonVals.BTN29 },
-            { "ls6", (int)GlobalButtonVals.BTN30 },
+            { "ss", (int)GlobalButtonVals.BTN11 },
+            { "ls", (int)GlobalButtonVals.BTN12 },
+            { "incs", (int)GlobalButtonVals.BTN13 },
+            { "decs", (int)GlobalButtonVals.BTN14 },
+            //{ "ss1", (int)GlobalButtonVals.BTN19 },
+            //{ "ss2", (int)GlobalButtonVals.BTN20 },
+            //{ "ss3", (int)GlobalButtonVals.BTN21 },
+            //{ "ss4", (int)GlobalButtonVals.BTN22 },
+            //{ "ss5", (int)GlobalButtonVals.BTN23 },
+            //{ "ss6", (int)GlobalButtonVals.BTN24 },
+            //{ "ls1", (int)GlobalButtonVals.BTN25 },
+            //{ "ls2", (int)GlobalButtonVals.BTN26 },
+            //{ "ls3", (int)GlobalButtonVals.BTN27 },
+            //{ "ls4", (int)GlobalButtonVals.BTN28 },
+            //{ "ls5", (int)GlobalButtonVals.BTN29 },
+            //{ "ls6", (int)GlobalButtonVals.BTN30 },
             { "start", (int)GlobalButtonVals.BTN31 },
             { "mode", (int)GlobalButtonVals.BTN32 }
         };
@@ -58,8 +62,9 @@ namespace TRBot
         public override string[] ValidInputs { get; protected set; } = new string[]
         {
             "up", "down", "left", "right", "a", "b", "c", "x", "y", "z", "start", "mode",
-            "ss1", "ss2", "ss3", "ss4", "ss5", "ss6",
-            "ls1", "ls2", "ls3", "ls4", "ls5", "ls6",
+            "ss", "ls", "incs", "decs",
+            //"ss1", "ss2", "ss3", "ss4", "ss5", "ss6",
+            //"ls1", "ls2", "ls3", "ls4", "ls5", "ls6",
             "#"
         };
 
