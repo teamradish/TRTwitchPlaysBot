@@ -354,11 +354,15 @@ namespace TRBot
         /// <param name="message">The expanded message.</param>
         /// <param name="checkMaxDur">If true, will render the input invalid if
         /// the total duration exceeds the maximum input duration.</param>
+        /// <param name="replaceSynonyms">If true, will replace the defined input synonyms with their actual inputs.</param>
         /// <returns>An InputSequence containing information about the parsed inputs.</returns>
-        public static InputSequence ParseInputs(string message, in bool checkMaxDur)
+        public static InputSequence ParseInputs(string message, in bool checkMaxDur, in bool useSynonyms)
         {
             //Populate synonyms and remove all whitespace
-            message = PopulateSynonyms(message, InputGlobals.InputSynonyms);
+            if (useSynonyms == true)
+            {
+                message = PopulateSynonyms(message, InputGlobals.InputSynonyms);
+            }
             message = message.Replace(" ", string.Empty).ToLower();
 
             //Full Regex:

@@ -152,9 +152,9 @@ namespace TRBot
 
             try
             {
-                //Ignore max duration
+                //Ignore max duration and synonyms
                 string parse_message = Parser.Expandify(Parser.PopulateMacros(userCommand));
-                inputSequence = Parser.ParseInputs(parse_message, false);
+                inputSequence = Parser.ParseInputs(parse_message, false, false);
             }
             catch
             {

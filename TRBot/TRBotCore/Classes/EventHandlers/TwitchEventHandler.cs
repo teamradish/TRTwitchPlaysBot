@@ -285,7 +285,7 @@ namespace TRBot
             try
             {
                 string parse_message = Parser.Expandify(Parser.PopulateMacros(e.UsrMessage.Message));
-                inputSequence = Parser.ParseInputs(parse_message, true);
+                inputSequence = Parser.ParseInputs(parse_message, true, true);
                 //parsedVal = Parser.Parse(parse_message);
                 //Console.WriteLine(inputSequence.ToString());
                 //Console.WriteLine("\nReverse Parsed: " + ReverseParser.ReverseParse(inputSequence));
