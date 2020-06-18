@@ -324,7 +324,7 @@ namespace TRBot
             //We're okay to perform the input
             if (shouldPerformInput == true)
             {
-                InputHandler.CarryOutInput(validInputSeq.Inputs, controllerNum);
+                InputHandler.CarryOutInput(validInputSeq.Inputs);
 
                 //If auto whitelist is enabled, the user reached the whitelist message threshold,
                 //the user isn't whitelisted, and the user hasn't ever been whitelisted, whitelist them

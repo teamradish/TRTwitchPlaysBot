@@ -525,7 +525,8 @@ namespace TRBot
                     return input;
                 }
 
-                input.controllerPort = portnum;
+                //Set it to the port minus 1 (Ex. 1 returns port 0)
+                input.controllerPort = portnum - 1;
             }
 
             //Hold or release modifier
