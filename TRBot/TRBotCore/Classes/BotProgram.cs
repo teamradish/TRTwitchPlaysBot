@@ -305,25 +305,29 @@ namespace TRBot
                 user.IncrementValidInputCount();
             }
 
-            bool shouldPerformInput = true;
+            //bool shouldPerformInput = true;
+
+            ///NOTE: This validation is now performed beforehand in
+            ///<see cref="ParserPostProcess.CheckInputPermissionsAndPorts"/>
 
             //Check the team the user is on for the controller they should be using
             //Validate that the controller is acquired and exists
-            int controllerNum = user.Team;
-            if (controllerNum < 0 || controllerNum >= InputGlobals.ControllerMngr.ControllerCount)
-            {
-                BotProgram.MsgHandler.QueueMessage($"ERROR: Invalid joystick number {controllerNum + 1}. # of joysticks: {InputGlobals.ControllerMngr.ControllerCount}. Please change your controller port to a valid number to perform inputs.");
-                shouldPerformInput = false;
-            }
-            //Now verify that the controller has been acquired
-            else if (InputGlobals.ControllerMngr.GetController(controllerNum).IsAcquired == false)
-            {
-                BotProgram.MsgHandler.QueueMessage($"ERROR: Joystick number {controllerNum + 1} with controller ID of {InputGlobals.ControllerMngr.GetController(controllerNum).ControllerID} has not been acquired! Ensure you (the streamer) have a virtual device set up at this ID.");
-                shouldPerformInput = false;
-            }
+            //int controllerNum = user.Team;
+            //if (controllerNum < 0 || controllerNum >= InputGlobals.ControllerMngr.ControllerCount)
+            //{
+            //    BotProgram.MsgHandler.QueueMessage($"ERROR: Invalid joystick number {controllerNum + 1}. # of joysticks: {InputGlobals.ControllerMngr.ControllerCount}. Please change your controller port to a valid number to perform inputs.");
+            //    shouldPerformInput = false;
+            //}
+            ////Now verify that the controller has been acquired
+            //else if (InputGlobals.ControllerMngr.GetController(controllerNum).IsAcquired == false)
+            //{
+            //    BotProgram.MsgHandler.QueueMessage($"ERROR: Joystick number {controllerNum + 1} with controller ID of {InputGlobals.ControllerMngr.GetController(controllerNum).ControllerID} has not been acquired! Ensure you (the streamer) have a virtual device set up at this ID.");
+            //    shouldPerformInput = false;
+            //}
+
             //We're okay to perform the input
-            if (shouldPerformInput == true)
-            {
+            //if (shouldPerformInput == true)
+            //{
                 InputHandler.CarryOutInput(validInputSeq.Inputs);
 
                 //If auto whitelist is enabled, the user reached the whitelist message threshold,
@@ -340,7 +344,7 @@ namespace TRBot
                         MsgHandler.QueueMessage(msg);
                     }
                 }
-            }
+            //}
         }
 
         private void OnWhisperReceived(EvtWhisperMessageArgs e)

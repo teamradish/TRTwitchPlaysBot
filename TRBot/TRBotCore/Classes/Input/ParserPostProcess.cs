@@ -223,19 +223,35 @@ namespace TRBot
         }
 
         /// <summary>
-        /// Validates permission for a user to perform certain inputs.
+        /// Validates permission for a user to perform certain inputs and the controller ports used.
         /// </summary>
         /// <param name="userLevel">The level of the user.</param>
         /// <param name="inputs">The inputs to check.</param>
         /// <param name="inputAccessLevels">The dictionary of access levels for inputs.</param>
         /// <returns>An InputValidation object specifying if the input is valid and a message, if any.</returns>
-        public static InputValidation CheckInputPermissions(in int userLevel, List<List<Parser.Input>> inputs, Dictionary<string, int> inputAccessLevels)
+        public static InputValidation CheckInputPermissionsAndPorts(in int userLevel, List<List<Parser.Input>> inputs, Dictionary<string, int> inputAccessLevels)
         {
             for (int i = 0; i < inputs.Count; i++)
             {
                 for (int j = 0; j < inputs[i].Count; j++)
                 {
                     Parser.Input input = inputs[i][j];
+
+                    //Check for a valid port
+                    if (input.controllerPort >= 0 && input.controllerPort < InputGlobals.ControllerMngr.ControllerCount)
+                    {
+                        //Check if the controller is acquired
+                        IVirtualController controller = InputGlobals.ControllerMngr.GetController(input.controllerPort);
+                        if (controller.IsAcquired == false)
+                        {
+                            return new InputValidation(false, $"ERROR: Joystick number {input.controllerPort + 1} with controller ID of {controller.ControllerID} has not been acquired! Ensure you (the streamer) have a virtual device set up at this ID.");
+                        }
+                    }
+                    //Invalid port
+                    else
+                    {
+                        return new InputValidation(false, $"ERROR: Invalid joystick number {input.controllerPort + 1}. # of joysticks: {InputGlobals.ControllerMngr.ControllerCount}. Please change yours or your input's controller port to a valid number to perform inputs.");
+                    }
 
                     if (inputAccessLevels.TryGetValue(input.name, out int accessLvl) == false)
                     {

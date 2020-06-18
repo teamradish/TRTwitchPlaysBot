@@ -337,7 +337,8 @@ namespace TRBot
              */
             
             //Check if the user has permission to perform all the inputs they attempted
-            ParserPostProcess.InputValidation inputValidation = ParserPostProcess.CheckInputPermissions(userData.Level, inputSequence.Inputs,
+            //Also validate that the controller ports they're inputting for are valid
+            ParserPostProcess.InputValidation inputValidation = ParserPostProcess.CheckInputPermissionsAndPorts(userData.Level, inputSequence.Inputs,
                 BotProgram.BotData.InputAccess.InputAccessDict);
 
             //If the input isn't valid, exit

@@ -214,6 +214,7 @@ namespace TRBot
                         {
                             IVirtualController controller = InputGlobals.ControllerMngr.GetController(waitIdx);
                             controller.UpdateController();
+
                             nonWaits[waitIdx] = 0;
                         }
                     }
@@ -241,18 +242,14 @@ namespace TRBot
             //Update all used controllers
             for (int i = 0; i < usedControllerPorts.Length; i++)
             {
-                //0 indicates the port wasn't used
+                //A value of 0 indicates the port wasn't used
                 if (usedControllerPorts[i] == 0)
                 {
                     continue;
                 }
 
                 IVirtualController controller = InputGlobals.ControllerMngr.GetController(i);
-
-                if (controller.IsAcquired == true)
-                {
-                    controller.UpdateController();
-                }
+                controller.UpdateController();
             }
 
             //Decrement running threads
