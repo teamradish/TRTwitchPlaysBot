@@ -130,7 +130,7 @@ namespace TRBot
                 {
                     string parse_message = Parser.Expandify(Parser.PopulateMacros(parsedVal));
 
-                    Parser.InputSequence inputSequence = Parser.ParseInputs(parse_message, true, true);
+                    Parser.InputSequence inputSequence = Parser.ParseInputs(parse_message, 0, true, true);
                     //var val = Parser.Parse(parse_message);
 
                     if (inputSequence.InputValidationType != Parser.InputValidationTypes.Valid)//val.Item1 == false)
