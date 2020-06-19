@@ -30,29 +30,37 @@ namespace TRBot
         //One list is for held inputs with another for pressed inputs - the sum of their counts is compared with the invalid combo list's count
         //Released inputs do not count
         
-        public static bool ValidateButtonCombos(List<List<Parser.Input>> inputs, List<string> invalidCombo, in int controllerNum)
+        public static bool ValidateButtonCombos(List<List<Parser.Input>> inputs, List<string> invalidCombo)
         {
-            //This error will be handled later down the road, so simply return true to simplify things
-            if (controllerNum < 0 || controllerNum >= InputGlobals.ControllerMngr.ControllerCount
-                || InputGlobals.ControllerMngr.GetController(controllerNum).IsAcquired == false)
+            int controllerCount = InputGlobals.ControllerMngr.ControllerCount;
+            
+            //These dictionaries are for each controller port
+            Dictionary<int, List<string>> currentComboDict = new Dictionary<int, List<string>>(controllerCount);
+            Dictionary<int, List<string>> subComboDict = new Dictionary<int, List<string>>(controllerCount);
+            
+            for (int i = 0; i < controllerCount; i++)
             {
-                return true;
-            }
-            
-            List<string> currentCombo = new List<string>(invalidCombo.Count);
-            List<string> subCombo = new List<string>(invalidCombo.Count);
-            
-            IVirtualController controller = InputGlobals.ControllerMngr.GetController(controllerNum);
-            
-            //Add already pressed inputs from the controller
-            for (int i = 0; i < invalidCombo.Count; i++)
-            {
-                if (controller.GetButtonState(InputGlobals.CurrentConsole.ButtonInputMap[invalidCombo[i]]) == ButtonStates.Pressed)
+                IVirtualController controller = InputGlobals.ControllerMngr.GetController(i);
+                if (controller.IsAcquired == false)
                 {
-                    currentCombo.Add(invalidCombo[i]);
+                    continue;
+                }
+
+                //Add already pressed inputs from all controllers
+                for (int j = 0; j < invalidCombo.Count; j++)
+                {
+                    string button = invalidCombo[j];
+                    if (controller.GetButtonState(InputGlobals.CurrentConsole.ButtonInputMap[button]) == ButtonStates.Pressed)
+                    {
+                        if (currentComboDict.ContainsKey(i) == false)
+                        {
+                            currentComboDict[i] = new List<string>(invalidCombo.Count);
+                        }
+                        currentComboDict[i].Add(button);
+                    }
                 }
             }
-            
+
             //If all these inputs are somehow pressed already, whatever we do now doesn't matter 
             //However, returning false here would prevent any further inputs from working, so
             //give a chance to check other inputs (such as releasing)
@@ -60,12 +68,37 @@ namespace TRBot
             for (int i = 0; i < inputs.Count; i++)
             {
                 List<Parser.Input> inputList = inputs[i];
-                subCombo.Clear();
+
+                //Clear sublists
+                foreach (List<string> subList in subComboDict.Values)
+                {
+                    subList.Clear();
+                }
                 
                 for (int j = 0; j < inputList.Count; j++)
                 {
                     Parser.Input input = inputList[j];
-                    
+
+                    //Get controller port and initialize
+                    int port = input.controllerPort;
+
+                    //Ensure a currentcombo entry is available for this port
+                    if (currentComboDict.ContainsKey(port) == false)
+                    {
+                        currentComboDict[port] = new List<string>(invalidCombo.Count);
+                    }
+
+                    //Ensure a subcombo entry is available for this port
+                    if (subComboDict.ContainsKey(port) == false)
+                    {
+                        subComboDict[port] = new List<string>(invalidCombo.Count);
+                    }
+
+                    //Current and sub combo lists
+                    List<string> currentCombo = currentComboDict[port];
+
+                    List<string> subCombo = subComboDict[port];
+
                     //Check if this input is in the invalid combo
                     if (invalidCombo.Contains(input.name) == true)
                     {
@@ -104,7 +137,7 @@ namespace TRBot
                     }
                 }
             }
-            
+
             return true;
         }
         

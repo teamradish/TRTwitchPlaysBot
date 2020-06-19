@@ -354,7 +354,9 @@ namespace TRBot
             //Lastly, check for invalid button combos given the current console
             if (BotProgram.BotData.InvalidBtnCombos.InvalidCombos.TryGetValue((int)InputGlobals.CurrentConsoleVal, out List<string> invalidCombos) == true)
             {
-                if (ParserPostProcess.ValidateButtonCombos(inputSequence.Inputs, invalidCombos, userData.Team) == false)
+                bool buttonCombosValidated = ParserPostProcess.ValidateButtonCombos(inputSequence.Inputs, invalidCombos);
+
+                if (buttonCombosValidated == false)
                 {
                     string msg = "Invalid input: buttons ({0}) are not allowed to be pressed at the same time.";
                     string combos = string.Empty;
