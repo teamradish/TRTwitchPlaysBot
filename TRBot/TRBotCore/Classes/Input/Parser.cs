@@ -41,6 +41,7 @@ namespace TRBot
             NormalMsg, Valid, Invalid
         }
 
+        public const string ParseRegexPortInput = @"&";
         public const string ParseRegexHoldInput = @"_";
         public const string ParseRegexReleaseInput = @"-";
         public const string ParseRegexPlusInput = @"\+";
@@ -54,7 +55,7 @@ namespace TRBot
         /// <summary>
         /// The start of the input regex string.
         /// </summary>
-        public const string ParseRegexStart = "([" + ParseRegexHoldInput + ParseRegexReleaseInput + "])?(";
+        public const string ParseRegexStart = @"(" + ParseRegexPortInput + @"\d+)?" + "([" + ParseRegexHoldInput + ParseRegexReleaseInput + "])?(";
 
         /// <summary>
         /// The end of the input regex string.
@@ -352,11 +353,12 @@ namespace TRBot
         /// Parses inputs from an expanded message.
         /// </summary>
         /// <param name="message">The expanded message.</param>
+        /// <param name="defControllerPort">The controller port to default to for this input.</param>
         /// <param name="checkMaxDur">If true, will render the input invalid if
         /// the total duration exceeds the maximum input duration.</param>
         /// <param name="replaceSynonyms">If true, will replace the defined input synonyms with their actual inputs.</param>
         /// <returns>An InputSequence containing information about the parsed inputs.</returns>
-        public static InputSequence ParseInputs(string message, in bool checkMaxDur, in bool useSynonyms)
+        public static InputSequence ParseInputs(string message, in int defControllerPort, in bool checkMaxDur, in bool useSynonyms)
         {
             //Populate synonyms and remove all whitespace
             if (useSynonyms == true)
@@ -366,14 +368,15 @@ namespace TRBot
             message = message.Replace(" ", string.Empty).ToLower();
 
             //Full Regex:
-            // ([_-])?(left|right|a)(\d+%)?((\d+ms)|(\d+s))?(\+)?
+            // (&\d)?([_-])?(left|right|a)(\d+%)?((\d+ms)|(\d+s))?(\+)?
             //Replace "left", "right", etc. with all the inputs for the console
-            //Group 1 = zero or one of '_' or '-' for hold and subtract, respectively
-            //Group 2 = the input - exactly one
-            //Group 3 = the percentage, including the amount
-            //Group 5 = milliseconds, including duration
-            //Group 6 = seconds, including duration
-            //Group 7 = + sign for performing inputs simultaneously
+            //Group 1 = controller port to send the input to
+            //Group 2 = zero or one of '_' or '-' for hold and subtract, respectively
+            //Group 3 = the input - exactly one
+            //Group 4 = the percentage, including the amount
+            //Group 6 = milliseconds, including duration
+            //Group 7 = seconds, including duration
+            //Group 8 = + sign for performing inputs simultaneously
 
             string regex = InputGlobals.ValidInputRegexStr;
 
@@ -417,7 +420,7 @@ namespace TRBot
                 }
 
                 //Get the input using the match information
-                Input input = GetInputFast(m, ref prevIndex, ref hasPlus);
+                Input input = GetInputFast(m, defControllerPort, ref prevIndex, ref hasPlus);
 
                 //Console.WriteLine(input.ToString());
 
@@ -480,19 +483,28 @@ namespace TRBot
             return inputSequence;
         }
 
-        private static Input GetInputFast(Match regexMatch, ref int prevIndex, ref bool hasPlus)
+        private static Input GetInputFast(Match regexMatch, in int defControllerPort, ref int prevIndex, ref bool hasPlus)
         {
             //Full Regex:
-            // ([_-])?(left|right|a)(\d+%)?((\d+ms)|(\d+s))?(\+)?
+            // (&\d)?([_-])?(left|right|a)(\d+%)?((\d+ms)|(\d+s))?(\+)?
             //Replace "left", "right", etc. with all the inputs for the console
-            //Group 1 = zero or one of '_' or '-' for hold and subtract, respectively
-            //Group 2 = the input - exactly one
-            //Group 3 = the percentage, including the amount
-            //Group 5 = milliseconds, including duration
-            //Group 6 = seconds, including duration
-            //Group 7 = + sign for performing inputs simultaneously
+            //Group 1 = controller port to send the input to
+            //Group 2 = zero or one of '_' or '-' for hold and subtract, respectively
+            //Group 3 = the input - exactly one
+            //Group 4 = the percentage, including the amount
+            //Group 6 = milliseconds, including duration
+            //Group 7 = seconds, including duration
+            //Group 8 = + sign for performing inputs simultaneously
+            const int portIndex = 1;
+            const int holdSubIndex = 2;
+            const int inputIndex = 3;
+            const int percentIndex = 4;
+            const int msIndex = 6;
+            const int secIndex = 7;
+            const int plusIndex = 8;
 
             Input input = Input.Default;
+            input.controllerPort = defControllerPort;
 
             //Check the top level success - if no matches at all or there's a gap, this isn't a valid input
             if (regexMatch.Success == false || regexMatch.Index != prevIndex)
@@ -501,28 +513,51 @@ namespace TRBot
                 return input;
             }
 
-            if (regexMatch.Groups[1].Success == true)
+            Group portGroup = regexMatch.Groups[portIndex];
+            if (portGroup.Success == true && string.IsNullOrEmpty(portGroup.Value) == false)
             {
-                if (regexMatch.Groups[1].Value == Parser.ParseRegexHoldInput)
+                string rawPortStr = portGroup.Value;
+                string portNumStr = rawPortStr.Substring(Parser.ParseRegexPortInput.Length, rawPortStr.Length - Parser.ParseRegexPortInput.Length);
+
+                if (int.TryParse(portNumStr, out int portnum) == false)
+                {
+                    input.error = "ERR_INVALID_CONTROLLER_PORT";
+                    return input;
+                }
+
+                //Set it to the port minus 1 (Ex. 1 returns port 0)
+                input.controllerPort = portnum - 1;
+            }
+
+            //Hold or release modifier
+            Group holdSubGroup = regexMatch.Groups[holdSubIndex];
+            if (holdSubGroup.Success == true)
+            {
+                if (holdSubGroup.Value == Parser.ParseRegexHoldInput)
                     input.hold = true;
-                else if (regexMatch.Groups[1].Value == Parser.ParseRegexReleaseInput)
+                else if (holdSubGroup.Value == Parser.ParseRegexReleaseInput)
                     input.release = true;
             }
 
-            if (regexMatch.Groups[2].Success == false || string.IsNullOrEmpty(regexMatch.Groups[2].Value) == true)
+            //Input name
+            Group inputGroup = regexMatch.Groups[inputIndex];
+
+            if (inputGroup.Success == false || string.IsNullOrEmpty(inputGroup.Value) == true)
             {
                 input.error = "ERR_NO_INPUT";
                 return input;
             }
 
-            input.name = regexMatch.Groups[2].Value;
+            input.name = inputGroup.Value;
+
+            Group percentGroup = regexMatch.Groups[percentIndex];
 
             //Check the percentage
-            if (regexMatch.Groups[3].Success == true && string.IsNullOrEmpty(regexMatch.Groups[3].Value) == false)
+            if (percentGroup.Success == true && string.IsNullOrEmpty(percentGroup.Value) == false)
             {
-                string rawPercentStr = regexMatch.Groups[3].Value;
-                string percent = rawPercentStr.Substring(0, rawPercentStr.Length - 1);
-
+                string rawPercentStr = percentGroup.Value;
+                string percent = rawPercentStr.Substring(0, rawPercentStr.Length - Parser.ParseRegexPercentInput.Length);
+                
                 if (int.TryParse(percent, out int percentage) == false)
                 {
                     input.error = "ERR_INVALID_PERCENTAGE";
@@ -539,10 +574,13 @@ namespace TRBot
                 input.percent = percentage;
             }
 
+            Group durMsGroup = regexMatch.Groups[msIndex];
+            Group durSecGroup = regexMatch.Groups[secIndex];
+
             //Check milliseconds
-            if (regexMatch.Groups[5].Success == true && string.IsNullOrEmpty(regexMatch.Groups[5].Value) == false)
+            if (durMsGroup.Success == true && string.IsNullOrEmpty(durMsGroup.Value) == false)
             {
-                string rawmsStr = regexMatch.Groups[5].Value;
+                string rawmsStr = durMsGroup.Value;
                 string msStr = rawmsStr.Substring(0, rawmsStr.Length - 2);
                 
                 if (int.TryParse(msStr, out int msDur) == false)
@@ -555,9 +593,9 @@ namespace TRBot
                 input.duration_type = ParseRegexMillisecondsInput;
             }
             //Check seconds
-            else if (regexMatch.Groups[6].Success == true && string.IsNullOrEmpty(regexMatch.Groups[6].Value) == false)
+            else if (durSecGroup.Success == true && string.IsNullOrEmpty(durSecGroup.Value) == false)
             {
-                string rawsecStr = regexMatch.Groups[6].Value;
+                string rawsecStr = durSecGroup.Value;
                 string secStr = rawsecStr.Substring(0, rawsecStr.Length - 1);
 
                 if (int.TryParse(secStr, out int secDur) == false)
@@ -570,8 +608,10 @@ namespace TRBot
                 input.duration_type = ParseRegexSecondsInput;
             }
 
+            Group plusGroup = regexMatch.Groups[plusIndex];
+
             //Check for a plus sign to perform the next input simultaneously
-            hasPlus = (regexMatch.Groups[7].Success == true && string.IsNullOrEmpty(regexMatch.Groups[7].Value) == false);
+            hasPlus = (plusGroup.Success == true && string.IsNullOrEmpty(plusGroup.Value) == false);
 
             prevIndex = regexMatch.Index + regexMatch.Length;
 
@@ -671,6 +711,7 @@ namespace TRBot
             public int percent;
             public int duration;
             public string duration_type;
+            public int controllerPort;
             //[Obsolete("length is the total string length of the input, which is no longer necessary for the new parser.", false)]
             //public int length;
             public string error;
@@ -678,9 +719,9 @@ namespace TRBot
             /// <summary>
             /// Returns a default Input.
             /// </summary>
-            public static Input Default => new Input(string.Empty, false, false, Parser.ParserDefaultPercent, BotProgram.BotData.DefaultInputDuration, Parser.ParserDefaultDurType, /*0,*/ string.Empty);
+            public static Input Default => new Input(string.Empty, false, false, Parser.ParserDefaultPercent, BotProgram.BotData.DefaultInputDuration, Parser.ParserDefaultDurType, 0, /*0,*/ string.Empty);
 
-            public Input(string nme, in bool hld, in bool relse, in int percnt, in int dur, string durType, /*in int len,*/ in string err)
+            public Input(string nme, in bool hld, in bool relse, in int percnt, in int dur, string durType, in int contPort, /*in int len,*/ in string err)
             {
                 this.name = nme;
                 this.hold = hld;
@@ -688,6 +729,7 @@ namespace TRBot
                 this.percent = percnt;
                 this.duration = dur;
                 this.duration_type = durType;
+                this.controllerPort = contPort;
                 //this.length = 0;
                 this.error = string.Empty;
             }
@@ -713,6 +755,7 @@ namespace TRBot
                     hash = (hash * 37) + percent.GetHashCode();
                     hash = (hash * 37) + duration.GetHashCode();
                     hash = (hash * 37) + ((duration_type == null) ? 0 : duration_type.GetHashCode());
+                    hash = (hash * 37) + controllerPort.GetHashCode();
                     //hash = (hash * 37) + length.GetHashCode();
                     hash = (hash * 37) + ((error == null) ? 0 : error.GetHashCode());
                     return hash;
@@ -723,7 +766,7 @@ namespace TRBot
             {
                 return (a.hold == b.hold && a.release == b.release && a.percent == b.percent
                         && a.duration_type == b.duration_type && a.duration_type == b.duration_type
-                        && a.name == b.name /*&& a.length == b.length*/ && a.error == b.error);
+                        && a.name == b.name && a.controllerPort == b.controllerPort /*&& a.length == b.length*/ && a.error == b.error);
             }
 
             public static bool operator !=(Input a, Input b)
@@ -733,7 +776,7 @@ namespace TRBot
 
             public override string ToString()
             {
-                return $"\"{name}\" {duration}{duration_type} | H:{hold} | R:{release} | P:{percent} | Err:{error}";
+                return $"\"{name}\" {duration}{duration_type} | H:{hold} | R:{release} | P:{percent} | CPort:{controllerPort} | Err:{error}";
             }
         }
 

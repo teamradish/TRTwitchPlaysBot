@@ -28,16 +28,14 @@ namespace TRBot
     public static class InputHandler
     {
         /// <summary>
-        /// A simple struct containing an input sequence and the controller number to perform the sequence on.
+        /// A simple struct wrapping an input sequence.
         /// </summary>
         private struct InputWrapper
         {
-            public int ControllerNum;
             public Parser.Input[][] InputArray;
 
-            public InputWrapper(in int controllerNum, Parser.Input[][] inputArray)
+            public InputWrapper(Parser.Input[][] inputArray)
             {
-                ControllerNum = controllerNum;
                 InputArray = inputArray;
             }
         }
@@ -78,7 +76,7 @@ namespace TRBot
         /// Carries out a set of inputs.
         /// </summary>
         /// <param name="inputList">A list of lists of inputs to execute.</param>
-        public static void CarryOutInput(List<List<Parser.Input>> inputList, in int controllerNum)
+        public static void CarryOutInput(List<List<Parser.Input>> inputList)
         {
             /*Kimimaru: We're using a thread pool for efficiency
              * Though very unlikely, there's a chance the input won't execute right away if it has to wait for a thread to be available
@@ -98,7 +96,7 @@ namespace TRBot
                 inputArray[i] = inputList[i].ToArray();
             }
 
-            InputWrapper inputWrapper = new InputWrapper(controllerNum, inputArray);
+            InputWrapper inputWrapper = new InputWrapper(inputArray);
             ThreadPool.QueueUserWorkItem(new WaitCallback(ExecuteInput), inputWrapper);
         }
 
@@ -107,15 +105,19 @@ namespace TRBot
             //Increment running threads
             Interlocked.Increment(ref RunningInputThreads);
 
-            //Get the input list and controller we're using - this should have been validated beforehand
+            //Get the input list - this should have been validated beforehand
             InputWrapper inputWrapper = (InputWrapper)obj;
             Parser.Input[][] inputArray = inputWrapper.InputArray;
-            IVirtualController controller = InputGlobals.ControllerMngr.GetController(inputWrapper.ControllerNum);
 
             Stopwatch sw = new Stopwatch();
 
             List<int> indices = new List<int>(16);
-            int nonWaits = 0;
+            int controllerCount = InputGlobals.ControllerMngr.ControllerCount;
+            int[] nonWaits = new int[controllerCount];
+
+            //This is used to track which controller ports were used across all inputs
+            //This helps prevent updating controllers that weren't used at the end
+            int[] usedControllerPorts = new int[controllerCount];
 
             for (int i = 0; i < inputArray.Length; i++)
             {
@@ -137,7 +139,13 @@ namespace TRBot
                         continue;
                     }
 
-                    nonWaits++;
+                    int port = input.controllerPort;
+
+                    //Get the controller we're using
+                    IVirtualController controller = InputGlobals.ControllerMngr.GetController(port);
+
+                    nonWaits[port]++;
+                    usedControllerPorts[port]++;
 
                     if (input.release == true)
                     {
@@ -149,11 +157,15 @@ namespace TRBot
                     }
                 }
 
-                //Update the controller if there are non-wait inputs
-                if (nonWaits > 0)
+                //Update the controllers if there are non-wait inputs
+                for (int waitIdx = 0; waitIdx < nonWaits.Length; waitIdx++)
                 {
-                    controller.UpdateController();
-                    nonWaits = 0;
+                    if (nonWaits[waitIdx] > 0)
+                    {
+                        IVirtualController controller = InputGlobals.ControllerMngr.GetController(waitIdx);
+                        controller.UpdateController();
+                        nonWaits[waitIdx] = 0;
+                    }
                 }
 
                 sw.Start();
@@ -179,20 +191,32 @@ namespace TRBot
                         //Release if the input isn't a hold and isn't a wait input
                         if (input.hold == false && InputGlobals.CurrentConsole.IsWait(input) == false)
                         {
+                            int port = input.controllerPort;
+
+                            //Get the controller we're using
+                            IVirtualController controller = InputGlobals.ControllerMngr.GetController(port);
+
                             controller.ReleaseInput(input);
 
                             //Track that we have a non-wait or hold input so we can update the controller with all input releases at once
-                            nonWaits++;
+                            nonWaits[port]++;
+
+                            usedControllerPorts[port]++;
                         }
 
                         indices.RemoveAt(j);
                     }
 
-                    //If there are no wait or hold inputs, update the controller
-                    if (nonWaits > 0)
+                    //Update the controllers if there are non-wait inputs
+                    for (int waitIdx = 0; waitIdx < nonWaits.Length; waitIdx++)
                     {
-                        controller.UpdateController();
-                        nonWaits = 0;
+                        if (nonWaits[waitIdx] > 0)
+                        {
+                            IVirtualController controller = InputGlobals.ControllerMngr.GetController(waitIdx);
+                            controller.UpdateController();
+
+                            nonWaits[waitIdx] = 0;
+                        }
                     }
                 }
 
@@ -208,11 +232,25 @@ namespace TRBot
                 ref Parser.Input[] inputs = ref inputArray[i];
                 for (int j = 0; j < inputs.Length; j++)
                 {
-                    controller.ReleaseInput(inputs[j]);
+                    ref Parser.Input input = ref inputs[j];
+
+                    IVirtualController controller = InputGlobals.ControllerMngr.GetController(input.controllerPort);
+                    controller.ReleaseInput(input);
                 }
             }
 
-            controller.UpdateController();
+            //Update all used controllers
+            for (int i = 0; i < usedControllerPorts.Length; i++)
+            {
+                //A value of 0 indicates the port wasn't used
+                if (usedControllerPorts[i] == 0)
+                {
+                    continue;
+                }
+
+                IVirtualController controller = InputGlobals.ControllerMngr.GetController(i);
+                controller.UpdateController();
+            }
 
             //Decrement running threads
             Interlocked.Decrement(ref RunningInputThreads);
