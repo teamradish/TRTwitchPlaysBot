@@ -112,12 +112,16 @@ namespace TRBot
             Stopwatch sw = new Stopwatch();
 
             List<int> indices = new List<int>(16);
-            int controllerCount = InputGlobals.ControllerMngr.ControllerCount;
+            IVirtualControllerManager vcMngr = InputGlobals.ControllerMngr;
+
+            int controllerCount = vcMngr.ControllerCount;
             int[] nonWaits = new int[controllerCount];
 
             //This is used to track which controller ports were used across all inputs
             //This helps prevent updating controllers that weren't used at the end
             int[] usedControllerPorts = new int[controllerCount];
+
+            ConsoleBase curConsole = InputGlobals.CurrentConsole;
 
             for (int i = 0; i < inputArray.Length; i++)
             {
@@ -134,7 +138,7 @@ namespace TRBot
                     ref Parser.Input input = ref inputs[j];
 
                     //Don't do anything for a wait input
-                    if (InputGlobals.CurrentConsole.IsWait(input) == true)
+                    if (curConsole.IsWait(input) == true)
                     {
                         continue;
                     }
@@ -142,7 +146,7 @@ namespace TRBot
                     int port = input.controllerPort;
 
                     //Get the controller we're using
-                    IVirtualController controller = InputGlobals.ControllerMngr.GetController(port);
+                    IVirtualController controller = vcMngr.GetController(port);
 
                     nonWaits[port]++;
                     usedControllerPorts[port]++;
@@ -162,7 +166,7 @@ namespace TRBot
                 {
                     if (nonWaits[waitIdx] > 0)
                     {
-                        IVirtualController controller = InputGlobals.ControllerMngr.GetController(waitIdx);
+                        IVirtualController controller = vcMngr.GetController(waitIdx);
                         controller.UpdateController();
                         nonWaits[waitIdx] = 0;
                     }
@@ -189,12 +193,12 @@ namespace TRBot
                         }
 
                         //Release if the input isn't a hold and isn't a wait input
-                        if (input.hold == false && InputGlobals.CurrentConsole.IsWait(input) == false)
+                        if (input.hold == false && curConsole.IsWait(input) == false)
                         {
                             int port = input.controllerPort;
 
                             //Get the controller we're using
-                            IVirtualController controller = InputGlobals.ControllerMngr.GetController(port);
+                            IVirtualController controller = vcMngr.GetController(port);
 
                             controller.ReleaseInput(input);
 
@@ -212,7 +216,7 @@ namespace TRBot
                     {
                         if (nonWaits[waitIdx] > 0)
                         {
-                            IVirtualController controller = InputGlobals.ControllerMngr.GetController(waitIdx);
+                            IVirtualController controller = vcMngr.GetController(waitIdx);
                             controller.UpdateController();
 
                             nonWaits[waitIdx] = 0;
@@ -234,7 +238,13 @@ namespace TRBot
                 {
                     ref Parser.Input input = ref inputs[j];
 
-                    IVirtualController controller = InputGlobals.ControllerMngr.GetController(input.controllerPort);
+                    if (curConsole.IsWait(input) == true)
+                    {
+                        continue;
+                    }
+
+                    //Release if it isn't a wait
+                    IVirtualController controller = vcMngr.GetController(input.controllerPort);
                     controller.ReleaseInput(input);
                 }
             }
