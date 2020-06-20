@@ -75,7 +75,7 @@ namespace TRBot
                 //Console.WriteLine("No arg found");
             }
 
-            Console.WriteLine("CONTROLLER INDEX: " + controllerIndex);
+            //Console.WriteLine("CONTROLLER INDEX: " + controllerIndex);
 
             //Check if the controller port is out of range
             if (controllerIndex < 0 || controllerIndex >= InputGlobals.ControllerMngr.ControllerCount)
