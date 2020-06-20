@@ -28,9 +28,6 @@ namespace TRBot
     /// </summary>
     public sealed class ListPressedInputsCommand : BaseCommand
     {
-        private Dictionary<uint, string> ButtonToInputCache = new Dictionary<uint, string>(64);
-        private InputGlobals.InputConsoles? CachedConsole = null;
-
         public ListPressedInputsCommand()
         {
 
@@ -49,7 +46,14 @@ namespace TRBot
 
             int controllerIndex = 0;
 
-            //Parse the controller index if we have another argument
+            //Default to the user's controller port
+            User user = BotProgram.GetUser(e.Command.ChatMessage.DisplayName, false);
+            if (user != null)
+            {
+                controllerIndex = user.Team;
+            }
+
+            //Parse the controller port if we have another argument
             if (args.Count == 1)
             {
                 //Console.WriteLine("Found arg");
@@ -62,13 +66,6 @@ namespace TRBot
                     return;
                 }
 
-                //Out of range
-                if (value <= 0 || value > InputGlobals.ControllerMngr.ControllerCount)
-                {
-                    BotProgram.MsgHandler.QueueMessage($"value <= 0 or out of controller count range of {InputGlobals.ControllerMngr.ControllerCount}.");
-                    return;
-                }
-
                 //Subtract 1 for consistency (Ex. player 1 is controller index 0)
                 controllerIndex = value - 1;
                 //Console.WriteLine($"Arg val set to {controllerIndex}");
@@ -76,6 +73,15 @@ namespace TRBot
             else
             {
                 //Console.WriteLine("No arg found");
+            }
+
+            Console.WriteLine("CONTROLLER INDEX: " + controllerIndex);
+
+            //Check if the controller port is out of range
+            if (controllerIndex < 0 || controllerIndex >= InputGlobals.ControllerMngr.ControllerCount)
+            {
+                BotProgram.MsgHandler.QueueMessage($"controller port is out of the 1 to {InputGlobals.ControllerMngr.ControllerCount} range.");
+                return;
             }
 
             //Get the controller
@@ -88,25 +94,21 @@ namespace TRBot
             }
 
             //Console.WriteLine("Found controller and acquired");
-
-            //Set up cache
-            if (CachedConsole == null || CachedConsole.Value != InputGlobals.CurrentConsoleVal)
-            {
-                CachedConsole = InputGlobals.CurrentConsoleVal;
-                SetupBtnToInputCache();
-            }
             
             StringBuilder stringBuilder = new StringBuilder(500);
             string startString = $"Pressed inputs for controller {controllerIndex + 1}: ";
             
             stringBuilder.Append(startString);
 
-            foreach (KeyValuePair<uint, string> kvPair in ButtonToInputCache)
+            //Check which inputs are pressed
+            string[] validInputs = InputGlobals.ValidInputs;
+            for (int i = 0; i < validInputs.Length; i++)
             {
-                ButtonStates btnState = controller.GetButtonState(kvPair.Key);
+                string inputName = validInputs[i];
+                ButtonStates btnState = controller.GetInputState(inputName);
                 if (btnState == ButtonStates.Pressed)
                 {
-                    stringBuilder.Append(kvPair.Value).Append(',').Append(' ');
+                    stringBuilder.Append(inputName).Append(',').Append(' ');
                 }
             }
 
@@ -123,30 +125,6 @@ namespace TRBot
             string finalStr = stringBuilder.ToString();
 
             BotProgram.MsgHandler.QueueMessage(finalStr);
-        }
-
-        private void SetupBtnToInputCache()
-        {
-            ButtonToInputCache.Clear();
-
-            //NOTE: Look into improving performance here
-            ConsoleBase curConsole = InputGlobals.CurrentConsole;
-            List<GlobalButtonVals> vals = new List<GlobalButtonVals>(EnumUtility.GetValues<GlobalButtonVals>.EnumValues);
-
-            foreach (KeyValuePair<string, uint> kvPair in curConsole.ButtonInputMap)
-            {
-                for (int i = vals.Count - 1; i >= 0; i--)
-                {
-                    uint val = (uint)vals[i];
-                    //Console.WriteLine($"Iterating val {val} with {kvPair.Key}");
-                    if (kvPair.Value == val)
-                    {
-                        ButtonToInputCache[val] = kvPair.Key;
-                        vals.RemoveAt(i);
-                        break;
-                    }
-                }
-            }
         }
     }
 }

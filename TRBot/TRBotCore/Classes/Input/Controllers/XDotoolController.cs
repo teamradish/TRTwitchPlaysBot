@@ -112,8 +112,7 @@ namespace TRBot
         private Dictionary<int, (long AxisMin, long AxisMax)> MinMaxAxes = new Dictionary<int, (long, long)>(2);
 
         //Kimimaru: Ideally we get the input's state from the driver, but this should work well enough, for now at least
-        private ConcurrentDictionary<uint, ButtonStates> ButtonPressStates = new ConcurrentDictionary<uint, ButtonStates>(Environment.ProcessorCount * 2, 32);
-        private ConcurrentDictionary<uint, ButtonStates> TempBtnStates = new ConcurrentDictionary<uint, ButtonStates>(Environment.ProcessorCount * 2, 32);
+        private VControllerInputTracker InputTracker = new VControllerInputTracker();
 
         /// <summary>
         /// The built argument list passed into xdotool.
@@ -178,11 +177,18 @@ namespace TRBot
                 ReleaseButton((uint)buttons[i]);
             }
 
+            InputTracker.ResetStates();
+
             UpdateController();
         }
 
         public void PressInput(in Parser.Input input)
         {
+            if (InputGlobals.CurrentConsole.IsWait(input) == true)
+            {
+                return;
+            }
+
             if (InputGlobals.CurrentConsole.IsAbsoluteAxis(input) == true)
             {
                 PressAbsoluteAxis(InputGlobals.CurrentConsole.InputAxes[input.name], input.percent);
@@ -205,26 +211,16 @@ namespace TRBot
                 }
             }
 
-            //Invoke input callbacks
-            if (BotProgram.InputCBData.Callbacks.TryGetValue(input.name, out InputCallback cbData) == true)
-            {
-                long invocation = (long)cbData.InvocationType;
-
-                //Invoke on press
-                if (input.hold == false && EnumUtility.HasEnumVal(invocation, (long)InputCBInvocation.Press) == true)
-                {
-                    cbData.Callback?.Invoke(cbData.CBValue);
-                }
-                //Invoke on hold
-                else if (input.hold == true && EnumUtility.HasEnumVal(invocation,(long)InputCBInvocation.Hold) == true)
-                {
-                    cbData.Callback?.Invoke(cbData.CBValue);
-                }
-            }
+            InputTracker.PressInput(input.name);
         }
 
         public void ReleaseInput(in Parser.Input input)
         {
+            if (InputGlobals.CurrentConsole.IsWait(input) == true)
+            {
+                return;
+            }
+
             if (InputGlobals.CurrentConsole.IsAbsoluteAxis(input) == true)
             {
                 ReleaseAbsoluteAxis(InputGlobals.CurrentConsole.InputAxes[input.name]);
@@ -247,15 +243,7 @@ namespace TRBot
                 }
             }
 
-            //Invoke input callbacks
-            if (BotProgram.InputCBData.Callbacks.TryGetValue(input.name, out InputCallback cbData) == true)
-            {
-                //Invoke on release
-                if (EnumUtility.HasEnumVal((long)cbData.InvocationType, (long)InputCBInvocation.Release) == true)
-                {
-                    cbData.Callback?.Invoke(cbData.CBValue);
-                }
-            }
+            InputTracker.ReleaseInput(input.name);
         }
 
         public void PressAxis(in int axis, in bool min, in int percent)
@@ -285,6 +273,8 @@ namespace TRBot
                 val = (int)(mid + ((percent / 100f) * half));
             }
 
+            InputTracker.PressAxis(axis, percent);
+
             if (inputAxis == (int)AxisCodes.MouseX)
             {
                 HandleMouseMove(val, 0);
@@ -297,6 +287,8 @@ namespace TRBot
 
         public void ReleaseAxis(in int axis)
         {
+            InputTracker.ReleaseAxis(axis);
+
             //Not a valid axis - defaulting to 0 results in the wrong axis being set
             //if (AxisCodeMap.TryGetValue(axis, out int xdotoolAxis) == false)
             //{
@@ -317,6 +309,8 @@ namespace TRBot
 
         public void PressAbsoluteAxis(in int axis, in int percent)
         {
+            InputTracker.PressAxis(axis, percent);
+
             ////Not a valid axis - defaulting to 0 results in the wrong axis being set
             //if (AxisCodeMap.TryGetValue(axis, out int xdotoolAxis) == false)
             //{
@@ -335,6 +329,8 @@ namespace TRBot
 
         public void ReleaseAbsoluteAxis(in int axis)
         {
+            InputTracker.ReleaseAxis(axis);
+
             ////Not a valid axis - defaulting to 0 results in the wrong axis being set
             //if (AxisCodeMap.TryGetValue(axis, out int xdotoolAxis) == false)
             //{
@@ -357,7 +353,7 @@ namespace TRBot
                 return;
             }
             
-            TempBtnStates[buttonVal] = ButtonStates.Pressed;
+            InputTracker.PressButton(buttonVal);
             
             if (ClickMap.TryGetValue(button, out int mouseBtn) == true)
             {
@@ -377,7 +373,7 @@ namespace TRBot
                 return;
             }
             
-            TempBtnStates[buttonVal] = ButtonStates.Released;
+            InputTracker.ReleaseButton(buttonVal);
             
             if (ClickMap.TryGetValue(button, out int mouseBtn) == true)
             {
@@ -389,14 +385,19 @@ namespace TRBot
             HandleProcessKeyUp(((InputCodes)button).ToString());
         }
 
+        public ButtonStates GetInputState(in string inputName)
+        {
+            return InputTracker.GetInputState(inputName);
+        }
+
         public ButtonStates GetButtonState(in uint buttonVal)
         {
-            if (ButtonPressStates.TryGetValue(buttonVal, out ButtonStates btnState) == true)
-            {
-                return btnState;
-            }
-            
-            return ButtonStates.Released;
+            return InputTracker.GetButtonState(buttonVal);
+        }
+
+        public int GetAxisState(in int axisVal)
+        {
+            return InputTracker.GetAxisState(axisVal);
         }
 
         public void UpdateController()
@@ -406,8 +407,8 @@ namespace TRBot
                 return;
             }
             
-            //Copy button states over
-            ButtonPressStates.CopyDictionaryData(TempBtnStates);
+            //Update states
+            InputTracker.UpdateCurrentStates();
             
             //Execute all the built up commands at once by passing them as arguments to xdotool
             string argList = BuiltArgList.ToString();
@@ -424,7 +425,7 @@ namespace TRBot
             }
             catch (Exception e)
             {
-                Console.WriteLine("Unable to carry out xdotool inputs: " + e.Message);
+                Console.WriteLine($"Unable to carry out xdotool inputs: {e.Message}");
             }
             
             BuiltArgList.Clear();

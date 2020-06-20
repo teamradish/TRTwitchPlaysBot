@@ -158,8 +158,7 @@ namespace TRBot
         private Dictionary<int, (long AxisMin, long AxisMax)> MinMaxAxes = new Dictionary<int, (long, long)>(8);
 
         //Kimimaru: Ideally we get the input's state from the driver, but this should work well enough, for now at least
-        private ConcurrentDictionary<uint, ButtonStates> ButtonPressStates = new ConcurrentDictionary<uint, ButtonStates>(Environment.ProcessorCount * 2, 32);
-        private ConcurrentDictionary<uint, ButtonStates> TempBtnStates = new ConcurrentDictionary<uint, ButtonStates>(Environment.ProcessorCount * 2, 32);
+        private VControllerInputTracker InputTracker = new VControllerInputTracker();
 
         public UInputController(in int controllerIndex)
         {
@@ -238,12 +237,19 @@ namespace TRBot
             {
                 ReleaseButton((uint)buttons[i]);
             }
+            
+            InputTracker.ResetStates();
 
             UpdateController();
         }
 
         public void PressInput(in Parser.Input input)
         {
+            if (InputGlobals.CurrentConsole.IsWait(input) == true)
+            {
+                return;
+            }
+
             if (InputGlobals.CurrentConsole.IsAbsoluteAxis(input) == true)
             {
                 PressAbsoluteAxis(InputGlobals.CurrentConsole.InputAxes[input.name], input.percent);
@@ -266,26 +272,16 @@ namespace TRBot
                 }
             }
 
-            //Invoke input callbacks
-            if (BotProgram.InputCBData.Callbacks.TryGetValue(input.name, out InputCallback cbData) == true)
-            {
-                long invocation = (long)cbData.InvocationType;
-
-                //Invoke on press
-                if (input.hold == false && EnumUtility.HasEnumVal(invocation, (long)InputCBInvocation.Press) == true)
-                {
-                    cbData.Callback?.Invoke(cbData.CBValue);
-                }
-                //Invoke on hold
-                else if (input.hold == true && EnumUtility.HasEnumVal(invocation,(long)InputCBInvocation.Hold) == true)
-                {
-                    cbData.Callback?.Invoke(cbData.CBValue);
-                }
-            }
+            InputTracker.PressInput(input.name);
         }
 
         public void ReleaseInput(in Parser.Input input)
         {
+            if (InputGlobals.CurrentConsole.IsWait(input) == true)
+            {
+                return;
+            }
+
             if (InputGlobals.CurrentConsole.IsAbsoluteAxis(input) == true)
             {
                 ReleaseAbsoluteAxis(InputGlobals.CurrentConsole.InputAxes[input.name]);
@@ -308,15 +304,7 @@ namespace TRBot
                 }
             }
 
-            //Invoke input callbacks
-            if (BotProgram.InputCBData.Callbacks.TryGetValue(input.name, out InputCallback cbData) == true)
-            {
-                //Invoke on release
-                if (EnumUtility.HasEnumVal((long)cbData.InvocationType, (long)InputCBInvocation.Release) == true)
-                {
-                    cbData.Callback?.Invoke(cbData.CBValue);
-                }
-            }
+            InputTracker.ReleaseInput(input.name);
         }
 
         public void PressAxis(in int axis, in bool min, in int percent)
@@ -346,6 +334,8 @@ namespace TRBot
                 val = (int)(mid + ((percent / 100f) * half));
             }
 
+            InputTracker.PressAxis(axis, percent);
+
             SetAxis(uinputAxis, val);
         }
 
@@ -366,6 +356,8 @@ namespace TRBot
             long half = (axisVals.Item2 - axisVals.Item1) / 2L;
             int val = (int)(axisVals.Item1 + half);
 
+            InputTracker.ReleaseAxis(axis);
+
             SetAxis(uinputAxis, val);
         }
 
@@ -384,6 +376,8 @@ namespace TRBot
 
             int val = (int)(axisVals.Item2 * (percent / 100f));
             
+            InputTracker.PressAxis(axis, percent);
+
             SetAxis(uinputAxis, val);
         }
 
@@ -400,6 +394,8 @@ namespace TRBot
                 return;
             }
 
+            InputTracker.ReleaseAxis(axis);
+
             SetAxis(uinputAxis, 0);
         }
 
@@ -411,7 +407,7 @@ namespace TRBot
                 return;
             }
 
-            TempBtnStates[buttonVal] = ButtonStates.Pressed;
+            InputTracker.PressButton(buttonVal);
 
             NativeWrapperUInput.PressButton(ControllerDescriptor, button);
         }
@@ -424,25 +420,30 @@ namespace TRBot
                 return;
             }
 
-            TempBtnStates[buttonVal] = ButtonStates.Released;
+            InputTracker.ReleaseButton(buttonVal);
 
             NativeWrapperUInput.ReleaseButton(ControllerDescriptor, button);
         }
 
+        public ButtonStates GetInputState(in string inputName)
+        {
+            return InputTracker.GetInputState(inputName);
+        }
+
         public ButtonStates GetButtonState(in uint buttonVal)
         {
-            if (ButtonPressStates.TryGetValue(buttonVal, out ButtonStates btnState) == true)
-            {
-                return btnState;
-            }
-            
-            return ButtonStates.Released;
+            return InputTracker.GetButtonState(buttonVal);
+        }
+
+        public int GetAxisState(in int axisVal)
+        {
+            return InputTracker.GetAxisState(axisVal);
         }
 
         public void UpdateController()
         {
-            //Copy button states over
-            ButtonPressStates.CopyDictionaryData(TempBtnStates);
+            //Update states
+            InputTracker.UpdateCurrentStates();
             
             NativeWrapperUInput.UpdateController(ControllerDescriptor);
         }

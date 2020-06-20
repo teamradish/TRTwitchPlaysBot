@@ -115,10 +115,59 @@ namespace TRBot
             //Copy axis states over
             CurAxesStates.CopyDictionaryData(TempAxesStates);
 
+            Dictionary<string, InputCallback> inputCallbacks = BotProgram.InputCBData.Callbacks;
+
             //Check for differences in the temp and current input states to invoke input callbacks
             //Then copy them over
+            foreach (KeyValuePair<string, ButtonStates> kvPair in TempInputStates)
+            {
+                string inputName = kvPair.Key;
+                ButtonStates pressedState = kvPair.Value;
 
-            CurInputStates.CopyDictionaryData(TempInputStates);
+                //Console.WriteLine($"{inputName} is {pressedState}");
+
+                //Invoke input callbacks
+                if (inputCallbacks.TryGetValue(inputName, out InputCallback cbData) == true)
+                {
+                    long invocation = (long)cbData.InvocationType;
+
+                    bool contains = CurInputStates.TryGetValue(inputName, out ButtonStates prevState);
+
+                    //Console.WriteLine($"{inputName} WAS {prevState}");
+
+                    //Console.WriteLine($"Invocation is {cbData.InvocationType} of type {cbData.Callback.GetInvocationList()[0].Method.Name} with val {cbData.CBValue.ToString()} | " + 
+                    //    $"Has press = {EnumUtility.HasEnumVal(invocation, (long)InputCBInvocation.Press) == true} | " +
+                    //    $"Has hold = {EnumUtility.HasEnumVal(invocation, (long)InputCBInvocation.Hold) == true} | " +
+                    //    $"Has release = {EnumUtility.HasEnumVal(invocation, (long)InputCBInvocation.Release) == true}");
+
+                    //Check for invoking on press or hold
+                    if (pressedState == ButtonStates.Pressed && prevState == ButtonStates.Released)
+                    {
+                        //Console.WriteLine($"{inputName} just pressed or held");
+
+                        if (EnumUtility.HasEnumVal(invocation, (long)InputCBInvocation.Press) == true
+                            || EnumUtility.HasEnumVal(invocation, (long)InputCBInvocation.Hold) == true)
+                        {
+                            //Console.WriteLine($"Invoking cb {cbData.Callback}");
+                            cbData.Callback?.Invoke(cbData.CBValue);
+                        }
+                    }
+                    //Check for invoking on release
+                    else if (pressedState == ButtonStates.Released && prevState == ButtonStates.Pressed)
+                    {
+                        //Console.WriteLine($"{inputName} just released");
+                        
+                        if (EnumUtility.HasEnumVal(invocation, (long)InputCBInvocation.Release) == true)
+                        {
+                            //Console.WriteLine($"Invoking cb {cbData.Callback}");
+                            cbData.Callback?.Invoke(cbData.CBValue);
+                        }
+                    }
+                }
+
+                //Update current state from the temp state
+                CurInputStates[inputName] = pressedState;
+            }
         }
 
         public string[] GetPressedInputs()
