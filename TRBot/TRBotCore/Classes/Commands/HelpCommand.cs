@@ -111,8 +111,8 @@ namespace TRBot
 
         private int CompareCmdKVPair(KeyValuePair<string, BaseCommand> pair1, KeyValuePair<string, BaseCommand> pair2)
         {
-            if (pair1.Value.AccessLevel > pair2.Value.AccessLevel) return -1;
-            else if (pair1.Value.AccessLevel < pair2.Value.AccessLevel) return 1;
+            //if (pair1.Value.AccessLevel > pair2.Value.AccessLevel) return -1;
+            //else if (pair1.Value.AccessLevel < pair2.Value.AccessLevel) return 1;
 
             return string.Compare(pair1.Key, pair2.Key, StringComparison.InvariantCulture);
         }
