@@ -6,7 +6,7 @@ using TwitchLib.Client.Events;
 namespace TRBot
 {
     /// <summary>
-    /// Displays how many vJoy controllers are intended to be available.
+    /// Displays how many virtual controllers are intended to be available.
     /// </summary>
     public sealed class ControllerCountCommand : BaseCommand
     {

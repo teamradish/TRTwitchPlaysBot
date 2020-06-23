@@ -70,34 +70,107 @@ namespace TRBot
             Regex.CacheSize = 32;
         }
 
+        /// <summary>
+        /// Expands out repeated inputs.
+        /// </summary>
         public static string Expandify(string message)
         {
-            const string regex = @"\[([^\[\]]*\])\*(\d{1,2})";
-            Match m = Regex.Match(message, regex, RegexOptions.Compiled);
+            string newMessage = message;
+            StringBuilder strBuilder = null;
+
+            const RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace;
+
+            //Find text within brackets with a number of repetitions
+            //Get the innermost matches first
+
+            //Uncomment these stopwatch lines to time it
+            //Stopwatch sw = Stopwatch.StartNew();
+
+            const string regex = @"\[([^\[\]]*\])\*(\d{1,3})";
+            Match m = Regex.Match(newMessage, regex, regexOptions);
+            
             while (m.Success == true)
             {
-                string str = string.Empty;
-                string value = m.Groups[1].Value.Replace("]", string.Empty).Replace("[", string.Empty);
-
-                int number = 0;
-                if (int.TryParse(m.Groups[2].Value, out number) == false)
+                //Initialize StringBuilder if not initialized
+                if (strBuilder == null)
                 {
-                    return message;
+                    strBuilder = new StringBuilder(message, message.Length * 3);
                 }
 
-                for (int i = 0; i < number; i++)
+                //Get the group
+                Group containedGroup = m.Groups[1];
+                string containedStr = containedGroup.Value;
+                if (containedGroup.Success == false)
                 {
-                    str += value;
+                    return newMessage;
                 }
 
-                string start = message.Substring(0, m.Index);
-                string end = message.Substring(m.Groups[2].Index + m.Groups[2].Length);
+                //Get the number of repetitions
+                Group repetitionsGroup = m.Groups[2];
+                string repetitionsStr = repetitionsGroup.Value;
+                if (repetitionsGroup.Success == false || string.IsNullOrEmpty(repetitionsStr) == true)
+                {
+                    return newMessage;
+                }
 
-                message = start + str + end;
-                m = Regex.Match(message, regex, RegexOptions.Compiled);
+                if (int.TryParse(repetitionsStr, out int num) == false)
+                {
+                    return newMessage;
+                }
+
+                //Remove opening bracket
+                strBuilder.Remove(containedGroup.Index - 1, 1);
+                //Console.WriteLine("Opening removed: " + strBuilder.ToString());
+                
+                //If repetitions is 0 or lower, remove the input entirely
+                if (num <= 0)
+                {
+                    strBuilder.Remove(containedGroup.Index - 1, containedGroup.Length + 1 + repetitionsStr.Length);
+                    //Console.WriteLine("Zero Str: " + strBuilder.ToString());
+                }
+                else
+                {
+                    //Console.WriteLine("Str Length: " + strBuilder.ToString().Length);
+
+                    int contentsStart = containedGroup.Index - 1;
+                    int contentsLength = containedGroup.Length - 1;
+
+                    //Remove closing bracket, symbol, and repetitions
+                    int start = contentsStart + contentsLength;
+                    int removeAmt = 1 + 1 + repetitionsStr.Length;
+
+                    //Console.WriteLine("start: " + strt + " | removeAmt: " + removeAmt);
+
+                    strBuilder.Remove(start, 1 + 1 + repetitionsStr.Length);
+                    //Console.WriteLine("CB, S, R removed: " + strBuilder.ToString());
+
+                    //Trim the end of the string so we can add just the text within the brackets
+                    string containedStrTrimmed = containedStr.Substring(0, containedStr.Length - 1);
+
+                    //Repeat sequence if greater than 1 to expand it out
+                    //Ex. "[a500ms .]*2" should expand out to "a500ms . a500ms ."
+                    if (num > 1)
+                    {
+                        int newStart = contentsStart + (contentsLength * 1);
+                        //Console.WriteLine("NEW START: " + newStart + " | INSERTING " + "\"" + containedStr + "\"");
+
+                        //Insert string - the StringBuilder can accurately allocate enough additional memory with this overload
+                        strBuilder.Insert(newStart, containedStrTrimmed, num - 1);
+                    }
+
+                    //Console.WriteLine("INSERTED: " + strBuilder.ToString());
+                }
+
+                newMessage = strBuilder.ToString();
+
+                //Find the next match in case this is a nested repetition
+                m = Regex.Match(newMessage, regex, regexOptions);
             }
 
-            return message;
+            //sw.Stop();
+            //Console.WriteLine($"SW MS for Expandify: {sw.ElapsedMilliseconds}");
+
+            return newMessage;
         }
 
         public static string PopulateVariables(string macro_contents, List<string> variables)
@@ -112,9 +185,14 @@ namespace TRBot
         }
 
         public static string PopulateMacros(string message)
-        {
+        {   
             message = message.Replace(" ", string.Empty);
             message = Parser.Expandify(message);
+
+            const RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace;
+
+            //Uncomment these stopwatch lines to time it
+            //Stopwatch sw = Stopwatch.StartNew();
 
             const int MAX_RECURSION = 10;
             int count = 0;
@@ -124,24 +202,24 @@ namespace TRBot
             while (count < MAX_RECURSION && found_macro == true)
             {
                 found_macro = false;
-                MatchCollection possible_macros = Regex.Matches(message, @"#[a-zA-Z0-9\(\,\.]*", RegexOptions.Compiled);
+                MatchCollection possible_macros = Regex.Matches(message, @"#[a-zA-Z0-9\(\,\.]*", regexOptions);
                 List<(string, (int, int), List<string>)> subs = null;
                 foreach (Match p in possible_macros)
                 {
-                    string macro_name = Regex.Replace(message.Substring(p.Index, p.Length), @"\(.*\)", string.Empty, RegexOptions.Compiled);
+                    string macro_name = Regex.Replace(message.Substring(p.Index, p.Length), @"\(.*\)", string.Empty, regexOptions);
                     string macro_name_generic = string.Empty;
                     int arg_index = macro_name.IndexOf("(");
                     if (arg_index != -1)
                     {
                         string sub = message.Substring(p.Index, p.Length + 1);
-                        macro_args = Regex.Match(sub, @"\(.*\)", RegexOptions.Compiled);
+                        macro_args = Regex.Match(sub, @"\(.*\)", regexOptions);
                         if (macro_args.Success == true)
                         {
                             int start = p.Index + macro_args.Index + 1;
                             string substr = message.Substring(start, macro_args.Length - 2);
                             macro_argsarr = new List<string>(substr.Split(","));
                             macro_name += ")";
-                            macro_name_generic = Regex.Replace(macro_name, @"\(.*\)", string.Empty, RegexOptions.Compiled) + "(";
+                            macro_name_generic = Regex.Replace(macro_name, @"\(.*\)", string.Empty, regexOptions) + "(";
 
                             int macroArgsCount = macro_argsarr.Count;
                             for (int i = 0; i < macroArgsCount; i++)
@@ -214,6 +292,9 @@ namespace TRBot
                 }
                 count += 1;
             }
+
+            //sw.Stop();
+            //Console.WriteLine($"SW MS for PopulateMacros: {sw.ElapsedMilliseconds}");
 
             return message;
         }
@@ -365,6 +446,7 @@ namespace TRBot
             {
                 message = PopulateSynonyms(message, InputGlobals.InputSynonyms);
             }
+
             message = message.Replace(" ", string.Empty).ToLower();
 
             //Full Regex:
@@ -388,7 +470,7 @@ namespace TRBot
             //New method: Get ALL the matches at once and parse them as we go, instead of matching each time and parsing
             //The caveat is all longer inputs with the same characters must be before shorter ones at the start of the input sequence
             //For example: "ls1" must be before "l" or it'll pick up "l" first
-            MatchCollection matches = Regex.Matches(message, regex, RegexOptions.IgnoreCase);
+            MatchCollection matches = Regex.Matches(message, regex, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
 
             //No matches, so invalid input
             if (matches.Count <= 0)
@@ -471,7 +553,7 @@ namespace TRBot
             }
 
             //sw.Stop();
-            //Console.WriteLine($"SW MS: {sw.ElapsedMilliseconds}");
+            //Console.WriteLine($"SW MS for ParseInputs: {sw.ElapsedMilliseconds}");
 
             //If there's more past what the regex caught, this isn't a valid input and is likely a normal message
             if (inputSequence.InputValidationType == InputValidationTypes.Valid && prevIndex != message.Length)
