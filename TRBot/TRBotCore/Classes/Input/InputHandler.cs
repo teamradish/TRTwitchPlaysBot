@@ -102,6 +102,11 @@ namespace TRBot
 
         private static void ExecuteInput(object obj)
         {
+            /*************************************************************
+            * PERFORMANCE CRITICAL CODE                                  *
+            * Even the smallest change must be thoroughly tested         *
+            *************************************************************/
+
             //Increment running threads
             Interlocked.Increment(ref RunningInputThreads);
 
