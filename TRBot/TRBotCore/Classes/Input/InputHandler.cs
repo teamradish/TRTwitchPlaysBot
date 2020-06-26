@@ -28,16 +28,14 @@ namespace TRBot
     public static class InputHandler
     {
         /// <summary>
-        /// A simple struct containing an input sequence and the controller number to perform the sequence on.
+        /// A simple struct wrapping an input sequence.
         /// </summary>
         private struct InputWrapper
         {
-            public int ControllerNum;
             public Parser.Input[][] InputArray;
 
-            public InputWrapper(in int controllerNum, Parser.Input[][] inputArray)
+            public InputWrapper(Parser.Input[][] inputArray)
             {
-                ControllerNum = controllerNum;
                 InputArray = inputArray;
             }
         }
@@ -78,7 +76,7 @@ namespace TRBot
         /// Carries out a set of inputs.
         /// </summary>
         /// <param name="inputList">A list of lists of inputs to execute.</param>
-        public static void CarryOutInput(List<List<Parser.Input>> inputList, in int controllerNum)
+        public static void CarryOutInput(List<List<Parser.Input>> inputList)
         {
             /*Kimimaru: We're using a thread pool for efficiency
              * Though very unlikely, there's a chance the input won't execute right away if it has to wait for a thread to be available
@@ -98,121 +96,184 @@ namespace TRBot
                 inputArray[i] = inputList[i].ToArray();
             }
 
-            InputWrapper inputWrapper = new InputWrapper(controllerNum, inputArray);
+            InputWrapper inputWrapper = new InputWrapper(inputArray);
             ThreadPool.QueueUserWorkItem(new WaitCallback(ExecuteInput), inputWrapper);
         }
 
         private static void ExecuteInput(object obj)
         {
+            /*************************************************************
+            * PERFORMANCE CRITICAL CODE                                  *
+            * Even the smallest change must be thoroughly tested         *
+            *************************************************************/
+
             //Increment running threads
             Interlocked.Increment(ref RunningInputThreads);
 
-            //Get the input list and controller we're using - this should have been validated beforehand
+            //Get the input list - this should have been validated beforehand
             InputWrapper inputWrapper = (InputWrapper)obj;
             Parser.Input[][] inputArray = inputWrapper.InputArray;
-            IVirtualController controller = InputGlobals.ControllerMngr.GetController(inputWrapper.ControllerNum);
 
             Stopwatch sw = new Stopwatch();
 
             List<int> indices = new List<int>(16);
-            int nonWaits = 0;
+            IVirtualControllerManager vcMngr = InputGlobals.ControllerMngr;
 
-            for (int i = 0; i < inputArray.Length; i++)
+            int controllerCount = vcMngr.ControllerCount;
+            int[] nonWaits = new int[controllerCount];
+
+            //This is used to track which controller ports were used across all inputs
+            //This helps prevent updating controllers that weren't used at the end
+            int[] usedControllerPorts = new int[controllerCount];
+
+            ConsoleBase curConsole = InputGlobals.CurrentConsole;
+
+            //Don't check for overflow to improve performance
+            unchecked
             {
-                ref Parser.Input[] inputs = ref inputArray[i];
-
-                indices.Clear();
-
-                //Press all buttons unless it's a release input
-                for (int j = 0; j < inputs.Length; j++)
+                for (int i = 0; i < inputArray.Length; i++)
                 {
-                    indices.Add(j);
+                    ref Parser.Input[] inputs = ref inputArray[i];
 
-                    //Get a reference to avoid copying the struct
-                    ref Parser.Input input = ref inputs[j];
+                    indices.Clear();
 
-                    //Don't do anything for a wait input
-                    if (InputGlobals.CurrentConsole.IsWait(input) == true)
+                    //Press all buttons unless it's a release input
+                    for (int j = 0; j < inputs.Length; j++)
                     {
-                        continue;
-                    }
+                        indices.Add(j);
 
-                    nonWaits++;
+                        //Get a reference to avoid copying the struct
+                        ref Parser.Input input = ref inputs[j];
 
-                    if (input.release == true)
-                    {
-                        controller.ReleaseInput(input);
-                    }
-                    else
-                    {
-                        controller.PressInput(input);
-                    }
-                }
-
-                //Update the controller if there are non-wait inputs
-                if (nonWaits > 0)
-                {
-                    controller.UpdateController();
-                    nonWaits = 0;
-                }
-
-                sw.Start();
-
-                while (indices.Count > 0)
-                {
-                    //End the input prematurely
-                    if (StopRunningInputs == true)
-                    {
-                        goto End;
-                    }
-
-                    //Release buttons when we should
-                    for (int j = indices.Count - 1; j >= 0; j--)
-                    {
-                        ref Parser.Input input = ref inputs[indices[j]];
-
-                        if (sw.ElapsedMilliseconds < input.duration)
+                        //Don't do anything for a wait input
+                        if (curConsole.IsWait(input) == true)
                         {
                             continue;
                         }
 
-                        //Release if the input isn't a hold and isn't a wait input
-                        if (input.hold == false && InputGlobals.CurrentConsole.IsWait(input) == false)
+                        int port = input.controllerPort;
+
+                        //Get the controller we're using
+                        IVirtualController controller = vcMngr.GetController(port);
+
+                        //These are set to 1 instead of incremented to prevent any chance of overflow
+                        nonWaits[port] = 1;
+                        usedControllerPorts[port] = 1;
+
+                        if (input.release == true)
                         {
                             controller.ReleaseInput(input);
+                        }
+                        else
+                        {
+                            controller.PressInput(input);
+                        }
+                    }
 
-                            //Track that we have a non-wait or hold input so we can update the controller with all input releases at once
-                            nonWaits++;
+                    //Update the controllers if there are non-wait inputs
+                    for (int waitIdx = 0; waitIdx < nonWaits.Length; waitIdx++)
+                    {
+                        if (nonWaits[waitIdx] > 0)
+                        {
+                            IVirtualController controller = vcMngr.GetController(waitIdx);
+                            controller.UpdateController();
+                            nonWaits[waitIdx] = 0;
+                        }
+                    }
+
+                    sw.Start();
+
+                    while (indices.Count > 0)
+                    {
+                        //End the input prematurely
+                        if (StopRunningInputs == true)
+                        {
+                            goto End;
                         }
 
-                        indices.RemoveAt(j);
+                        //Release buttons when we should
+                        for (int j = indices.Count - 1; j >= 0; j--)
+                        {
+                            ref Parser.Input input = ref inputs[indices[j]];
+
+                            if (sw.ElapsedMilliseconds < input.duration)
+                            {
+                                continue;
+                            }
+
+                            //Release if the input isn't a hold and isn't a wait input
+                            if (input.hold == false && curConsole.IsWait(input) == false)
+                            {
+                                int port = input.controllerPort;
+                                
+                                //Get the controller we're using
+                                IVirtualController controller = vcMngr.GetController(port);
+
+                                controller.ReleaseInput(input);
+
+                                //Track that we have a non-wait or hold input so we can update the controller with all input releases at once
+                                nonWaits[port] = 1;
+
+                                usedControllerPorts[port] = 1;
+                            }
+
+                            indices.RemoveAt(j);
+                        }
+
+                        //Update the controllers if there are non-wait inputs
+                        for (int waitIdx = 0; waitIdx < nonWaits.Length; waitIdx++)
+                        {
+                            if (nonWaits[waitIdx] > 0)
+                            {
+                                IVirtualController controller = vcMngr.GetController(waitIdx);
+                                controller.UpdateController();
+
+                                nonWaits[waitIdx] = 0;
+                            }
+                        }
                     }
 
-                    //If there are no wait or hold inputs, update the controller
-                    if (nonWaits > 0)
-                    {
-                        controller.UpdateController();
-                        nonWaits = 0;
-                    }
+                    sw.Reset();
                 }
-
-                sw.Reset();
             }
 
             //End label to skip to if we should cancel early
             End:
 
-            //At the end of it all, release every input
-            for (int i = 0; i < inputArray.Length; i++)
+            unchecked
             {
-                ref Parser.Input[] inputs = ref inputArray[i];
-                for (int j = 0; j < inputs.Length; j++)
+                //At the end of it all, release every input
+                for (int i = 0; i < inputArray.Length; i++)
                 {
-                    controller.ReleaseInput(inputs[j]);
+                    ref Parser.Input[] inputs = ref inputArray[i];
+                    for (int j = 0; j < inputs.Length; j++)
+                    {
+                        ref Parser.Input input = ref inputs[j];
+
+                        if (curConsole.IsWait(input) == true)
+                        {
+                            continue;
+                        }
+
+                        //Release if it isn't a wait
+                        IVirtualController controller = vcMngr.GetController(input.controllerPort);
+                        controller.ReleaseInput(input);
+                    }
+                }
+            
+                //Update all used controllers
+                for (int i = 0; i < usedControllerPorts.Length; i++)
+                {
+                    //A value of 0 indicates the port wasn't used
+                    if (usedControllerPorts[i] == 0)
+                    {
+                        continue;
+                    }
+
+                    IVirtualController controller = InputGlobals.ControllerMngr.GetController(i);
+                    controller.UpdateController();
                 }
             }
-
-            controller.UpdateController();
 
             //Decrement running threads
             Interlocked.Decrement(ref RunningInputThreads);

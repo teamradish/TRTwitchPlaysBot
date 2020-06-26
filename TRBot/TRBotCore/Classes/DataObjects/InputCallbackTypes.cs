@@ -24,6 +24,7 @@ namespace TRBot
     /// The invocation types determining when an input callback is invoked.
     /// <para>This is a bitwise field.</para>
     /// </summary>
+    [Flags]
     public enum InputCBInvocation
     {
         None = 0,

@@ -163,7 +163,7 @@ namespace TRBot
             SubscribeEvents();
 
             //Set up message handler
-            MsgHandler = new BotMessageHandler(ClientService, LoginInformation.ChannelName, BotSettings.MessageCooldown);
+            MsgHandler = new BotMessageHandler(ClientService, LoginInformation.ChannelName, BotSettings.MsgSettings.MessageCooldown);
 
             RoutineHandler = new BotRoutineHandler(ClientService);
             RoutineHandler.AddRoutine(new PeriodicMessageRoutine());
@@ -256,9 +256,9 @@ namespace TRBot
 
         private void OnJoinedChannel(EvtJoinedChannelArgs e)
         {
-            if (string.IsNullOrEmpty(BotSettings.ConnectMessage) == false)
+            if (string.IsNullOrEmpty(BotSettings.MsgSettings.ConnectMessage) == false)
             {
-                string finalMsg = BotSettings.ConnectMessage.Replace("{0}", LoginInformation.BotName).Replace("{1}", Globals.CommandIdentifier.ToString());
+                string finalMsg = BotSettings.MsgSettings.ConnectMessage.Replace("{0}", LoginInformation.BotName).Replace("{1}", Globals.CommandIdentifier.ToString());
                 MsgHandler.QueueMessage(finalMsg);
             }
 
@@ -272,7 +272,15 @@ namespace TRBot
 
         private void OnChatCommandReceived(EvtChatCommandArgs e)
         {
-            CommandHandler.HandleCommand(e);
+            //If an exception is unhandled in a command, the entire bot will hang up (potential internal TwitchLib issue)
+            try
+            {
+                CommandHandler.HandleCommand(e);
+            }
+            catch (Exception exc)
+            {
+                BotProgram.MsgHandler.QueueMessage($"Error handling command \"{e.Command.CommandText}\": {exc.Message}");
+            }
         }
 
         private void OnUserSentMessage(User user, EvtUserMessageArgs e)
@@ -297,26 +305,30 @@ namespace TRBot
                 user.IncrementValidInputCount();
             }
 
-            bool shouldPerformInput = true;
+            //bool shouldPerformInput = true;
+
+            ///NOTE: This validation is now performed beforehand in
+            ///<see cref="ParserPostProcess.CheckInputPermissionsAndPorts"/>
 
             //Check the team the user is on for the controller they should be using
             //Validate that the controller is acquired and exists
-            int controllerNum = user.Team;
-            if (controllerNum < 0 || controllerNum >= InputGlobals.ControllerMngr.ControllerCount)
-            {
-                BotProgram.MsgHandler.QueueMessage($"ERROR: Invalid joystick number {controllerNum + 1}. # of joysticks: {InputGlobals.ControllerMngr.ControllerCount}. Please change your controller port to a valid number to perform inputs.");
-                shouldPerformInput = false;
-            }
-            //Now verify that the controller has been acquired
-            else if (InputGlobals.ControllerMngr.GetController(controllerNum).IsAcquired == false)
-            {
-                BotProgram.MsgHandler.QueueMessage($"ERROR: Joystick number {controllerNum + 1} with controller ID of {InputGlobals.ControllerMngr.GetController(controllerNum).ControllerID} has not been acquired! Ensure you (the streamer) have a virtual device set up at this ID.");
-                shouldPerformInput = false;
-            }
+            //int controllerNum = user.Team;
+            //if (controllerNum < 0 || controllerNum >= InputGlobals.ControllerMngr.ControllerCount)
+            //{
+            //    BotProgram.MsgHandler.QueueMessage($"ERROR: Invalid joystick number {controllerNum + 1}. # of joysticks: {InputGlobals.ControllerMngr.ControllerCount}. Please change your controller port to a valid number to perform inputs.");
+            //    shouldPerformInput = false;
+            //}
+            ////Now verify that the controller has been acquired
+            //else if (InputGlobals.ControllerMngr.GetController(controllerNum).IsAcquired == false)
+            //{
+            //    BotProgram.MsgHandler.QueueMessage($"ERROR: Joystick number {controllerNum + 1} with controller ID of {InputGlobals.ControllerMngr.GetController(controllerNum).ControllerID} has not been acquired! Ensure you (the streamer) have a virtual device set up at this ID.");
+            //    shouldPerformInput = false;
+            //}
+
             //We're okay to perform the input
-            if (shouldPerformInput == true)
-            {
-                InputHandler.CarryOutInput(validInputSeq.Inputs, controllerNum);
+            //if (shouldPerformInput == true)
+            //{
+                InputHandler.CarryOutInput(validInputSeq.Inputs);
 
                 //If auto whitelist is enabled, the user reached the whitelist message threshold,
                 //the user isn't whitelisted, and the user hasn't ever been whitelisted, whitelist them
@@ -325,14 +337,14 @@ namespace TRBot
                 {
                     user.Level = (int)AccessLevels.Levels.Whitelisted;
                     user.SetAutoWhitelist(true);
-                    if (string.IsNullOrEmpty(BotSettings.AutoWhitelistMsg) == false)
+                    if (string.IsNullOrEmpty(BotSettings.MsgSettings.AutoWhitelistMsg) == false)
                     {
                         //Replace the user's name with the message
-                        string msg = BotSettings.AutoWhitelistMsg.Replace("{0}", user.Name);
+                        string msg = BotSettings.MsgSettings.AutoWhitelistMsg.Replace("{0}", user.Name);
                         MsgHandler.QueueMessage(msg);
                     }
                 }
-            }
+            //}
         }
 
         private void OnWhisperReceived(EvtWhisperMessageArgs e)
@@ -342,22 +354,37 @@ namespace TRBot
 
         private void OnBeingHosted(EvtOnHostedArgs e)
         {
-            MsgHandler.QueueMessage($"Thank you for hosting, {e.HostedData.HostedByChannel}!!");
+            if (string.IsNullOrEmpty(BotSettings.MsgSettings.BeingHostedMsg) == false)
+            {
+                string finalMsg = BotSettings.MsgSettings.BeingHostedMsg.Replace("{0}", e.HostedData.HostedByChannel);
+                MsgHandler.QueueMessage(finalMsg);
+            }
         }
 
         private void OnNewSubscriber(User user, EvtOnSubscriptionArgs e)
         {
-            MsgHandler.QueueMessage($"Thank you for subscribing, {e.SubscriptionData.DisplayName} :D !!");
+            if (string.IsNullOrEmpty(BotSettings.MsgSettings.NewSubscriberMsg) == false)
+            {
+                string finalMsg = BotSettings.MsgSettings.NewSubscriberMsg.Replace("{0}", e.SubscriptionData.DisplayName);
+                MsgHandler.QueueMessage(finalMsg);
+            }
         }
 
         private void OnReSubscriber(User user, EvtOnReSubscriptionArgs e)
         {
-            MsgHandler.QueueMessage($"Thank you for subscribing for {e.ReSubscriptionData.Months} months, {e.ReSubscriptionData.DisplayName} :D !!");
+            if (string.IsNullOrEmpty(BotSettings.MsgSettings.ReSubscriberMsg) == false)
+            {
+                string finalMsg = BotSettings.MsgSettings.ReSubscriberMsg.Replace("{0}", e.ReSubscriptionData.DisplayName).Replace("{1}", e.ReSubscriptionData.Months.ToString());
+                MsgHandler.QueueMessage(finalMsg);
+            }
         }
 
         private void OnReconnected(EvtReconnectedArgs e)
         {
-            MsgHandler.QueueMessage("Successfully reconnected to chat!");
+            if (string.IsNullOrEmpty(BotSettings.MsgSettings.ReconnectedMsg) == false)
+            {
+                MsgHandler.QueueMessage(BotSettings.MsgSettings.ReconnectedMsg);
+            }
         }
 
         private void OnDisconnected(EvtDisconnectedArgs e)
@@ -411,7 +438,11 @@ namespace TRBot
                     return null;
                 }
 
-                BotProgram.MsgHandler.QueueMessage($"Welcome to the stream, {origName} :D ! We hope you enjoy your stay!");
+                if (string.IsNullOrEmpty(BotSettings.MsgSettings.NewUserMsg) == false)
+                {
+                    string finalMsg = BotSettings.MsgSettings.NewUserMsg.Replace("{0}", origName).Replace("{1}", Globals.CommandIdentifier.ToString());
+                    BotProgram.MsgHandler.QueueMessage(finalMsg);
+                }
             }
 
             return userData;
@@ -470,6 +501,21 @@ namespace TRBot
                 Console.WriteLine($"Clamped sleep time to the maximum of {Globals.MinSleepTime}ms!");
                 settingsChanged = true;
             }
+
+            //Convert to new message settings
+            if (BotSettings.MsgSettings == null)
+            {
+                BotSettings.MsgSettings = new MessageSettings();
+                BotSettings.MsgSettings.PeriodicMessage = BotSettings.PeriodicMessage;
+                BotSettings.MsgSettings.ConnectMessage = BotSettings.ConnectMessage;
+                BotSettings.MsgSettings.MessageCooldown = BotSettings.MessageCooldown;
+                BotSettings.MsgSettings.MessageTime = BotSettings.MessageTime;
+                BotSettings.MsgSettings.AutoWhitelistMsg = BotSettings.AutoWhitelistMsg;
+                
+                Console.WriteLine("Converted some settings to new MessageSettings data!");
+
+                settingsChanged = true;
+            }
             
             //Write only once after checking all the changes
             if (settingsChanged == true)
@@ -503,7 +549,7 @@ namespace TRBot
 
             if (MsgHandler != null)
             {
-                MsgHandler.SetMessageCooldown(BotSettings.MessageCooldown);
+                MsgHandler.SetMessageCooldown(BotSettings.MsgSettings.MessageCooldown);
             }
 
             //string achievementsText = Globals.ReadFromTextFileOrCreate(Globals.AchievementsFilename);
@@ -538,12 +584,77 @@ namespace TRBot
             public string ChannelName = string.Empty;
         }
 
-        public class Settings
+        public class MessageSettings
         {
             /// <summary>
             /// The time, in minutes, for outputting the periodic message.
             /// </summary>
             public int MessageTime = 30;
+
+            /// <summary>
+            /// The time, in milliseconds, before each queued message will be sent.
+            /// This is used as a form of rate limiting.
+            /// </summary>
+            public double MessageCooldown = 1000d;
+
+            /// <summary>
+            /// The message to send when the bot connects to a channel. "{0}" is replaced with the name of the bot and "{1}" is replaced with the command identifier.
+            /// </summary>
+            /// <para>Set empty to display no message upon connecting.</para>
+            public string ConnectMessage = "{0} has connected :D ! Use {1}help to display a list of commands and {1}tutorial to see how to play! Original input parser by Jdog, aka TwitchPlays_Everything, converted to C# & improved by the community.";
+
+            /// <summary>
+            /// The message to send when the bot reconnects to chat.
+            /// </summary>
+            public string ReconnectedMsg = "Successfully reconnected to chat!";
+
+            /// <summary>
+            /// The message to send periodically according to <see cref="MessageTime"/>.
+            /// "{0}" is replaced with the name of the bot and "{1}" is replaced with the command identifier.
+            /// </summary>
+            /// <para>Set empty to display no messages in the interval.</para>
+            public string PeriodicMessage = "Hi! I'm {0} :D ! Use {1}help to display a list of commands!";
+
+            /// <summary>
+            /// The message to send when a user is auto whitelisted. "{0}" is replaced with the name of the user whitelisted.
+            /// </summary>
+            public string AutoWhitelistMsg = "{0} has been whitelisted! New commands are available.";
+
+            /// <summary>
+            /// The message to send when a new user is added to the database.
+            /// "{0}" is replaced with the name of the user and "{1}" is replaced with the command identifier.
+            /// </summary>
+            public string NewUserMsg = "Welcome to the stream, {0} :D ! We hope you enjoy your stay!";
+
+            /// <summary>
+            /// The message to send when another channel hosts the one the bot is on.
+            /// "{0}" is replaced with the name of the channel hosting the one the bot is on.
+            /// </summary>
+            public string BeingHostedMsg = "Thank you for hosting, {0}!!";
+
+            /// <summary>
+            /// The message to send when a user newly subscribes to the channel.
+            /// "{0}" is replaced with the name of the subscriber.
+            /// </summary>
+            public string NewSubscriberMsg = "Thank you for subscribing, {0} :D !!";
+
+            /// <summary>
+            /// The message to send when a user resubscribes to the channel.
+            /// "{0}" is replaced with the name of the subscriber and "{1}" is replaced with the number of months subscribed for.
+            /// </summary>
+            public string ReSubscriberMsg = "Thank you for subscribing for {1} months, {0} :D !!";
+        }
+
+        public class Settings
+        {
+            public MessageSettings MsgSettings = null;
+
+            /// <summary>
+            /// The time, in minutes, for outputting the periodic message.
+            /// </summary>
+            [Obsolete("Use the value in MsgSettings instead.", false)]
+            public int MessageTime = 30;
+            [Obsolete("Use the value in MsgSettings instead.", false)]
             public double MessageCooldown = 1000d;
             public double CreditsTime = 2d;
             public long CreditsAmount = 100L;
@@ -565,13 +676,15 @@ namespace TRBot
             /// The message to send when the bot connects to a channel. "{0}" is replaced with the name of the bot and "{1}" is replaced with the command identifier.
             /// </summary>
             /// <para>Set empty to display no message upon connecting.</para>
+            [Obsolete("Use the value in MsgSettings instead.", false)]
             public string ConnectMessage = "{0} has connected :D ! Use {1}help to display a list of commands and {1}tutorial to see how to play! Original input parser by Jdog, aka TwitchPlays_Everything, converted to C# & improved by the community.";
 
             /// <summary>
-            /// The message to send periodically according to <see cref="MessageTime"/>.
+            /// The message to send periodically according to <see cref="MessageSettings.MessageTime"/>.
             /// "{0}" is replaced with the name of the bot and "{1}" is replaced with the command identifier.
             /// </summary>
             /// <para>Set empty to display no messages in the interval.</para>
+            [Obsolete("Use the value in MsgSettings instead.", false)]
             public string PeriodicMessage = "Hi! I'm {0} :D ! Use {1}help to display a list of commands!";
 
             /// <summary>
@@ -587,6 +700,7 @@ namespace TRBot
             /// <summary>
             /// The message to send when a user is auto whitelisted. "{0}" is replaced with the name of the user whitelisted.
             /// </summary>
+            [Obsolete("Use the value in MsgSettings instead.", false)]
             public string AutoWhitelistMsg = "{0} has been whitelisted! New commands are available.";
             
             /// <summary>

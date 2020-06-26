@@ -42,13 +42,13 @@ namespace TRBot
         {
             TimeSpan msgDiff = currentTime - CurMsgTime;
 
-            if (msgDiff.TotalMinutes >= BotProgram.BotSettings.MessageTime)
+            if (msgDiff.TotalMinutes >= BotProgram.BotSettings.MsgSettings.MessageTime)
             {
                 if (clientService.IsConnected == true)
                 {
-                    if (string.IsNullOrEmpty(BotProgram.BotSettings.PeriodicMessage) == false)
+                    if (string.IsNullOrEmpty(BotProgram.BotSettings.MsgSettings.PeriodicMessage) == false)
                     {
-                        string finalMsg = BotProgram.BotSettings.PeriodicMessage.Replace("{0}", BotProgram.BotName).Replace("{1}", Globals.CommandIdentifier.ToString());
+                        string finalMsg = BotProgram.BotSettings.MsgSettings.PeriodicMessage.Replace("{0}", BotProgram.BotName).Replace("{1}", Globals.CommandIdentifier.ToString());
                         BotProgram.MsgHandler.QueueMessage(finalMsg);
                     }
                     

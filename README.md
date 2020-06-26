@@ -1,21 +1,33 @@
 # TRTwitchPlaysBot
 [Example of an advanced command](https://tdeeb.github.io/projects/images/TRBot/TRBot_AdvancedCommands.gif)
 
-A Twitch bot that contains many features to facilitate handling Twitch Plays games. It uses [TwitchLib](https://github.com/TwitchLib/TwitchLib) to handle Twitch connection.
+A Twitch bot designed to facilitate setting up and managing Twitch Plays games. It uses [TwitchLib](https://github.com/TwitchLib/TwitchLib) to handle Twitch connection.
 
-The bot is inspired by TwitchPlays_Everything; the input syntax allows for great precision, making it well-suited for 2D and 3D games of any kind.
+The bot is inspired by TwitchPlays_Everything; the input syntax allows for great precision, making it well-suited for many types of games.
 
 ## Features
-* Powerful input parser with a flexible, expressive syntax - original Python implementation by TwitchPlays_Everything, improved and converted to C#.
-* Virtual controller handling through a simple interface with currently two implementations: vJoy (Windows) and uinput (Linux)
-* Performant multi-threaded input handler with support for stopping all ongoing inputs
-* Flexible console infrastructure - supports NES, SNES, N64, GC, Wii, and more that can be added
-* Powerful Twitch Plays features - macros, savestate support, game logs, and silencing users (without having to timeout on Twitch)
-* User data with access levels that restrict or allow access to commands and inputs
-* Several additional bot goodies and games, such as dueling, jump rope, and memes
+* [Expressive yet simple input syntax](https://github.com/teamradish/TRTwitchPlaysBot/wiki/Syntax-Tutorial) - translate your text to game inputs easily. Make your inputs as simple or precise as you want!
+* Game-agnostic; TRBot runs alongside your game.
+* Emulator support - NES, SNES, N64, GCN, and more. Several [emulator controller config files](https://github.com/teamradish/TRTwitchPlaysBot/tree/master/Emulator%20Controller%20Configs) are available.
+* Runs on Windows (vJoy) and Linux (uinput).
+* Highly performant input handling with minimal delay between each input.
+* Pluggable virtual controller architecture - add your own custom virtual controller.
+* Twitch Plays quality-of-life enhancements - macros, game logs, savestates, user silencing (without timeout/ban), stop all ongoing inputs, and switch consoles on the fly.
+* User data with access levels - control access to commands, inputs, and other features.
+* Additional goodies and games - duel for credits, create memes, calculate expressions, and reverse text.
 
 ## Getting Started
-Instructions for building and setting up the bot can be found on the [wiki](https://github.com/teamradish/TRTwitchPlaysBot/wiki/Getting-Started).
+Please see the [Getting Started](https://github.com/teamradish/TRTwitchPlaysBot/wiki/Getting-Started) guide on the wiki for setting up TRBot.
 
 ## See it in action
-Want to see what players can do with TRBot? Head over to the wiki's [examples](https://github.com/teamradish/TRTwitchPlaysBot/wiki/Real-Usage-Examples) page to see clips from real playthroughs.
+Want to see what players have done with TRBot? Check out the [examples](https://github.com/teamradish/TRTwitchPlaysBot/wiki/Real-Usage-Examples) page for clips from real playthroughs.
+
+## Credits
+The original Python version of the original parser was written by TwitchPlays_Everything.
+
+## License
+[![AGPL](https://www.gnu.org/graphics/agplv3-155x51.png)](https://www.gnu.org/licenses/agpl-3.0.en.html)
+
+TRBot is free software; you are free to run, study, modify, and redistribute it. Specifically, you can modify and/or redistribute TRBot under the terms of the GNU Affero General Public License v3.0 or (at your option) any later version.
+
+See the [LICENSE](https://github.com/teamradish/TRTwitchPlaysBot/blob/master/LICENSE) file for the full terms. See the [Dependency Licenses](https://github.com/teamradish/TRTwitchPlaysBot/blob/master/Dependency%20Licenses) file for the licenses of third party libraries used by TRBot.

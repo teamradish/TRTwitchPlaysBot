@@ -143,7 +143,7 @@ namespace TRBot
         }
 
         /// <summary>
-        /// Closes and destroyes the virtual controller at the specified controller description number.
+        /// Closes and destroys the virtual controller at the specified controller description number.
         /// </summary>
         /// <param name="fd">The controller description value.</param>
         public static void Close(in int fd)

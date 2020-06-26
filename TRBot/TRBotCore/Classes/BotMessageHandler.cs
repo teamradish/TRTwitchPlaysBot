@@ -80,7 +80,7 @@ namespace TRBot
             TimeSpan queueDiff = now - CurQueueTime;
 
             //Queued messages
-            if (ClientMessages.Count > 0 && queueDiff.TotalMilliseconds >= BotProgram.BotSettings.MessageCooldown)
+            if (ClientMessages.Count > 0 && queueDiff.TotalMilliseconds >= BotProgram.BotSettings.MsgSettings.MessageCooldown)
             {
                 //Ensure the client service has joined a channel, otherwise we can't send the message 
                 if (ClientService.IsConnected == true && ClientService.JoinedChannels?.Count >= 1)

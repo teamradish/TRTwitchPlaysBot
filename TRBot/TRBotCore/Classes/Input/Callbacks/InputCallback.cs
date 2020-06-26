@@ -52,12 +52,18 @@ namespace TRBot
 
         public static void SavestateLog(object cbValue)
         {
-            if (cbValue == null || (cbValue is int) == false)
+            int stateNum = 0;
+            try
             {
+                stateNum = (int)(long)cbValue;
+            }
+            catch (InvalidCastException)
+            {
+                //Console.WriteLine($"EXCEPTION: {e.Message}");
                 return;
-            } 
+            }
 
-            int stateNum = (int)cbValue;
+            //Console.WriteLine($"Logged state {stateNum}");
 
             //Track the time of the savestate
             DateTime curTime = DateTime.UtcNow;
@@ -79,6 +85,8 @@ namespace TRBot
 
         public static void BotMessage(object cbValue)
         {
+            //Console.WriteLine("Send bot message");
+
             string strVal = cbValue as string;
 
             if (string.IsNullOrEmpty(strVal) == true)

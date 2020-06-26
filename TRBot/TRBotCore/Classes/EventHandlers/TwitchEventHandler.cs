@@ -285,7 +285,7 @@ namespace TRBot
             try
             {
                 string parse_message = Parser.Expandify(Parser.PopulateMacros(e.UsrMessage.Message));
-                inputSequence = Parser.ParseInputs(parse_message, true);
+                inputSequence = Parser.ParseInputs(parse_message, userData.Team, true, true);
                 //parsedVal = Parser.Parse(parse_message);
                 //Console.WriteLine(inputSequence.ToString());
                 //Console.WriteLine("\nReverse Parsed: " + ReverseParser.ReverseParse(inputSequence));
@@ -337,7 +337,8 @@ namespace TRBot
              */
             
             //Check if the user has permission to perform all the inputs they attempted
-            ParserPostProcess.InputValidation inputValidation = ParserPostProcess.CheckInputPermissions(userData.Level, inputSequence.Inputs,
+            //Also validate that the controller ports they're inputting for are valid
+            ParserPostProcess.InputValidation inputValidation = ParserPostProcess.CheckInputPermissionsAndPorts(userData.Level, inputSequence.Inputs,
                 BotProgram.BotData.InputAccess.InputAccessDict);
 
             //If the input isn't valid, exit
@@ -353,7 +354,9 @@ namespace TRBot
             //Lastly, check for invalid button combos given the current console
             if (BotProgram.BotData.InvalidBtnCombos.InvalidCombos.TryGetValue((int)InputGlobals.CurrentConsoleVal, out List<string> invalidCombos) == true)
             {
-                if (ParserPostProcess.ValidateButtonCombos(inputSequence.Inputs, invalidCombos, userData.Team) == false)
+                bool buttonCombosValidated = ParserPostProcess.ValidateButtonCombos(inputSequence.Inputs, invalidCombos);
+
+                if (buttonCombosValidated == false)
                 {
                     string msg = "Invalid input: buttons ({0}) are not allowed to be pressed at the same time.";
                     string combos = string.Empty;

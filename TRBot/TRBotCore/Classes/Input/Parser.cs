@@ -41,6 +41,7 @@ namespace TRBot
             NormalMsg, Valid, Invalid
         }
 
+        public const string ParseRegexPortInput = @"&";
         public const string ParseRegexHoldInput = @"_";
         public const string ParseRegexReleaseInput = @"-";
         public const string ParseRegexPlusInput = @"\+";
@@ -54,7 +55,7 @@ namespace TRBot
         /// <summary>
         /// The start of the input regex string.
         /// </summary>
-        public const string ParseRegexStart = "([" + ParseRegexHoldInput + ParseRegexReleaseInput + "])?(";
+        public const string ParseRegexStart = @"(" + ParseRegexPortInput + @"\d+)?" + "([" + ParseRegexHoldInput + ParseRegexReleaseInput + "])?(";
 
         /// <summary>
         /// The end of the input regex string.
@@ -69,34 +70,107 @@ namespace TRBot
             Regex.CacheSize = 32;
         }
 
+        /// <summary>
+        /// Expands out repeated inputs.
+        /// </summary>
         public static string Expandify(string message)
         {
-            const string regex = @"\[([^\[\]]*\])\*(\d{1,2})";
-            Match m = Regex.Match(message, regex, RegexOptions.Compiled);
+            string newMessage = message;
+            StringBuilder strBuilder = null;
+
+            const RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace;
+
+            //Find text within brackets with a number of repetitions
+            //Get the innermost matches first
+
+            //Uncomment these stopwatch lines to time it
+            //Stopwatch sw = Stopwatch.StartNew();
+
+            const string regex = @"\[([^\[\]]*\])\*(\d{1,3})";
+            Match m = Regex.Match(newMessage, regex, regexOptions);
+            
             while (m.Success == true)
             {
-                string str = string.Empty;
-                string value = m.Groups[1].Value.Replace("]", string.Empty).Replace("[", string.Empty);
-
-                int number = 0;
-                if (int.TryParse(m.Groups[2].Value, out number) == false)
+                //Initialize StringBuilder if not initialized
+                if (strBuilder == null)
                 {
-                    return message;
+                    strBuilder = new StringBuilder(message, message.Length * 3);
                 }
 
-                for (int i = 0; i < number; i++)
+                //Get the group
+                Group containedGroup = m.Groups[1];
+                string containedStr = containedGroup.Value;
+                if (containedGroup.Success == false)
                 {
-                    str += value;
+                    return newMessage;
                 }
 
-                string start = message.Substring(0, m.Index);
-                string end = message.Substring(m.Groups[2].Index + m.Groups[2].Length);
+                //Get the number of repetitions
+                Group repetitionsGroup = m.Groups[2];
+                string repetitionsStr = repetitionsGroup.Value;
+                if (repetitionsGroup.Success == false || string.IsNullOrEmpty(repetitionsStr) == true)
+                {
+                    return newMessage;
+                }
 
-                message = start + str + end;
-                m = Regex.Match(message, regex, RegexOptions.Compiled);
+                if (int.TryParse(repetitionsStr, out int num) == false)
+                {
+                    return newMessage;
+                }
+
+                //Remove opening bracket
+                strBuilder.Remove(containedGroup.Index - 1, 1);
+                //Console.WriteLine("Opening removed: " + strBuilder.ToString());
+                
+                //If repetitions is 0 or lower, remove the input entirely
+                if (num <= 0)
+                {
+                    strBuilder.Remove(containedGroup.Index - 1, containedGroup.Length + 1 + repetitionsStr.Length);
+                    //Console.WriteLine("Zero Str: " + strBuilder.ToString());
+                }
+                else
+                {
+                    //Console.WriteLine("Str Length: " + strBuilder.ToString().Length);
+
+                    int contentsStart = containedGroup.Index - 1;
+                    int contentsLength = containedGroup.Length - 1;
+
+                    //Remove closing bracket, symbol, and repetitions
+                    int start = contentsStart + contentsLength;
+                    int removeAmt = 1 + 1 + repetitionsStr.Length;
+
+                    //Console.WriteLine("start: " + strt + " | removeAmt: " + removeAmt);
+
+                    strBuilder.Remove(start, 1 + 1 + repetitionsStr.Length);
+                    //Console.WriteLine("CB, S, R removed: " + strBuilder.ToString());
+
+                    //Trim the end of the string so we can add just the text within the brackets
+                    string containedStrTrimmed = containedStr.Substring(0, containedStr.Length - 1);
+
+                    //Repeat sequence if greater than 1 to expand it out
+                    //Ex. "[a500ms .]*2" should expand out to "a500ms . a500ms ."
+                    if (num > 1)
+                    {
+                        int newStart = contentsStart + (contentsLength * 1);
+                        //Console.WriteLine("NEW START: " + newStart + " | INSERTING " + "\"" + containedStr + "\"");
+
+                        //Insert string - the StringBuilder can accurately allocate enough additional memory with this overload
+                        strBuilder.Insert(newStart, containedStrTrimmed, num - 1);
+                    }
+
+                    //Console.WriteLine("INSERTED: " + strBuilder.ToString());
+                }
+
+                newMessage = strBuilder.ToString();
+
+                //Find the next match in case this is a nested repetition
+                m = Regex.Match(newMessage, regex, regexOptions);
             }
 
-            return message;
+            //sw.Stop();
+            //Console.WriteLine($"SW MS for Expandify: {sw.ElapsedMilliseconds}");
+
+            return newMessage;
         }
 
         public static string PopulateVariables(string macro_contents, List<string> variables)
@@ -111,9 +185,14 @@ namespace TRBot
         }
 
         public static string PopulateMacros(string message)
-        {
+        {   
             message = message.Replace(" ", string.Empty);
             message = Parser.Expandify(message);
+
+            const RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace;
+
+            //Uncomment these stopwatch lines to time it
+            //Stopwatch sw = Stopwatch.StartNew();
 
             const int MAX_RECURSION = 10;
             int count = 0;
@@ -123,24 +202,24 @@ namespace TRBot
             while (count < MAX_RECURSION && found_macro == true)
             {
                 found_macro = false;
-                MatchCollection possible_macros = Regex.Matches(message, @"#[a-zA-Z0-9\(\,\.]*", RegexOptions.Compiled);
+                MatchCollection possible_macros = Regex.Matches(message, @"#[a-zA-Z0-9\(\,\.]*", regexOptions);
                 List<(string, (int, int), List<string>)> subs = null;
                 foreach (Match p in possible_macros)
                 {
-                    string macro_name = Regex.Replace(message.Substring(p.Index, p.Length), @"\(.*\)", string.Empty, RegexOptions.Compiled);
+                    string macro_name = Regex.Replace(message.Substring(p.Index, p.Length), @"\(.*\)", string.Empty, regexOptions);
                     string macro_name_generic = string.Empty;
                     int arg_index = macro_name.IndexOf("(");
                     if (arg_index != -1)
                     {
                         string sub = message.Substring(p.Index, p.Length + 1);
-                        macro_args = Regex.Match(sub, @"\(.*\)", RegexOptions.Compiled);
+                        macro_args = Regex.Match(sub, @"\(.*\)", regexOptions);
                         if (macro_args.Success == true)
                         {
                             int start = p.Index + macro_args.Index + 1;
                             string substr = message.Substring(start, macro_args.Length - 2);
                             macro_argsarr = new List<string>(substr.Split(","));
                             macro_name += ")";
-                            macro_name_generic = Regex.Replace(macro_name, @"\(.*\)", string.Empty, RegexOptions.Compiled) + "(";
+                            macro_name_generic = Regex.Replace(macro_name, @"\(.*\)", string.Empty, regexOptions) + "(";
 
                             int macroArgsCount = macro_argsarr.Count;
                             for (int i = 0; i < macroArgsCount; i++)
@@ -213,6 +292,9 @@ namespace TRBot
                 }
                 count += 1;
             }
+
+            //sw.Stop();
+            //Console.WriteLine($"SW MS for PopulateMacros: {sw.ElapsedMilliseconds}");
 
             return message;
         }
@@ -352,24 +434,31 @@ namespace TRBot
         /// Parses inputs from an expanded message.
         /// </summary>
         /// <param name="message">The expanded message.</param>
+        /// <param name="defControllerPort">The controller port to default to for this input.</param>
         /// <param name="checkMaxDur">If true, will render the input invalid if
         /// the total duration exceeds the maximum input duration.</param>
+        /// <param name="replaceSynonyms">If true, will replace the defined input synonyms with their actual inputs.</param>
         /// <returns>An InputSequence containing information about the parsed inputs.</returns>
-        public static InputSequence ParseInputs(string message, in bool checkMaxDur)
+        public static InputSequence ParseInputs(string message, in int defControllerPort, in bool checkMaxDur, in bool useSynonyms)
         {
-            //Remove all whitespace and populate synonyms
+            //Populate synonyms and remove all whitespace
+            if (useSynonyms == true)
+            {
+                message = PopulateSynonyms(message, InputGlobals.InputSynonyms);
+            }
+
             message = message.Replace(" ", string.Empty).ToLower();
-            message = PopulateSynonyms(message, InputGlobals.InputSynonyms);
 
             //Full Regex:
-            // ([_-])?(left|right|a)(\d+%)?((\d+ms)|(\d+s))?(\+)?
+            // (&\d)?([_-])?(left|right|a)(\d+%)?((\d+ms)|(\d+s))?(\+)?
             //Replace "left", "right", etc. with all the inputs for the console
-            //Group 1 = zero or one of '_' or '-' for hold and subtract, respectively
-            //Group 2 = the input - exactly one
-            //Group 3 = the percentage, including the amount
-            //Group 5 = milliseconds, including duration
-            //Group 6 = seconds, including duration
-            //Group 7 = + sign for performing inputs simultaneously
+            //Group 1 = controller port to send the input to
+            //Group 2 = zero or one of '_' or '-' for hold and subtract, respectively
+            //Group 3 = the input - exactly one
+            //Group 4 = the percentage, including the amount
+            //Group 6 = milliseconds, including duration
+            //Group 7 = seconds, including duration
+            //Group 8 = + sign for performing inputs simultaneously
 
             string regex = InputGlobals.ValidInputRegexStr;
 
@@ -381,7 +470,7 @@ namespace TRBot
             //New method: Get ALL the matches at once and parse them as we go, instead of matching each time and parsing
             //The caveat is all longer inputs with the same characters must be before shorter ones at the start of the input sequence
             //For example: "ls1" must be before "l" or it'll pick up "l" first
-            MatchCollection matches = Regex.Matches(message, regex, RegexOptions.IgnoreCase);
+            MatchCollection matches = Regex.Matches(message, regex, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
 
             //No matches, so invalid input
             if (matches.Count <= 0)
@@ -413,7 +502,7 @@ namespace TRBot
                 }
 
                 //Get the input using the match information
-                Input input = GetInputFast(m, ref prevIndex, ref hasPlus);
+                Input input = GetInputFast(m, defControllerPort, ref prevIndex, ref hasPlus);
 
                 //Console.WriteLine(input.ToString());
 
@@ -464,7 +553,7 @@ namespace TRBot
             }
 
             //sw.Stop();
-            //Console.WriteLine($"SW MS: {sw.ElapsedMilliseconds}");
+            //Console.WriteLine($"SW MS for ParseInputs: {sw.ElapsedMilliseconds}");
 
             //If there's more past what the regex caught, this isn't a valid input and is likely a normal message
             if (inputSequence.InputValidationType == InputValidationTypes.Valid && prevIndex != message.Length)
@@ -476,19 +565,28 @@ namespace TRBot
             return inputSequence;
         }
 
-        private static Input GetInputFast(Match regexMatch, ref int prevIndex, ref bool hasPlus)
+        private static Input GetInputFast(Match regexMatch, in int defControllerPort, ref int prevIndex, ref bool hasPlus)
         {
             //Full Regex:
-            // ([_-])?(left|right|a)(\d+%)?((\d+ms)|(\d+s))?(\+)?
+            // (&\d)?([_-])?(left|right|a)(\d+%)?((\d+ms)|(\d+s))?(\+)?
             //Replace "left", "right", etc. with all the inputs for the console
-            //Group 1 = zero or one of '_' or '-' for hold and subtract, respectively
-            //Group 2 = the input - exactly one
-            //Group 3 = the percentage, including the amount
-            //Group 5 = milliseconds, including duration
-            //Group 6 = seconds, including duration
-            //Group 7 = + sign for performing inputs simultaneously
+            //Group 1 = controller port to send the input to
+            //Group 2 = zero or one of '_' or '-' for hold and subtract, respectively
+            //Group 3 = the input - exactly one
+            //Group 4 = the percentage, including the amount
+            //Group 6 = milliseconds, including duration
+            //Group 7 = seconds, including duration
+            //Group 8 = + sign for performing inputs simultaneously
+            const int portIndex = 1;
+            const int holdSubIndex = 2;
+            const int inputIndex = 3;
+            const int percentIndex = 4;
+            const int msIndex = 6;
+            const int secIndex = 7;
+            const int plusIndex = 8;
 
             Input input = Input.Default;
+            input.controllerPort = defControllerPort;
 
             //Check the top level success - if no matches at all or there's a gap, this isn't a valid input
             if (regexMatch.Success == false || regexMatch.Index != prevIndex)
@@ -497,28 +595,51 @@ namespace TRBot
                 return input;
             }
 
-            if (regexMatch.Groups[1].Success == true)
+            Group portGroup = regexMatch.Groups[portIndex];
+            if (portGroup.Success == true && string.IsNullOrEmpty(portGroup.Value) == false)
             {
-                if (regexMatch.Groups[1].Value == Parser.ParseRegexHoldInput)
+                string rawPortStr = portGroup.Value;
+                string portNumStr = rawPortStr.Substring(Parser.ParseRegexPortInput.Length, rawPortStr.Length - Parser.ParseRegexPortInput.Length);
+
+                if (int.TryParse(portNumStr, out int portnum) == false)
+                {
+                    input.error = "ERR_INVALID_CONTROLLER_PORT";
+                    return input;
+                }
+
+                //Set it to the port minus 1 (Ex. 1 returns port 0)
+                input.controllerPort = portnum - 1;
+            }
+
+            //Hold or release modifier
+            Group holdSubGroup = regexMatch.Groups[holdSubIndex];
+            if (holdSubGroup.Success == true)
+            {
+                if (holdSubGroup.Value == Parser.ParseRegexHoldInput)
                     input.hold = true;
-                else if (regexMatch.Groups[1].Value == Parser.ParseRegexReleaseInput)
+                else if (holdSubGroup.Value == Parser.ParseRegexReleaseInput)
                     input.release = true;
             }
 
-            if (regexMatch.Groups[2].Success == false || string.IsNullOrEmpty(regexMatch.Groups[2].Value) == true)
+            //Input name
+            Group inputGroup = regexMatch.Groups[inputIndex];
+
+            if (inputGroup.Success == false || string.IsNullOrEmpty(inputGroup.Value) == true)
             {
                 input.error = "ERR_NO_INPUT";
                 return input;
             }
 
-            input.name = regexMatch.Groups[2].Value;
+            input.name = inputGroup.Value;
+
+            Group percentGroup = regexMatch.Groups[percentIndex];
 
             //Check the percentage
-            if (regexMatch.Groups[3].Success == true && string.IsNullOrEmpty(regexMatch.Groups[3].Value) == false)
+            if (percentGroup.Success == true && string.IsNullOrEmpty(percentGroup.Value) == false)
             {
-                string rawPercentStr = regexMatch.Groups[3].Value;
-                string percent = rawPercentStr.Substring(0, rawPercentStr.Length - 1);
-
+                string rawPercentStr = percentGroup.Value;
+                string percent = rawPercentStr.Substring(0, rawPercentStr.Length - Parser.ParseRegexPercentInput.Length);
+                
                 if (int.TryParse(percent, out int percentage) == false)
                 {
                     input.error = "ERR_INVALID_PERCENTAGE";
@@ -535,10 +656,13 @@ namespace TRBot
                 input.percent = percentage;
             }
 
+            Group durMsGroup = regexMatch.Groups[msIndex];
+            Group durSecGroup = regexMatch.Groups[secIndex];
+
             //Check milliseconds
-            if (regexMatch.Groups[5].Success == true && string.IsNullOrEmpty(regexMatch.Groups[5].Value) == false)
+            if (durMsGroup.Success == true && string.IsNullOrEmpty(durMsGroup.Value) == false)
             {
-                string rawmsStr = regexMatch.Groups[5].Value;
+                string rawmsStr = durMsGroup.Value;
                 string msStr = rawmsStr.Substring(0, rawmsStr.Length - 2);
                 
                 if (int.TryParse(msStr, out int msDur) == false)
@@ -551,9 +675,9 @@ namespace TRBot
                 input.duration_type = ParseRegexMillisecondsInput;
             }
             //Check seconds
-            else if (regexMatch.Groups[6].Success == true && string.IsNullOrEmpty(regexMatch.Groups[6].Value) == false)
+            else if (durSecGroup.Success == true && string.IsNullOrEmpty(durSecGroup.Value) == false)
             {
-                string rawsecStr = regexMatch.Groups[6].Value;
+                string rawsecStr = durSecGroup.Value;
                 string secStr = rawsecStr.Substring(0, rawsecStr.Length - 1);
 
                 if (int.TryParse(secStr, out int secDur) == false)
@@ -566,8 +690,10 @@ namespace TRBot
                 input.duration_type = ParseRegexSecondsInput;
             }
 
+            Group plusGroup = regexMatch.Groups[plusIndex];
+
             //Check for a plus sign to perform the next input simultaneously
-            hasPlus = (regexMatch.Groups[7].Success == true && string.IsNullOrEmpty(regexMatch.Groups[7].Value) == false);
+            hasPlus = (plusGroup.Success == true && string.IsNullOrEmpty(plusGroup.Value) == false);
 
             prevIndex = regexMatch.Index + regexMatch.Length;
 
@@ -667,6 +793,7 @@ namespace TRBot
             public int percent;
             public int duration;
             public string duration_type;
+            public int controllerPort;
             //[Obsolete("length is the total string length of the input, which is no longer necessary for the new parser.", false)]
             //public int length;
             public string error;
@@ -674,9 +801,9 @@ namespace TRBot
             /// <summary>
             /// Returns a default Input.
             /// </summary>
-            public static Input Default => new Input(string.Empty, false, false, Parser.ParserDefaultPercent, BotProgram.BotData.DefaultInputDuration, Parser.ParserDefaultDurType, /*0,*/ string.Empty);
+            public static Input Default => new Input(string.Empty, false, false, Parser.ParserDefaultPercent, BotProgram.BotData.DefaultInputDuration, Parser.ParserDefaultDurType, 0, /*0,*/ string.Empty);
 
-            public Input(string nme, in bool hld, in bool relse, in int percnt, in int dur, string durType, /*in int len,*/ in string err)
+            public Input(string nme, in bool hld, in bool relse, in int percnt, in int dur, string durType, in int contPort, /*in int len,*/ in string err)
             {
                 this.name = nme;
                 this.hold = hld;
@@ -684,6 +811,7 @@ namespace TRBot
                 this.percent = percnt;
                 this.duration = dur;
                 this.duration_type = durType;
+                this.controllerPort = contPort;
                 //this.length = 0;
                 this.error = string.Empty;
             }
@@ -709,6 +837,7 @@ namespace TRBot
                     hash = (hash * 37) + percent.GetHashCode();
                     hash = (hash * 37) + duration.GetHashCode();
                     hash = (hash * 37) + ((duration_type == null) ? 0 : duration_type.GetHashCode());
+                    hash = (hash * 37) + controllerPort.GetHashCode();
                     //hash = (hash * 37) + length.GetHashCode();
                     hash = (hash * 37) + ((error == null) ? 0 : error.GetHashCode());
                     return hash;
@@ -719,7 +848,7 @@ namespace TRBot
             {
                 return (a.hold == b.hold && a.release == b.release && a.percent == b.percent
                         && a.duration_type == b.duration_type && a.duration_type == b.duration_type
-                        && a.name == b.name /*&& a.length == b.length*/ && a.error == b.error);
+                        && a.name == b.name && a.controllerPort == b.controllerPort /*&& a.length == b.length*/ && a.error == b.error);
             }
 
             public static bool operator !=(Input a, Input b)
@@ -729,7 +858,7 @@ namespace TRBot
 
             public override string ToString()
             {
-                return $"\"{name}\" {duration}{duration_type} | H:{hold} | R:{release} | P:{percent} | Err:{error}";
+                return $"\"{name}\" {duration}{duration_type} | H:{hold} | R:{release} | P:{percent} | CPort:{controllerPort} | Err:{error}";
             }
         }
 
