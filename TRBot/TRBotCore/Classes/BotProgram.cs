@@ -154,8 +154,10 @@ namespace TRBot
             }
             
             //Set up client service
-            ClientService = new TwitchClientService(Credentials, LoginInformation.ChannelName,
+            ClientService = 
+                new TwitchClientService(Credentials, LoginInformation.ChannelName,
                 Globals.CommandIdentifier, Globals.CommandIdentifier, true);
+                //new ConsoleClientService();
 
             ClientService.Initialize();
 
@@ -270,16 +272,16 @@ namespace TRBot
             }
         }
 
-        private void OnChatCommandReceived(EvtChatCommandArgs e)
+        private void OnChatCommandReceived(User userData, EvtChatCommandArgs e)
         {
             //If an exception is unhandled in a command, the entire bot will hang up (potential internal TwitchLib issue)
             try
             {
-                CommandHandler.HandleCommand(e);
+                CommandHandler.HandleCommand(userData, e);
             }
             catch (Exception exc)
             {
-                BotProgram.MsgHandler.QueueMessage($"Error handling command \"{e.Command.CommandText}\": {exc.Message}");
+                BotProgram.MsgHandler.QueueMessage($"Error handling command \"{e.Command.CommandText}\": {exc.Message}\n {exc.StackTrace}");
             }
         }
 

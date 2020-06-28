@@ -39,7 +39,7 @@ namespace TRBot
         /// Whether to ignore logging bot messages to the console based on potential console logs
         /// from the <see cref="ExecCommand"/>.
         /// </summary>
-        private bool IgnoreConsoleLog = false;
+        public bool IgnoreConsoleLog { get; private set; } = false;
 
         private DateTime CurQueueTime = default;
 

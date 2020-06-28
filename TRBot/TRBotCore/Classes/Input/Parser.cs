@@ -189,7 +189,7 @@ namespace TRBot
             message = message.Replace(" ", string.Empty);
             message = Parser.Expandify(message);
 
-            const RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace;
+            const RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.IgnoreCase;
 
             //Uncomment these stopwatch lines to time it
             //Stopwatch sw = Stopwatch.StartNew();
