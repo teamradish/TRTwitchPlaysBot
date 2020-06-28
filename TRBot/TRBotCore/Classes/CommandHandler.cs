@@ -137,7 +137,7 @@ namespace TRBot
             }
         }
 
-        public void HandleCommand(EvtChatCommandArgs e)
+        public void HandleCommand(User userData, EvtChatCommandArgs e)
         {
             if (e == null || e.Command == null || e.Command.ChatMessage == null)
             {
@@ -154,14 +154,18 @@ namespace TRBot
                 return;
             }
 
-            User user = BotProgram.GetOrAddUser(userToLower);
+            if (userData == null)
+            {
+                BotProgram.MsgHandler.QueueMessage($"Invalid user: \"{e.Command.ChatMessage.DisplayName}\" - cannot carry out command.");
+                return;
+            }
 
             string commandToLower = e.Command.CommandText.ToLower();
 
             if (CommandDict.TryGetValue(commandToLower, out BaseCommand command) == true)
             {
                 //Handle permissions
-                if (user.Level >= command.AccessLevel)
+                if (userData.Level >= command.AccessLevel)
                 {
                     command.ExecuteCommand(e);
                 }

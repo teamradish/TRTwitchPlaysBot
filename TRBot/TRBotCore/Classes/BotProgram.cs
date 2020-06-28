@@ -142,21 +142,39 @@ namespace TRBot
                 }
             }
 
-            try
+            ClientServiceTypes clientType = BotSettings.ClientSettings.ClientType;
+
+            //Credentials don't matter if running through a terminal
+            if (clientType != ClientServiceTypes.Terminal)
             {
-                Credentials = new ConnectionCredentials(LoginInformation.BotName, LoginInformation.Password);
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine($"Invalid credentials: {exception.Message}");
-                Console.WriteLine("Cannot proceed. Please double check the login information in the data folder");
-                return;
+                try
+                {
+                    Credentials = new ConnectionCredentials(LoginInformation.BotName, LoginInformation.Password);
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine($"Invalid credentials: {exception.Message}");
+                    Console.WriteLine("Cannot proceed. Please double check the login information in the data folder");
+                    return;
+                }
             }
             
-            //Set up client service
-            ClientService = new TwitchClientService(Credentials, LoginInformation.ChannelName,
-                Globals.CommandIdentifier, Globals.CommandIdentifier, true);
+            Console.WriteLine($"Setting up client service: {clientType}");
 
+            //Set up client service
+            //NOTE: Replace with something more scalable later, such as a factory
+            switch (clientType)
+            {
+                case ClientServiceTypes.Terminal:
+                    ClientService = new TerminalClientService();
+                    break;
+                case ClientServiceTypes.Twitch:
+                    ClientService = new TwitchClientService(Credentials, LoginInformation.ChannelName,
+                        Globals.CommandIdentifier, Globals.CommandIdentifier, true);
+                    break;
+            }
+
+            //Initialize service
             ClientService.Initialize();
 
             UnsubscribeEvents();
@@ -270,16 +288,16 @@ namespace TRBot
             }
         }
 
-        private void OnChatCommandReceived(EvtChatCommandArgs e)
+        private void OnChatCommandReceived(User userData, EvtChatCommandArgs e)
         {
             //If an exception is unhandled in a command, the entire bot will hang up (potential internal TwitchLib issue)
             try
             {
-                CommandHandler.HandleCommand(e);
+                CommandHandler.HandleCommand(userData, e);
             }
             catch (Exception exc)
             {
-                BotProgram.MsgHandler.QueueMessage($"Error handling command \"{e.Command.CommandText}\": {exc.Message}");
+                BotProgram.MsgHandler.QueueMessage($"Error handling command \"{e.Command.CommandText}\": {exc.Message}\n {exc.StackTrace}");
             }
         }
 
@@ -478,6 +496,13 @@ namespace TRBot
         {
             bool settingsChanged = false;
             
+            ClientServiceTypes? prevClientService = null;
+
+            if (BotSettings != null && BotSettings.ClientSettings != null)
+            {
+                prevClientService = BotSettings.ClientSettings.ClientType;
+            }
+
             string settingsText = Globals.ReadFromTextFileOrCreate(Globals.SettingsFilename);
             BotSettings = JsonConvert.DeserializeObject<Settings>(settingsText);
 
@@ -516,11 +541,23 @@ namespace TRBot
 
                 settingsChanged = true;
             }
+
+            if (BotSettings.ClientSettings == null)
+            {
+                BotSettings.ClientSettings = new ClientSettings();
+                settingsChanged = true;
+            }
             
             //Write only once after checking all the changes
             if (settingsChanged == true)
             {
                 SaveSettings();
+            }
+
+            //Notify that the client type was changed
+            if (prevClientService != null && prevClientService.Value != BotSettings.ClientSettings.ClientType)
+            {
+                Console.WriteLine("Client service type changed in settings. To apply the change, restart the bot.");
             }
 
             string dataText = Globals.ReadFromTextFile(Globals.BotDataFilename);
@@ -645,8 +682,14 @@ namespace TRBot
             public string ReSubscriberMsg = "Thank you for subscribing for {1} months, {0} :D !!";
         }
 
+        public class ClientSettings
+        {
+            public ClientServiceTypes ClientType = ClientServiceTypes.Twitch;
+        }
+
         public class Settings
         {
+            public ClientSettings ClientSettings = null;
             public MessageSettings MsgSettings = null;
 
             /// <summary>
