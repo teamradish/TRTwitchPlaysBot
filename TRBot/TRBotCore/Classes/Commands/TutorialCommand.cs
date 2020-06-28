@@ -25,7 +25,7 @@ namespace TRBot
     {
         public override void ExecuteCommand(EvtChatCommandArgs e)
         {
-            BotProgram.MsgHandler.QueueMessage($"Hi {e.Command.ChatMessage.Username}, here's how to play: https://twitchplays.fandom.com/wiki/Welcome_to_TPE");
+            BotProgram.MsgHandler.QueueMessage($"Hi {e.Command.ChatMessage.Username}, here's how to play: https://github.com/teamradish/TRTwitchPlaysBot/wiki/Syntax-Tutorial");
         }
     }
 }

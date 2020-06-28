@@ -23,9 +23,9 @@ using static TRBot.EventDelegates;
 namespace TRBot
 {
     /// <summary>
-    /// Handles events from input from the console.
+    /// Handles events from input through a terminal.
     /// </summary>
-    public class ConsoleEventHandler : IEventHandler
+    public class TerminalEventHandler : IEventHandler
     {
         public event UserSentMessage UserSentMessageEvent = null;
 
@@ -55,7 +55,7 @@ namespace TRBot
 
         private User UserData = null;
 
-        public ConsoleEventHandler(User userData)
+        public TerminalEventHandler(User userData)
         {
             UserData = userData;
         }

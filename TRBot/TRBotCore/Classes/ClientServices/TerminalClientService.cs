@@ -24,9 +24,9 @@ using TwitchLib.Client.Models;
 namespace TRBot
 {
     /// <summary>
-    /// Read inputs through the console.
+    /// Read inputs through a terminal.
     /// </summary>
-    public class ConsoleClientService : IClientService
+    public class TerminalClientService : IClientService
     {
         /// <summary>
         /// The event handler associated with the service.
@@ -51,7 +51,7 @@ namespace TRBot
         private bool Initialized = false;
         private bool Connected = false;
 
-        public ConsoleClientService()
+        public TerminalClientService()
         {
 
         }
@@ -63,7 +63,7 @@ namespace TRBot
         {
             User dummyUser = DummyUserSetup();
 
-            EventHandler = new ConsoleEventHandler(dummyUser);
+            EventHandler = new TerminalEventHandler(dummyUser);
 
             EventHandler.OnJoinedChannelEvent -= OnClientJoinedChannel;
             EventHandler.OnJoinedChannelEvent += OnClientJoinedChannel;
