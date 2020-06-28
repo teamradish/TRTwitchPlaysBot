@@ -38,7 +38,7 @@ namespace TRBot
 
         public delegate void OnWhisperReceived(EvtWhisperMessageArgs e);
 
-        public delegate void ChatCommandReceived(EvtChatCommandArgs e);
+        public delegate void ChatCommandReceived(User user, EvtChatCommandArgs e);
 
         public delegate void OnJoinedChannel(EvtJoinedChannelArgs e);
 

@@ -62,6 +62,8 @@ namespace TRBot
             //Kimimaru: Store the default console output stream
             TextWriter defaultOut = Console.Out;
 
+            bool prevIgnoreConsoleLogVal = BotProgram.MsgHandler.IgnoreConsoleLog;
+
             try
             {
                 //Kimimaru: Output any Console output to the chat
@@ -74,7 +76,7 @@ namespace TRBot
                     var script = await CSharpScript.RunAsync(code, ScriptCompileOptions);
 
                     Console.SetOut(defaultOut);
-                    BotProgram.MsgHandler.SetIgnoreConsoleLog(false);
+                    BotProgram.MsgHandler.SetIgnoreConsoleLog(prevIgnoreConsoleLogVal);
                 }
             }
             catch (CompilationErrorException exception)
@@ -85,7 +87,7 @@ namespace TRBot
             finally
             {
                 Console.SetOut(defaultOut);
-                BotProgram.MsgHandler.SetIgnoreConsoleLog(false);
+                BotProgram.MsgHandler.SetIgnoreConsoleLog(prevIgnoreConsoleLogVal);
             }
         }
 

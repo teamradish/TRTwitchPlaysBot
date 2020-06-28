@@ -17,18 +17,15 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using TwitchLib.Client;
-using TwitchLib.Client.Events;
-using TwitchLib.Client.Models;
-using TwitchLib.Communication.Events;
+using System.Threading;
 using static TRBot.EventDelegates;
 
 namespace TRBot
 {
     /// <summary>
-    /// Helps handle events from Twitch.
+    /// Handles events from input through a terminal.
     /// </summary>
-    public class TwitchEventHandler : IEventHandler
+    public class TerminalEventHandler : IEventHandler
     {
         public event UserSentMessage UserSentMessageEvent = null;
 
@@ -54,62 +51,23 @@ namespace TRBot
 
         public event OnDisconnected OnDisconnectedEvent = null;
 
-        private TwitchClient twitchClient = null;
+        private volatile bool StopConsoleThread = false;
 
-        public TwitchEventHandler(TwitchClient client)
+        private User UserData = null;
+
+        public TerminalEventHandler(User userData)
         {
-            twitchClient = client;
+            UserData = userData;
         }
 
         public void Initialize()
         {
-            twitchClient.OnMessageReceived -= OnMessageReceived;
-            twitchClient.OnMessageReceived += OnMessageReceived;
-
-            twitchClient.OnNewSubscriber -= OnNewSubscriber;
-            twitchClient.OnNewSubscriber += OnNewSubscriber;
-            
-            twitchClient.OnReSubscriber -= OnReSubscriber;
-            twitchClient.OnReSubscriber += OnReSubscriber;
-
-            twitchClient.OnWhisperReceived -= OnWhisperReceived;
-            twitchClient.OnWhisperReceived += OnWhisperReceived;
-
-            twitchClient.OnChatCommandReceived -= OnChatCommandReceived;
-            twitchClient.OnChatCommandReceived += OnChatCommandReceived;
-
-            twitchClient.OnJoinedChannel -= OnJoinedChannel;
-            twitchClient.OnJoinedChannel += OnJoinedChannel;
-
-            twitchClient.OnBeingHosted -= OnChannelHosted;
-            twitchClient.OnBeingHosted += OnChannelHosted;
-
-            twitchClient.OnConnected -= OnConnected;
-            twitchClient.OnConnected += OnConnected;
-
-            twitchClient.OnConnectionError -= OnConnectionError;
-            twitchClient.OnConnectionError += OnConnectionError;
-
-            twitchClient.OnReconnected -= OnReconnected;
-            twitchClient.OnReconnected += OnReconnected;
-
-            twitchClient.OnDisconnected -= OnDisconnected;
-            twitchClient.OnDisconnected += OnDisconnected;
+            WaitForMainInitialization();       
         }
 
         public void CleanUp()
         {
-            twitchClient.OnMessageReceived -= OnMessageReceived;
-            twitchClient.OnNewSubscriber -= OnNewSubscriber;
-            twitchClient.OnReSubscriber -= OnReSubscriber;
-            twitchClient.OnWhisperReceived -= OnWhisperReceived;
-            twitchClient.OnChatCommandReceived -= OnChatCommandReceived;
-            twitchClient.OnJoinedChannel -= OnJoinedChannel;
-            twitchClient.OnBeingHosted -= OnChannelHosted;
-            twitchClient.OnConnected -= OnConnected;
-            twitchClient.OnConnectionError -= OnConnectionError;
-            twitchClient.OnReconnected -= OnReconnected;
-            twitchClient.OnDisconnected -= OnDisconnected;
+            StopConsoleThread = true;
 
             UserSentMessageEvent = null;
             UserNewlySubscribedEvent = null;
@@ -123,145 +81,6 @@ namespace TRBot
             OnReconnectedEvent = null;
             OnDisconnectedEvent = null;
             UserMadeInputEvent = null;
-        }
-
-        //Break up much of the message handling by sending events
-        private void OnMessageReceived(object sender, OnMessageReceivedArgs e)
-        {
-            User user = BotProgram.GetOrAddUser(e.ChatMessage.DisplayName, false);
-
-            EvtUserMessageArgs umArgs = new EvtUserMessageArgs()
-            {
-                UsrMessage = new EvtUserMsgData(e.ChatMessage.UserId, e.ChatMessage.Username,
-                    e.ChatMessage.DisplayName, e.ChatMessage.Channel, e.ChatMessage.Message)
-            };
-
-            UserSentMessageEvent?.Invoke(user, umArgs);
-
-            //Attempt to parse the message as an input
-            ProcessMsgAsInput(user, umArgs);
-        }
-
-        private void OnNewSubscriber(object sender, OnNewSubscriberArgs e)
-        {
-            User user = BotProgram.GetOrAddUser(e.Subscriber.DisplayName, false);
-
-            EvtOnSubscriptionArgs subArgs = new EvtOnSubscriptionArgs
-            {
-                SubscriptionData = new EvtSubscriptionData(e.Subscriber.UserId, e.Subscriber.DisplayName,
-                    e.Subscriber.DisplayName)
-            };
-
-            UserNewlySubscribedEvent?.Invoke(user, subArgs);
-        }
-
-        private void OnReSubscriber(object sender, OnReSubscriberArgs e)
-        {
-            User user = BotProgram.GetOrAddUser(e.ReSubscriber.DisplayName, false);
-
-            EvtOnReSubscriptionArgs reSubArgs = new EvtOnReSubscriptionArgs
-            {
-                ReSubscriptionData = new EvtReSubscriptionData(e.ReSubscriber.UserId, e.ReSubscriber.DisplayName,
-                    e.ReSubscriber.DisplayName, e.ReSubscriber.Months)
-            };
-
-            UserReSubscribedEvent?.Invoke(user, reSubArgs);
-        }
-
-        private void OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
-        {
-            EvtWhisperMessageArgs whisperMsg = new EvtWhisperMessageArgs()
-            {
-                WhsprMessage = new EvtWhisperMsgData(e.WhisperMessage.UserId, e.WhisperMessage.Username,
-                    e.WhisperMessage.DisplayName, e.WhisperMessage.MessageId, e.WhisperMessage.ThreadId,
-                    e.WhisperMessage.Message)
-            };
-
-            WhisperReceivedEvent?.Invoke(whisperMsg);
-        }
-
-        private void OnChatCommandReceived(object sender, OnChatCommandReceivedArgs e)
-        {
-            User user = BotProgram.GetOrAddUser(e.Command.ChatMessage.DisplayName, false);
-
-            ChatMessage cMsg = e.Command.ChatMessage;
-
-            EvtUserMsgData msgData = new EvtUserMsgData(cMsg.UserId, cMsg.Username, cMsg.DisplayName,
-                cMsg.Channel, cMsg.Message);
-
-            EvtChatCommandArgs chatCmdArgs = new EvtChatCommandArgs
-            {
-                Command = new EvtChatCommandData(e.Command.ArgumentsAsList, e.Command.ArgumentsAsString,
-                    msgData, e.Command.CommandIdentifier, e.Command.CommandText)
-            };
-
-            ChatCommandReceivedEvent?.Invoke(user, chatCmdArgs);
-        }
-
-        private void OnJoinedChannel(object sender, OnJoinedChannelArgs e)
-        {
-            EvtJoinedChannelArgs jcArgs = new EvtJoinedChannelArgs()
-            {
-                BotUsername = e.BotUsername,
-                Channel = e.Channel
-            };
-
-            OnJoinedChannelEvent?.Invoke(jcArgs);
-        }
-
-        private void OnChannelHosted(object sender, OnBeingHostedArgs e)
-        {
-            BeingHostedNotification bHNotif = e.BeingHostedNotification;
-
-            EvtOnHostedArgs hostedArgs = new EvtOnHostedArgs
-            {
-                HostedData = new EvtHostedData(bHNotif.Channel, bHNotif.HostedByChannel,
-                bHNotif.Viewers, bHNotif.IsAutoHosted)
-            };
-
-            ChannelHostedEvent?.Invoke(hostedArgs);
-        }
-
-        private void OnConnected(object sender, OnConnectedArgs e)
-        {
-            EvtConnectedArgs connectedArgs = new EvtConnectedArgs()
-            {
-                BotUsername = e.BotUsername,
-                AutoJoinChannel = e.AutoJoinChannel
-            };
-
-            OnConnectedEvent?.Invoke(connectedArgs);
-        }
-
-        private void OnConnectionError(object sender, OnConnectionErrorArgs e)
-        {
-            EvtConnectionErrorArgs cErrArgs = new EvtConnectionErrorArgs()
-            {
-                Error = new EvtErrorData(e.Error.Message),
-                BotUsername = e.BotUsername
-            };
-
-            OnConnectionErrorEvent?.Invoke(cErrArgs);
-        }
-
-        private void OnReconnected(object sender, OnReconnectedEventArgs e)
-        {
-            EvtReconnectedArgs recArgs = new EvtReconnectedArgs()
-            {
-
-            };
-
-            OnReconnectedEvent?.Invoke(recArgs);
-        }
-
-        private void OnDisconnected(object sender, OnDisconnectedEventArgs e)
-        {
-            EvtDisconnectedArgs disArgs = new EvtDisconnectedArgs()
-            {
-
-            };
-
-            OnDisconnectedEvent?.Invoke(disArgs);
         }
 
         //NOTE: This would result in lots of code duplication if other streaming services were integrated
@@ -398,6 +217,98 @@ namespace TRBot
             else
             {
                 BotProgram.MsgHandler.QueueMessage("New inputs cannot be processed until all other inputs have stopped.");
+            }
+        }
+
+        private async void WaitForMainInitialization()
+        {
+            //Wait for the main program to initialize
+            while (BotProgram.MsgHandler == null)
+            {
+                await System.Threading.Tasks.Task.Delay(100);
+            }
+
+            SetupStart();
+
+            //Create a new thread to handle inputs through the console
+            Thread consoleThread = new Thread(ReadWaitInputs);
+            consoleThread.IsBackground = true;
+            consoleThread.Start();
+        }
+
+        private void SetupStart()
+        {
+            EvtConnectedArgs conArgs = new EvtConnectedArgs
+            {
+                BotUsername = BotProgram.BotName,
+                AutoJoinChannel = string.Empty
+            };
+
+            OnConnectedEvent?.Invoke(conArgs);
+
+            EvtJoinedChannelArgs joinedChannelArgs = new EvtJoinedChannelArgs
+            {
+                BotUsername = BotProgram.BotName,
+                Channel = string.Empty
+            };
+
+            OnJoinedChannelEvent?.Invoke(joinedChannelArgs);
+        }
+
+        private void ReadWaitInputs()
+        {
+            while (true)
+            {
+                if (StopConsoleThread == true)
+                {
+                    break;
+                }
+
+                //if (Console.KeyAvailable == false)
+                //    continue;
+
+                string line = Console.ReadLine();
+
+                User user = UserData;
+
+                //Send message event
+                EvtUserMessageArgs umArgs = new EvtUserMessageArgs()
+                {
+                    UsrMessage = new EvtUserMsgData(user.Name, user.Name,
+                        user.Name, string.Empty, line)
+                };
+
+                UserSentMessageEvent?.Invoke(user, umArgs);
+
+                //Attempt to parse the message as an input
+                ProcessMsgAsInput(user, umArgs);
+
+                //Check for a command
+                if (line.Length > 0 && line[0] == Globals.CommandIdentifier)
+                {
+                    //Build args list
+                    List<string> argsList = new List<string>(line.Split(' '));
+                    string argsAsStr = string.Empty;
+
+                    //Remove the command itself and the space from the string
+                    if (argsList.Count > 1)
+                    {
+                        argsAsStr = line.Remove(0, argsList[0].Length + 1);
+                    }
+
+                    //Remove command identifier
+                    string cmdText = argsList[0].Remove(0, 1);
+                    
+                    //Now remove the first entry from the list, which is the command, retaining only the arguments
+                    argsList.RemoveAt(0);
+
+                    EvtChatCommandArgs chatcmdArgs = new EvtChatCommandArgs();
+                    EvtUserMsgData msgData = new EvtUserMsgData(user.Name, user.Name, user.Name, string.Empty, line);
+
+                    chatcmdArgs.Command = new EvtChatCommandData(argsList, argsAsStr, msgData, Globals.CommandIdentifier, cmdText);
+
+                    ChatCommandReceivedEvent?.Invoke(UserData, chatcmdArgs);
+                }
             }
         }
     }
