@@ -80,7 +80,7 @@ namespace TRBot
             //Check if the controller port is out of range
             if (controllerIndex < 0 || controllerIndex >= InputGlobals.ControllerMngr.ControllerCount)
             {
-                BotProgram.MsgHandler.QueueMessage($"controller port is out of the 1 to {InputGlobals.ControllerMngr.ControllerCount} range.");
+                BotProgram.MsgHandler.QueueMessage($"Controller port is out of the 1 to {InputGlobals.ControllerMngr.ControllerCount} range.");
                 return;
             }
 

@@ -33,10 +33,14 @@ namespace TRBot
         private struct InputWrapper
         {
             public Parser.Input[][] InputArray;
+            public ConsoleBase Console;
+            public IVirtualControllerManager VCManager;
 
-            public InputWrapper(Parser.Input[][] inputArray)
+            public InputWrapper(Parser.Input[][] inputArray, ConsoleBase console, IVirtualControllerManager vcMngr)
             {
                 InputArray = inputArray;
+                Console = console;
+                VCManager = vcMngr;
             }
         }
 
@@ -76,7 +80,7 @@ namespace TRBot
         /// Carries out a set of inputs.
         /// </summary>
         /// <param name="inputList">A list of lists of inputs to execute.</param>
-        public static void CarryOutInput(List<List<Parser.Input>> inputList)
+        public static void CarryOutInput(List<List<Parser.Input>> inputList, ConsoleBase currentConsole, IVirtualControllerManager vcManager)
         {
             /*Kimimaru: We're using a thread pool for efficiency
              * Though very unlikely, there's a chance the input won't execute right away if it has to wait for a thread to be available
@@ -96,7 +100,7 @@ namespace TRBot
                 inputArray[i] = inputList[i].ToArray();
             }
 
-            InputWrapper inputWrapper = new InputWrapper(inputArray);
+            InputWrapper inputWrapper = new InputWrapper(inputArray, currentConsole, vcManager);
             ThreadPool.QueueUserWorkItem(new WaitCallback(ExecuteInput), inputWrapper);
         }
 
@@ -117,7 +121,7 @@ namespace TRBot
             Stopwatch sw = new Stopwatch();
 
             List<int> indices = new List<int>(16);
-            IVirtualControllerManager vcMngr = InputGlobals.ControllerMngr;
+            IVirtualControllerManager vcMngr = inputWrapper.VCManager;
 
             int controllerCount = vcMngr.ControllerCount;
             int[] nonWaits = new int[controllerCount];
@@ -126,7 +130,7 @@ namespace TRBot
             //This helps prevent updating controllers that weren't used at the end
             int[] usedControllerPorts = new int[controllerCount];
 
-            ConsoleBase curConsole = InputGlobals.CurrentConsole;
+            ConsoleBase curConsole = inputWrapper.Console;
 
             //Don't check for overflow to improve performance
             unchecked
@@ -201,8 +205,8 @@ namespace TRBot
                                 continue;
                             }
 
-                            //Release if the input isn't a hold and isn't a wait input
-                            if (input.hold == false && curConsole.IsWait(input) == false)
+                            //Release if the input isn't held or released and isn't a wait input
+                            if (input.hold == false && input.release == false && curConsole.IsWait(input) == false)
                             {
                                 int port = input.controllerPort;
                                 
@@ -270,7 +274,7 @@ namespace TRBot
                         continue;
                     }
 
-                    IVirtualController controller = InputGlobals.ControllerMngr.GetController(i);
+                    IVirtualController controller = vcMngr.GetController(i);
                     controller.UpdateController();
                 }
             }
