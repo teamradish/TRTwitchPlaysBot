@@ -44,6 +44,7 @@ namespace TRBot
 
         private const string GenerateNewArg = "new";
         private const int BaseCreditReward = 100;
+        private const int CreditRewardMultiplier = 2;
 
         private readonly Random Rand = new Random();
 
@@ -110,10 +111,10 @@ namespace TRBot
         private void ExecuteNewArg(User user)
         {
             //Generate the exercise 
-            Parser.InputSequence newSequence = GenerateExercise(InputGlobals.CurrentConsole);
+            Parser.InputSequence newSequence = GenerateExercise(user.Level, InputGlobals.CurrentConsole);
 
             //Give greater credit rewards for longer input sequences
-            long creditReward = newSequence.Inputs.Count * BaseCreditReward;
+            long creditReward = (newSequence.Inputs.Count * BaseCreditReward) * CreditRewardMultiplier;
 
             InputExercise inputExercise = new InputExercise(newSequence, creditReward);
             UserExercises[user.Name] = inputExercise;
@@ -241,7 +242,7 @@ namespace TRBot
 
         #region Exercise Generation
 
-        private Parser.InputSequence GenerateExercise(ConsoleBase currentConsole)
+        private Parser.InputSequence GenerateExercise(in int userLevel, ConsoleBase currentConsole)
         {
             int numInputs = Rand.Next(MinInputs, MaxInputs);
 
@@ -257,19 +258,20 @@ namespace TRBot
                 bool haveSubSequence = (Rand.Next(0, 2) == 0);
                 int subSequences = (haveSubSequence == false) ? 1 : Rand.Next(MinSubSequences, MaxSubSequences);
 
-                List<Parser.Input> subSequence = GenerateSubSequence(subSequences, heldInputs, currentConsole);
+                List<Parser.Input> subSequence = GenerateSubSequence(subSequences, heldInputs, userLevel, currentConsole);
                 exerciseInputs.Add(subSequence);
             }
 
             return inputSequence;
         }
 
-        private List<Parser.Input> GenerateSubSequence(in int numSubSequences, List<string> heldInputs, ConsoleBase currentConsole)
+        private List<Parser.Input> GenerateSubSequence(in int numSubSequences, List<string> heldInputs, in int userLevel, ConsoleBase currentConsole)
         {
             List<Parser.Input> subSequence = new List<Parser.Input>(numSubSequences);
 
             //Trim inputs that shouldn't be chosen in exercises
-            List<string> validInputs = TrimInvalidExerciseInputs(currentConsole.ValidInputs);
+            //NOTE: To improve performance we should trim only at the highest level, not here in the subsequences
+            List<string> validInputs = TrimInvalidExerciseInputs(userLevel, currentConsole.ValidInputs);
 
             //If there's more than one subsequence, remove wait inputs since they're largely redundant in this case
             if (numSubSequences > 1)
@@ -348,12 +350,29 @@ namespace TRBot
             return subSequence;
         }
 
-        private List<string> TrimInvalidExerciseInputs(string[] validInputs)
+        private List<string> TrimInvalidExerciseInputs(in int userLevel, string[] validInputs)
         {
             List<string> inputs = new List<string>(validInputs);
             for (int i = 0; i < InvalidExerciseInputs.Length; i++)
             {
                 inputs.Remove(InvalidExerciseInputs[i]);
+            }
+
+            for (int i = inputs.Count - 1; i >= 0; i--)
+            {
+                int permLvl = 0;
+
+                //NOTE: Try to decouple this dictionary from here
+                if (BotProgram.BotData.InputAccess?.InputAccessDict?.TryGetValue(inputs[i], out permLvl) == false)
+                {
+                    continue;
+                }
+
+                //Remove the input if the user doesn't have access to use it
+                if (userLevel < permLvl)
+                {
+                    inputs.RemoveAt(i);
+                }
             }
 
             return inputs;
