@@ -288,12 +288,12 @@ namespace TRBot
             }
         }
 
-        private void OnChatCommandReceived(User userData, EvtChatCommandArgs e)
+        private void OnChatCommandReceived(EvtChatCommandArgs e)
         {
             //If an exception is unhandled in a command, the entire bot will hang up (potential internal TwitchLib issue)
             try
             {
-                CommandHandler.HandleCommand(userData, e);
+                CommandHandler.HandleCommand(e.UserData, e);
             }
             catch (Exception exc)
             {
@@ -301,11 +301,11 @@ namespace TRBot
             }
         }
 
-        private void OnUserSentMessage(User user, EvtUserMessageArgs e)
+        private void OnUserSentMessage(EvtUserMessageArgs e)
         {
-            if (user.OptedOut == false)
+            if (e.UserData.OptedOut == false)
             {
-                user.IncrementMsgCount();
+                e.UserData.IncrementMsgCount();
             }
 
             string possibleMeme = e.UsrMessage.Message.ToLower();
@@ -315,8 +315,10 @@ namespace TRBot
             }
         }
 
-        private void OnUserMadeInput(User user, EvtUserMessageArgs e, in Parser.InputSequence validInputSeq)
+        private void OnUserMadeInput(EvtUserInputArgs e)
         {
+            User user = e.UserData;
+
             //Mark this as a valid input
             if (user.OptedOut == false)
             {
@@ -346,7 +348,7 @@ namespace TRBot
             //We're okay to perform the input
             //if (shouldPerformInput == true)
             //{
-                InputHandler.CarryOutInput(validInputSeq.Inputs, InputGlobals.CurrentConsole, InputGlobals.ControllerMngr);
+                InputHandler.CarryOutInput(e.ValidInputSeq.Inputs, InputGlobals.CurrentConsole, InputGlobals.ControllerMngr);
 
                 //If auto whitelist is enabled, the user reached the whitelist message threshold,
                 //the user isn't whitelisted, and the user hasn't ever been whitelisted, whitelist them
@@ -379,7 +381,7 @@ namespace TRBot
             }
         }
 
-        private void OnNewSubscriber(User user, EvtOnSubscriptionArgs e)
+        private void OnNewSubscriber(EvtOnSubscriptionArgs e)
         {
             if (string.IsNullOrEmpty(BotSettings.MsgSettings.NewSubscriberMsg) == false)
             {
@@ -388,7 +390,7 @@ namespace TRBot
             }
         }
 
-        private void OnReSubscriber(User user, EvtOnReSubscriptionArgs e)
+        private void OnReSubscriber(EvtOnReSubscriptionArgs e)
         {
             if (string.IsNullOrEmpty(BotSettings.MsgSettings.ReSubscriberMsg) == false)
             {

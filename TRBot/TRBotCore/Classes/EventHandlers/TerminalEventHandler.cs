@@ -86,8 +86,10 @@ namespace TRBot
         //NOTE: This would result in lots of code duplication if other streaming services were integrated
         //Is there a better way to do this?
 
-        private void ProcessMsgAsInput(User userData, EvtUserMessageArgs e)
+        private void ProcessMsgAsInput(EvtUserMessageArgs e)
         {
+            User userData = e.UserData;
+
             //Don't process for inputs if a meme
             string possibleMeme = e.UsrMessage.Message.ToLower();
             if (BotProgram.BotData.Memes.TryGetValue(possibleMeme, out string meme) == true)
@@ -211,8 +213,15 @@ namespace TRBot
 
             if (InputHandler.StopRunningInputs == false)
             {
+                EvtUserInputArgs userInputArgs = new EvtUserInputArgs()
+                {
+                    UserData = e.UserData,
+                    UsrMessage = e.UsrMessage,
+                    ValidInputSeq = inputSequence
+                };
+
                 //Invoke input event
-                UserMadeInputEvent?.Invoke(userData, e, inputSequence);
+                UserMadeInputEvent?.Invoke(userInputArgs);
             }
             else
             {
@@ -274,14 +283,15 @@ namespace TRBot
                 //Send message event
                 EvtUserMessageArgs umArgs = new EvtUserMessageArgs()
                 {
+                    UserData = user,
                     UsrMessage = new EvtUserMsgData(user.Name, user.Name,
                         user.Name, string.Empty, line)
                 };
 
-                UserSentMessageEvent?.Invoke(user, umArgs);
+                UserSentMessageEvent?.Invoke(umArgs);
 
                 //Attempt to parse the message as an input
-                ProcessMsgAsInput(user, umArgs);
+                ProcessMsgAsInput(umArgs);
 
                 //Check for a command
                 if (line.Length > 0 && line[0] == Globals.CommandIdentifier)
@@ -306,8 +316,9 @@ namespace TRBot
                     EvtUserMsgData msgData = new EvtUserMsgData(user.Name, user.Name, user.Name, string.Empty, line);
 
                     chatcmdArgs.Command = new EvtChatCommandData(argsList, argsAsStr, msgData, Globals.CommandIdentifier, cmdText);
+                    chatcmdArgs.UserData = UserData;
 
-                    ChatCommandReceivedEvent?.Invoke(UserData, chatcmdArgs);
+                    ChatCommandReceivedEvent?.Invoke(chatcmdArgs);
                 }
             }
         }
