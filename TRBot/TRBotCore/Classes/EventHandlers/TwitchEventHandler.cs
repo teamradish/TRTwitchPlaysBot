@@ -275,15 +275,8 @@ namespace TRBot
         {
             User userData = e.UserData;
 
-            //Don't process for inputs if a meme
-            string possibleMeme = e.UsrMessage.Message.ToLower();
-            if (BotProgram.BotData.Memes.TryGetValue(possibleMeme, out string meme) == true)
-            {
-                return;
-            }
-
             //Ignore commands as inputs
-            if (possibleMeme.StartsWith(Globals.CommandIdentifier) == true)
+            if (e.UsrMessage.Message.StartsWith(Globals.CommandIdentifier) == true)
             {
                 return;
             }
