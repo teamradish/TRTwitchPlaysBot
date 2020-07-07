@@ -47,7 +47,7 @@ namespace TRBot
         /// <summary>
         /// The current number of running input sequences.
         /// </summary>
-        public static int CurrentRunningInputs => RunningInputThreads;
+        public static int CurrentRunningInputs => Interlocked.CompareExchange(ref RunningInputThreads, 0, 0);
 
         /// <summary>
         /// The current number of running input threads.
