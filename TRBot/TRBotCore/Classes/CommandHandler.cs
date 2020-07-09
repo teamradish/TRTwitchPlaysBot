@@ -123,6 +123,7 @@ namespace TRBot
             CommandDict.Add("pressedinputs", new ListPressedInputsCommand());
             CommandDict.Add("reverseparse", new ReverseInputCommand());
             CommandDict.Add("runninginputs", new NumRunningInputsCommand());
+            CommandDict.Add("cmdperms", new CmdAccessLevelCommand());
             CommandDict.Add("tutorial", new TutorialCommand());
 
             foreach (KeyValuePair<string, BaseCommand> command in CommandDict)
