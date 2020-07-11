@@ -591,6 +591,9 @@ namespace TRBot
                 MsgHandler.SetMessageCooldown(BotSettings.MsgSettings.MessageCooldown);
             }
 
+            //Re-populate macros
+            DataInit.PopulateMacrosToParserList(BotProgram.BotData.Macros, BotProgram.BotData.ParserMacroLookup);
+
             //string achievementsText = Globals.ReadFromTextFileOrCreate(Globals.AchievementsFilename);
             //BotData.Achievements = JsonConvert.DeserializeObject<AchievementData>(achievementsText);
             //if (BotData.Achievements == null)
