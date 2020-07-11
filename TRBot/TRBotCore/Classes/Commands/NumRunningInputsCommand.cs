@@ -33,7 +33,21 @@ namespace TRBot
 
         public override void ExecuteCommand(EvtChatCommandArgs e)
         {
-            BotProgram.MsgHandler.QueueMessage($"There are {InputHandler.CurrentRunningInputs} input sequences running!");
+            int curInputsRunning = InputHandler.CurrentRunningInputs;
+
+            string message = string.Empty;
+
+            //Account for singular and plural
+            if (curInputsRunning == 1)
+            {
+                message = "There is 1 input sequence running!";
+            }
+            else
+            {
+                message = $"There are {curInputsRunning} input sequences running!";
+            }
+
+            BotProgram.MsgHandler.QueueMessage(message);
         }
     }
 }

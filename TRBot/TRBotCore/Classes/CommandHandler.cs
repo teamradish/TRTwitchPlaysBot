@@ -65,7 +65,7 @@ namespace TRBot
             CommandDict.Add("jumprope", new JumpRopeCommand());
             CommandDict.Add("jumpropestreak", new HighestJumpRopeCommand());
             CommandDict.Add("calculate", new CalculateCommand());
-            CommandDict.Add("memes", new MemesCommand());
+            CommandDict.Add("memes", new ListMemesCommand());
             CommandDict.Add("addmeme", new AddMemeCommand());
             CommandDict.Add("removememe", new RemoveMemeCommand());
             CommandDict.Add("highfive", new HighFiveCommand());
@@ -74,7 +74,7 @@ namespace TRBot
             CommandDict.Add("crashbot", new CrashBotCommand());
             CommandDict.Add("console", new ConsoleCommand());
             CommandDict.Add("stopall", new StopAllCommand());
-            CommandDict.Add("macros", new MacrosCommand());
+            CommandDict.Add("macros", new ListMacrosCommand());
             CommandDict.Add("addmacro", new AddMacroCommand());
             CommandDict.Add("removemacro", new RemoveMacroCommand());
             CommandDict.Add("show", new ShowCommand());
