@@ -28,17 +28,17 @@ namespace TRBot
     /// </summary>
     public static class EventDelegates
     {
-        public delegate void UserSentMessage(User user, EvtUserMessageArgs e);
+        public delegate void UserSentMessage(EvtUserMessageArgs e);
 
-        public delegate void UserMadeInput(User user, EvtUserMessageArgs e, in Parser.InputSequence validInputSeq);
+        public delegate void UserMadeInput(EvtUserInputArgs e);
 
-        public delegate void UserNewlySubscribed(User user, EvtOnSubscriptionArgs e);
+        public delegate void UserNewlySubscribed(EvtOnSubscriptionArgs e);
 
-        public delegate void UserReSubscribed(User user, EvtOnReSubscriptionArgs e);
+        public delegate void UserReSubscribed(EvtOnReSubscriptionArgs e);
 
         public delegate void OnWhisperReceived(EvtWhisperMessageArgs e);
 
-        public delegate void ChatCommandReceived(User user, EvtChatCommandArgs e);
+        public delegate void ChatCommandReceived(EvtChatCommandArgs e);
 
         public delegate void OnJoinedChannel(EvtJoinedChannelArgs e);
 

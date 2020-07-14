@@ -33,12 +33,6 @@ namespace TRBot
         {
             base.Initialize(commandHandler);
             AccessLevel = (int)AccessLevels.Levels.Whitelisted;
-
-            //Add all macros in the data to the parser list on initialization
-            foreach (var macroName in BotProgram.BotData.Macros.Keys)
-            {
-                AddMacroToParserList(macroName);
-            }
         }
 
         public override void ExecuteCommand(EvtChatCommandArgs e)
@@ -207,16 +201,7 @@ namespace TRBot
 
         private void AddMacroToParserList(string macroName)
         {
-            char macroFirstChar = macroName[1];
-
-            //Add to the parsed macro list for quicker lookup
-            if (BotProgram.BotData.ParserMacroLookup.TryGetValue(macroFirstChar, out List<string> macroList) == false)
-            {
-                macroList = new List<string>(16);
-                BotProgram.BotData.ParserMacroLookup.Add(macroFirstChar, macroList);
-            }
-
-            macroList.Add(macroName);
+            DataInit.AddMacroToParserList(macroName, BotProgram.BotData.ParserMacroLookup);
         }
     }
 }

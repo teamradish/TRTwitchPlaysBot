@@ -72,7 +72,7 @@ namespace TRBot
             }
         }
 
-        private void MessageReceived(User user, EvtUserMessageArgs e)
+        private void MessageReceived(EvtUserMessageArgs e)
         {
             string nameToLower = e.UsrMessage.DisplayName.ToLower();
 
@@ -81,7 +81,7 @@ namespace TRBot
             {
                 //If so, check if they're in the credits database and not opted out,
                 //then add them for gaining credits
-                if (user != null && user.OptedOut == false)
+                if (e.UserData != null && e.UserData.OptedOut == false)
                 {
                     UsersTalked.Add(nameToLower, true);
                 }

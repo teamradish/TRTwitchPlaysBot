@@ -45,7 +45,7 @@ namespace TRBot
             {
                 BotProgram.BotData.Memes.TryRemove(meme, out string removedMeme);
                 BotProgram.SaveBotData();
-                MemesCommand.CacheMemesString();
+                ListMemesCommand.CacheMemesString();
             }
         }
     }

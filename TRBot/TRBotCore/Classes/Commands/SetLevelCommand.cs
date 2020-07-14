@@ -101,9 +101,9 @@ namespace TRBot
                 return;
             }
 
-            if (levelNum > curUser.Level)
+            if (levelNum >= curUser.Level)
             {
-                BotProgram.MsgHandler.QueueMessage("You cannot set a level greater than your own!");
+                BotProgram.MsgHandler.QueueMessage("You cannot set a level greater than or equal to your own!");
                 return;
             }
 

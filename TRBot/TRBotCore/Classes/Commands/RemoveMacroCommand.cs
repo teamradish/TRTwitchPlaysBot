@@ -46,15 +46,7 @@ namespace TRBot
             
             if (BotProgram.BotData.Macros.ContainsKey(macroName) == true)
             {
-                char macroFirstChar = macroName[1];
-
-                //Remove from the parser macro list
-                List<string> parserMacroList = BotProgram.BotData.ParserMacroLookup[macroFirstChar];
-                parserMacroList.Remove(macroName);
-                if (parserMacroList.Count == 0)
-                {
-                    BotProgram.BotData.ParserMacroLookup.Remove(macroFirstChar);
-                }
+                DataInit.RemoveMacroFromParserList(macroName, BotProgram.BotData.ParserMacroLookup);
 
                 BotProgram.BotData.Macros.TryRemove(macroName, out string removedMacro);
                 BotProgram.SaveBotData();
