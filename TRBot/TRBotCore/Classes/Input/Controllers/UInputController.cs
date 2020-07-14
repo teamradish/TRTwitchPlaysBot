@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Text;
 using System.Runtime.CompilerServices;
+using static TRBot.VirtualControllerDelegates;
 
 namespace TRBot
 {
@@ -157,8 +158,22 @@ namespace TRBot
 
         private Dictionary<int, (long AxisMin, long AxisMax)> MinMaxAxes = new Dictionary<int, (long, long)>(8);
 
+        public event OnInputPressed InputPressedEvent = null;
+        public event OnInputReleased InputReleasedEvent = null;
+
+        public event OnAxisPressed AxisPressedEvent = null;
+        public event OnAxisReleased AxisReleasedEvent = null;
+
+        public event OnButtonPressed ButtonPressedEvent = null;
+        public event OnButtonReleased ButtonReleasedEvent = null;
+
+        public event OnControllerUpdated ControllerUpdatedEvent = null;
+        public event OnControllerReset ControllerResetEvent = null;
+
+        public event OnControllerClosed ControllerClosedEvent = null;
+
         //Kimimaru: Ideally we get the input's state from the driver, but this should work well enough, for now at least
-        private VControllerInputTracker InputTracker = new VControllerInputTracker();
+        private VControllerInputTracker InputTracker = null;
 
         public UInputController(in int controllerIndex)
         {
@@ -172,6 +187,16 @@ namespace TRBot
 
             Reset();
             Close();
+
+            InputPressedEvent = null;
+            InputReleasedEvent = null;
+            AxisPressedEvent = null;
+            AxisReleasedEvent = null;
+            ButtonPressedEvent = null;
+            ButtonReleasedEvent = null;
+            ControllerUpdatedEvent = null;
+            ControllerResetEvent = null;
+            ControllerClosedEvent = null;
         }
 
         public void Acquire()
@@ -194,6 +219,8 @@ namespace TRBot
             
             ControllerDescriptor = INVALID_CONTROLLER;
             ControllerID = 0;
+
+            ControllerClosedEvent?.Invoke();
         }
 
         public void Init()
@@ -211,6 +238,8 @@ namespace TRBot
             {
                 MinMaxAxes.Add((int)axes[i], (minAxis, maxAxis));
             }
+
+            InputTracker = new VControllerInputTracker(this);
         }
 
         public void Reset()
@@ -237,10 +266,10 @@ namespace TRBot
             {
                 ReleaseButton((uint)buttons[i]);
             }
-            
-            InputTracker.ResetStates();
 
             UpdateController();
+
+            ControllerResetEvent?.Invoke();
         }
 
         public void PressInput(in Parser.Input input)
@@ -272,7 +301,7 @@ namespace TRBot
                 }
             }
 
-            InputTracker.PressInput(input.name);
+            InputPressedEvent?.Invoke(input);
         }
 
         public void ReleaseInput(in Parser.Input input)
@@ -304,7 +333,7 @@ namespace TRBot
                 }
             }
 
-            InputTracker.ReleaseInput(input.name);
+            InputReleasedEvent?.Invoke(input);
         }
 
         public void PressAxis(in int axis, in bool min, in int percent)
@@ -334,9 +363,9 @@ namespace TRBot
                 val = (int)(mid + ((percent / 100f) * half));
             }
 
-            InputTracker.PressAxis(axis, percent);
-
             SetAxis(uinputAxis, val);
+
+            AxisPressedEvent?.Invoke(axis, percent);
         }
 
         public void ReleaseAxis(in int axis)
@@ -356,9 +385,9 @@ namespace TRBot
             long half = (axisVals.Item2 - axisVals.Item1) / 2L;
             int val = (int)(axisVals.Item1 + half);
 
-            InputTracker.ReleaseAxis(axis);
-
             SetAxis(uinputAxis, val);
+
+            AxisReleasedEvent?.Invoke(axis);
         }
 
         public void PressAbsoluteAxis(in int axis, in int percent)
@@ -375,10 +404,10 @@ namespace TRBot
             }
 
             int val = (int)(axisVals.Item2 * (percent / 100f));
-            
-            InputTracker.PressAxis(axis, percent);
 
             SetAxis(uinputAxis, val);
+
+            AxisPressedEvent?.Invoke(axis, percent);
         }
 
         public void ReleaseAbsoluteAxis(in int axis)
@@ -394,9 +423,9 @@ namespace TRBot
                 return;
             }
 
-            InputTracker.ReleaseAxis(axis);
-
             SetAxis(uinputAxis, 0);
+
+            AxisReleasedEvent?.Invoke(axis);
         }
 
         public void PressButton(in uint buttonVal)
@@ -407,9 +436,9 @@ namespace TRBot
                 return;
             }
 
-            InputTracker.PressButton(buttonVal);
-
             NativeWrapperUInput.PressButton(ControllerDescriptor, button);
+
+            ButtonPressedEvent?.Invoke(buttonVal);
         }
 
         public void ReleaseButton(in uint buttonVal)
@@ -420,9 +449,9 @@ namespace TRBot
                 return;
             }
 
-            InputTracker.ReleaseButton(buttonVal);
-
             NativeWrapperUInput.ReleaseButton(ControllerDescriptor, button);
+
+            ButtonReleasedEvent?.Invoke(buttonVal);
         }
 
         public ButtonStates GetInputState(in string inputName)
@@ -442,10 +471,9 @@ namespace TRBot
 
         public void UpdateController()
         {
-            //Update states
-            InputTracker.UpdateCurrentStates();
-            
             NativeWrapperUInput.UpdateController(ControllerDescriptor);
+
+            ControllerUpdatedEvent?.Invoke();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -35,6 +35,58 @@ namespace TRBot
         private ConcurrentDictionary<int, int> CurAxesStates = new ConcurrentDictionary<int, int>(Environment.ProcessorCount * 2, 32);
         private ConcurrentDictionary<int, int> TempAxesStates = new ConcurrentDictionary<int, int>(Environment.ProcessorCount * 2, 32);
 
+        private IVirtualController virtualController = null;
+
+        public VControllerInputTracker(IVirtualController vController)
+        {
+            virtualController = vController;
+
+            virtualController.InputPressedEvent -= PressInput;
+            virtualController.InputPressedEvent += PressInput;
+            virtualController.InputReleasedEvent -= ReleaseInput;
+            virtualController.InputReleasedEvent += ReleaseInput;
+
+            virtualController.ButtonPressedEvent -= PressButton;
+            virtualController.ButtonPressedEvent += PressButton;
+            virtualController.ButtonReleasedEvent -= ReleaseButton;
+            virtualController.ButtonReleasedEvent += ReleaseButton;
+
+            virtualController.AxisPressedEvent -= PressAxis;
+            virtualController.AxisPressedEvent += PressAxis;
+            virtualController.AxisReleasedEvent -= ReleaseAxis;
+            virtualController.AxisReleasedEvent += ReleaseAxis;
+
+            virtualController.ControllerResetEvent -= ResetStates;
+            virtualController.ControllerResetEvent += ResetStates;
+
+            virtualController.ControllerUpdatedEvent -= UpdateCurrentStates;
+            virtualController.ControllerUpdatedEvent += UpdateCurrentStates;
+
+            virtualController.ControllerClosedEvent -= CleanUp;
+            virtualController.ControllerClosedEvent += CleanUp;
+        }
+
+        public void CleanUp()
+        {
+            //Unsubscribe from all events
+            virtualController.InputPressedEvent -= PressInput;
+            virtualController.InputReleasedEvent -= ReleaseInput;
+
+            virtualController.ButtonPressedEvent -= PressButton;
+            virtualController.ButtonReleasedEvent -= ReleaseButton;
+
+            virtualController.AxisPressedEvent -= PressAxis;
+            virtualController.AxisReleasedEvent -= ReleaseAxis;
+
+            virtualController.ControllerResetEvent -= ResetStates;
+            virtualController.ControllerUpdatedEvent -= UpdateCurrentStates;
+            virtualController.ControllerClosedEvent -= CleanUp;
+
+            virtualController = null;
+
+            //Console.WriteLine("Cleaned up states");
+        }
+
         public void ResetStates()
         {
             CurInputStates.Clear();
@@ -45,6 +97,8 @@ namespace TRBot
 
             CurAxesStates.Clear();
             TempAxesStates.Clear();
+
+            //Console.WriteLine("Reset states");
         }
 
         public ButtonStates GetInputState(in string inputName)
@@ -77,34 +131,46 @@ namespace TRBot
             return 0;
         }
 
-        public void PressInput(in string inputName)
+        public void PressInput(in Parser.Input input)
         {
-            TempInputStates[inputName] = ButtonStates.Pressed;
+            TempInputStates[input.name] = ButtonStates.Pressed;
+
+            //Console.WriteLine("Pressed input " + input.name);
         }
 
-        public void ReleaseInput(in string inputName)
+        public void ReleaseInput(in Parser.Input input)
         {
-            TempInputStates[inputName] = ButtonStates.Released;
+            TempInputStates[input.name] = ButtonStates.Released;
+
+            //Console.WriteLine("Released input " + input.name);
         }
 
         public void PressButton(in uint buttonVal)
         {
             TempButtonStates[buttonVal] = ButtonStates.Pressed;
+
+            //Console.WriteLine("Pressed button " + buttonVal);
         }
 
         public void ReleaseButton(in uint buttonVal)
         {
             TempButtonStates[buttonVal] = ButtonStates.Released;
+
+            //Console.WriteLine("Released button " + buttonVal);
         }
 
         public void PressAxis(in int axisVal, in int percent)
         {
             TempAxesStates[axisVal] = percent;
+
+            //Console.WriteLine("Pressed axis " + axisVal + " " + percent + " percent");
         }
 
         public void ReleaseAxis(in int axisVal)
         {
             TempAxesStates[axisVal] = 0;
+
+            //Console.WriteLine("Released axis " + axisVal);
         }
 
         public void UpdateCurrentStates()
@@ -168,6 +234,8 @@ namespace TRBot
                 //Update current state from the temp state
                 CurInputStates[inputName] = pressedState;
             }
+
+            //Console.WriteLine("Updated states");
         }
 
         public string[] GetPressedInputs()

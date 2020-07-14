@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static TRBot.VirtualControllerDelegates;
 
 namespace TRBot
 {
@@ -87,6 +88,55 @@ namespace TRBot
         /// Updates the virtual device by applying all changes.
         /// </summary>
         void UpdateController();
+
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        /// An event invoked after an input is pressed on the controller.
+        /// </summary>
+        event OnInputPressed InputPressedEvent;
+
+        /// <summary>
+        /// An event invoked after an input is released on the controller.
+        /// </summary>
+        event OnInputReleased InputReleasedEvent;
+
+        /// <summary>
+        /// An event invoked after a button is pressed on the controller.
+        /// </summary>
+        event OnButtonPressed ButtonPressedEvent;
+
+        /// <summary>
+        /// An event invoked after a button is released on the controller.
+        /// </summary>
+        event OnButtonReleased ButtonReleasedEvent;
+
+        /// <summary>
+        /// An event invoked after an axis is pressed on the controller.
+        /// </summary>
+        event OnAxisPressed AxisPressedEvent;
+
+        /// <summary>
+        /// An event invoked after an axis is released on the controller.
+        /// </summary>
+        event OnAxisReleased AxisReleasedEvent;
+
+        /// <summary>
+        /// An event invoked after the virtual device is updated with all changes.
+        /// </summary>
+        event OnControllerUpdated ControllerUpdatedEvent;
+
+        /// <summary>
+        /// An event invoked after the controller is reset to its defaults.
+        /// </summary>
+        event OnControllerReset ControllerResetEvent;
+
+        /// <summary>
+        /// An event invoked after the controller has been closed and is no longer available.
+        /// </summary>
+        event OnControllerClosed ControllerClosedEvent;
 
         #endregion
     }

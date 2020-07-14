@@ -21,6 +21,7 @@ using System.Text;
 using vJoyInterfaceWrap;
 using System.Runtime.CompilerServices;
 using static vJoyInterfaceWrap.vJoy;
+using static TRBot.VirtualControllerDelegates;
 
 namespace TRBot
 {
@@ -100,8 +101,22 @@ namespace TRBot
 
         private Dictionary<int, (long AxisMin, long AxisMax)> MinMaxAxes = new Dictionary<int, (long, long)>(8);
 
+        public event OnInputPressed InputPressedEvent = null;
+        public event OnInputReleased InputReleasedEvent = null;
+
+        public event OnAxisPressed AxisPressedEvent = null;
+        public event OnAxisReleased AxisReleasedEvent = null;
+
+        public event OnButtonPressed ButtonPressedEvent = null;
+        public event OnButtonReleased ButtonReleasedEvent = null;
+
+        public event OnControllerUpdated ControllerUpdatedEvent = null;
+        public event OnControllerReset ControllerResetEvent = null;
+
+        public event OnControllerClosed ControllerClosedEvent = null;
+
         //Kimimaru: Ideally we get the input's state from the driver, but this should work well enough, for now at least
-        private VControllerInputTracker InputTracker = new VControllerInputTracker();
+        private VControllerInputTracker InputTracker = null;
 
         private vJoy VJoyInstance = null;
 
@@ -118,6 +133,16 @@ namespace TRBot
 
             Reset();
             Close();
+
+            InputPressedEvent = null;
+            InputReleasedEvent = null;
+            AxisPressedEvent = null;
+            AxisReleasedEvent = null;
+            ButtonPressedEvent = null;
+            ButtonReleasedEvent = null;
+            ControllerUpdatedEvent = null;
+            ControllerResetEvent = null;
+            ControllerClosedEvent = null;
         }
 
         public void Acquire()
@@ -129,6 +154,8 @@ namespace TRBot
         {
             VJoyInstance.RelinquishVJD(ControllerID);
             IsAcquired = false;
+
+            ControllerClosedEvent?.Invoke();
         }
 
         public void Init()
@@ -160,6 +187,8 @@ namespace TRBot
                     MinMaxAxes.Add(globalAxisVal, (min, max));
                 }
             }
+
+            InputTracker = new VControllerInputTracker(this);
         }
 
         public void Reset()
@@ -181,9 +210,9 @@ namespace TRBot
                 }
             }
 
-            InputTracker.ResetStates();
-
             UpdateController();
+
+            ControllerResetEvent?.Invoke();
         }
 
         public void PressInput(in Parser.Input input)
@@ -214,8 +243,8 @@ namespace TRBot
                     ReleaseAbsoluteAxis(value);
                 }
             }
-            
-            InputTracker.PressInput(input.name);
+
+            InputPressedEvent?.Invoke(input);
         }
 
         public void ReleaseInput(in Parser.Input input)
@@ -247,7 +276,7 @@ namespace TRBot
                 }
             }
 
-            InputTracker.ReleaseInput(input.name);
+            InputReleasedEvent?.Invoke(input);
         }
 
         public void PressAxis(in int axis, in bool min, in int percent)
@@ -277,9 +306,9 @@ namespace TRBot
                 val = (int)(mid + ((percent / 100f) * half));
             }
 
-            InputTracker.PressAxis(axis, percent);
-
             SetAxisEfficient(vJoyAxis, val);
+
+            AxisPressedEvent?.Invoke(axis, percent);
         }
 
         public void ReleaseAxis(in int axis)
@@ -299,9 +328,9 @@ namespace TRBot
             long half = (axisVals.Item2 - axisVals.Item1) / 2L;
             int val = (int)(axisVals.Item1 + half);
 
-            InputTracker.ReleaseAxis(axis);
-
             SetAxisEfficient(vJoyAxis, val);
+
+            AxisReleasedEvent?.Invoke(axis);
         }
 
         public void PressAbsoluteAxis(in int axis, in int percent)
@@ -319,9 +348,9 @@ namespace TRBot
 
             int val = (int)(axisVals.Item2 * (percent / 100f));
 
-            InputTracker.PressAxis(axis, percent);
-
             SetAxisEfficient(vJoyAxis, val);
+
+            AxisPressedEvent?.Invoke(axis, percent);
         }
 
         public void ReleaseAbsoluteAxis(in int axis)
@@ -337,9 +366,9 @@ namespace TRBot
                 return;
             }
 
-            InputTracker.ReleaseAxis(axis);
-
             SetAxisEfficient(vJoyAxis, 0);
+
+            AxisReleasedEvent?.Invoke(axis);
         }
 
         public void PressButton(in uint buttonVal)
@@ -349,8 +378,6 @@ namespace TRBot
             {
                 return;
             }
-
-            InputTracker.PressButton(buttonVal);
 
             //Kimimaru: Handle button counts greater than 32
             //Each buttons value contains 32 bits, so choose the appropriate one based on the value of the button pressed
@@ -366,6 +393,8 @@ namespace TRBot
                 case 2: JSState.ButtonsEx2 |= addition; break;
                 case 3: JSState.ButtonsEx3 |= addition; break;
             }
+
+            ButtonPressedEvent?.Invoke(buttonVal);
         }
 
         public void ReleaseButton(in uint buttonVal)
@@ -375,8 +404,6 @@ namespace TRBot
             {
                 return;
             }
-
-            InputTracker.ReleaseButton(buttonVal);
 
             //Kimimaru: Handle button counts greater than 32
             //Each buttons value contains 32 bits, so choose the appropriate one based on the value of the button pressed
@@ -392,6 +419,8 @@ namespace TRBot
                 case 2: JSState.ButtonsEx2 &= inverse; break;
                 case 3: JSState.ButtonsEx3 &= inverse; break;
             }
+
+            ButtonReleasedEvent?.Invoke(buttonVal);
         }
 
         public ButtonStates GetInputState(in string inputName)
@@ -411,10 +440,9 @@ namespace TRBot
 
         public void UpdateController()
         {
-            //Update states
-            InputTracker.UpdateCurrentStates();
-            
             VJoyInstance.UpdateVJD(ControllerID, ref JSState);
+
+            ControllerUpdatedEvent?.Invoke();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -41,7 +41,7 @@ namespace TRBot
 
         /// <summary>
         /// The button input map for this console.
-        /// Each value corresponds to a numbered button on a vJoy controller.
+        /// Each value corresponds to a numbered button on a virtual controller.
         /// </summary>
         public abstract Dictionary<string, uint> ButtonInputMap { get; protected set; }
 
@@ -86,7 +86,7 @@ namespace TRBot
 
         /// <summary>
         /// Tells whether the axis is an axis that ranges from a negative value to 0.
-        /// This is used to tell the vJoy controller how to press the axis.
+        /// This is used to tell the virtual controller how to press the axis.
         /// </summary>
         /// <param name="input">The input to check.</param>
         /// <returns>true if the input is a min axis, otherwise false.</returns>

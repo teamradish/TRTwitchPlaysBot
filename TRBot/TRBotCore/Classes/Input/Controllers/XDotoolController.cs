@@ -20,6 +20,7 @@ using System.Collections.Concurrent;
 using System.Text;
 using System.Runtime.CompilerServices;
 using System.Diagnostics;
+using static TRBot.VirtualControllerDelegates;
 
 namespace TRBot
 {
@@ -111,8 +112,22 @@ namespace TRBot
 
         private Dictionary<int, (long AxisMin, long AxisMax)> MinMaxAxes = new Dictionary<int, (long, long)>(2);
 
+        public event OnInputPressed InputPressedEvent = null;
+        public event OnInputReleased InputReleasedEvent = null;
+
+        public event OnAxisPressed AxisPressedEvent = null;
+        public event OnAxisReleased AxisReleasedEvent = null;
+
+        public event OnButtonPressed ButtonPressedEvent = null;
+        public event OnButtonReleased ButtonReleasedEvent = null;
+
+        public event OnControllerUpdated ControllerUpdatedEvent = null;
+        public event OnControllerReset ControllerResetEvent = null;
+
+        public event OnControllerClosed ControllerClosedEvent = null;
+
         //Kimimaru: Ideally we get the input's state from the driver, but this should work well enough, for now at least
-        private VControllerInputTracker InputTracker = new VControllerInputTracker();
+        private VControllerInputTracker InputTracker = null;
 
         /// <summary>
         /// The built argument list passed into xdotool.
@@ -131,6 +146,16 @@ namespace TRBot
 
             //Reset();
             Close();
+
+            InputPressedEvent = null;
+            InputReleasedEvent = null;
+            AxisPressedEvent = null;
+            AxisReleasedEvent = null;
+            ButtonPressedEvent = null;
+            ButtonReleasedEvent = null;
+            ControllerUpdatedEvent = null;
+            ControllerResetEvent = null;
+            ControllerClosedEvent = null;
         }
 
         public void Acquire()
@@ -143,6 +168,8 @@ namespace TRBot
         {
             BuiltArgList.Clear();
             IsAcquired = false;
+
+            ControllerClosedEvent?.Invoke();
         }
 
         public void Init()
@@ -157,6 +184,8 @@ namespace TRBot
             {
                 MinMaxAxes.Add((int)axes[i], (-500, 500));
             }
+
+            InputTracker = new VControllerInputTracker(this);
         }
 
         public void Reset()
@@ -177,9 +206,9 @@ namespace TRBot
                 ReleaseButton((uint)buttons[i]);
             }
 
-            InputTracker.ResetStates();
-
             UpdateController();
+
+            ControllerResetEvent?.Invoke();
         }
 
         public void PressInput(in Parser.Input input)
@@ -211,7 +240,7 @@ namespace TRBot
                 }
             }
 
-            InputTracker.PressInput(input.name);
+            InputPressedEvent?.Invoke(input);
         }
 
         public void ReleaseInput(in Parser.Input input)
@@ -243,7 +272,7 @@ namespace TRBot
                 }
             }
 
-            InputTracker.ReleaseInput(input.name);
+            InputReleasedEvent?.Invoke(input);
         }
 
         public void PressAxis(in int axis, in bool min, in int percent)
@@ -273,8 +302,6 @@ namespace TRBot
                 val = (int)(mid + ((percent / 100f) * half));
             }
 
-            InputTracker.PressAxis(axis, percent);
-
             if (inputAxis == (int)AxisCodes.MouseX)
             {
                 HandleMouseMove(val, 0);
@@ -283,11 +310,13 @@ namespace TRBot
             {
                 HandleMouseMove(0, val);
             }
+
+            AxisPressedEvent?.Invoke(axis, percent);
         }
 
         public void ReleaseAxis(in int axis)
         {
-            InputTracker.ReleaseAxis(axis);
+            AxisReleasedEvent?.Invoke(axis);
 
             //Not a valid axis - defaulting to 0 results in the wrong axis being set
             //if (AxisCodeMap.TryGetValue(axis, out int xdotoolAxis) == false)
@@ -309,7 +338,7 @@ namespace TRBot
 
         public void PressAbsoluteAxis(in int axis, in int percent)
         {
-            InputTracker.PressAxis(axis, percent);
+            AxisPressedEvent?.Invoke(axis, percent);
 
             ////Not a valid axis - defaulting to 0 results in the wrong axis being set
             //if (AxisCodeMap.TryGetValue(axis, out int xdotoolAxis) == false)
@@ -329,7 +358,7 @@ namespace TRBot
 
         public void ReleaseAbsoluteAxis(in int axis)
         {
-            InputTracker.ReleaseAxis(axis);
+            AxisReleasedEvent?.Invoke(axis);
 
             ////Not a valid axis - defaulting to 0 results in the wrong axis being set
             //if (AxisCodeMap.TryGetValue(axis, out int xdotoolAxis) == false)
@@ -353,16 +382,17 @@ namespace TRBot
                 return;
             }
             
-            InputTracker.PressButton(buttonVal);
-            
             if (ClickMap.TryGetValue(button, out int mouseBtn) == true)
             {
                 HandleMouseDown(mouseBtn);
-                return;
+            }
+            else
+            {
+                //It should be a keyboard key then
+                HandleProcessKeyDown(((InputCodes)button).ToString());
             }
 
-            //It should be a keyboard key then
-            HandleProcessKeyDown(((InputCodes)button).ToString());
+            ButtonPressedEvent?.Invoke(buttonVal);
         }
 
         public void ReleaseButton(in uint buttonVal)
@@ -373,16 +403,17 @@ namespace TRBot
                 return;
             }
             
-            InputTracker.ReleaseButton(buttonVal);
-            
             if (ClickMap.TryGetValue(button, out int mouseBtn) == true)
             {
                 HandleMouseUp(mouseBtn);
-                return;
+            }
+            else
+            {
+                //It should be a keyboard key then
+                HandleProcessKeyUp(((InputCodes)button).ToString());
             }
 
-            //It should be a keyboard key then
-            HandleProcessKeyUp(((InputCodes)button).ToString());
+            ButtonReleasedEvent?.Invoke(buttonVal);
         }
 
         public ButtonStates GetInputState(in string inputName)
@@ -407,9 +438,6 @@ namespace TRBot
                 return;
             }
             
-            //Update states
-            InputTracker.UpdateCurrentStates();
-            
             //Execute all the built up commands at once by passing them as arguments to xdotool
             string argList = BuiltArgList.ToString();
             
@@ -429,6 +457,8 @@ namespace TRBot
             }
             
             BuiltArgList.Clear();
+
+            ControllerUpdatedEvent?.Invoke();
         }
         
         //Kimimaru: We need to find a way to smoothly move the mouse over time so durations work
