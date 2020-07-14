@@ -25,21 +25,21 @@ namespace TRBot
     /// </summary>
     public sealed class CustomConsole : ConsoleBase
     {
-        public override Dictionary<string, int> InputAxes { get; protected set; } = new Dictionary<string, int>();
+        public override Dictionary<string, InputAxis> InputAxes { get; protected set; } = new Dictionary<string, InputAxis>();
 
-        public override Dictionary<string, uint> ButtonInputMap { get; protected set; } = new Dictionary<string, uint>()
+        public override Dictionary<string, InputButton> ButtonInputMap { get; protected set; } = new Dictionary<string, InputButton>()
         {
-            { "left", (int)GlobalButtonVals.BTN3 }, { "l", (int)GlobalButtonVals.BTN3 },
-            { "right", (int)GlobalButtonVals.BTN4 }, { "r", (int)GlobalButtonVals.BTN4 },
-            { "up", (int)GlobalButtonVals.BTN1 }, { "u", (int)GlobalButtonVals.BTN1 },
-            { "down", (int)GlobalButtonVals.BTN2 }, { "d", (int)GlobalButtonVals.BTN2 },
-            { "grab", (int)GlobalButtonVals.BTN5 }, { "g", (int)GlobalButtonVals.BTN5 },
-            { "select", (int)GlobalButtonVals.BTN6 }, { "s", (int)GlobalButtonVals.BTN6 },
-            { "pause", (int)GlobalButtonVals.BTN7 }, { "p", (int)GlobalButtonVals.BTN7 }, { "start", (int)GlobalButtonVals.BTN7 },
-            { "restart", (int)GlobalButtonVals.BTN8 },
-            { "undo", (int)GlobalButtonVals.BTN9 },
-            { "back", (int)GlobalButtonVals.BTN10 }, { "b", (int)GlobalButtonVals.BTN10 },
-            { "viewmap", (int)GlobalButtonVals.BTN11 }, { "v", (int)GlobalButtonVals.BTN11 },
+            { "left", new InputButton((int)GlobalButtonVals.BTN3) }, { "l", new InputButton((int)GlobalButtonVals.BTN3) },
+            { "right", new InputButton((int)GlobalButtonVals.BTN4) }, { "r", new InputButton((int)GlobalButtonVals.BTN4) },
+            { "up", new InputButton((int)GlobalButtonVals.BTN1) }, { "u", new InputButton((int)GlobalButtonVals.BTN1) },
+            { "down", new InputButton((int)GlobalButtonVals.BTN2) }, { "d", new InputButton((int)GlobalButtonVals.BTN2) },
+            { "grab", new InputButton((int)GlobalButtonVals.BTN5) }, { "g", new InputButton((int)GlobalButtonVals.BTN5) },
+            { "select", new InputButton((int)GlobalButtonVals.BTN6) }, { "s", new InputButton((int)GlobalButtonVals.BTN6) },
+            { "pause", new InputButton((int)GlobalButtonVals.BTN7) }, { "p", new InputButton((int)GlobalButtonVals.BTN7) }, { "start", new InputButton((int)GlobalButtonVals.BTN7) },
+            { "restart", new InputButton((int)GlobalButtonVals.BTN8) },
+            { "undo", new InputButton((int)GlobalButtonVals.BTN9) },
+            { "back", new InputButton((int)GlobalButtonVals.BTN10) }, { "b", new InputButton((int)GlobalButtonVals.BTN10) },
+            { "viewmap", new InputButton((int)GlobalButtonVals.BTN11) }, { "v", new InputButton((int)GlobalButtonVals.BTN11) },
         };
 
         public override string[] ValidInputs { get; protected set; } = new string[]
@@ -49,7 +49,7 @@ namespace TRBot
             "#"
         };
 
-        public override bool GetAxis(in Parser.Input input, out int axis)
+        public override bool GetAxis(in Parser.Input input, out InputAxis axis)
         {
             axis = default;
             return false;

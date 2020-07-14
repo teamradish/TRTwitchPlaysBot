@@ -50,7 +50,7 @@ namespace TRBot
                 for (int j = 0; j < invalidCombo.Count; j++)
                 {
                     string button = invalidCombo[j];
-                    if (controller.GetButtonState(InputGlobals.CurrentConsole.ButtonInputMap[button]) == ButtonStates.Pressed)
+                    if (controller.GetButtonState(InputGlobals.CurrentConsole.ButtonInputMap[button].ButtonVal) == ButtonStates.Pressed)
                     {
                         if (currentComboDict.ContainsKey(i) == false)
                         {

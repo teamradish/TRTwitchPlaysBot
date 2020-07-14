@@ -76,7 +76,7 @@ namespace TRBot
 
             //Savestates are always performed on the first controller
             IVirtualController joystick = InputGlobals.ControllerMngr.GetController(0);
-            joystick.PressButton(InputGlobals.CurrentConsole.ButtonInputMap[saveStateStr]);
+            joystick.PressButton(InputGlobals.CurrentConsole.ButtonInputMap[saveStateStr].ButtonVal);
             joystick.UpdateController();
 
             //Track the time of the savestate
@@ -114,7 +114,7 @@ namespace TRBot
 
             }
 
-            joystick.ReleaseButton(InputGlobals.CurrentConsole.ButtonInputMap[saveStateStr]);
+            joystick.ReleaseButton(InputGlobals.CurrentConsole.ButtonInputMap[saveStateStr].ButtonVal);
             joystick.UpdateController();
         }
     }

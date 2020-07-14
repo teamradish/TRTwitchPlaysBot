@@ -25,24 +25,24 @@ namespace TRBot
     /// </summary>
     public sealed class GenesisConsole : ConsoleBase
     {
-        public override Dictionary<string, int> InputAxes { get; protected set; } = new Dictionary<string, int>();
+        public override Dictionary<string, InputAxis> InputAxes { get; protected set; } = new Dictionary<string, InputAxis>();
 
-        public override Dictionary<string, uint> ButtonInputMap { get; protected set; } = new Dictionary<string, uint>()
+        public override Dictionary<string, InputButton> ButtonInputMap { get; protected set; } = new Dictionary<string, InputButton>()
         {
-            { "left", (int)GlobalButtonVals.BTN1 },
-            { "right", (int)GlobalButtonVals.BTN2 },
-            { "up", (int)GlobalButtonVals.BTN3 },
-            { "down", (int)GlobalButtonVals.BTN4 },
-            { "a", (int)GlobalButtonVals.BTN5 },
-            { "b", (int)GlobalButtonVals.BTN6 },
-            { "c", (int)GlobalButtonVals.BTN7 },
-            { "x", (int)GlobalButtonVals.BTN8 },
-            { "y", (int)GlobalButtonVals.BTN9 },
-            { "z", (int)GlobalButtonVals.BTN10 },
-            { "ss", (int)GlobalButtonVals.BTN11 },
-            { "ls", (int)GlobalButtonVals.BTN12 },
-            { "incs", (int)GlobalButtonVals.BTN13 },
-            { "decs", (int)GlobalButtonVals.BTN14 },
+            { "left", new InputButton((int)GlobalButtonVals.BTN1) },
+            { "right", new InputButton((int)GlobalButtonVals.BTN2) },
+            { "up", new InputButton((int)GlobalButtonVals.BTN3) },
+            { "down", new InputButton((int)GlobalButtonVals.BTN4) },
+            { "a", new InputButton((int)GlobalButtonVals.BTN5) },
+            { "b", new InputButton((int)GlobalButtonVals.BTN6) },
+            { "c", new InputButton((int)GlobalButtonVals.BTN7) },
+            { "x", new InputButton((int)GlobalButtonVals.BTN8) },
+            { "y", new InputButton((int)GlobalButtonVals.BTN9) },
+            { "z", new InputButton((int)GlobalButtonVals.BTN10) },
+            { "ss", new InputButton((int)GlobalButtonVals.BTN11) },
+            { "ls", new InputButton((int)GlobalButtonVals.BTN12) },
+            { "incs", new InputButton((int)GlobalButtonVals.BTN13) },
+            { "decs", new InputButton((int)GlobalButtonVals.BTN14) },
             //{ "ss1", (int)GlobalButtonVals.BTN19 },
             //{ "ss2", (int)GlobalButtonVals.BTN20 },
             //{ "ss3", (int)GlobalButtonVals.BTN21 },
@@ -55,8 +55,8 @@ namespace TRBot
             //{ "ls4", (int)GlobalButtonVals.BTN28 },
             //{ "ls5", (int)GlobalButtonVals.BTN29 },
             //{ "ls6", (int)GlobalButtonVals.BTN30 },
-            { "start", (int)GlobalButtonVals.BTN31 },
-            { "mode", (int)GlobalButtonVals.BTN32 }
+            { "start", new InputButton((int)GlobalButtonVals.BTN31) },
+            { "mode", new InputButton((int)GlobalButtonVals.BTN32) }
         };
 
         public override string[] ValidInputs { get; protected set; } = new string[]
@@ -68,7 +68,7 @@ namespace TRBot
             "#"
         };
 
-        public override bool GetAxis(in Parser.Input input, out int axis)
+        public override bool GetAxis(in Parser.Input input, out InputAxis axis)
         {
             axis = default;
             return false;

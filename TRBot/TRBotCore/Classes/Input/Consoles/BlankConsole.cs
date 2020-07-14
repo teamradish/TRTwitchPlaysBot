@@ -25,13 +25,13 @@ namespace TRBot
     /// </summary>
     public sealed class BlankConsole : ConsoleBase
     {
-        public override Dictionary<string, int> InputAxes { get; protected set; } = new Dictionary<string, int>();
+        public override Dictionary<string, InputAxis> InputAxes { get; protected set; } = new Dictionary<string, InputAxis>();
 
-        public override Dictionary<string, uint> ButtonInputMap { get; protected set; } = new Dictionary<string, uint>();
+        public override Dictionary<string, InputButton> ButtonInputMap { get; protected set; } = new Dictionary<string, InputButton>();
 
         public override string[] ValidInputs { get; protected set; } = new string[0];
 
-        public override bool GetAxis(in Parser.Input input, out int axis)
+        public override bool GetAxis(in Parser.Input input, out InputAxis axis)
         {
             axis = default;
             return false;

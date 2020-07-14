@@ -37,13 +37,13 @@ namespace TRBot
         /// <summary>
         /// The input axes this console supports.
         /// </summary>
-        public abstract Dictionary<string, int> InputAxes { get; protected set; }
+        public abstract Dictionary<string, InputAxis> InputAxes { get; protected set; }
 
         /// <summary>
         /// The button input map for this console.
         /// Each value corresponds to a numbered button on a virtual controller.
         /// </summary>
-        public abstract Dictionary<string, uint> ButtonInputMap { get; protected set; }
+        public abstract Dictionary<string, InputButton> ButtonInputMap { get; protected set; }
 
         public string InputRegex { get; private set; } = string.Empty;
 
@@ -66,9 +66,9 @@ namespace TRBot
         /// Returns the axis if found to save a dictionary lookup if one is needed afterwards.
         /// </summary>
         /// <param name="input">The input to check.</param>
-        /// <param name="axis">The axis value that is assigned. If no axis is found, the default value.</param>
+        /// <param name="axis">The InputAxis value that is assigned. If no axis is found, the default value.</param>
         /// <returns>true if the input is an axis, otherwise false.</returns>
-        public abstract bool GetAxis(in Parser.Input input, out int axis);
+        public abstract bool GetAxis(in Parser.Input input, out InputAxis axis);
 
         /// <summary>
         /// Tells whether an input is an axis or not.
@@ -90,6 +90,8 @@ namespace TRBot
         /// </summary>
         /// <param name="input">The input to check.</param>
         /// <returns>true if the input is a min axis, otherwise false.</returns>
+
+        //NOTE: We can remove this after the InputAxis refactor
         public abstract bool IsMinAxis(in Parser.Input input);
 
         /// <summary>
@@ -98,6 +100,8 @@ namespace TRBot
         /// </summary>
         /// <param name="input">The input to check.</param>
         /// <returns>true if the input is an absolute axis, otherwise false.</returns>
+
+        //NOTE: We can remove this after the InputAxis refactor
         public abstract bool IsAbsoluteAxis(in Parser.Input input);
 
         #endregion

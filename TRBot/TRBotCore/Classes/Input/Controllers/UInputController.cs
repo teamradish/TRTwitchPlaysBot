@@ -281,23 +281,23 @@ namespace TRBot
 
             if (InputGlobals.CurrentConsole.IsAbsoluteAxis(input) == true)
             {
-                PressAbsoluteAxis(InputGlobals.CurrentConsole.InputAxes[input.name], input.percent);
+                PressAbsoluteAxis(InputGlobals.CurrentConsole.InputAxes[input.name].AxisVal, input.percent);
 
                 //Kimimaru: In the case of L and R buttons on GCN, when the axes are pressed, the buttons should be released
-                ReleaseButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name]);
+                ReleaseButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name].ButtonVal);
             }
-            else if (InputGlobals.CurrentConsole.GetAxis(input, out int axis) == true)
+            else if (InputGlobals.CurrentConsole.GetAxis(input, out InputAxis axis) == true)
             {
-                PressAxis(axis, InputGlobals.CurrentConsole.IsMinAxis(input), input.percent);
+                PressAxis(axis.AxisVal, InputGlobals.CurrentConsole.IsMinAxis(input), input.percent);
             }
             else if (InputGlobals.CurrentConsole.IsButton(input) == true)
             {
-                PressButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name]);
+                PressButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name].ButtonVal);
 
                 //Kimimaru: In the case of L and R buttons on GCN, when the buttons are pressed, the axes should be released
-                if (InputGlobals.CurrentConsole.InputAxes.TryGetValue(input.name, out int value) == true)
+                if (InputGlobals.CurrentConsole.InputAxes.TryGetValue(input.name, out InputAxis value) == true)
                 {
-                    ReleaseAbsoluteAxis(value);
+                    ReleaseAbsoluteAxis(value.AxisVal);
                 }
             }
 
@@ -313,23 +313,23 @@ namespace TRBot
 
             if (InputGlobals.CurrentConsole.IsAbsoluteAxis(input) == true)
             {
-                ReleaseAbsoluteAxis(InputGlobals.CurrentConsole.InputAxes[input.name]);
+                ReleaseAbsoluteAxis(InputGlobals.CurrentConsole.InputAxes[input.name].AxisVal);
 
                 //Kimimaru: In the case of L and R buttons on GCN, when the axes are released, the buttons should be too
-                ReleaseButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name]);
+                ReleaseButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name].ButtonVal);
             }
-            else if (InputGlobals.CurrentConsole.GetAxis(input, out int axis) == true)
+            else if (InputGlobals.CurrentConsole.GetAxis(input, out InputAxis axis) == true)
             {
-                ReleaseAxis(axis);
+                ReleaseAxis(axis.AxisVal);
             }
             else if (InputGlobals.CurrentConsole.IsButton(input) == true)
             {
-                ReleaseButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name]);
+                ReleaseButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name].ButtonVal);
 
                 //Kimimaru: In the case of L and R buttons on GCN, when the buttons are released, the axes should be too
-                if (InputGlobals.CurrentConsole.InputAxes.TryGetValue(input.name, out int value) == true)
+                if (InputGlobals.CurrentConsole.InputAxes.TryGetValue(input.name, out InputAxis value) == true)
                 {
-                    ReleaseAbsoluteAxis(value);
+                    ReleaseAbsoluteAxis(value.AxisVal);
                 }
             }
 

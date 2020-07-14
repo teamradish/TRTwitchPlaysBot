@@ -61,59 +61,59 @@ namespace TRBot
             "#"
         };
         
-        public override Dictionary<string, int> InputAxes { get; protected set; } = new Dictionary<string, int>()
+        public override Dictionary<string, InputAxis> InputAxes { get; protected set; } = new Dictionary<string, InputAxis>()
         {
-            { "left",       (int)GlobalAxisVals.AXIS_X },
-            { "right",      (int)GlobalAxisVals.AXIS_X },
-            { "up",         (int)GlobalAxisVals.AXIS_Y },
-            { "down",       (int)GlobalAxisVals.AXIS_Y },
-            { "tleft",      (int)GlobalAxisVals.AXIS_RX },
-            { "tright",     (int)GlobalAxisVals.AXIS_RX },
-            { "tforward",   (int)GlobalAxisVals.AXIS_RY },
-            { "tback",      (int)GlobalAxisVals.AXIS_RY },
-            { "pleft",      (int)GlobalAxisVals.AXIS_RZ },
-            { "pright",     (int)GlobalAxisVals.AXIS_RZ },
-            { "pup",        (int)GlobalAxisVals.AXIS_Z },
-            { "pdown",      (int)GlobalAxisVals.AXIS_Z }
+            { "left",       new InputAxis((int)GlobalAxisVals.AXIS_X, -1, 0) },
+            { "right",      new InputAxis((int)GlobalAxisVals.AXIS_X, 0, 1) },
+            { "up",         new InputAxis((int)GlobalAxisVals.AXIS_Y, -1, 0) },
+            { "down",       new InputAxis((int)GlobalAxisVals.AXIS_Y, 0, 1) },
+            { "tleft",      new InputAxis((int)GlobalAxisVals.AXIS_RX, -1, 0) },
+            { "tright",     new InputAxis((int)GlobalAxisVals.AXIS_RX, 0, 1) },
+            { "tforward",   new InputAxis((int)GlobalAxisVals.AXIS_RY, -1, 0) },
+            { "tback",      new InputAxis((int)GlobalAxisVals.AXIS_RY, 0, 1) },
+            { "pleft",      new InputAxis((int)GlobalAxisVals.AXIS_RZ, -1, 0) },
+            { "pright",     new InputAxis((int)GlobalAxisVals.AXIS_RZ, 0, 1) },
+            { "pup",        new InputAxis((int)GlobalAxisVals.AXIS_Z, -1, 0) },
+            { "pdown",      new InputAxis((int)GlobalAxisVals.AXIS_Z, 0, 1) }
         };
 
         //Kimimaru: NOTE - Though some virtual controllers support up to 128 buttons, Dolphin supports only 32 max
         //The Wii Remote + Nunchuk has more than 32 inputs, so since we can't fit them all, we'll need some modes to toggle
         //and change the input map based on the input scheme
         //We might have to make some sacrifices, such as fewer savestates or disallowing use of the D-pad if a Nunchuk is being used
-        public override Dictionary<string, uint> ButtonInputMap { get; protected set; } = new Dictionary<string, uint>() {
-            { "left",       (int)GlobalButtonVals.BTN1 }, { "c",          (int)GlobalButtonVals.BTN1 },
-            { "right",      (int)GlobalButtonVals.BTN2 }, { "z",          (int)GlobalButtonVals.BTN2 },
-            { "up",         (int)GlobalButtonVals.BTN3 }, { "tleft",      (int)GlobalButtonVals.BTN3 },
-            { "down",       (int)GlobalButtonVals.BTN4 }, { "tright",     (int)GlobalButtonVals.BTN4 },
-            { "a",          (int)GlobalButtonVals.BTN5 },
-            { "b",          (int)GlobalButtonVals.BTN6 },
-            { "one",        (int)GlobalButtonVals.BTN7 },
-            { "two",        (int)GlobalButtonVals.BTN8 },
-            { "minus",      (int)GlobalButtonVals.BTN9 },
-            { "plus",       (int)GlobalButtonVals.BTN10 },
-            { "pleft",      (int)GlobalButtonVals.BTN11 },
-            { "pright",     (int)GlobalButtonVals.BTN12 },
-            { "pup",        (int)GlobalButtonVals.BTN13 },
-            { "pdown",      (int)GlobalButtonVals.BTN14 },
-            { "dleft",      (int)GlobalButtonVals.BTN15 },
-            { "dright",     (int)GlobalButtonVals.BTN16 },
-            { "dup",        (int)GlobalButtonVals.BTN17 },
-            { "ddown",      (int)GlobalButtonVals.BTN18 },
-            { "ss1",        (int)GlobalButtonVals.BTN19 }, { "tforward",  (int)GlobalButtonVals.BTN19 },
-            { "ss2",        (int)GlobalButtonVals.BTN20 }, { "tback",     (int)GlobalButtonVals.BTN20 },
-            { "ss3",        (int)GlobalButtonVals.BTN21 },
-            { "ss4",        (int)GlobalButtonVals.BTN22 },
-            { "ss5",        (int)GlobalButtonVals.BTN23 },
-            { "ss6",        (int)GlobalButtonVals.BTN24 },
-            { "ls1",        (int)GlobalButtonVals.BTN25 },
-            { "ls2",        (int)GlobalButtonVals.BTN26 },
-            { "ls3",        (int)GlobalButtonVals.BTN27 },
-            { "ls4",        (int)GlobalButtonVals.BTN28 },
-            { "ls5",        (int)GlobalButtonVals.BTN29 },
-            { "ls6",        (int)GlobalButtonVals.BTN30 },
-            { "shake",      (int)GlobalButtonVals.BTN31 },
-            { "point",      (int)GlobalButtonVals.BTN32 }
+        public override Dictionary<string, InputButton> ButtonInputMap { get; protected set; } = new Dictionary<string, InputButton>() {
+            { "left",       new InputButton((int)GlobalButtonVals.BTN1) }, { "c",          new InputButton((int)GlobalButtonVals.BTN1) },
+            { "right",      new InputButton((int)GlobalButtonVals.BTN2) }, { "z",          new InputButton((int)GlobalButtonVals.BTN2) },
+            { "up",         new InputButton((int)GlobalButtonVals.BTN3) }, { "tleft",      new InputButton((int)GlobalButtonVals.BTN3) },
+            { "down",       new InputButton((int)GlobalButtonVals.BTN4) }, { "tright",     new InputButton((int)GlobalButtonVals.BTN4) },
+            { "a",          new InputButton((int)GlobalButtonVals.BTN5) },
+            { "b",          new InputButton((int)GlobalButtonVals.BTN6) },
+            { "one",        new InputButton((int)GlobalButtonVals.BTN7) },
+            { "two",        new InputButton((int)GlobalButtonVals.BTN8) },
+            { "minus",      new InputButton((int)GlobalButtonVals.BTN9) },
+            { "plus",       new InputButton((int)GlobalButtonVals.BTN10) },
+            { "pleft",      new InputButton((int)GlobalButtonVals.BTN11) },
+            { "pright",     new InputButton((int)GlobalButtonVals.BTN12) },
+            { "pup",        new InputButton((int)GlobalButtonVals.BTN13) },
+            { "pdown",      new InputButton((int)GlobalButtonVals.BTN14) },
+            { "dleft",      new InputButton((int)GlobalButtonVals.BTN15) },
+            { "dright",     new InputButton((int)GlobalButtonVals.BTN16) },
+            { "dup",        new InputButton((int)GlobalButtonVals.BTN17) },
+            { "ddown",      new InputButton((int)GlobalButtonVals.BTN18) },
+            { "ss1",        new InputButton((int)GlobalButtonVals.BTN19) }, { "tforward",  new InputButton((int)GlobalButtonVals.BTN19) },
+            { "ss2",        new InputButton((int)GlobalButtonVals.BTN20) }, { "tback",     new InputButton((int)GlobalButtonVals.BTN20) },
+            { "ss3",        new InputButton((int)GlobalButtonVals.BTN21) },
+            { "ss4",        new InputButton((int)GlobalButtonVals.BTN22) },
+            { "ss5",        new InputButton((int)GlobalButtonVals.BTN23) },
+            { "ss6",        new InputButton((int)GlobalButtonVals.BTN24) },
+            { "ls1",        new InputButton((int)GlobalButtonVals.BTN25) },
+            { "ls2",        new InputButton((int)GlobalButtonVals.BTN26) },
+            { "ls3",        new InputButton((int)GlobalButtonVals.BTN27) },
+            { "ls4",        new InputButton((int)GlobalButtonVals.BTN28) },
+            { "ls5",        new InputButton((int)GlobalButtonVals.BTN29) },
+            { "ls6",        new InputButton((int)GlobalButtonVals.BTN30) },
+            { "shake",      new InputButton((int)GlobalButtonVals.BTN31) },
+            { "point",      new InputButton((int)GlobalButtonVals.BTN32) }
         };
         
         public override void HandleArgsOnConsoleChange(List<string> arguments)
@@ -142,7 +142,7 @@ namespace TRBot
             }
         }
 
-        public override bool GetAxis(in Parser.Input input, out int axis)
+        public override bool GetAxis(in Parser.Input input, out InputAxis axis)
         {
             return InputAxes.TryGetValue(input.name, out axis);
         }

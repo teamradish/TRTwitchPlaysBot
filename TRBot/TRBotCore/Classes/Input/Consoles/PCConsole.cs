@@ -34,36 +34,36 @@ namespace TRBot
             "#"
         };
 
-        public override Dictionary<string, int> InputAxes { get; protected set; } = new Dictionary<string, int>()
+        public override Dictionary<string, InputAxis> InputAxes { get; protected set; } = new Dictionary<string, InputAxis>()
         {
-            { "left", (int)GlobalAxisVals.AXIS_X },
-            { "right", (int)GlobalAxisVals.AXIS_X },
-            { "up", (int)GlobalAxisVals.AXIS_Y },
-            { "down", (int)GlobalAxisVals.AXIS_Y }
+            { "left", new InputAxis((int)GlobalAxisVals.AXIS_X, -1, 0) },
+            { "right", new InputAxis((int)GlobalAxisVals.AXIS_X, 0, 1) },
+            { "up", new InputAxis((int)GlobalAxisVals.AXIS_Y, -1, 0) },
+            { "down", new InputAxis((int)GlobalAxisVals.AXIS_Y, 0, 1) }
         };
 
-        public override Dictionary<string, uint> ButtonInputMap { get; protected set; } = new Dictionary<string, uint>()
+        public override Dictionary<string, InputButton> ButtonInputMap { get; protected set; } = new Dictionary<string, InputButton>()
         {
-            { "left", (int)GlobalButtonVals.BTN1 },
-            { "right", (int)GlobalButtonVals.BTN2 },
-            { "up", (int)GlobalButtonVals.BTN3 },
-            { "down", (int)GlobalButtonVals.BTN4 },
-            { "lclick", (int)GlobalButtonVals.BTN5 },
-            { "mclick", (int)GlobalButtonVals.BTN6 },
-            { "rclick", (int)GlobalButtonVals.BTN7 },
-            { "return", (int)GlobalButtonVals.BTN8 },
-            { "space", (int)GlobalButtonVals.BTN9 },
-            { "q", (int)GlobalButtonVals.BTN10 },
-            { "w", (int)GlobalButtonVals.BTN11 },
-            { "e", (int)GlobalButtonVals.BTN12 },
-            { "r", (int)GlobalButtonVals.BTN13 },
-            { "a", (int)GlobalButtonVals.BTN14 },
-            { "s", (int)GlobalButtonVals.BTN15 },
-            { "d", (int)GlobalButtonVals.BTN16 },
-            { "p", (int)GlobalButtonVals.BTN17 }
+            { "left", new InputButton((int)GlobalButtonVals.BTN1) },
+            { "right", new InputButton((int)GlobalButtonVals.BTN2) },
+            { "up", new InputButton((int)GlobalButtonVals.BTN3) },
+            { "down", new InputButton((int)GlobalButtonVals.BTN4) },
+            { "lclick", new InputButton((int)GlobalButtonVals.BTN5) },
+            { "mclick", new InputButton((int)GlobalButtonVals.BTN6) },
+            { "rclick", new InputButton((int)GlobalButtonVals.BTN7) },
+            { "return", new InputButton((int)GlobalButtonVals.BTN8) },
+            { "space", new InputButton((int)GlobalButtonVals.BTN9) },
+            { "q", new InputButton((int)GlobalButtonVals.BTN10) },
+            { "w", new InputButton((int)GlobalButtonVals.BTN11) },
+            { "e", new InputButton((int)GlobalButtonVals.BTN12) },
+            { "r", new InputButton((int)GlobalButtonVals.BTN13) },
+            { "a", new InputButton((int)GlobalButtonVals.BTN14) },
+            { "s", new InputButton((int)GlobalButtonVals.BTN15) },
+            { "d", new InputButton((int)GlobalButtonVals.BTN16) },
+            { "p", new InputButton((int)GlobalButtonVals.BTN17) }
         };
 
-        public override bool GetAxis(in Parser.Input input, out int axis)
+        public override bool GetAxis(in Parser.Input input, out InputAxis axis)
         {
             return InputAxes.TryGetValue(input.name, out axis);
         }
