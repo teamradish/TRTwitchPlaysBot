@@ -217,30 +217,31 @@ namespace TRBot
 
         public void PressInput(in Parser.Input input)
         {
-            if (InputGlobals.CurrentConsole.IsWait(input) == true)
+            ConsoleBase curConsole = InputGlobals.CurrentConsole;
+
+            if (curConsole.IsWait(input) == true)
             {
                 return;
             }
 
-            if (InputGlobals.CurrentConsole.IsAbsoluteAxis(input) == true)
+            if (curConsole.GetAxis(input, out InputAxis axis) == true)
             {
-                PressAbsoluteAxis(InputGlobals.CurrentConsole.InputAxes[input.name].AxisVal, input.percent);
+                PressAxis(axis.AxisVal, axis.MinAxisVal, axis.MaxAxisVal, input.percent);
 
-                //Kimimaru: In the case of L and R buttons on GCN, when the axes are pressed, the buttons should be released
-                ReleaseButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name].ButtonVal);
-            }
-            else if (InputGlobals.CurrentConsole.GetAxis(input, out InputAxis axis) == true)
-            {
-                PressAxis(axis.AxisVal, InputGlobals.CurrentConsole.IsMinAxis(input), input.percent);
-            }
-            else if (InputGlobals.CurrentConsole.IsButton(input) == true)
-            {
-                PressButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name].ButtonVal);
-
-                //Kimimaru: In the case of L and R buttons on GCN, when the buttons are pressed, the axes should be released
-                if (InputGlobals.CurrentConsole.InputAxes.TryGetValue(input.name, out InputAxis value) == true)
+                //Release a button with the same name (Ex. L/R buttons on GCN)
+                if (curConsole.ButtonInputMap.TryGetValue(input.name, out InputButton btnVal) == true)
                 {
-                    ReleaseAbsoluteAxis(value.AxisVal);
+                    ReleaseButton(btnVal.ButtonVal);
+                }
+            }
+            else if (curConsole.IsButton(input) == true)
+            {
+                PressButton(curConsole.ButtonInputMap[input.name].ButtonVal);
+
+                //Release an axis with the same name (Ex. L/R buttons on GCN)
+                if (curConsole.InputAxes.TryGetValue(input.name, out InputAxis value) == true)
+                {
+                    ReleaseAxis(value.AxisVal);
                 }
             }
 
@@ -249,37 +250,38 @@ namespace TRBot
 
         public void ReleaseInput(in Parser.Input input)
         {
-            if (InputGlobals.CurrentConsole.IsWait(input) == true)
+            ConsoleBase curConsole = InputGlobals.CurrentConsole;
+
+            if (curConsole.IsWait(input) == true)
             {
                 return;
             }
 
-            if (InputGlobals.CurrentConsole.IsAbsoluteAxis(input) == true)
-            {
-                ReleaseAbsoluteAxis(InputGlobals.CurrentConsole.InputAxes[input.name].AxisVal);
-
-                //Kimimaru: In the case of L and R buttons on GCN, when the axes are released, the buttons should be too
-                ReleaseButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name].ButtonVal);
-            }
-            else if (InputGlobals.CurrentConsole.GetAxis(input, out InputAxis axis) == true)
+            if (curConsole.GetAxis(input, out InputAxis axis) == true)
             {
                 ReleaseAxis(axis.AxisVal);
-            }
-            else if (InputGlobals.CurrentConsole.IsButton(input) == true)
-            {
-                ReleaseButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name].ButtonVal);
 
-                //Kimimaru: In the case of L and R buttons on GCN, when the buttons are released, the axes should be too
-                if (InputGlobals.CurrentConsole.InputAxes.TryGetValue(input.name, out InputAxis value) == true)
+                //Release a button with the same name (Ex. L/R buttons on GCN)
+                if (curConsole.ButtonInputMap.TryGetValue(input.name, out InputButton btnVal) == true)
                 {
-                    ReleaseAbsoluteAxis(value.AxisVal);
+                    ReleaseButton(btnVal.ButtonVal);
+                }
+            }
+            else if (curConsole.IsButton(input) == true)
+            {
+                ReleaseButton(curConsole.ButtonInputMap[input.name].ButtonVal);
+
+                //Release an axis with the same name (Ex. L/R buttons on GCN)
+                if (curConsole.InputAxes.TryGetValue(input.name, out InputAxis value) == true)
+                {
+                    ReleaseAxis(value.AxisVal);
                 }
             }
 
             InputReleasedEvent?.Invoke(input);
         }
 
-        public void PressAxis(in int axis, in bool min, in int percent)
+        public void PressAxis(in int axis, in double minAxisVal, in double maxAxisVal, in int percent)
         {
             //Not a valid axis - defaulting to 0 results in the wrong axis being set
             if (AxisCodeMap.TryGetValue(axis, out int vJoyAxis) == false)
@@ -292,21 +294,19 @@ namespace TRBot
                 return;
             }
 
-            //Neutral is halfway between the min and max axes 
-            long half = (axisVals.Item2 - axisVals.Item1) / 2L;
-            int mid = (int)(axisVals.Item1 + half);
-            int val = 0;
+            //Get the pressed amount between the min and max values for the axis
+            double pressAmount = Utilities.Lerp(minAxisVal, maxAxisVal, (percent / 100d));
 
-            if (min)
-            {
-                val = (int)(mid - ((percent / 100f) * half));
-            }
-            else
-            {
-                val = (int)(mid + ((percent / 100f) * half));
-            }
+            //Map the pressed amount to the virtual controller's range
+            //Ex. 0 to 1 min/max for axis
+            //0 to 32767 for virtual controller
+            //50% results in 0.5, which maps to 16383 (truncated)
+            int finalVal = (int)Utilities.RemapNum(pressAmount, minAxisVal, maxAxisVal,
+                minAxisVal * axisVals.Item1, maxAxisVal * axisVals.Item2);
 
-            SetAxisEfficient(vJoyAxis, val);
+            //Console.WriteLine($"%: {percent} | Min/Max: {minAxisVal}/{maxAxisVal} | pressAmount: {pressAmount} | finalVal: {finalVal}");
+
+            SetAxisEfficient(vJoyAxis, finalVal);
 
             AxisPressedEvent?.Invoke(axis, percent);
         }

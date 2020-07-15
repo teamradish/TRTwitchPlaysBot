@@ -51,7 +51,7 @@ namespace TRBot
         {
             "left", "right", "up", "down",
             "pleft", "pright", "pup", "pdown",
-            "tleft", "tright", "tup", "tdown",
+            "tleft", "tright", "tforward", "tback",
             "dleft", "dright", "dup", "ddown",
             "a", "b", "one", "two", "minus", "plus",
             "c", "z",
@@ -63,17 +63,17 @@ namespace TRBot
         
         public override Dictionary<string, InputAxis> InputAxes { get; protected set; } = new Dictionary<string, InputAxis>()
         {
-            { "left",       new InputAxis((int)GlobalAxisVals.AXIS_X, -1, 0) },
+            { "left",       new InputAxis((int)GlobalAxisVals.AXIS_X, 0, -1) },
             { "right",      new InputAxis((int)GlobalAxisVals.AXIS_X, 0, 1) },
-            { "up",         new InputAxis((int)GlobalAxisVals.AXIS_Y, -1, 0) },
+            { "up",         new InputAxis((int)GlobalAxisVals.AXIS_Y, 0, -1) },
             { "down",       new InputAxis((int)GlobalAxisVals.AXIS_Y, 0, 1) },
-            { "tleft",      new InputAxis((int)GlobalAxisVals.AXIS_RX, -1, 0) },
+            { "tleft",      new InputAxis((int)GlobalAxisVals.AXIS_RX, 0, -1) },
             { "tright",     new InputAxis((int)GlobalAxisVals.AXIS_RX, 0, 1) },
-            { "tforward",   new InputAxis((int)GlobalAxisVals.AXIS_RY, -1, 0) },
+            { "tforward",   new InputAxis((int)GlobalAxisVals.AXIS_RY, 0, -1) },
             { "tback",      new InputAxis((int)GlobalAxisVals.AXIS_RY, 0, 1) },
-            { "pleft",      new InputAxis((int)GlobalAxisVals.AXIS_RZ, -1, 0) },
+            { "pleft",      new InputAxis((int)GlobalAxisVals.AXIS_RZ, 0, -1) },
             { "pright",     new InputAxis((int)GlobalAxisVals.AXIS_RZ, 0, 1) },
-            { "pup",        new InputAxis((int)GlobalAxisVals.AXIS_Z, -1, 0) },
+            { "pup",        new InputAxis((int)GlobalAxisVals.AXIS_Z, 0, -1) },
             { "pdown",      new InputAxis((int)GlobalAxisVals.AXIS_Z, 0, 1) }
         };
 
@@ -118,7 +118,7 @@ namespace TRBot
         
         public override void HandleArgsOnConsoleChange(List<string> arguments)
         {
-            if (arguments?.Count == 0) return;
+            if (arguments == null || arguments.Count <= 1) return;
 
             for (int i = 0; i < arguments.Count; i++)
             {
@@ -147,20 +147,9 @@ namespace TRBot
             return InputAxes.TryGetValue(input.name, out axis);
         }
 
-        public override bool IsAbsoluteAxis(in Parser.Input input)
-        {
-            return false;
-        }
-
         public override bool IsAxis(in Parser.Input input)
         {
             return (InputAxes.ContainsKey(input.name) == true);
-        }
-
-        public override bool IsMinAxis(in Parser.Input input)
-        {
-            return (input.name == "left" || input.name == "up" || input.name == "tleft" || input.name == "tforward"
-                || input.name == "pleft" || input.name == "pup");
         }
 
         public override bool IsButton(in Parser.Input input)

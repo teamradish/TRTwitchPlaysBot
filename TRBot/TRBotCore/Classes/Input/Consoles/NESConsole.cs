@@ -64,12 +64,8 @@ namespace TRBot
             axis = default;
             return false;
         }
-
-        public override bool IsAbsoluteAxis(in Parser.Input input) => false;
-
+        
         public override bool IsAxis(in Parser.Input input) => false;
-
-        public override bool IsMinAxis(in Parser.Input input) => false;
 
         public override bool IsButton(in Parser.Input input)
         {

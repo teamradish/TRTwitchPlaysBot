@@ -84,26 +84,6 @@ namespace TRBot
         /// <returns>true if the input is a button, otherwise false.</returns>
         public abstract bool IsButton(in Parser.Input input);
 
-        /// <summary>
-        /// Tells whether the axis is an axis that ranges from a negative value to 0.
-        /// This is used to tell the virtual controller how to press the axis.
-        /// </summary>
-        /// <param name="input">The input to check.</param>
-        /// <returns>true if the input is a min axis, otherwise false.</returns>
-
-        //NOTE: We can remove this after the InputAxis refactor
-        public abstract bool IsMinAxis(in Parser.Input input);
-
-        /// <summary>
-        /// Tells whether the input is an absolute axis - one that starts at 0 and goes up to a value.
-        /// <para>This is usually true only for triggers, such as the GameCube's L and R buttons.</para>
-        /// </summary>
-        /// <param name="input">The input to check.</param>
-        /// <returns>true if the input is an absolute axis, otherwise false.</returns>
-
-        //NOTE: We can remove this after the InputAxis refactor
-        public abstract bool IsAbsoluteAxis(in Parser.Input input);
-
         #endregion
 
         #region Methods

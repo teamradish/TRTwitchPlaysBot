@@ -36,9 +36,9 @@ namespace TRBot
 
         public override Dictionary<string, InputAxis> InputAxes { get; protected set; } = new Dictionary<string, InputAxis>()
         {
-            { "left", new InputAxis((int)GlobalAxisVals.AXIS_X, -1, 0) },
+            { "left", new InputAxis((int)GlobalAxisVals.AXIS_X, 0, -1) },
             { "right", new InputAxis((int)GlobalAxisVals.AXIS_X, 0, 1) },
-            { "up", new InputAxis((int)GlobalAxisVals.AXIS_Y, -1, 0) },
+            { "up", new InputAxis((int)GlobalAxisVals.AXIS_Y, 0, -1) },
             { "down", new InputAxis((int)GlobalAxisVals.AXIS_Y, 0, 1) }
         };
 
@@ -68,19 +68,9 @@ namespace TRBot
             return InputAxes.TryGetValue(input.name, out axis);
         }
 
-        public override bool IsAbsoluteAxis(in Parser.Input input)
-        {
-            return false;
-        }
-
         public override bool IsAxis(in Parser.Input input)
         {
             return InputAxes.ContainsKey(input.name);
-        }
-
-        public override bool IsMinAxis(in Parser.Input input)
-        {
-            return (input.name == "up" || input.name == "left");
         }
         
         public override bool IsButton(in Parser.Input input)
