@@ -21,24 +21,22 @@ using System.Text;
 namespace TRBot
 {
     /// <summary>
-    /// An empty stub console.
+    /// Delegates for virtual controller events.
     /// </summary>
-    public sealed class BlankConsole : ConsoleBase
+    public static class VirtualControllerDelegates
     {
-        public override Dictionary<string, InputAxis> InputAxes { get; protected set; } = new Dictionary<string, InputAxis>();
+        public delegate void OnInputPressed(in Parser.Input inputPressed);
+        public delegate void OnInputReleased(in Parser.Input inputPressed);
 
-        public override Dictionary<string, InputButton> ButtonInputMap { get; protected set; } = new Dictionary<string, InputButton>();
+        public delegate void OnAxisPressed(in int axis, in int percent);
+        public delegate void OnAxisReleased(in int axis);
 
-        public override string[] ValidInputs { get; protected set; } = new string[0];
+        public delegate void OnButtonPressed(in uint buttonVal);
+        public delegate void OnButtonReleased(in uint buttonVal);
 
-        public override bool GetAxis(in Parser.Input input, out InputAxis axis)
-        {
-            axis = default;
-            return false;
-        }
+        public delegate void OnControllerUpdated();
+        public delegate void OnControllerReset();
 
-        public override bool IsAxis(in Parser.Input input) => false;
-
-        public override bool IsButton(in Parser.Input input) => false;
+        public delegate void OnControllerClosed();
     }
 }

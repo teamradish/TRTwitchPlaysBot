@@ -329,8 +329,7 @@ namespace TRBot
                 }
 
                 //Check for choosing a percent if the input is an axes
-                if (currentConsole.IsAxis(input) == true 
-                    || currentConsole.IsAbsoluteAxis(input) == true)
+                if (currentConsole.IsAxis(input) == true)
                 {
                     bool usePercent = (Rand.Next(0, 2) == 0);
 

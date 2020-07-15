@@ -20,6 +20,7 @@ using System.Collections.Concurrent;
 using System.Text;
 using System.Runtime.CompilerServices;
 using System.Diagnostics;
+using static TRBot.VirtualControllerDelegates;
 
 namespace TRBot
 {
@@ -111,8 +112,22 @@ namespace TRBot
 
         private Dictionary<int, (long AxisMin, long AxisMax)> MinMaxAxes = new Dictionary<int, (long, long)>(2);
 
+        public event OnInputPressed InputPressedEvent = null;
+        public event OnInputReleased InputReleasedEvent = null;
+
+        public event OnAxisPressed AxisPressedEvent = null;
+        public event OnAxisReleased AxisReleasedEvent = null;
+
+        public event OnButtonPressed ButtonPressedEvent = null;
+        public event OnButtonReleased ButtonReleasedEvent = null;
+
+        public event OnControllerUpdated ControllerUpdatedEvent = null;
+        public event OnControllerReset ControllerResetEvent = null;
+
+        public event OnControllerClosed ControllerClosedEvent = null;
+
         //Kimimaru: Ideally we get the input's state from the driver, but this should work well enough, for now at least
-        private VControllerInputTracker InputTracker = new VControllerInputTracker();
+        private VControllerInputTracker InputTracker = null;
 
         /// <summary>
         /// The built argument list passed into xdotool.
@@ -131,6 +146,16 @@ namespace TRBot
 
             //Reset();
             Close();
+
+            InputPressedEvent = null;
+            InputReleasedEvent = null;
+            AxisPressedEvent = null;
+            AxisReleasedEvent = null;
+            ButtonPressedEvent = null;
+            ButtonReleasedEvent = null;
+            ControllerUpdatedEvent = null;
+            ControllerResetEvent = null;
+            ControllerClosedEvent = null;
         }
 
         public void Acquire()
@@ -143,6 +168,8 @@ namespace TRBot
         {
             BuiltArgList.Clear();
             IsAcquired = false;
+
+            ControllerClosedEvent?.Invoke();
         }
 
         public void Init()
@@ -157,6 +184,8 @@ namespace TRBot
             {
                 MinMaxAxes.Add((int)axes[i], (-500, 500));
             }
+
+            InputTracker = new VControllerInputTracker(this);
         }
 
         public void Reset()
@@ -177,76 +206,78 @@ namespace TRBot
                 ReleaseButton((uint)buttons[i]);
             }
 
-            InputTracker.ResetStates();
-
             UpdateController();
+
+            ControllerResetEvent?.Invoke();
         }
 
         public void PressInput(in Parser.Input input)
         {
-            if (InputGlobals.CurrentConsole.IsWait(input) == true)
+            ConsoleBase curConsole = InputGlobals.CurrentConsole;
+
+            if (curConsole.IsWait(input) == true)
             {
                 return;
             }
 
-            if (InputGlobals.CurrentConsole.IsAbsoluteAxis(input) == true)
+            if (curConsole.GetAxis(input, out InputAxis axis) == true)
             {
-                PressAbsoluteAxis(InputGlobals.CurrentConsole.InputAxes[input.name], input.percent);
+                PressAxis(axis.AxisVal, axis.MinAxisVal, axis.MaxAxisVal, input.percent);
 
-                //Kimimaru: In the case of L and R buttons on GCN, when the axes are pressed, the buttons should be released
-                ReleaseButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name]);
-            }
-            else if (InputGlobals.CurrentConsole.GetAxis(input, out int axis) == true)
-            {
-                PressAxis(axis, InputGlobals.CurrentConsole.IsMinAxis(input), input.percent);
-            }
-            else if (InputGlobals.CurrentConsole.IsButton(input) == true)
-            {
-                PressButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name]);
-
-                //Kimimaru: In the case of L and R buttons on GCN, when the buttons are pressed, the axes should be released
-                if (InputGlobals.CurrentConsole.InputAxes.TryGetValue(input.name, out int value) == true)
+                //Release a button with the same name (Ex. L/R buttons on GCN)
+                if (curConsole.ButtonInputMap.TryGetValue(input.name, out InputButton btnVal) == true)
                 {
-                    ReleaseAbsoluteAxis(value);
+                    ReleaseButton(btnVal.ButtonVal);
+                }
+            }
+            else if (curConsole.IsButton(input) == true)
+            {
+                PressButton(curConsole.ButtonInputMap[input.name].ButtonVal);
+
+                //Release an axis with the same name (Ex. L/R buttons on GCN)
+                if (curConsole.InputAxes.TryGetValue(input.name, out InputAxis value) == true)
+                {
+                    ReleaseAxis(value.AxisVal);
                 }
             }
 
-            InputTracker.PressInput(input.name);
+            InputPressedEvent?.Invoke(input);
         }
 
         public void ReleaseInput(in Parser.Input input)
         {
-            if (InputGlobals.CurrentConsole.IsWait(input) == true)
+            ConsoleBase curConsole = InputGlobals.CurrentConsole;
+
+            if (curConsole.IsWait(input) == true)
             {
                 return;
             }
 
-            if (InputGlobals.CurrentConsole.IsAbsoluteAxis(input) == true)
+            if (curConsole.GetAxis(input, out InputAxis axis) == true)
             {
-                ReleaseAbsoluteAxis(InputGlobals.CurrentConsole.InputAxes[input.name]);
+                ReleaseAxis(axis.AxisVal);
 
-                //Kimimaru: In the case of L and R buttons on GCN, when the axes are released, the buttons should be too
-                ReleaseButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name]);
-            }
-            else if (InputGlobals.CurrentConsole.GetAxis(input, out int axis) == true)
-            {
-                ReleaseAxis(axis);
-            }
-            else if (InputGlobals.CurrentConsole.IsButton(input) == true)
-            {
-                ReleaseButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name]);
-
-                //Kimimaru: In the case of L and R buttons on GCN, when the buttons are released, the axes should be too
-                if (InputGlobals.CurrentConsole.InputAxes.TryGetValue(input.name, out int value) == true)
+                //Release a button with the same name (Ex. L/R buttons on GCN)
+                if (curConsole.ButtonInputMap.TryGetValue(input.name, out InputButton btnVal) == true)
                 {
-                    ReleaseAbsoluteAxis(value);
+                    ReleaseButton(btnVal.ButtonVal);
+                }
+            }
+            else if (curConsole.IsButton(input) == true)
+            {
+                ReleaseButton(curConsole.ButtonInputMap[input.name].ButtonVal);
+
+                //Release an axis with the same name (Ex. L/R buttons on GCN)
+                if (curConsole.InputAxes.TryGetValue(input.name, out InputAxis value) == true)
+                {
+                    ReleaseAxis(value.AxisVal);
                 }
             }
 
-            InputTracker.ReleaseInput(input.name);
+            InputReleasedEvent?.Invoke(input);
         }
 
-        public void PressAxis(in int axis, in bool min, in int percent)
+        public void PressAxis(in int axis, in double minAxisVal, in double maxAxisVal, in int percent)
         {
             //Not a valid axis - defaulting to 0 results in the wrong axis being set
             if (AxisCodeMap.TryGetValue(axis, out int inputAxis) == false)
@@ -259,35 +290,33 @@ namespace TRBot
                 return;
             }
 
-            //Neutral is halfway between the min and max axes 
-            long half = (axisVals.Item2 - axisVals.Item1) / 2L;
-            int mid = (int)(axisVals.Item1 + half);
-            int val = 0;
+            //Get the pressed amount between the min and max values for the axis
+            double pressAmount = Utilities.Lerp(minAxisVal, maxAxisVal, (percent / 100d));
 
-            if (min)
-            {
-                val = (int)(mid - ((percent / 100f) * half));
-            }
-            else
-            {
-                val = (int)(mid + ((percent / 100f) * half));
-            }
+            //Map the pressed amount to the virtual controller's range
+            //Ex. 0 to 1 min/max for axis
+            //0 to 32767 for virtual controller
+            //50% results in 0.5, which maps to 16383 (truncated)
+            int finalVal = (int)Utilities.RemapNum(pressAmount, minAxisVal, maxAxisVal,
+                minAxisVal * axisVals.Item1, maxAxisVal * axisVals.Item2);
 
-            InputTracker.PressAxis(axis, percent);
+            //Console.WriteLine($"%: {percent} | Min/Max: {minAxisVal}/{maxAxisVal} | pressAmount: {pressAmount} | finalVal: {finalVal}");
 
             if (inputAxis == (int)AxisCodes.MouseX)
             {
-                HandleMouseMove(val, 0);
+                HandleMouseMove(finalVal, 0);
             }
             else
             {
-                HandleMouseMove(0, val);
+                HandleMouseMove(0, finalVal);
             }
+
+            AxisPressedEvent?.Invoke(axis, percent);
         }
 
         public void ReleaseAxis(in int axis)
         {
-            InputTracker.ReleaseAxis(axis);
+            AxisReleasedEvent?.Invoke(axis);
 
             //Not a valid axis - defaulting to 0 results in the wrong axis being set
             //if (AxisCodeMap.TryGetValue(axis, out int xdotoolAxis) == false)
@@ -309,7 +338,7 @@ namespace TRBot
 
         public void PressAbsoluteAxis(in int axis, in int percent)
         {
-            InputTracker.PressAxis(axis, percent);
+            AxisPressedEvent?.Invoke(axis, percent);
 
             ////Not a valid axis - defaulting to 0 results in the wrong axis being set
             //if (AxisCodeMap.TryGetValue(axis, out int xdotoolAxis) == false)
@@ -329,7 +358,7 @@ namespace TRBot
 
         public void ReleaseAbsoluteAxis(in int axis)
         {
-            InputTracker.ReleaseAxis(axis);
+            AxisReleasedEvent?.Invoke(axis);
 
             ////Not a valid axis - defaulting to 0 results in the wrong axis being set
             //if (AxisCodeMap.TryGetValue(axis, out int xdotoolAxis) == false)
@@ -353,16 +382,17 @@ namespace TRBot
                 return;
             }
             
-            InputTracker.PressButton(buttonVal);
-            
             if (ClickMap.TryGetValue(button, out int mouseBtn) == true)
             {
                 HandleMouseDown(mouseBtn);
-                return;
+            }
+            else
+            {
+                //It should be a keyboard key then
+                HandleProcessKeyDown(((InputCodes)button).ToString());
             }
 
-            //It should be a keyboard key then
-            HandleProcessKeyDown(((InputCodes)button).ToString());
+            ButtonPressedEvent?.Invoke(buttonVal);
         }
 
         public void ReleaseButton(in uint buttonVal)
@@ -373,16 +403,17 @@ namespace TRBot
                 return;
             }
             
-            InputTracker.ReleaseButton(buttonVal);
-            
             if (ClickMap.TryGetValue(button, out int mouseBtn) == true)
             {
                 HandleMouseUp(mouseBtn);
-                return;
+            }
+            else
+            {
+                //It should be a keyboard key then
+                HandleProcessKeyUp(((InputCodes)button).ToString());
             }
 
-            //It should be a keyboard key then
-            HandleProcessKeyUp(((InputCodes)button).ToString());
+            ButtonReleasedEvent?.Invoke(buttonVal);
         }
 
         public ButtonStates GetInputState(in string inputName)
@@ -407,9 +438,6 @@ namespace TRBot
                 return;
             }
             
-            //Update states
-            InputTracker.UpdateCurrentStates();
-            
             //Execute all the built up commands at once by passing them as arguments to xdotool
             string argList = BuiltArgList.ToString();
             
@@ -429,6 +457,8 @@ namespace TRBot
             }
             
             BuiltArgList.Clear();
+
+            ControllerUpdatedEvent?.Invoke();
         }
         
         //Kimimaru: We need to find a way to smoothly move the mouse over time so durations work

@@ -33,7 +33,8 @@ namespace TRBot
         public static bool ValidateButtonCombos(List<List<Parser.Input>> inputs, List<string> invalidCombo)
         {
             int controllerCount = InputGlobals.ControllerMngr.ControllerCount;
-            
+            ConsoleBase curConsole = InputGlobals.CurrentConsole;
+
             //These dictionaries are for each controller port
             Dictionary<int, List<string>> currentComboDict = new Dictionary<int, List<string>>(controllerCount);
             Dictionary<int, List<string>> subComboDict = new Dictionary<int, List<string>>(controllerCount);
@@ -50,7 +51,15 @@ namespace TRBot
                 for (int j = 0; j < invalidCombo.Count; j++)
                 {
                     string button = invalidCombo[j];
-                    if (controller.GetButtonState(InputGlobals.CurrentConsole.ButtonInputMap[button]) == ButtonStates.Pressed)
+
+                    //This button doesn't exist on this console; skip it
+                    if (curConsole.ButtonInputMap.TryGetValue(button, out InputButton inputBtn) == false)
+                    {
+                        Console.WriteLine($"Warning: \"{button}\" is part of an invalid button combo but doesn't exist for {InputGlobals.CurrentConsoleVal}.");
+                        continue;
+                    }
+
+                    if (controller.GetButtonState(inputBtn.ButtonVal) == ButtonStates.Pressed)
                     {
                         if (currentComboDict.ContainsKey(i) == false)
                         {

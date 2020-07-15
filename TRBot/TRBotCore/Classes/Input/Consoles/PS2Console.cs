@@ -25,40 +25,40 @@ namespace TRBot
     /// </summary>
     public sealed class PS2Console : ConsoleBase
     {
-        public override Dictionary<string, uint> ButtonInputMap { get; protected set; } = new Dictionary<string, uint>()
+        public override Dictionary<string, InputButton> ButtonInputMap { get; protected set; } = new Dictionary<string, InputButton>()
         {
-            { "left", (int)GlobalButtonVals.BTN1 },
-            { "right", (int)GlobalButtonVals.BTN2 },
-            { "up", (int)GlobalButtonVals.BTN3 },
-            { "down", (int)GlobalButtonVals.BTN4 },
-            { "rleft", (int)GlobalButtonVals.BTN5 },
-            { "rright", (int)GlobalButtonVals.BTN6 },
-            { "rup", (int)GlobalButtonVals.BTN7 },
-            { "rdown", (int)GlobalButtonVals.BTN8 },
-            { "square", (int)GlobalButtonVals.BTN9 },
-            { "triangle", (int)GlobalButtonVals.BTN10 },
-            { "circle", (int)GlobalButtonVals.BTN11 },
-            { "cross", (int)GlobalButtonVals.BTN12 },
-            { "select", (int)GlobalButtonVals.BTN13 },
-            { "start", (int)GlobalButtonVals.BTN14 },
-            { "l1", (int)GlobalButtonVals.BTN15 },
-            { "r1", (int)GlobalButtonVals.BTN16 },
-            { "l2", (int)GlobalButtonVals.BTN17 },
-            { "r2", (int)GlobalButtonVals.BTN18 },
-            { "l3", (int)GlobalButtonVals.BTN19 },
-            { "r3", (int)GlobalButtonVals.BTN20 },
-            { "dup", (int)GlobalButtonVals.BTN21 },
-            { "ddown", (int)GlobalButtonVals.BTN22 },
-            { "dleft", (int)GlobalButtonVals.BTN23 },
-            { "dright", (int)GlobalButtonVals.BTN24 },
-            { "ss1", (int)GlobalButtonVals.BTN25 },
-            { "ss2", (int)GlobalButtonVals.BTN26 },
-            { "ss3", (int)GlobalButtonVals.BTN27 },
-            { "ss4", (int)GlobalButtonVals.BTN28 },
-            { "ls1", (int)GlobalButtonVals.BTN29 },
-            { "ls2", (int)GlobalButtonVals.BTN30 },
-            { "ls3", (int)GlobalButtonVals.BTN31 },
-            { "ls4", (int)GlobalButtonVals.BTN32 },
+            { "left", new InputButton((int)GlobalButtonVals.BTN1) },
+            { "right", new InputButton((int)GlobalButtonVals.BTN2) },
+            { "up", new InputButton((int)GlobalButtonVals.BTN3) },
+            { "down", new InputButton((int)GlobalButtonVals.BTN4) },
+            { "rleft", new InputButton((int)GlobalButtonVals.BTN5) },
+            { "rright", new InputButton((int)GlobalButtonVals.BTN6) },
+            { "rup", new InputButton((int)GlobalButtonVals.BTN7) },
+            { "rdown", new InputButton((int)GlobalButtonVals.BTN8) },
+            { "square", new InputButton((int)GlobalButtonVals.BTN9) },
+            { "triangle", new InputButton((int)GlobalButtonVals.BTN10) },
+            { "circle", new InputButton((int)GlobalButtonVals.BTN11) },
+            { "cross", new InputButton((int)GlobalButtonVals.BTN12) },
+            { "select", new InputButton((int)GlobalButtonVals.BTN13) },
+            { "start", new InputButton((int)GlobalButtonVals.BTN14) },
+            { "l1", new InputButton((int)GlobalButtonVals.BTN15) },
+            { "r1", new InputButton((int)GlobalButtonVals.BTN16) },
+            { "l2", new InputButton((int)GlobalButtonVals.BTN17) },
+            { "r2", new InputButton((int)GlobalButtonVals.BTN18) },
+            { "l3", new InputButton((int)GlobalButtonVals.BTN19) },
+            { "r3", new InputButton((int)GlobalButtonVals.BTN20) },
+            { "dup", new InputButton((int)GlobalButtonVals.BTN21) },
+            { "ddown", new InputButton((int)GlobalButtonVals.BTN22) },
+            { "dleft", new InputButton((int)GlobalButtonVals.BTN23) },
+            { "dright", new InputButton((int)GlobalButtonVals.BTN24) },
+            { "ss1", new InputButton((int)GlobalButtonVals.BTN25) },
+            { "ss2", new InputButton((int)GlobalButtonVals.BTN26) },
+            { "ss3", new InputButton((int)GlobalButtonVals.BTN27) },
+            { "ss4", new InputButton((int)GlobalButtonVals.BTN28) },
+            { "ls1", new InputButton((int)GlobalButtonVals.BTN29) },
+            { "ls2", new InputButton((int)GlobalButtonVals.BTN30) },
+            { "ls3", new InputButton((int)GlobalButtonVals.BTN31) },
+            { "ls4", new InputButton((int)GlobalButtonVals.BTN32) },
         };
 
         public override string[] ValidInputs { get; protected set; } = new string[]
@@ -70,36 +70,26 @@ namespace TRBot
             "#"
         };
 
-        public override Dictionary<string, int> InputAxes { get; protected set; } = new Dictionary<string, int>()
+        public override Dictionary<string, InputAxis> InputAxes { get; protected set; } = new Dictionary<string, InputAxis>()
         {
-            { "left", (int)GlobalAxisVals.AXIS_X },
-            { "right", (int)GlobalAxisVals.AXIS_X },
-            { "up", (int)GlobalAxisVals.AXIS_Y },
-            { "down", (int)GlobalAxisVals.AXIS_Y },
-            { "rleft", (int)GlobalAxisVals.AXIS_RX },
-            { "rright", (int)GlobalAxisVals.AXIS_RX },
-            { "rup", (int)GlobalAxisVals.AXIS_RY },
-            { "rdown", (int)GlobalAxisVals.AXIS_RY }
+            { "left", new InputAxis((int)GlobalAxisVals.AXIS_X, 0, -1) },
+            { "right", new InputAxis((int)GlobalAxisVals.AXIS_X, 0, 1) },
+            { "up", new InputAxis((int)GlobalAxisVals.AXIS_Y, 0, -1) },
+            { "down", new InputAxis((int)GlobalAxisVals.AXIS_Y, 0, 1) },
+            { "rleft", new InputAxis((int)GlobalAxisVals.AXIS_RX, 0, -1) },
+            { "rright", new InputAxis((int)GlobalAxisVals.AXIS_RX, 0, 1) },
+            { "rup", new InputAxis((int)GlobalAxisVals.AXIS_RY, 0, -1) },
+            { "rdown", new InputAxis((int)GlobalAxisVals.AXIS_RY, 0, 1) }
         };
 
-        public override bool GetAxis(in Parser.Input input, out int axis)
+        public override bool GetAxis(in Parser.Input input, out InputAxis axis)
         {
             return InputAxes.TryGetValue(input.name, out axis);
-        }
-
-        public override bool IsAbsoluteAxis(in Parser.Input input)
-        {
-            return false;
         }
 
         public override bool IsAxis(in Parser.Input input)
         {
             return InputAxes.ContainsKey(input.name);
-        }
-
-        public override bool IsMinAxis(in Parser.Input input)
-        {
-            return (input.name == "left" || input.name == "up" || input.name == "rleft" || input.name == "rup");
         }
 
         public override bool IsButton(in Parser.Input input)

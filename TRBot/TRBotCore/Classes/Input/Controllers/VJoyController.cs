@@ -21,6 +21,7 @@ using System.Text;
 using vJoyInterfaceWrap;
 using System.Runtime.CompilerServices;
 using static vJoyInterfaceWrap.vJoy;
+using static TRBot.VirtualControllerDelegates;
 
 namespace TRBot
 {
@@ -100,8 +101,22 @@ namespace TRBot
 
         private Dictionary<int, (long AxisMin, long AxisMax)> MinMaxAxes = new Dictionary<int, (long, long)>(8);
 
+        public event OnInputPressed InputPressedEvent = null;
+        public event OnInputReleased InputReleasedEvent = null;
+
+        public event OnAxisPressed AxisPressedEvent = null;
+        public event OnAxisReleased AxisReleasedEvent = null;
+
+        public event OnButtonPressed ButtonPressedEvent = null;
+        public event OnButtonReleased ButtonReleasedEvent = null;
+
+        public event OnControllerUpdated ControllerUpdatedEvent = null;
+        public event OnControllerReset ControllerResetEvent = null;
+
+        public event OnControllerClosed ControllerClosedEvent = null;
+
         //Kimimaru: Ideally we get the input's state from the driver, but this should work well enough, for now at least
-        private VControllerInputTracker InputTracker = new VControllerInputTracker();
+        private VControllerInputTracker InputTracker = null;
 
         private vJoy VJoyInstance = null;
 
@@ -118,6 +133,16 @@ namespace TRBot
 
             Reset();
             Close();
+
+            InputPressedEvent = null;
+            InputReleasedEvent = null;
+            AxisPressedEvent = null;
+            AxisReleasedEvent = null;
+            ButtonPressedEvent = null;
+            ButtonReleasedEvent = null;
+            ControllerUpdatedEvent = null;
+            ControllerResetEvent = null;
+            ControllerClosedEvent = null;
         }
 
         public void Acquire()
@@ -129,6 +154,8 @@ namespace TRBot
         {
             VJoyInstance.RelinquishVJD(ControllerID);
             IsAcquired = false;
+
+            ControllerClosedEvent?.Invoke();
         }
 
         public void Init()
@@ -160,6 +187,8 @@ namespace TRBot
                     MinMaxAxes.Add(globalAxisVal, (min, max));
                 }
             }
+
+            InputTracker = new VControllerInputTracker(this);
         }
 
         public void Reset()
@@ -181,76 +210,78 @@ namespace TRBot
                 }
             }
 
-            InputTracker.ResetStates();
-
             UpdateController();
+
+            ControllerResetEvent?.Invoke();
         }
 
         public void PressInput(in Parser.Input input)
         {
-            if (InputGlobals.CurrentConsole.IsWait(input) == true)
+            ConsoleBase curConsole = InputGlobals.CurrentConsole;
+
+            if (curConsole.IsWait(input) == true)
             {
                 return;
             }
 
-            if (InputGlobals.CurrentConsole.IsAbsoluteAxis(input) == true)
+            if (curConsole.GetAxis(input, out InputAxis axis) == true)
             {
-                PressAbsoluteAxis(InputGlobals.CurrentConsole.InputAxes[input.name], input.percent);
+                PressAxis(axis.AxisVal, axis.MinAxisVal, axis.MaxAxisVal, input.percent);
 
-                //Kimimaru: In the case of L and R buttons on GCN, when the axes are pressed, the buttons should be released
-                ReleaseButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name]);
-            }
-            else if (InputGlobals.CurrentConsole.GetAxis(input, out int axis) == true)
-            {
-                PressAxis(axis, InputGlobals.CurrentConsole.IsMinAxis(input), input.percent);
-            }
-            else if (InputGlobals.CurrentConsole.IsButton(input) == true)
-            {
-                PressButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name]);
-
-                //Kimimaru: In the case of L and R buttons on GCN, when the buttons are pressed, the axes should be released
-                if (InputGlobals.CurrentConsole.InputAxes.TryGetValue(input.name, out int value) == true)
+                //Release a button with the same name (Ex. L/R buttons on GCN)
+                if (curConsole.ButtonInputMap.TryGetValue(input.name, out InputButton btnVal) == true)
                 {
-                    ReleaseAbsoluteAxis(value);
+                    ReleaseButton(btnVal.ButtonVal);
                 }
             }
-            
-            InputTracker.PressInput(input.name);
+            else if (curConsole.IsButton(input) == true)
+            {
+                PressButton(curConsole.ButtonInputMap[input.name].ButtonVal);
+
+                //Release an axis with the same name (Ex. L/R buttons on GCN)
+                if (curConsole.InputAxes.TryGetValue(input.name, out InputAxis value) == true)
+                {
+                    ReleaseAxis(value.AxisVal);
+                }
+            }
+
+            InputPressedEvent?.Invoke(input);
         }
 
         public void ReleaseInput(in Parser.Input input)
         {
-            if (InputGlobals.CurrentConsole.IsWait(input) == true)
+            ConsoleBase curConsole = InputGlobals.CurrentConsole;
+
+            if (curConsole.IsWait(input) == true)
             {
                 return;
             }
 
-            if (InputGlobals.CurrentConsole.IsAbsoluteAxis(input) == true)
+            if (curConsole.GetAxis(input, out InputAxis axis) == true)
             {
-                ReleaseAbsoluteAxis(InputGlobals.CurrentConsole.InputAxes[input.name]);
+                ReleaseAxis(axis.AxisVal);
 
-                //Kimimaru: In the case of L and R buttons on GCN, when the axes are released, the buttons should be too
-                ReleaseButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name]);
-            }
-            else if (InputGlobals.CurrentConsole.GetAxis(input, out int axis) == true)
-            {
-                ReleaseAxis(axis);
-            }
-            else if (InputGlobals.CurrentConsole.IsButton(input) == true)
-            {
-                ReleaseButton(InputGlobals.CurrentConsole.ButtonInputMap[input.name]);
-
-                //Kimimaru: In the case of L and R buttons on GCN, when the buttons are released, the axes should be too
-                if (InputGlobals.CurrentConsole.InputAxes.TryGetValue(input.name, out int value) == true)
+                //Release a button with the same name (Ex. L/R buttons on GCN)
+                if (curConsole.ButtonInputMap.TryGetValue(input.name, out InputButton btnVal) == true)
                 {
-                    ReleaseAbsoluteAxis(value);
+                    ReleaseButton(btnVal.ButtonVal);
+                }
+            }
+            else if (curConsole.IsButton(input) == true)
+            {
+                ReleaseButton(curConsole.ButtonInputMap[input.name].ButtonVal);
+
+                //Release an axis with the same name (Ex. L/R buttons on GCN)
+                if (curConsole.InputAxes.TryGetValue(input.name, out InputAxis value) == true)
+                {
+                    ReleaseAxis(value.AxisVal);
                 }
             }
 
-            InputTracker.ReleaseInput(input.name);
+            InputReleasedEvent?.Invoke(input);
         }
 
-        public void PressAxis(in int axis, in bool min, in int percent)
+        public void PressAxis(in int axis, in double minAxisVal, in double maxAxisVal, in int percent)
         {
             //Not a valid axis - defaulting to 0 results in the wrong axis being set
             if (AxisCodeMap.TryGetValue(axis, out int vJoyAxis) == false)
@@ -263,23 +294,21 @@ namespace TRBot
                 return;
             }
 
-            //Neutral is halfway between the min and max axes 
-            long half = (axisVals.Item2 - axisVals.Item1) / 2L;
-            int mid = (int)(axisVals.Item1 + half);
-            int val = 0;
+            //Get the pressed amount between the min and max values for the axis
+            double pressAmount = Utilities.Lerp(minAxisVal, maxAxisVal, (percent / 100d));
 
-            if (min)
-            {
-                val = (int)(mid - ((percent / 100f) * half));
-            }
-            else
-            {
-                val = (int)(mid + ((percent / 100f) * half));
-            }
+            //Map the pressed amount to the virtual controller's range
+            //Ex. 0 to 1 min/max for axis
+            //0 to 32767 for virtual controller
+            //50% results in 0.5, which maps to 16383 (truncated)
+            int finalVal = (int)Utilities.RemapNum(pressAmount, minAxisVal, maxAxisVal,
+                minAxisVal * axisVals.Item1, maxAxisVal * axisVals.Item2);
 
-            InputTracker.PressAxis(axis, percent);
+            //Console.WriteLine($"%: {percent} | Min/Max: {minAxisVal}/{maxAxisVal} | pressAmount: {pressAmount} | finalVal: {finalVal}");
 
-            SetAxisEfficient(vJoyAxis, val);
+            SetAxisEfficient(vJoyAxis, finalVal);
+
+            AxisPressedEvent?.Invoke(axis, percent);
         }
 
         public void ReleaseAxis(in int axis)
@@ -299,9 +328,9 @@ namespace TRBot
             long half = (axisVals.Item2 - axisVals.Item1) / 2L;
             int val = (int)(axisVals.Item1 + half);
 
-            InputTracker.ReleaseAxis(axis);
-
             SetAxisEfficient(vJoyAxis, val);
+
+            AxisReleasedEvent?.Invoke(axis);
         }
 
         public void PressAbsoluteAxis(in int axis, in int percent)
@@ -319,9 +348,9 @@ namespace TRBot
 
             int val = (int)(axisVals.Item2 * (percent / 100f));
 
-            InputTracker.PressAxis(axis, percent);
-
             SetAxisEfficient(vJoyAxis, val);
+
+            AxisPressedEvent?.Invoke(axis, percent);
         }
 
         public void ReleaseAbsoluteAxis(in int axis)
@@ -337,9 +366,9 @@ namespace TRBot
                 return;
             }
 
-            InputTracker.ReleaseAxis(axis);
-
             SetAxisEfficient(vJoyAxis, 0);
+
+            AxisReleasedEvent?.Invoke(axis);
         }
 
         public void PressButton(in uint buttonVal)
@@ -349,8 +378,6 @@ namespace TRBot
             {
                 return;
             }
-
-            InputTracker.PressButton(buttonVal);
 
             //Kimimaru: Handle button counts greater than 32
             //Each buttons value contains 32 bits, so choose the appropriate one based on the value of the button pressed
@@ -366,6 +393,8 @@ namespace TRBot
                 case 2: JSState.ButtonsEx2 |= addition; break;
                 case 3: JSState.ButtonsEx3 |= addition; break;
             }
+
+            ButtonPressedEvent?.Invoke(buttonVal);
         }
 
         public void ReleaseButton(in uint buttonVal)
@@ -375,8 +404,6 @@ namespace TRBot
             {
                 return;
             }
-
-            InputTracker.ReleaseButton(buttonVal);
 
             //Kimimaru: Handle button counts greater than 32
             //Each buttons value contains 32 bits, so choose the appropriate one based on the value of the button pressed
@@ -392,6 +419,8 @@ namespace TRBot
                 case 2: JSState.ButtonsEx2 &= inverse; break;
                 case 3: JSState.ButtonsEx3 &= inverse; break;
             }
+
+            ButtonReleasedEvent?.Invoke(buttonVal);
         }
 
         public ButtonStates GetInputState(in string inputName)
@@ -411,10 +440,9 @@ namespace TRBot
 
         public void UpdateController()
         {
-            //Update states
-            InputTracker.UpdateCurrentStates();
-            
             VJoyInstance.UpdateVJD(ControllerID, ref JSState);
+
+            ControllerUpdatedEvent?.Invoke();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
