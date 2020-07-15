@@ -69,11 +69,8 @@ namespace TRBot
         void PressInput(in Parser.Input input);
         void ReleaseInput(in Parser.Input input);
 
-        void PressAxis(in int axis, in bool min, in int percent);
+        void PressAxis(in int axis, in double minAxisVal, in double maxAxisVal, in int percent);
         void ReleaseAxis(in int axis);
-
-        void PressAbsoluteAxis(in int axis, in int percent);
-        void ReleaseAbsoluteAxis(in int axis);
 
         void PressButton(in uint buttonVal);
         void ReleaseButton(in uint buttonVal);
