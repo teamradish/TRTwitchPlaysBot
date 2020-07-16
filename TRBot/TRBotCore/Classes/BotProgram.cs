@@ -549,6 +549,11 @@ namespace TRBot
                 BotSettings.ClientSettings = new ClientSettings();
                 settingsChanged = true;
             }
+            if (BotSettings.DatabaseConfiguration == null)
+            {
+                BotSettings.DatabaseConfiguration = new DatabaseSettings();
+                settingsChanged = true;
+            }
             
             //Write only once after checking all the changes
             if (settingsChanged == true)
@@ -687,6 +692,26 @@ namespace TRBot
             public string ReSubscriberMsg = "Thank you for subscribing for {1} months, {0} :D !!";
         }
 
+        public class DatabaseSettings
+        {
+            //This will be the host of the database (in case it is external, if not defaulted to localhost)
+            public string DatabaseHost = "localhost";
+
+            //Optional Field: specify portnumber, if not using portnumber 1433 as default value.
+            public string DatabasePortNumber = "1433";
+
+            //This will be the database username that will be needed to log in.
+            //**NOTE** full permissions need to be granted so the user can auto-create the tables.
+            public string DatabaseUsername = string.Empty;
+
+            //This will be the database password that will be needed to log in.
+            public string DatabasePassword = string.Empty;
+
+            //Name of the Database where all the tables will be stored
+            public string DatabaseName = string.Empty;
+
+        }
+
         public class ClientSettings
         {
             public ClientServiceTypes ClientType = ClientServiceTypes.Twitch;
@@ -696,6 +721,7 @@ namespace TRBot
         {
             public ClientSettings ClientSettings = null;
             public MessageSettings MsgSettings = null;
+            public DatabaseSettings DatabaseConfiguration = null;
 
             /// <summary>
             /// The time, in minutes, for outputting the periodic message.
@@ -706,6 +732,7 @@ namespace TRBot
             public double MessageCooldown = 1000d;
             public double CreditsTime = 2d;
             public long CreditsAmount = 100L;
+            public bool useDatabase = false;
 
             /// <summary>
             /// The character limit for bot messages. The default is the client service's character limit (Ex. Twitch).
