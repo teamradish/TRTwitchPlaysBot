@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Collections.Concurrent;
 using NUnit.Framework;
 using TRBot;
 
@@ -6,6 +8,10 @@ namespace TRBot.Tests
     [TestFixture]
     public class ParserTests
     {
+        /* For some tests, we need to build dictionaries and other structures ahead of time.
+           Find a way to supply ALL the necessary data ahead of time so each test can focus on just one thing.
+        */
+
         [TestCase("a", true, 60000)]
         [TestCase("b", true, 60000)]
         [TestCase("x", true, 60000)]
@@ -33,7 +39,7 @@ namespace TRBot.Tests
         [TestCase("a1000ms b1000ms", 2000, 200, new string[] { "a", "#", "b" })]
         [TestCase("_a500ms b200ms #1s", 1700, 200, new string[] { "a", "#", "b" })]
         [TestCase("_a500ms b200ms #1s -a1300ms", 3000, 200, new string[] { "a", "#", "b" })]
-        public void TestDuration(string input, int expectedDur, int defaultDur, string[] validInputs)
+        public void TestTotalDuration(string input, int expectedDur, int defaultDur, string[] validInputs)
         {
             string inputRegex = Parser.BuildInputRegex(validInputs);
 
@@ -61,5 +67,59 @@ namespace TRBot.Tests
             
             Assert.AreEqual(inputCount, expectedInputCount);
         }
+
+        [TestCase("jump", "a", new string[] { "jump" }, new string[] { "a" })]
+        [TestCase("slide", "_down b", new string[] { "slide" }, new string[] { "_down b" })]
+        [TestCase("a . jump . x . pause", "a . a . x . start", new string[] { "jump", "pause" }, new string[] { "a", "start" })]
+        public static void TestSynonyms(string input, string expectedOutput, string[] synonyms, string[] associatedInputs)
+        {
+            Dictionary<string, string> synonymDict = BuildDictWithArrays(synonyms, associatedInputs);
+
+            string synonymsPopulate = Parser.PopulateSynonyms(input, synonymDict);
+
+            Assert.AreEqual(synonymsPopulate, expectedOutput);
+        }
+
+        [TestCase("#atwo", "aa", new string[] { "#atwo" }, new string[] { "aa" })]
+        [TestCase("#mashr", "r34ms #34ms r34ms #34ms r34ms #34ms", new string[] { "#mashr" }, new string[] { "r34ms #34ms r34ms #34ms r34ms #34ms" })]
+        public static void TestMacros(string input, string expectedOutput, string[] macroNames, string[] macroInputs)
+        {
+            ConcurrentDictionary<string, string> macroDict = BuildConcurrentDictWithArrays(macroNames, macroInputs);
+            Dictionary<char, List<string>> macroLookup = new Dictionary<char, List<string>>();
+
+            DataInit.PopulateMacrosToParserList(macroDict, macroLookup);
+
+            string macroInput = Parser.PopulateMacros(input, macroDict, macroLookup);
+
+            Assert.AreEqual(macroInput, expectedOutput);
+        }
+
+        # region Utility
+
+        private static Dictionary<T, U> BuildDictWithArrays<T, U>(T[] array1, U[] array2)
+        {
+            Dictionary<T, U> dict = new Dictionary<T, U>(array1.Length);
+
+            for (int i = 0; i < array1.Length; i++)
+            {
+                dict[array1[i]] = array2[i];
+            }
+
+            return dict;
+        }
+
+        private static ConcurrentDictionary<T, U> BuildConcurrentDictWithArrays<T, U>(T[] array1, U[] array2)
+        {
+            ConcurrentDictionary<T, U> dict = new ConcurrentDictionary<T, U>(1, array1.Length);
+
+            for (int i = 0; i < array1.Length; i++)
+            {
+                dict[array1[i]] = array2[i];
+            }
+
+            return dict;    
+        }
+
+        #endregion
     }
 }

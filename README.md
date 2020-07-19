@@ -16,6 +16,28 @@ The bot is inspired by TwitchPlays_Everything; the input syntax allows for great
 * User data with access levels - control access to commands, inputs, and other features.
 * Additional goodies and games - duel for credits, create memes, calculate expressions, and reverse text.
 
+## Building from source
+* Clone the repo with `git clone https://github.com/teamradish/TRTwitchPlaysBot.git`
+  * Alternatively, download the zip.
+* [.NET Core 3.1 SDK and Runtime](https://dotnet.microsoft.com/download/dotnet-core)
+  * Before installing, set the `DOTNET_CLI_TELEMETRY_OPTOUT` environment variable to 1 if you don't want dotnet CLI commands sending telemetry.
+
+You can build TRBot using the provided .sln or through the CLI (instructions below). You can also use any IDE supporting .NET Core, such as VSCode/VSCodium, Visual Studio, or JetBrains Rider.
+
+Command line:
+* Main directory: `cd TRBotCore`
+* Building: `dotnet build`
+* Publishing: `dotnet publish -c (config) -o (dir) --self-contained --runtime (RID)`
+  * config = "Debug" or "Release"
+  * dir = output directory
+  * [RID](https://github.com/dotnet/runtime/blob/master/src/libraries/pkg/Microsoft.NETCore.Platforms/runtime.json) = usually "win-x64" or "linux-x64". See link for a full list of runtime identifiers.
+  * Example: `dotnet publish -c Debug -o TRBot --self-contained --runtime linux-x64`
+
+When building, make sure to define the correct preprocessor directives in the .csproj project file - `WINDOWS` for Windows, and `LINUX` for Linux.
+
+## Running Tests
+All unit tests are in the **TRBot.Tests** project. Simply run `dotnet test` inside this directory or the base **TRBot** directory to run the tests.
+
 ## Getting Started
 Please see the [Getting Started](https://github.com/teamradish/TRTwitchPlaysBot/wiki/Getting-Started) guide on the wiki for setting up TRBot.
 
