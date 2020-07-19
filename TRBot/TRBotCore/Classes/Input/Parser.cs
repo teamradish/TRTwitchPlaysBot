@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -184,7 +185,7 @@ namespace TRBot
             return macro_contents;
         }
 
-        public static string PopulateMacros(string message)
+        public static string PopulateMacros(string message, ConcurrentDictionary<string, string> macros, Dictionary<char, List<string>> macroLookup)
         {   
             message = message.Replace(" ", string.Empty);
             message = Parser.Expandify(message);
@@ -241,7 +242,7 @@ namespace TRBot
                     //Look through the parser macro list for performance
                     //Handle no macro (Ex. "#" alone)
                     if (macro_name_generic.Length > 1
-                        && BotProgram.BotData.ParserMacroLookup.TryGetValue(macro_name_generic[1], out List<string> macroList) == true)
+                        && macroLookup.TryGetValue(macro_name_generic[1], out List<string> macroList) == true)
                     {
                         for (int i = 0; i < macroList.Count; i++)
                         {
@@ -284,7 +285,7 @@ namespace TRBot
                     foreach (var current in subs)
                     {
                         if (prev != def) str += message.Substring(prev.Item2.Item2, current.Item2.Item1 - prev.Item2.Item2);
-                        str += Parser.PopulateVariables(BotProgram.BotData.Macros[current.Item1], current.Item3);
+                        str += Parser.PopulateVariables(macros[current.Item1], current.Item3);
                         prev = current;
                     }
                     str += message.Substring(prev.Item2.Item2);
@@ -434,19 +435,12 @@ namespace TRBot
         /// Parses inputs from an expanded message.
         /// </summary>
         /// <param name="message">The expanded message.</param>
-        /// <param name="defControllerPort">The controller port to default to for this input.</param>
-        /// <param name="checkMaxDur">If true, will render the input invalid if
-        /// the total duration exceeds the maximum input duration.</param>
-        /// <param name="replaceSynonyms">If true, will replace the defined input synonyms with their actual inputs.</param>
+        /// <param name="inputRegex">The input regex to use.</param>
+        /// <param name="parserOptions">The <see cref="Parser"/> to use.</param>
         /// <returns>An InputSequence containing information about the parsed inputs.</returns>
-        public static InputSequence ParseInputs(string message, in int defControllerPort, in bool checkMaxDur, in bool useSynonyms)
+        public static InputSequence ParseInputs(string message, string inputRegex, in ParserOptions parserOptions)
         {
-            //Populate synonyms and remove all whitespace
-            if (useSynonyms == true)
-            {
-                message = PopulateSynonyms(message, InputGlobals.InputSynonyms);
-            }
-
+            //Remove all whitespace
             message = message.Replace(" ", string.Empty).ToLower();
 
             //Full Regex:
@@ -460,8 +454,6 @@ namespace TRBot
             //Group 7 = seconds, including duration
             //Group 8 = + sign for performing inputs simultaneously
 
-            string regex = InputGlobals.ValidInputRegexStr;
-
             //Console.WriteLine(regex);
 
             //Uncomment these stopwatch lines to time it
@@ -470,7 +462,7 @@ namespace TRBot
             //New method: Get ALL the matches at once and parse them as we go, instead of matching each time and parsing
             //The caveat is all longer inputs with the same characters must be before shorter ones at the start of the input sequence
             //For example: "ls1" must be before "l" or it'll pick up "l" first
-            MatchCollection matches = Regex.Matches(message, regex, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
+            MatchCollection matches = Regex.Matches(message, inputRegex, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
 
             //No matches, so invalid input
             if (matches.Count <= 0)
@@ -502,7 +494,7 @@ namespace TRBot
                 }
 
                 //Get the input using the match information
-                Input input = GetInputFast(m, defControllerPort, ref prevIndex, ref hasPlus);
+                Input input = GetInputFast(m, parserOptions.DefaultControllerPort, parserOptions.DefaultInputDur, ref prevIndex, ref hasPlus);
 
                 //Console.WriteLine(input.ToString());
 
@@ -543,7 +535,7 @@ namespace TRBot
                     inputSequence.TotalDuration = totalDuration;
 
                     //Check for max duration and break out early if so
-                    if (checkMaxDur == true && totalDuration > BotProgram.BotData.MaxInputDuration)
+                    if (parserOptions.CheckMaxDur == true && totalDuration > parserOptions.MaxInputDur)
                     {
                         inputSequence.InputValidationType = InputValidationTypes.Invalid;
                         inputSequence.Error = "ERR_MAX_DURATION";
@@ -565,7 +557,7 @@ namespace TRBot
             return inputSequence;
         }
 
-        private static Input GetInputFast(Match regexMatch, in int defControllerPort, ref int prevIndex, ref bool hasPlus)
+        private static Input GetInputFast(Match regexMatch, in int defControllerPort, in int defaultInputDur, ref int prevIndex, ref bool hasPlus)
         {
             //Full Regex:
             // (&\d)?([_-])?(left|right|a)(\d+%)?((\d+ms)|(\d+s))?(\+)?
@@ -585,7 +577,7 @@ namespace TRBot
             const int secIndex = 7;
             const int plusIndex = 8;
 
-            Input input = Input.Default;
+            Input input = Input.Default(defaultInputDur);
             input.controllerPort = defControllerPort;
 
             //Check the top level success - if no matches at all or there's a gap, this isn't a valid input
@@ -700,6 +692,40 @@ namespace TRBot
             return input;
         }
 
+        /// <summary>
+        /// Builds a regex expression for the parser to use given a set of valid input names.
+        /// </summary>
+        /// <param name="validInputs">The valid input names.</param>
+        /// <returns>A string containing a regex expression for the parser to use.</returns>
+        public static string BuildInputRegex(string[] validInputs)
+        {
+            //Set up the regex using the given values
+            //Add longer inputs first due to how the parser works
+            //This avoids picking up shorter inputs with the same characters first
+            IOrderedEnumerable<string> sorted = from str in validInputs
+                                                orderby str.Length descending
+                                                select str;
+
+            StringBuilder sb = new StringBuilder(Parser.ParseRegexStart.Length + Parser.ParseRegexEnd.Length);
+            int i = 0;
+
+            sb.Append(Parser.ParseRegexStart);
+            foreach (string s in sorted)
+            {
+                sb.Append(System.Text.RegularExpressions.Regex.Escape(s));
+                if (i != (validInputs.Length - 1))
+                {
+                    sb.Append('|');
+                }
+                i++;
+            }
+            sb.Append(Parser.ParseRegexEnd);
+
+            string inputRegex = sb.ToString();
+            
+            return inputRegex;
+        }
+
         //Returns list containing: [Valid, input_sequence]
         //Or: [Invalid, input that it failed on]
         /*[Obsolete("Use ParseInputs instead for better type safety and greatly improved performance and readability.", false)]
@@ -801,7 +827,7 @@ namespace TRBot
             /// <summary>
             /// Returns a default Input.
             /// </summary>
-            public static Input Default => new Input(string.Empty, false, false, Parser.ParserDefaultPercent, BotProgram.BotData.DefaultInputDuration, Parser.ParserDefaultDurType, 0, /*0,*/ string.Empty);
+            public static Input Default(in int defaultInputDur) => new Input(string.Empty, false, false, Parser.ParserDefaultPercent, defaultInputDur, Parser.ParserDefaultDurType, 0, /*0,*/ string.Empty);
 
             public Input(string nme, in bool hld, in bool relse, in int percnt, in int dur, string durType, in int contPort, /*in int len,*/ in string err)
             {
@@ -918,6 +944,63 @@ namespace TRBot
             {
                 int inputCount = (Inputs == null) ? 0 : Inputs.Count;
                 return $"VType:{InputValidationType} | SubInputs:{inputCount} | Duration:{TotalDuration} | Err:{Error}";
+            }
+        }
+
+        public struct ParserOptions
+        {
+            public int DefaultControllerPort;
+            public int DefaultInputDur;
+            public bool CheckMaxDur;
+            public int MaxInputDur;
+
+            public ParserOptions(in int defControllerPort, in int defaultInputDur, in bool checkMaxDur)
+                : this(defControllerPort, defaultInputDur, checkMaxDur, 0)
+            {
+
+            }
+
+            public ParserOptions(in int defControllerPort, in int defaultInputDur,
+                in bool checkMaxDur, in int maxInputDur)
+            {
+                DefaultControllerPort = defControllerPort;
+                DefaultInputDur = defaultInputDur;
+                CheckMaxDur = checkMaxDur;
+                MaxInputDur = maxInputDur;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj is ParserOptions inpSeq)
+                {
+                    return (this == inpSeq);
+                }
+
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hash = 19;
+                    hash = (hash * 37) + DefaultControllerPort.GetHashCode();
+                    hash = (hash * 37) + DefaultInputDur.GetHashCode();
+                    hash = (hash * 37) + CheckMaxDur.GetHashCode();
+                    hash = (hash * 37) + MaxInputDur.GetHashCode();
+                    return hash;
+                }
+            }
+
+            public static bool operator ==(ParserOptions a, ParserOptions b)
+            {
+                return (a.DefaultControllerPort == b.DefaultControllerPort && a.DefaultInputDur == b.DefaultInputDur
+                        && a.CheckMaxDur == b.CheckMaxDur && a.MaxInputDur == b.MaxInputDur);
+            }
+
+            public static bool operator !=(ParserOptions a, ParserOptions b)
+            {
+                return !(a == b);
             }
         }
     }
