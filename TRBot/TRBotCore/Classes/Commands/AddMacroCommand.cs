@@ -122,9 +122,9 @@ namespace TRBot
             {
                 try
                 {
-                    string parse_message = Parser.Expandify(Parser.PopulateMacros(parsedVal));
-
-                    Parser.InputSequence inputSequence = Parser.ParseInputs(parse_message, 0, true, true);
+                    string parse_message = Parser.Expandify(Parser.PopulateMacros(parsedVal, BotProgram.BotData.Macros, BotProgram.BotData.ParserMacroLookup));
+                    parse_message = Parser.PopulateSynonyms(parse_message, InputGlobals.InputSynonyms);
+                    Parser.InputSequence inputSequence = Parser.ParseInputs(parse_message, InputGlobals.ValidInputRegexStr, new Parser.ParserOptions(0, BotProgram.BotData.DefaultInputDuration, true, BotProgram.BotData.MaxInputDuration));
                     //var val = Parser.Parse(parse_message);
 
                     if (inputSequence.InputValidationType != Parser.InputValidationTypes.Valid)//val.Item1 == false)

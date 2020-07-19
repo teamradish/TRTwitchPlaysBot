@@ -154,8 +154,9 @@ namespace TRBot
             try
             {
                 //Ignore max duration and synonyms
-                string parse_message = Parser.Expandify(Parser.PopulateMacros(userCommand));
-                inputSequence = Parser.ParseInputs(parse_message, 0, false, false);
+                string parse_message = Parser.Expandify(Parser.PopulateMacros(userCommand, BotProgram.BotData.Macros, BotProgram.BotData.ParserMacroLookup));
+                parse_message = Parser.PopulateSynonyms(parse_message, InputGlobals.InputSynonyms);
+                inputSequence = Parser.ParseInputs(parse_message, InputGlobals.ValidInputRegexStr, new Parser.ParserOptions(0, BotProgram.BotData.DefaultInputDuration, false, 0));
             }
             catch
             {
@@ -288,7 +289,7 @@ namespace TRBot
                     break;
                 }
                 
-                Parser.Input input = Parser.Input.Default;
+                Parser.Input input = Parser.Input.Default(BotProgram.BotData.DefaultInputDuration);
 
                 int chosenInputIndex = Rand.Next(0, validInputs.Count);
                 input.name = validInputs[chosenInputIndex];

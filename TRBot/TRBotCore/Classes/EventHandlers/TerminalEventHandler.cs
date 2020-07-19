@@ -108,8 +108,9 @@ namespace TRBot
 
             try
             {
-                string parse_message = Parser.Expandify(Parser.PopulateMacros(e.UsrMessage.Message));
-                inputSequence = Parser.ParseInputs(parse_message, userData.Team, true, true);
+                string parse_message = Parser.Expandify(Parser.PopulateMacros(e.UsrMessage.Message, BotProgram.BotData.Macros, BotProgram.BotData.ParserMacroLookup));
+                parse_message = Parser.PopulateSynonyms(parse_message, InputGlobals.InputSynonyms);
+                inputSequence = Parser.ParseInputs(parse_message, InputGlobals.ValidInputRegexStr, new Parser.ParserOptions(userData.Team, BotProgram.BotData.DefaultInputDuration, true, BotProgram.BotData.MaxInputDuration));
                 //parsedVal = Parser.Parse(parse_message);
                 //Console.WriteLine(inputSequence.ToString());
                 //Console.WriteLine("\nReverse Parsed: " + ReverseParser.ReverseParse(inputSequence));
