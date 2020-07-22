@@ -50,7 +50,7 @@ namespace TRBot
 
         private readonly string[] InvalidExerciseInputs = new string[]
         {
-            "ss1", "ss2", "ss3", "ss4", "ss5", "ss6", "ls1", "ls2", "ls3", "ls4", "ls5", "ls6",
+            "ss1", "ss2", "ss3", "ss4", "ss5", "ss6", "ls1", "ls2", "ls3", "ls4", "ls5", "ls6", "ss", "ls", "incs", "decs",
             "."
         };
 
@@ -149,20 +149,29 @@ namespace TRBot
         {
             /* We don't need any parser post processing done here, as these inputs don't affect the game itself */
             
+            //Console.WriteLine("USER COMMAND: " + userCommand);
+
             Parser.InputSequence inputSequence = default;
 
             try
             {
                 //Ignore max duration and synonyms
                 string parse_message = Parser.Expandify(Parser.PopulateMacros(userCommand, BotProgram.BotData.Macros, BotProgram.BotData.ParserMacroLookup));
-                parse_message = Parser.PopulateSynonyms(parse_message, InputGlobals.InputSynonyms);
+                
+                //Ignore synonyms, since they can mess with inputs
+                //parse_message = Parser.PopulateSynonyms(parse_message, InputGlobals.InputSynonyms);
+                
                 inputSequence = Parser.ParseInputs(parse_message, InputGlobals.ValidInputRegexStr, new Parser.ParserOptions(0, BotProgram.BotData.DefaultInputDuration, false, 0));
             }
-            catch
+            catch// (Exception e)
             {
+                //Console.WriteLine($"EXCEPTION: {e.Message}");
+
                 BotProgram.MsgHandler.QueueMessage("Sorry, I couldn't parse your input.");
                 return;
             }
+
+            //Console.WriteLine("VALIDITY: " + inputSequence.InputValidationType);
 
             if (inputSequence.InputValidationType != Parser.InputValidationTypes.Valid)
             {
@@ -171,6 +180,7 @@ namespace TRBot
             }
 
             InputExercise currentExercise = UserExercises[user.Name];
+            //Console.WriteLine("Correct: " + ReverseParser.ReverseParse(currentExercise.Sequence));
             List<List<Parser.Input>> exerciseInputs = currentExercise.Sequence.Inputs;
 
             List<List<Parser.Input>> userInputs = inputSequence.Inputs;
@@ -178,6 +188,8 @@ namespace TRBot
             //Compare input lengths - this has some downsides, but it's a quick check
             if (userInputs.Count != exerciseInputs.Count)
             {
+                //Console.WriteLine($"COUNT DISPARITY {userInputs.Count} vs {exerciseInputs.Count}");
+
                 BotProgram.MsgHandler.QueueMessage("Incorrect input! Try again!");
                 return;
             }
@@ -189,6 +201,8 @@ namespace TRBot
 
                 if (exerciseSubInputs.Count != userSubInputs.Count)
                 {
+                    //Console.WriteLine($"SUBINPUT COUNT DISPARITY AT {i}: {userSubInputs.Count} vs {exerciseSubInputs.Count}");
+
                     BotProgram.MsgHandler.QueueMessage("Incorrect input! Try again!");
                     return;
                 }
@@ -207,6 +221,8 @@ namespace TRBot
 
                     if (CompareInputs(excInp, userInp) == false)
                     {
+                        //Console.WriteLine($"FAILED COMPARISON ON: {userInp.ToString()} ===== CORRECT: {excInp.ToString()}");
+
                         BotProgram.MsgHandler.QueueMessage("Incorrect input! Try again!");
                         return;
                     }

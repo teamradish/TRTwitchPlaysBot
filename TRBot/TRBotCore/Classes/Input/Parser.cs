@@ -467,6 +467,8 @@ namespace TRBot
             //No matches, so invalid input
             if (matches.Count <= 0)
             {
+                //Console.WriteLine("NO MATCHES");
+
                 return new InputSequence(InputValidationTypes.NormalMsg, null, 0, "ERR_NORMAL_MSG");
             }
 
@@ -488,6 +490,8 @@ namespace TRBot
                 //If there's a gap in matches (Ex. "a34ms hi b300ms"), this isn't a valid input and is likely a normal message
                 if (m.Index != prevIndex)
                 {
+                    //Console.WriteLine($"INDEX GAP. CUR: {m.Index} | PREV: {prevIndex}");
+
                     inputSequence.InputValidationType = InputValidationTypes.NormalMsg;
                     inputSequence.Error = "ERR_NORMAL_MSG";
                     break;
@@ -495,6 +499,8 @@ namespace TRBot
 
                 //Get the input using the match information
                 Input input = GetInputFast(m, parserOptions.DefaultControllerPort, parserOptions.DefaultInputDur, ref prevIndex, ref hasPlus);
+
+                //Console.WriteLine($"REGEX MATCH INDEX: {m.Index} | LENGTH: {m.Length} | MATCH: {m.Value}");
 
                 //Console.WriteLine(input.ToString());
 
@@ -550,6 +556,8 @@ namespace TRBot
             //If there's more past what the regex caught, this isn't a valid input and is likely a normal message
             if (inputSequence.InputValidationType == InputValidationTypes.Valid && prevIndex != message.Length)
             {
+                //Console.WriteLine($"PREVINDEX: {prevIndex} | MESSAGE LENGTH: {message.Length}");
+
                 inputSequence.InputValidationType = InputValidationTypes.NormalMsg;
                 inputSequence.Error = "ERR_NORMAL_MSG";
             }
