@@ -41,6 +41,10 @@ namespace TRBot
             CallbackData["ss4"] = new InputCBWrapper(InputCBInvocation.Press | InputCBInvocation.Hold, InputCBTypes.SavestateLog, 4);
             CallbackData["ss5"] = new InputCBWrapper(InputCBInvocation.Press | InputCBInvocation.Hold, InputCBTypes.SavestateLog, 5);
             CallbackData["ss6"] = new InputCBWrapper(InputCBInvocation.Press | InputCBInvocation.Hold, InputCBTypes.SavestateLog, 6);
+            
+            CallbackData["ss"] = new InputCBWrapper(InputCBInvocation.Press | InputCBInvocation.Hold, InputCBTypes.SavestateSlotLog, null);
+            CallbackData["incs"] = new InputCBWrapper(InputCBInvocation.Press | InputCBInvocation.Hold, InputCBTypes.ChangeStateSlot, 1);
+            CallbackData["decs"] = new InputCBWrapper(InputCBInvocation.Press | InputCBInvocation.Hold, InputCBTypes.ChangeStateSlot, -1);
         }
 
         public void PopulateCBWithData()

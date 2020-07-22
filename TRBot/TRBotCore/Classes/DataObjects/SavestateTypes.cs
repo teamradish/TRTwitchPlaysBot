@@ -1,4 +1,4 @@
-﻿/* This file is part of TRBot.
+/* This file is part of TRBot.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,26 +21,10 @@ using System.Text;
 namespace TRBot
 {
     /// <summary>
-    /// The invocation types determining when an input callback is invoked.
-    /// <para>This is a bitwise field.</para>
+    /// The types of savestates used.
     /// </summary>
-    [Flags]
-    public enum InputCBInvocation
+    public enum SavestateTypes
     {
-        None = 0,
-        Press = 1 << 0,
-        Hold = 1 << 1,
-        Release = 1 << 2
-    }
-
-    /// <summary>
-    /// The available callback types.
-    /// </summary>
-    public enum InputCBTypes
-    {
-        SavestateLog = 0,
-        BotMessage = 1,
-        SavestateSlotLog = 2,
-        ChangeStateSlot = 3
+        Quick, Slot
     }
 }

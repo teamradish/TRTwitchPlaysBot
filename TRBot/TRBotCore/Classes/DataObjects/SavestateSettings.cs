@@ -21,26 +21,19 @@ using System.Text;
 namespace TRBot
 {
     /// <summary>
-    /// The invocation types determining when an input callback is invoked.
-    /// <para>This is a bitwise field.</para>
+    /// Holds settings for savestates.
     /// </summary>
-    [Flags]
-    public enum InputCBInvocation
+    public class SavestateSettings
     {
-        None = 0,
-        Press = 1 << 0,
-        Hold = 1 << 1,
-        Release = 1 << 2
-    }
+        /// <summary>
+        /// The type of savestates to use.
+        /// </summary>
+        public SavestateTypes SavestateType = SavestateTypes.Quick;
 
-    /// <summary>
-    /// The available callback types.
-    /// </summary>
-    public enum InputCBTypes
-    {
-        SavestateLog = 0,
-        BotMessage = 1,
-        SavestateSlotLog = 2,
-        ChangeStateSlot = 3
+        /// <summary>
+        /// The current save slot; used for <see cref="SavestateTypes.Slot"/>.
+        /// <para>Make sure this value matches the savestate slot on your game for accuracy.</para>
+        /// </summary>
+        public int CurrentSaveSlot = 1;
     }
 }

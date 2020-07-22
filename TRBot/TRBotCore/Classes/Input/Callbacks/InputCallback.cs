@@ -46,6 +46,8 @@ namespace TRBot
             {
                 case InputCBTypes.SavestateLog: return SavestateLog;
                 case InputCBTypes.BotMessage: return BotMessage;
+                case InputCBTypes.SavestateSlotLog: return SavestateSlotLog;
+                case InputCBTypes.ChangeStateSlot: return ChangeStateSlot;
                 default: return null;
             }
         }
@@ -95,6 +97,34 @@ namespace TRBot
             } 
 
             BotProgram.MsgHandler.QueueMessage(strVal);
+        }
+
+        public static void SavestateSlotLog(object cbValue)
+        {
+            //Console.WriteLine("SavestateSlotLog with: " + BotProgram.BotData.SaveLoadStateSettings.CurrentSaveSlot);
+
+            //Save a log in the current slot
+            SavestateLog((long)BotProgram.BotData.SaveLoadStateSettings.CurrentSaveSlot);
+        }
+
+        public static void ChangeStateSlot(object cbValue)
+        {
+            int changeAmount = 0;
+            try
+            {
+                changeAmount = (int)(long)cbValue;
+            }
+            catch (InvalidCastException)
+            {
+                //Console.WriteLine($"EXCEPTION: {e.Message}");
+                return;
+            }
+
+            int slotVal = BotProgram.BotData.SaveLoadStateSettings.CurrentSaveSlot;
+            slotVal = System.Math.Clamp(slotVal + changeAmount, 1, int.MaxValue);
+
+            //Don't save bot data, for now at least, since slots may switch often
+            BotProgram.BotData.SaveLoadStateSettings.CurrentSaveSlot = slotVal;
         }
     }
 }
