@@ -33,20 +33,20 @@ namespace TRBot
             List<string> validInputs = new List<string>(InputGlobals.CurrentConsole.ValidInputs);
 
             User user = BotProgram.GetOrAddUser(e.Command.ChatMessage.Username, false);
-            Dictionary<string, int> inputAccess = BotProgram.BotData.InputAccess.InputAccessDict;
+            Dictionary<string, InputAccessInfo> inputAccess = BotProgram.BotData.InputAccess.InputAccessDict;
 
             //Show the input only if the user has access to use it
             for (int i = validInputs.Count - 1; i >= 0; i--)
             {
                 string input = validInputs[i];
 
-                if (inputAccess.TryGetValue(input, out int accessLvl) == false)
+                if (inputAccess.TryGetValue(input, out InputAccessInfo accessInfo) == false)
                 {
                     continue;
                 }
 
                 //Check access level
-                if (user.Level < accessLvl)
+                if (InputAccessData.HasAccessToInput(user.Level, accessInfo) == false)
                 {
                     validInputs.RemoveAt(i);
                 }

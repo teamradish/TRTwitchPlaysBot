@@ -376,16 +376,16 @@ namespace TRBot
 
             for (int i = inputs.Count - 1; i >= 0; i--)
             {
-                int permLvl = 0;
+                InputAccessInfo accessInfo = default;
 
                 //NOTE: Try to decouple this dictionary from here
-                if (BotProgram.BotData.InputAccess?.InputAccessDict?.TryGetValue(inputs[i], out permLvl) == false)
+                if (BotProgram.BotData.InputAccess?.InputAccessDict?.TryGetValue(inputs[i], out accessInfo) == false)
                 {
                     continue;
                 }
 
                 //Remove the input if the user doesn't have access to use it
-                if (userLevel < permLvl)
+                if (userLevel < accessInfo.AccessLevel)
                 {
                     inputs.RemoveAt(i);
                 }

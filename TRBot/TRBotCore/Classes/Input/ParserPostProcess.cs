@@ -251,13 +251,13 @@ namespace TRBot
         /// <param name="inputName">The input to check.</param>
         /// <param name="inputAccessLevels">The dictionary of access levels for inputs.</param>
         /// <returns>An InputValidation object specifying if the input is valid and a message, if any.</returns>
-        public static InputValidation CheckInputPermissions(in int userLevel, in string inputName, Dictionary<string,int> inputAccessLevels)
+        public static InputValidation CheckInputPermissions(in int userLevel, in string inputName, Dictionary<string, InputAccessInfo> inputAccessLevels)
         {
-            if (inputAccessLevels.TryGetValue(inputName, out int accessLvl) == true)
+            if (inputAccessLevels.TryGetValue(inputName, out InputAccessInfo accessInfo) == true)
             {
-                if (userLevel < accessLvl)
+                if (InputAccessData.HasAccessToInput(userLevel, accessInfo) == false)
                 {
-                    return new InputValidation(false, $"No permission to use input \"{inputName}\", which requires {(AccessLevels.Levels)accessLvl} access.");
+                    return new InputValidation(false, $"No permission to use input \"{inputName}\", which requires {(AccessLevels.Levels)accessInfo.AccessLevel} access.");
                 }
             }
 
@@ -271,7 +271,7 @@ namespace TRBot
         /// <param name="inputs">The inputs to check.</param>
         /// <param name="inputAccessLevels">The dictionary of access levels for inputs.</param>
         /// <returns>An InputValidation object specifying if the input is valid and a message, if any.</returns>
-        public static InputValidation CheckInputPermissionsAndPorts(in int userLevel, List<List<Parser.Input>> inputs, Dictionary<string, int> inputAccessLevels)
+        public static InputValidation CheckInputPermissionsAndPorts(in int userLevel, List<List<Parser.Input>> inputs, Dictionary<string, InputAccessInfo> inputAccessLevels)
         {
             for (int i = 0; i < inputs.Count; i++)
             {
@@ -295,14 +295,14 @@ namespace TRBot
                         return new InputValidation(false, $"ERROR: Invalid joystick number {input.controllerPort + 1}. # of joysticks: {InputGlobals.ControllerMngr.ControllerCount}. Please change yours or your input's controller port to a valid number to perform inputs.");
                     }
 
-                    if (inputAccessLevels.TryGetValue(input.name, out int accessLvl) == false)
+                    if (inputAccessLevels.TryGetValue(input.name, out InputAccessInfo accessInfo) == false)
                     {
                         continue;
                     }
 
-                    if (userLevel < accessLvl)
+                    if (InputAccessData.HasAccessToInput(userLevel, accessInfo) == false)
                     {
-                        return new InputValidation(false, $"No permission to use input \"{input.name}\", which requires at least {(AccessLevels.Levels)accessLvl} access.");
+                        return new InputValidation(false, $"No permission to use input \"{input.name}\", which requires at least {(AccessLevels.Levels)accessInfo.AccessLevel} access.");
                     }
                 }
             }
