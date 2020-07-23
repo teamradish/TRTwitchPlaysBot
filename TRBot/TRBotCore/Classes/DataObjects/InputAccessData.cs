@@ -27,7 +27,7 @@ namespace TRBot
     /// </summary>
     public enum InputAccessTypes
     {
-        Default, SavestateSlot
+        Default
     }
 
     /// <summary>
@@ -38,57 +38,14 @@ namespace TRBot
         public readonly Dictionary<string, InputAccessInfo> InputAccessDict = new Dictionary<string, InputAccessInfo>(4)
         {
             { "ss1", new InputAccessInfo((int)AccessLevels.Levels.Moderator, InputAccessTypes.Default, null) },
-            { "ss2", new InputAccessInfo((int)AccessLevels.Levels.Moderator, InputAccessTypes.Default, null) },
-            { "ss", new InputAccessInfo((int)AccessLevels.Levels.Moderator, InputAccessTypes.SavestateSlot, new int[] { 1, 2 }) },
+            { "ss2", new InputAccessInfo((int)AccessLevels.Levels.Moderator, InputAccessTypes.Default, null) }
         };
 
         //Throw in here for now
         //THIS IS A QUICK HACKY FIX AND WE SHOULD FIND A BETTER WAY TO DO THIS
         public static bool HasAccessToInput(in int userLevel, in InputAccessInfo accessInfo)
         {
-            if (accessInfo.AccessType != InputAccessTypes.SavestateSlot)
-            {
-                return (userLevel >= accessInfo.AccessLevel);
-            }
-            else
-            {
-                if (accessInfo.AccessVal == null)
-                {
-                    return true;
-                }
-
-                int[] accessLvls = null;
-
-                //Check savestate slot
-                try
-                {
-                    //Convert object - EXTREMELY HACKY
-                    JArray jArr = (JArray)accessInfo.AccessVal;
-                    accessLvls = new int[jArr.Count];
-                    for (int i = 0; i < jArr.Count; i++)
-                    {
-                        accessLvls[i] = jArr[i].ToObject<int>();
-                    }
-                }
-                catch (InvalidCastException e)
-                {
-                    Console.WriteLine($"EXCEPTION: {e.Message}");
-                    
-                    //Return false for safety
-                    return false;
-                }
-
-                for (int i = 0; i < accessLvls.Length; i++)
-                {
-                    //If the current savetate slot is any of these values, don't allow using the input
-                    if (BotProgram.BotData.SaveLoadStateSettings.CurrentSaveSlot == accessLvls[i])
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
-            }
+            return userLevel >= accessInfo.AccessLevel;
         }
     }
 
