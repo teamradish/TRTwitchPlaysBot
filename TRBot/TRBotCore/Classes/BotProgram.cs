@@ -39,6 +39,9 @@ namespace TRBot
 
         public bool Initialized { get; private set; } = false;
 
+        public static TimeSpan TotalUptime { get; private set;} = TimeSpan.Zero;
+        private static DateTime StartUptime = DateTime.UtcNow;
+
         //NOTE: Potentially move all these to a separate data storage class
         private LoginInfo LoginInformation = null;
         public static Settings BotSettings { get; private set; } = null;
@@ -200,6 +203,8 @@ namespace TRBot
             
             InputGlobals.SetVirtualController(vCType);
 
+            StartUptime = DateTime.UtcNow;
+
             Initialized = true;
         }
 
@@ -216,6 +221,10 @@ namespace TRBot
             //Run
             while (true)
             {
+                //Store the bot's uptime
+                DateTime utcNow = DateTime.UtcNow;
+                TotalUptime = (utcNow - StartUptime);
+
                 DateTime now = DateTime.Now;
 
                 //Update queued messages
