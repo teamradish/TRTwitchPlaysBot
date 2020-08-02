@@ -11,8 +11,7 @@
 # See more information on the official documentation (https://chatterbot.readthedocs.io/en/stable/index.html)
 
 from chatterbot import ChatBot
-from chatterbot.trainers import ChatterBotCorpusTrainer
-from chatterbot.trainers import UbuntuCorpusTrainer
+from chatterbot.trainers import ChatterBotCorpusTrainer, ListTrainer
 import time
 import os
 import socket
@@ -32,11 +31,13 @@ SocketPath = os.path.join(BaseDir, FileName)
 
 chatbot = ChatBot(
         "ChatBot",
-        #logic_adapters=[
-        #    'chatterbot.logic.MathematicalEvaluation',
-        #    'chatterbot.logic.TimeLogicAdapter',
-        #    'chatterbot.logic.BestMatch'
-        #]
+        logic_adapters=[
+            'chatterbot.logic.MathematicalEvaluation',
+            'chatterbot.logic.BestMatch'
+        ],
+        preprocessors=[
+            'chatterbot.preprocessors.unescape_html',
+        ]
 )
 
 trainer = ChatterBotCorpusTrainer(chatbot)
@@ -46,16 +47,30 @@ trainer.train(
     "chatterbot.corpus.english"
 )
 
-# Train with Ubuntu Corpus Trainer
-# This can take a VERY long time to download, unpack, and train
-# Uncomment it only if you want your bot to be trained with a lot of data
-# Make sure to comment out the above trainer if you're using this
-# ubuntuCorpusTrainer = UbuntuCorpusTrainer(chatbot)
-# ubuntuCorpusTrainer.train()
+# Train with custom responses to questions
+conversationList = [
+    "Hey, that's...",
+    "That blue hedgehog again, of all places.",
+    "I found you, faker!",
+    "Faker? I think you're the fake hedgehog around here. You're comparing yourself to me? Ha! You're not even good enough to be my fake!",
+    "Mama",
+    "That's Mama Luigi to you, Mario!",
+    "Nice of the princess to invite us over for a picnic, eh Luigi?",
+    "I hope she made lotsa spaghetti!",
+    "Gee, it sure is boring around here...",
+    "My boy, this peace is what all true warriors strive for.",
+]
 
-# response = chatbot.get_response("Hi, how are you?")
+listTrainer = ListTrainer(chatbot)
 
-#print(response)
+numTrainLoops = 5
+
+# Train it a bunch with this list so it keeps it in its digital head
+for i in range(0, numTrainLoops):
+    listTrainer.train(conversationList)
+
+# Do anything that needs to be done before getting responses
+chatbot.initialize()
 
 print("\nChatBot trained! Setting up socket and listening for responses...")
 
