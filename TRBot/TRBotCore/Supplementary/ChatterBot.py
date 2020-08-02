@@ -3,9 +3,8 @@
 # It's recommended to run this in the TRBot Data folder at first
 # You will need to install Python and ChatterBot as prerequisites (https://chatterbot.readthedocs.io/en/stable/setup.html)
 
-# Overview: This looks for changes in a text file that is used as a bot prompt
-# If it detects a change in the file, it'll send the prompt through ChatterBot and write the response to a response file
-# If "UseChatBot" is true in TRBot's Settings.txt file, a routine will look for changes in the response file and output that response to the chat
+# Overview: This opens a socket with a file used for the data
+# After a client sends data through the socket, it feeds that into the bot as a prompt and sends back a response
 # This essentially lets users talk with a bot
 
 # Don't hesitate to change any of this to get your desired chatbot behavior - this is just a sample setup
@@ -16,20 +15,20 @@ from chatterbot.trainers import ChatterBotCorpusTrainer
 from chatterbot.trainers import UbuntuCorpusTrainer
 import time
 import os
+import socket
+import struct
 import traceback
 
-# This is the root path to the prompt and response files
+# This is the root path to the file
 # Change this to the TRBot data folder where you want to store the bot's files
 # This allows running this program anywhere
 # Keep it as "." if you want to run the bot in the data folder
-Path = "."
+BaseDir = "."
 
 SleepTime = 1
-PromptFileName = "ChatBotPrompt.txt"
-ResponseFileName = "ChatBotResponse.txt"
+FileName = "ChatterBotSocket"
 
-PromptDir = os.path.join(Path, PromptFileName)
-ResponseDir = os.path.join(Path, ResponseFileName)
+SocketPath = os.path.join(BaseDir, FileName)
 
 chatbot = ChatBot(
         "ChatBot",
@@ -58,56 +57,70 @@ trainer.train(
 
 #print(response)
 
-print("\nChatBot trained! Listening for responses...");
+print("\nChatBot trained! Setting up socket and listening for responses...")
 
-LastMTime = time.time()
+BufferSize = 4
 
-# Keep listening for changes
-while True:
-    # Sleep this amount of time
-    time.sleep(SleepTime)
-    
-    # print("1 second passed")
-    
-    # Get the time the prompt file was modified
-    mTime = 0
+# Setup socket
+with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as chatterBotSocket:
+
+    # Try to replace the socket file if this was run before
     try:
-        mTime = os.path.getmtime(PromptDir)
-        #print(mTime)
-    except:
-        print("Exception when obtaining file timestamp: ", traceback.format_exc())
-        continue
+        os.remove(SocketPath)
+    except OSError:
+        pass
 
-    # If the checked time is less than or equal to the stored time, it hasn't been changed
-    if mTime <= LastMTime:
-        continue
+    # Bind socket to address and start listening to accept connections
+    chatterBotSocket.bind(SocketPath)
+    chatterBotSocket.listen()
+
+    # Keep listening for changes
+    while True:
+        # conn is the socket object used to send and receive data once it accepts a connection
+        # addr is the address bound to the socket on the other end of the connection
+        (conn, addr) = chatterBotSocket.accept()
+
+        with conn:
+            try:
+                while True:
+                    # Unpack the native socket data into something python can read (byte strings from C code in this case)
+                    # The return value of recv is how many bytes were received, the parameter taking the # of bytes in the buffer
+                    # The return value of unpack is a tuple
+                    dataReceived = conn.recv(BufferSize)
+                    
+                    # If no data is received, end the connection with this client
+                    if dataReceived is None or len(dataReceived) == 0:
+                        break
+
+                    #print(dataReceived)
+                    #print(len(dataReceived))
+
+                    bytesReceived = struct.unpack('I', dataReceived)[0]
+                    
+                    #print("bytesReceived: " + bytesReceived)
+                    
+                    # Get the data for the number of bytes we actually received
+                    # Decode the string as UTF-8
+                    promptData = conn.recv(bytesReceived)
+                    
+                    promptTxt = promptData.decode()
+                    #print("Received prompt :" + promptTxt)
+
+                    # Get the response from the chat bot
+                    responseTxt = str(chatbot.get_response(promptTxt))
+
+                    #print("Response: " + responseTxt)
+                    
+                    # Repack the string as well as the encoding data
+                    sentData = struct.pack('I', len(responseTxt)) + responseTxt.encode('utf-8')
     
-    #print("File newly modified!")
+                    # Repack the response and send it off
+                    conn.sendall(sentData)
 
-    # Update modified time
-    LastMTime = mTime
-    
-    fileTxt = ""
-    
-    # Read the prompt file
-    try:    
-        with open(PromptDir, "r") as File_obj:
-            fileTxt = File_obj.read()
-    except:
-        print("Exception opening or reading prompt file: ", traceback.format_exc())
-        continue
-
-    # Get the response from the chat bot
-    response = str(chatbot.get_response(fileTxt))
-
-    # Write to the response file
-    try:
-        with open(ResponseDir, "w") as Response_File:
-            Response_File.write(response)
-    except:
-        print("Exception writing to response file: ", traceback.format_exc())
-
-
+            except (struct.error, KeyboardInterrupt) as e:
+                print(e)
+            # finally:
+            #     print("Closing socket connection for this client and listening for another client.")
 
 
      
