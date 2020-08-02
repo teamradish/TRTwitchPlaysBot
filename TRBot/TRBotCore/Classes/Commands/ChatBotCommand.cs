@@ -19,12 +19,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using System.IO.Pipes;
 using TwitchLib.Client.Events;
 
 namespace TRBot
 {
     public sealed class ChatBotCommand : BaseCommand
     {
+        /// <summary>
+        /// The response timeout for the chatbot.
+        /// </summary>
+        private const int ResponseTimeout = 1000;
+
         public ChatBotCommand()
         {
 
@@ -52,10 +59,46 @@ namespace TRBot
                 return;
             }
 
-            if (Globals.SaveToTextFile(Globals.ChatBotPromptFilename, question) == false)
+            try
             {
-                BotProgram.MsgHandler.QueueMessage("Error saving question to prompt file.");
-                return;
+                string pipeName = Globals.GetDataFilePath(BotProgram.BotSettings.ChatBotSocketFilename);
+
+                //Set up the pipe stream
+                using (NamedPipeClientStream chatterBotClient = new NamedPipeClientStream(".", pipeName, PipeDirection.InOut))
+                {
+                    //Connect to the pipe or wait until it's available, with a timeout
+                    //Console.WriteLine("Attempting to connect to chatbot socket...");
+                    chatterBotClient.Connect(ResponseTimeout);
+
+                    //Send the input to ChatterBot
+                    using (BinaryWriter promptWriter = new BinaryWriter(chatterBotClient))
+                    {
+                        using (BinaryReader responseReader = new BinaryReader(chatterBotClient))
+                        {
+                            //Get a byte array
+                            byte[] byteBuffer = System.Text.Encoding.ASCII.GetBytes(question);
+                            
+                            //Send the data to the socket
+                            promptWriter.Write((uint)byteBuffer.Length);
+                            promptWriter.Write(byteBuffer);
+                            
+                            //Get the data back from the socket
+                            uint responseLength = responseReader.ReadUInt32();
+                            
+                            //Console.WriteLine($"Response length: responseLength");
+                            
+                            string response = new string(responseReader.ReadChars((int)responseLength));
+                            
+                            //Console.WriteLine($"Received response: {response}");
+                            //Output the response
+                            BotProgram.MsgHandler.QueueMessage(response);
+                        }
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                BotProgram.MsgHandler.QueueMessage($"Error with sending chatbot reply: {exc.Message}");
             }
         }
     }

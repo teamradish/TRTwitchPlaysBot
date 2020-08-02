@@ -190,7 +190,6 @@ namespace TRBot
             RoutineHandler.AddRoutine(new PeriodicMessageRoutine());
             RoutineHandler.AddRoutine(new CreditsGiveRoutine());
             RoutineHandler.AddRoutine(new ReconnectRoutine());
-            RoutineHandler.AddRoutine(new ChatBotResponseRoutine());
 
             //Initialize controller input - validate the controller type first
             if (InputGlobals.IsVControllerSupported((InputGlobals.VControllerTypes)BotData.LastVControllerType) == false)
@@ -764,6 +763,11 @@ namespace TRBot
             /// If true, will acknowledge that a chat bot is in use and allow interacting with it, provided it's set up.
             /// </summary>
             public bool UseChatBot = false;
+
+            /// <summary>
+            /// The name of the file for the chatbot's socket in the data directory.
+            /// </summary>
+            public string ChatBotSocketFilename = "ChatterBotSocket";
         }
     }
 }
