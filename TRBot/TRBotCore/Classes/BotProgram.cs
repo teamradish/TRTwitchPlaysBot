@@ -557,6 +557,12 @@ namespace TRBot
                 BotSettings.ClientSettings = new ClientSettings();
                 settingsChanged = true;
             }
+
+            if (BotSettings.BingoSettings == null)
+            {
+                BotSettings.BingoSettings = new BingoSettings();
+                settingsChanged = true;
+            }
             
             //Write only once after checking all the changes
             if (settingsChanged == true)
@@ -700,10 +706,17 @@ namespace TRBot
             public ClientServiceTypes ClientType = ClientServiceTypes.Twitch;
         }
 
+        public class BingoSettings
+        {
+            public bool UseBingo = false;
+            public string BingoPipeFilePath = Globals.GetDataFilePath("BingoPipe");
+        }
+
         public class Settings
         {
             public ClientSettings ClientSettings = null;
             public MessageSettings MsgSettings = null;
+            public BingoSettings BingoSettings = null;
 
             /// <summary>
             /// The time, in minutes, for outputting the periodic message.
