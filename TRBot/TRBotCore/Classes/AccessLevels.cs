@@ -32,8 +32,9 @@ namespace TRBot
         {
             User = 0,
             Whitelisted = 1,
-            Moderator = 2,
-            Admin = 3
+            VIP = 2,
+            Moderator = 3,
+            Admin = 4
         }
     }
 }

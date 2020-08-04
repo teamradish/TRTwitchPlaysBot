@@ -34,7 +34,12 @@ namespace TRBot
 
         public BingoCommand()
         {
+            
+        }
 
+        public override void Initialize(CommandHandler commandHandler)
+        {
+            AccessLevel = (int)AccessLevels.Levels.VIP;
         }
 
         public override void ExecuteCommand(EvtChatCommandArgs e)
