@@ -126,6 +126,7 @@ namespace TRBot
             CommandDict.Add("cmdperms", new CmdAccessLevelCommand());
             CommandDict.Add("uptime", new UptimeCommand());
             CommandDict.Add("bingo", new BingoCommand());
+            CommandDict.Add("music", new MusicCommand());
             CommandDict.Add("tutorial", new TutorialCommand());
 
             foreach (KeyValuePair<string, BaseCommand> command in CommandDict)
