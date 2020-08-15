@@ -181,6 +181,7 @@ namespace TRBot
             {
                 string v = variables[i];
                 macro_contents = Regex.Replace(macro_contents, "<" + i + ">", v);
+                //Console.WriteLine($"Macro Contents: {macro_contents}");
             }
             return macro_contents;
         }
@@ -188,6 +189,7 @@ namespace TRBot
         public static string PopulateMacros(string message, ConcurrentDictionary<string, string> macros, Dictionary<char, List<string>> macroLookup)
         {   
             message = message.Replace(" ", string.Empty);
+
             message = Parser.Expandify(message);
 
             const RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.IgnoreCase;
@@ -203,17 +205,31 @@ namespace TRBot
             while (count < MAX_RECURSION && found_macro == true)
             {
                 found_macro = false;
-                MatchCollection possible_macros = Regex.Matches(message, @"#[a-zA-Z0-9\(\,\.]*", regexOptions);
+                MatchCollection possible_macros = Regex.Matches(message, @"#[a-zA-Z0-9\(\,\.\+_\-&#]*", regexOptions);
+
+                //Console.WriteLine($"Possible macros: {possible_macros} | {possible_macros.Count}");
+
                 List<(string, (int, int), List<string>)> subs = null;
                 foreach (Match p in possible_macros)
                 {
                     string macro_name = Regex.Replace(message.Substring(p.Index, p.Length), @"\(.*\)", string.Empty, regexOptions);
+
+                    //Console.WriteLine($"Macro name: {macro_name}");
+
                     string macro_name_generic = string.Empty;
                     int arg_index = macro_name.IndexOf("(");
                     if (arg_index != -1)
                     {
+                        //Console.WriteLine($"Arg Index: {arg_index} | P index: {p.Index} | P len: {p.Length}");
+
                         string sub = message.Substring(p.Index, p.Length + 1);
+
+                        //Console.WriteLine($"Sub: {sub}");
+
                         macro_args = Regex.Match(sub, @"\(.*\)", regexOptions);
+
+                        //Console.WriteLine($"Macro Arg match: {macro_args.Value} | {macro_args.Length}");
+
                         if (macro_args.Success == true)
                         {
                             int start = p.Index + macro_args.Index + 1;
