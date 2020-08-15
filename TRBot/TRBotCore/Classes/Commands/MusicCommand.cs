@@ -92,16 +92,16 @@ namespace TRBot
                 //Add 12 to the pitch for one octave higher
                 //Ex. C# is 61, D is 62
                 Outputs[i].Send(new byte [] {MidiEvent.Program, GeneralMidi.Instruments.AcousticGrandPiano}, 0, 2, 0); // There are constant fields for each GM instrument
-                Outputs[i].Send(new byte [] {MidiEvent.NoteOn, 0x40, 0x40}, 0, 1, 0); // There are constant fields for each MIDI event
-                Outputs[i].Send(new byte [] {MidiEvent.NoteOn, 0x43, 0x40}, 0, 1, 0);
-                Outputs[i].Send(new byte [] {MidiEvent.NoteOff, 0x40, 0x40}, 0, 1, 1);
-                Outputs[i].Send(new byte [] {MidiEvent.NoteOff, 0x43, 0x40}, 0, 1, 1);
-                //Outputs[i].Send(new byte [] {MidiEvent.Program, 0x30}, 0, 10, 20); // Strings Ensemble
-                Outputs[i].Send(new byte [] {MidiEvent.NoteOn, 0x45, 0x40}, 0, 1, 2);
-                Outputs[i].Send(new byte [] {MidiEvent.NoteOff, 0x45, 0x40}, 0, 1, 3);
-                ////Outputs[i].Send(new byte [] {MidiEvent.Program, 0x30}, 0, 10, 50); // Strings Ensemble
-                Outputs[i].Send(new byte [] {MidiEvent.NoteOn, 0x40, 0x40}, 0, 1, 4);
-                Outputs[i].Send(new byte [] {MidiEvent.NoteOff, 0x40, 0x40}, 0, 1, 5);
+
+                for (int j = 0; j < 10; j++)
+                {
+                    int modifier = j * 2;
+                    int offsetMod = j * 2;
+
+                    Outputs[i].Send(new byte [] {MidiEvent.NoteOn, (byte)(0x40 + modifier), (byte)(0x40 + modifier)}, 0, 3, offsetMod); // There are constant fields for each MIDI event
+                    Outputs[i].Send(new byte [] {MidiEvent.NoteOff, (byte)(0x40 + modifier), (byte)(0x40 + modifier)}, 0, 3, offsetMod + 1);
+                }
+                //Outputs[i].Send(new byte [] {MidiEvent.Program, 0x30}, 0, 3, 0); // Strings Ensemble
             }
         }
     }
