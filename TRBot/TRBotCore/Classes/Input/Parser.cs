@@ -205,7 +205,7 @@ namespace TRBot
             while (count < MAX_RECURSION && found_macro == true)
             {
                 found_macro = false;
-                MatchCollection possible_macros = Regex.Matches(message, @"#[a-zA-Z0-9\(\,\.\+_\-&#]*", regexOptions);
+                MatchCollection possible_macros = Regex.Matches(message, @"#[a-zA-Z0-9\(\,\.\+_\-&]*", regexOptions);
 
                 //Console.WriteLine($"Possible macros: {possible_macros} | {possible_macros.Count}");
 
