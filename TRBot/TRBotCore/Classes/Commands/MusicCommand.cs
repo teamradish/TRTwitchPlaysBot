@@ -46,7 +46,7 @@ namespace TRBot
             foreach (var thing in access.Outputs)
             {
                 //Skip non-timidity output
-                if (i < 0)
+                if (i != 1)
                 {
                     i++;
                     continue;
@@ -93,14 +93,27 @@ namespace TRBot
                 //Ex. C# is 61, D is 62
                 Outputs[i].Send(new byte [] {MidiEvent.Program, GeneralMidi.Instruments.AcousticGrandPiano}, 0, 2, 0); // There are constant fields for each GM instrument
 
-                for (int j = 0; j < 10; j++)
-                {
-                    int modifier = j * 2;
-                    int offsetMod = j * 2;
+                Outputs[i].Send(new byte [] {MidiEvent.NoteOn, 0x40, 0x40 }, 0, 3, 0); // There are constant fields for each MIDI event
+                Outputs[i].Send(new byte [] {MidiEvent.NoteOn, 0x43, 0x40 }, 0, 3, 0);
+                Outputs[i].Send(new byte [] {MidiEvent.NoteOff, 0x43, 0x40 }, 0, 3, 1);
+                Outputs[i].Send(new byte [] {MidiEvent.NoteOn, 0x45, 0x40 }, 0, 3, 1);
+                Outputs[i].Send(new byte [] {MidiEvent.NoteOff, 0x45, 0x00 }, 0, 3, 2);
+                Outputs[i].Send(new byte [] {MidiEvent.NoteOff, 0x40, 0x00 }, 0, 3, 2);
+                Outputs[i].Send(new byte [] {MidiEvent.NoteOn, 0x3C, 0x40 }, 0, 3, 2);
+                Outputs[i].Send(new byte [] {MidiEvent.NoteOn, 0x47, 0x40 }, 0, 3, 2);
+                Outputs[i].Send(new byte [] {MidiEvent.NoteOff, 0x47, 0x00 }, 0, 3, 3);
+                Outputs[i].Send(new byte [] {MidiEvent.NoteOn, 0x48, 0x40 }, 0, 3, 3);
+                Outputs[i].Send(new byte [] {MidiEvent.NoteOff, 0x48, 0x00 }, 0, 3, 4);
+                //Outputs[i].Send(new byte [] {MidiEvent.NoteOff, 0x3C, 0x40 }, 0, 3, 4);
 
-                    Outputs[i].Send(new byte [] {MidiEvent.NoteOn, (byte)(0x40 + modifier), (byte)(0x40 + modifier)}, 0, 3, offsetMod); // There are constant fields for each MIDI event
-                    Outputs[i].Send(new byte [] {MidiEvent.NoteOff, (byte)(0x40 + modifier), (byte)(0x40 + modifier)}, 0, 3, offsetMod + 1);
-                }
+                //for (int j = 0; j < 10; j++)
+                //{
+                //    int modifier = j * 2;
+                //    int offsetMod = j * 2;
+//
+                //    Outputs[i].Send(new byte [] {MidiEvent.NoteOn, (byte)(0x40 + modifier), (byte)(0x40 + modifier)}, 0, 3, offsetMod); // There are constant fields for each MIDI event
+                //    Outputs[i].Send(new byte [] {MidiEvent.NoteOff, (byte)(0x40 + modifier), (byte)(0x40 + modifier)}, 0, 3, offsetMod + 1);
+                //}
                 //Outputs[i].Send(new byte [] {MidiEvent.Program, 0x30}, 0, 3, 0); // Strings Ensemble
             }
         }
