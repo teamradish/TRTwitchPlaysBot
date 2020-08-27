@@ -7,7 +7,7 @@ The bot is inspired by TwitchPlays_Everything; the input syntax allows for great
 
 
 ## Features
-* [Expressive yet simple input syntax](https://github.com/teamradish/TRTwitchPlaysBot/wiki/Syntax-Tutorial) - translate your text to game inputs easily. Make your inputs as simple or precise as you want!
+* [Expressive yet simple input syntax](https://github.com/teamradish/TRTwitchPlaysBot/Wiki/Syntax-Tutorial.md) - translate your text to game inputs easily. Make your inputs as simple or precise as you want!
 * Game-agnostic; TRBot runs alongside your game.
 * Emulator support - NES, SNES, N64, GCN, and more. Several [emulator controller config files](https://github.com/teamradish/TRTwitchPlaysBot/tree/master/Emulator%20Controller%20Configs) are available.
 * Runs on Windows (vJoy) and Linux (uinput).
@@ -40,10 +40,10 @@ When building, make sure to define the correct preprocessor directives in the .c
 All unit tests are in the **TRBot.Tests** project. Simply run `dotnet test` inside this directory or the base **TRBot** directory to run the tests.
 
 ## Getting Started
-Please see the [Getting Started](https://github.com/teamradish/TRTwitchPlaysBot/wiki/Getting-Started) guide on the wiki for setting up TRBot.
+Please see the [Getting Started](https://github.com/teamradish/TRTwitchPlaysBot/Wiki/Getting-Started.md) guide for setting up TRBot.
 
 ## See it in action
-Want to see what players have done with TRBot? Check out the [examples](https://github.com/teamradish/TRTwitchPlaysBot/wiki/Real-Usage-Examples) page for clips from real playthroughs.
+Want to see what players have done with TRBot? Check out the [examples](https://github.com/teamradish/TRTwitchPlaysBot/Wiki/Real-Usage-Examples.md) page for clips from real playthroughs.
 
 ## Credits
 The original Python version of the original parser was written by TwitchPlays_Everything.
