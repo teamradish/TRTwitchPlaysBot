@@ -6,7 +6,7 @@ Welcome to the TRBot wiki! This short guide should help get you up and running w
 * [Setting up TRBot](#setting-up-trbot)
   * [Running via Terminal (optional)](#running-via-terminal-optional)
 * [Setting up virtual controllers for inputs](#setting-up-virtual-controllers-for-inputs)
-  * [Linux](#linux)
+  * [GNU/Linux](#linux)
   * [Windows](#windows)
   * [Testing Virtual Controller Configuration](#testing-virtual-controller-configuration)
 * [Additional Notes & Utilities](#additional-notes)
@@ -38,12 +38,12 @@ Command line:
   * [RID](https://github.com/dotnet/runtime/blob/master/src/libraries/pkg/Microsoft.NETCore.Platforms/runtime.json) = usually "win-x64" or "linux-x64". See link for a full list of runtime identifiers.
   * Example: `dotnet publish -c Debug -o TRBot --self-contained --runtime linux-x64`
 
-When building, make sure to define the correct preprocessor directives in the .csproj project file - `WINDOWS` for Windows, and `LINUX` for Linux.
+When building, make sure to define the correct preprocessor directives in the .csproj project file - `WINDOWS` for Windows, and `LINUX` for GNU/Linux.
 
-**Note: TRBot runs on all major desktop operating systems, but virtual controller input works only on Windows (vJoy) and Linux (uinput) since virtual controllers are platform-specific. The virtual controller API is abstracted into an `IVirtualController` interface, making it simple to add new implementations. Please file an issue if your platform isn't supported.**
+**Note: TRBot runs on all major desktop operating systems, but virtual controller input works only on Windows (vJoy) and GNU/Linux (uinput) since virtual controllers are platform-specific. The virtual controller API is abstracted into an `IVirtualController` interface, making it simple to add new implementations. Please file an issue if your platform isn't supported.**
 
 # Setting up TRBot
-If you installed a pre-built binary, run `TRBot` (Ex. `TRBot.exe` on Windows, `./TRBot` on Linux). If you built the project, use either `dotnet run` or open the native executable depending on whether the runtime is self-contained or not.
+If you installed a pre-built binary, run `TRBot` (Ex. `TRBot.exe` on Windows, `./TRBot` on GNU/Linux). If you built the project, use either `dotnet run` or open the native executable depending on whether the runtime is self-contained or not.
 
 After running TRBot once, it will create a **Data** folder in the same folder you ran it from. TRBot will also create template files for Twitch login information and bot settings in this folder. Open the **LoginInfo.txt** file and fill out the Twitch login information for your bot. The settings are described below:
 
@@ -68,7 +68,7 @@ In this mode, TRBot will read all lines you input to the terminal. Simply press 
 
 # Setting up virtual controllers for inputs
 ## Linux
-Make sure `uinput` is enabled with `sudo modprobe uinput`. Unless TRBot is run as root, you'll also need permissions to read and write in `/dev/uinput` with `sudo chmod a+rw /dev/uinput`. TRBot creates and manages the `uinput` virtual controllers on Linux automatically, so there is nothing to install.
+Make sure `uinput` is enabled with `sudo modprobe uinput`. Unless TRBot is run as root, you'll also need permissions to read and write in `/dev/uinput` with `sudo chmod a+rw /dev/uinput`. TRBot creates and manages the `uinput` virtual controllers on GNU/Linux automatically, so there is nothing to install.
 
 If the native code fails to run for your distro, head to the `TRBotCore/Native` folder and compile `SetupVController.c` with **gcc** as a shared library (`gcc -fPIC -shared SetupVController.c -o SetupVController.so`). Use the newly compiled .so file in place of the old one and run the bot again.
 
@@ -122,7 +122,7 @@ There are several options for displaying Twitch chat on your stream:
   * [This fork](https://github.com/tdeeb/obs-advanced-timer/tree/CountupStart) adds the ability to start a countup timer from a given time ("CountupStart" branch).
 
 ## PC Games
-Inputs should work for PC games that can recognize the virtual controllers. There is experimental keyboard and mouse controls accessible on Linux if [`xdotool`](https://www.semicomplete.com/projects/xdotool/) is installed.
+Inputs should work for PC games that can recognize the virtual controllers. There is experimental keyboard and mouse controls accessible on GNU/Linux if [`xdotool`](https://www.semicomplete.com/projects/xdotool/) is installed.
 
 **Be very careful when playing PC games!** Make sure that players can't exit the game, access files or perform any other malicious activities, such as shutting down the system. If you're streaming a PC game, highly consider capturing only the window with the game and not the entire display; this way if players manage to exit the game, they won't be able to see anything else on your computer. This is usually easier to perform by playing the game in windowed mode.
 

@@ -10,7 +10,7 @@ The bot is inspired by TwitchPlays_Everything; the input syntax allows for great
 * [Expressive yet simple input syntax](https://github.com/teamradish/TRTwitchPlaysBot/Wiki/Syntax-Tutorial.md) - translate your text to game inputs easily. Make your inputs as simple or precise as you want!
 * Game-agnostic; TRBot runs alongside your game.
 * Emulator support - NES, SNES, N64, GCN, and more. Several [emulator controller config files](https://github.com/teamradish/TRTwitchPlaysBot/tree/master/Emulator%20Controller%20Configs) are available.
-* Runs on Windows (vJoy) and Linux (uinput).
+* Runs on Windows (vJoy) and GNU/Linux (uinput).
 * Highly performant input handling with minimal delay between inputs.
 * Pluggable virtual controller architecture - add your own custom virtual controller.
 * Twitch Plays quality-of-life enhancements - macros, game logs, savestates, user silencing (without timeout/ban), stop all ongoing inputs, and switch consoles on the fly.
@@ -34,7 +34,7 @@ Command line:
   * [RID](https://github.com/dotnet/runtime/blob/master/src/libraries/pkg/Microsoft.NETCore.Platforms/runtime.json) = usually "win-x64" or "linux-x64". See link for a full list of runtime identifiers.
   * Example: `dotnet publish -c Debug -o TRBot --self-contained --runtime linux-x64`
 
-When building, make sure to define the correct preprocessor directives in the .csproj project file - `WINDOWS` for Windows, and `LINUX` for Linux.
+When building, make sure to define the correct preprocessor directives in the .csproj project file - `WINDOWS` for Windows, and `LINUX` for GNU/Linux.
 
 ## Running Tests
 All unit tests are in the **TRBot.Tests** project. Simply run `dotnet test` inside this directory or the base **TRBot** directory to run the tests.

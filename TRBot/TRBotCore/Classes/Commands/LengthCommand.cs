@@ -56,7 +56,18 @@ namespace TRBot
 
             if (inputSequence.InputValidationType != Parser.InputValidationTypes.Valid)
             {
-                BotProgram.MsgHandler.QueueMessage("Invalid input. Note that length cannot be determined for dynamic macros without inputs filled in.");
+                const string dyMacroLenErrorMsg = "Note that length cannot be determined for dynamic macros without inputs filled in.";
+
+                if (inputSequence.InputValidationType == Parser.InputValidationTypes.NormalMsg
+                    || string.IsNullOrEmpty(inputSequence.Error) == true)
+                {
+                    BotProgram.MsgHandler.QueueMessage($"Invalid input. {dyMacroLenErrorMsg}");
+                }
+                else
+                {
+                    BotProgram.MsgHandler.QueueMessage($"Invalid input: {inputSequence.Error}. {dyMacroLenErrorMsg}");
+                }
+                
                 return;
             }
 
