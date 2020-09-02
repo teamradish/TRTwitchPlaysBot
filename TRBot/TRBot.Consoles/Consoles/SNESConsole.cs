@@ -75,7 +75,7 @@ namespace TRBot.Consoles
 
         public override bool IsButton(in Input input)
         {
-            return (IsWait(input) == false);
+            return ButtonInputMap.ContainsKey(input.name);
         }
     }
 }

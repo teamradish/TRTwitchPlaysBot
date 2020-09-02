@@ -111,9 +111,9 @@ namespace TRBot.Connection
             {
                 TRBot.Parsing.Parser parser = new TRBot.Parsing.Parser();
                 
-                string regexStr = parser.BuildInputRegex(new string[] { "a", "b", "up", "down", "left", "right", "select", "start", "x", "y" } );
+                string regexStr = parser.BuildInputRegex(new string[] { "a", "b", "up", "down", "left", "right", "select", "start", "x", "y", "l", "r", "#" } );
 
-                string parse_message = e.UsrMessage.Message;//parser.Expandify(parser.PopulateMacros(e.UsrMessage.Message, null, null));
+                string parse_message = parser.Expandify(e.UsrMessage.Message);//parser.PopulateMacros(e.UsrMessage.Message, null, null));
                 //parse_message = parser.PopulateSynonyms(parse_message, InputGlobals.InputSynonyms);
                 inputSequence = parser.ParseInputs(parse_message, regexStr, new ParserOptions(0, 200, true, 60000));
                 //parsedVal = Parser.Parse(parse_message);
