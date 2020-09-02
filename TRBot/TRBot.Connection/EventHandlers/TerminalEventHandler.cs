@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
-using TRBot.Parser;
+using TRBot.Parsing;
 using static TRBot.Connection.EventDelegates;
 
 namespace TRBot.Connection
@@ -109,7 +109,7 @@ namespace TRBot.Connection
 
             try
             {
-                TRBot.Parser.Parser parser = new TRBot.Parser.Parser();
+                TRBot.Parsing.Parser parser = new TRBot.Parsing.Parser();
                 
                 string regexStr = parser.BuildInputRegex(new string[] { "a", "b", "up", "down", "left", "right", "select", "start", "x", "y" } );
 

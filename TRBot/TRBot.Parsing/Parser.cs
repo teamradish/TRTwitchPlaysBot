@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
 
-namespace TRBot.Parser
+namespace TRBot.Parsing
 {
     /// <summary>
     /// The validation types for inputs.
@@ -617,6 +617,18 @@ namespace TRBot.Parser
         /// <returns>A string containing a regex expression for the parser to use.</returns>
         public string BuildInputRegex(string[] validInputs)
         {
+            return BuildInputRegex(ParseRegexStart, ParseRegexEnd, validInputs);
+        }
+
+        /// <summary>
+        /// Builds a regex expression for the parser to use given a start regex, end regex, and a set of valid input names.
+        /// </summary>
+        /// <param name="parseRegexStart">The start regex expression to use</param>
+        /// <param name="parseRegexEnd">The end regex expression to use.</param>
+        /// <param name="validInputs">The valid input names.</param>
+        /// <returns>A string containing a regex expression for the parser to use.</returns>
+        public static string BuildInputRegex(string parseRegexStart, string parseRegexEnd, string[] validInputs)
+        {
             //Set up the regex using the given values
             //Add longer inputs first due to how the parser works
             //This avoids picking up shorter inputs with the same characters first
@@ -624,10 +636,10 @@ namespace TRBot.Parser
                                                 orderby str.Length descending
                                                 select str;
 
-            StringBuilder sb = new StringBuilder(ParseRegexStart.Length + ParseRegexEnd.Length);
+            StringBuilder sb = new StringBuilder(parseRegexStart.Length + parseRegexEnd.Length);
             int i = 0;
 
-            sb.Append(ParseRegexStart);
+            sb.Append(parseRegexStart);
             foreach (string s in sorted)
             {
                 sb.Append(System.Text.RegularExpressions.Regex.Escape(s));
@@ -637,7 +649,7 @@ namespace TRBot.Parser
                 }
                 i++;
             }
-            sb.Append(ParseRegexEnd);
+            sb.Append(parseRegexEnd);
 
             string inputRegex = sb.ToString();
             
