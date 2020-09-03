@@ -54,11 +54,11 @@ namespace TRBot.Connection
 
         private volatile bool StopConsoleThread = false;
 
-        //private User UserData = null;
+        private char CommandIdentifier = '!';
 
-        public TerminalEventHandler()//User userData)
+        public TerminalEventHandler(char commandIdentifier)
         {
-            //UserData = userData;
+            CommandIdentifier = commandIdentifier;
         }
 
         public void Initialize()
@@ -81,7 +81,6 @@ namespace TRBot.Connection
             OnConnectionErrorEvent = null;
             OnReconnectedEvent = null;
             OnDisconnectedEvent = null;
-            UserMadeInputEvent = null;
         }
 
         //NOTE: This would result in lots of code duplication if other streaming services were integrated
@@ -290,11 +289,8 @@ namespace TRBot.Connection
 
                 UserSentMessageEvent?.Invoke(umArgs);
 
-                //Attempt to parse the message as an input
-                ProcessMsgAsInput(umArgs);
-
                 //Check for a command
-                if (line.Length > 0 && line[0] == '!'/*Globals.CommandIdentifier*/)
+                if (line.Length > 0 && line[0] == CommandIdentifier)
                 {
                     //Build args list
                     List<string> argsList = new List<string>(line.Split(' '));
@@ -317,7 +313,7 @@ namespace TRBot.Connection
                     EvtChatCommandArgs chatcmdArgs = new EvtChatCommandArgs();
                     EvtUserMsgData msgData = new EvtUserMsgData(userName, userName, userName, string.Empty, line);
 
-                    chatcmdArgs.Command = new EvtChatCommandData(argsList, argsAsStr, msgData, '!'/*Globals.CommandIdentifier*/, cmdText);
+                    chatcmdArgs.Command = new EvtChatCommandData(argsList, argsAsStr, msgData, CommandIdentifier, cmdText);
                     //chatcmdArgs.UserData = UserData;
 
                     ChatCommandReceivedEvent?.Invoke(chatcmdArgs);

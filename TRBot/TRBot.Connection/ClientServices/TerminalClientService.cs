@@ -51,9 +51,11 @@ namespace TRBot.Connection
         private bool Initialized = false;
         private bool Connected = false;
 
-        public TerminalClientService()
-        {
+        private char CommandIdentifier = '!';
 
+        public TerminalClientService(char commandIdentifier)
+        {
+            CommandIdentifier = commandIdentifier;
         }
 
         /// <summary>
@@ -63,7 +65,7 @@ namespace TRBot.Connection
         {
             //User dummyUser = DummyUserSetup();
 
-            EventHandler = new TerminalEventHandler();//dummyUser);
+            EventHandler = new TerminalEventHandler(CommandIdentifier);//dummyUser);
 
             EventHandler.OnJoinedChannelEvent -= OnClientJoinedChannel;
             EventHandler.OnJoinedChannelEvent += OnClientJoinedChannel;

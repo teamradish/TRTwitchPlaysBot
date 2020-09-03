@@ -39,6 +39,8 @@ namespace TRBot.Core
         public IVirtualControllerManager ControllerMngr { get; private set; } = null;
         public ConsoleBase CurConsole { get; private set; } = null;
 
+        private Parser InputParser = null;
+
         public BotProgram()
         {
             //Below normal priority
@@ -82,9 +84,11 @@ namespace TRBot.Core
 
             Console.WriteLine($"Setting up client service: Terminal");
 
-            CurConsole = new SNESConsole();
+            InputParser = new Parser();
 
-            ClientService = new TerminalClientService();
+            CurConsole = new GCConsole();
+
+            ClientService = new TerminalClientService('!');
 
             //Initialize service
             ClientService.Initialize();
@@ -133,7 +137,7 @@ namespace TRBot.Core
         private void UnsubscribeEvents()
         {
             ClientService.EventHandler.UserSentMessageEvent -= OnUserSentMessage;
-            ClientService.EventHandler.UserMadeInputEvent -= OnUserMadeInput;
+            //ClientService.EventHandler.UserMadeInputEvent -= OnUserMadeInput;
             ClientService.EventHandler.UserNewlySubscribedEvent -= OnNewSubscriber;
             ClientService.EventHandler.UserReSubscribedEvent -= OnReSubscriber;
             ClientService.EventHandler.WhisperReceivedEvent -= OnWhisperReceived;
@@ -149,7 +153,7 @@ namespace TRBot.Core
         private void SubscribeEvents()
         {
             ClientService.EventHandler.UserSentMessageEvent += OnUserSentMessage;
-            ClientService.EventHandler.UserMadeInputEvent += OnUserMadeInput;
+            //ClientService.EventHandler.UserMadeInputEvent += OnUserMadeInput;
             ClientService.EventHandler.UserNewlySubscribedEvent += OnNewSubscriber;
             ClientService.EventHandler.UserReSubscribedEvent += OnReSubscriber;
             ClientService.EventHandler.WhisperReceivedEvent += OnWhisperReceived;
@@ -186,12 +190,12 @@ namespace TRBot.Core
 
         private void OnUserSentMessage(EvtUserMessageArgs e)
         {
-            
+            ProcessMsgAsInput(e);
         }
 
         private void OnUserMadeInput(EvtUserInputArgs e)
         {
-            InputHandler.CarryOutInput(e.ValidInputSeq.Inputs, CurConsole, ControllerMngr);
+            //InputHandler.CarryOutInput(e.ValidInputSeq.Inputs, CurConsole, ControllerMngr);
 
             //If auto whitelist is enabled, the user reached the whitelist message threshold,
             //the user isn't whitelisted, and the user hasn't ever been whitelisted, whitelist them
@@ -252,6 +256,147 @@ namespace TRBot.Core
         private void OnDisconnected(EvtDisconnectedArgs e)
         {
             Console.WriteLine("Bot disconnected! Please check your internet connection.");
+        }
+
+        private void ProcessMsgAsInput(EvtUserMessageArgs e)
+        {
+            //User userData = e.UserData;
+
+            //Ignore commands as inputs
+            if (e.UsrMessage.Message.StartsWith('!') == true)
+            {
+                return;
+            }
+
+            //If there are no valid inputs, don't attempt to parse
+            if (CurConsole.ValidInputs == null || CurConsole.ValidInputs.Length == 0)
+            {
+                return;
+            }
+
+            //Parser.InputSequence inputSequence = default;
+            //(bool, List<List<Parser.Input>>, bool, int) parsedVal = default;
+            InputSequence inputSequence = default;
+
+            try
+            {
+                string regexStr = CurConsole.InputRegex;
+
+                string parse_message = InputParser.Expandify(e.UsrMessage.Message);//InputParser.PopulateMacros(e.UsrMessage.Message, null, null));
+                //parse_message = InputParser.PopulateSynonyms(parse_message, InputGlobals.InputSynonyms);
+                inputSequence = InputParser.ParseInputs(parse_message, regexStr, new ParserOptions(0, 200, true, 60000));
+                //Console.WriteLine(inputSequence.ToString());
+                //Console.WriteLine("\nReverse Parsed: " + ReverseParser.ReverseParse(inputSequence));
+                //Console.WriteLine("\nReverse Parsed Natural:\n" + ReverseParser.ReverseParseNatural(inputSequence));
+            }
+            catch (Exception exception)
+            {
+                string excMsg = exception.Message;
+
+                //Kimimaru: Sanitize parsing exceptions
+                //Most of these are currently caused by differences in how C# and Python handle slicing strings (Substring() vs string[:])
+                //One example that throws this that shouldn't is "#mash(w234"
+                //BotProgram.MsgHandler.QueueMessage($"ERROR: {excMsg}");
+                inputSequence.InputValidationType = InputValidationTypes.Invalid;
+                //parsedVal.Item1 = false;
+            }
+
+            //Check for non-valid messages
+            if (inputSequence.InputValidationType != InputValidationTypes.Valid)
+            {
+                //Display error message for invalid inputs
+                if (inputSequence.InputValidationType == InputValidationTypes.Invalid)
+                {
+                    Console.WriteLine(inputSequence.Error);
+                    //BotProgram.MsgHandler.QueueMessage(inputSequence.Error);
+                }
+
+                return;
+            }
+
+            //It's a valid message, so process it
+                
+            //Ignore if user is silenced
+            //if (userData.Silenced == true)
+            //{
+            //    return;
+            //}
+
+            //Ignore based on user level and permissions
+            //if (userData.Level < -1)//BotProgram.BotData.InputPermissions)
+            //{
+            //    BotProgram.MsgHandler.QueueMessage($"Inputs are restricted to levels {(AccessLevels.Levels)BotProgram.BotData.InputPermissions} and above");
+            //    return;
+            //}
+
+            #region Parser Post-Process Validation
+            
+            /* All this validation is very slow
+             * Find a way to speed it up, ideally without integrating it directly into the parser
+             */
+            
+            //Check if the user has permission to perform all the inputs they attempted
+            //Also validate that the controller ports they're inputting for are valid
+            //ParserPostProcess.InputValidation inputValidation = ParserPostProcess.CheckInputPermissionsAndPorts(userData.Level, inputSequence.Inputs,
+            //    BotProgram.BotData.InputAccess.InputAccessDict);
+
+            //If the input isn't valid, exit
+            //if (inputValidation.IsValid == false)
+            //{
+            //    if (string.IsNullOrEmpty(inputValidation.Message) == false)
+            //    {
+            //        BotProgram.MsgHandler.QueueMessage(inputValidation.Message);
+            //    }
+            //    return;
+            //}
+
+            //Lastly, check for invalid button combos given the current console
+            /*if (BotProgram.BotData.InvalidBtnCombos.InvalidCombos.TryGetValue((int)InputGlobals.CurrentConsoleVal, out List<string> invalidCombos) == true)
+            {
+                bool buttonCombosValidated = ParserPostProcess.ValidateButtonCombos(inputSequence.Inputs, invalidCombos);
+
+                if (buttonCombosValidated == false)
+                {
+                    string msg = "Invalid input: buttons ({0}) are not allowed to be pressed at the same time.";
+                    string combos = string.Empty;
+                    
+                    for (int i = 0; i < invalidCombos.Count; i++)
+                    {
+                        combos += "\"" + invalidCombos[i] + "\"";
+                        
+                        if (i < (invalidCombos.Count - 1))
+                        {
+                            combos += ", ";
+                        }
+                    }
+                    
+                    msg = string.Format(msg, combos);
+                    BotProgram.MsgHandler.QueueMessage(msg);
+                    
+                    return;
+                }
+            }*/
+
+            #endregion
+
+            /*if (true)//InputHandler.StopRunningInputs == false)
+            {
+                EvtUserInputArgs userInputArgs = new EvtUserInputArgs()
+                {
+                    //UserData = e.UserData,
+                    UsrMessage = e.UsrMessage,
+                    ValidInputSeq = inputSequence
+                };
+
+                //Invoke input event
+                UserMadeInputEvent?.Invoke(userInputArgs);
+            }
+            else
+            {
+                //BotProgram.MsgHandler.QueueMessage("New inputs cannot be processed until all other inputs have stopped.");
+            }*/
+
+            InputHandler.CarryOutInput(inputSequence.Inputs, CurConsole, ControllerMngr);
         }
 
 #endregion

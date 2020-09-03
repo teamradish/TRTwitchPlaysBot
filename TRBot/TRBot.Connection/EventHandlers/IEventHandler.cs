@@ -33,11 +33,11 @@ namespace TRBot.Connection
         /// </summary>
         event UserSentMessage UserSentMessageEvent;
 
-        /// <summary>
-        /// An event invoked whenever a user makes a valid input.
-        /// This should be invoked after all post processing validation.
-        /// </summary>
-        event UserMadeInput UserMadeInputEvent;
+        // <summary>
+        // An event invoked whenever a user makes a valid input.
+        // This should be invoked after all post processing validation.
+        // </summary>
+        //event UserMadeInput UserMadeInputEvent;
 
         /// <summary>
         /// An event invoked whenever a user newly subscribed to the channel.
