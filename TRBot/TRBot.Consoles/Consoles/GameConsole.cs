@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Runtime.CompilerServices;
 using TRBot.Parsing;
+using Newtonsoft.Json;
 
 namespace TRBot.Consoles
 {
@@ -58,6 +59,7 @@ namespace TRBot.Consoles
         /// Update this with <see cref="UpdateInputRegex"/> to warm the regex expression for the parser.
         /// Modifying <see cref="ValidInputs"/> will also update this value.
         /// </summary>
+        [JsonIgnore]
         public string InputRegex { get; private set; } = string.Empty;
 
         #endregion

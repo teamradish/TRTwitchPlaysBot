@@ -26,6 +26,7 @@ using TRBot.Parsing;
 using TRBot.Connection;
 using TRBot.Consoles;
 using TRBot.VirtualControllers;
+using Newtonsoft.Json;
 
 namespace TRBot.Core
 {
@@ -37,7 +38,7 @@ namespace TRBot.Core
 
         public IClientService ClientService { get; private set; } = null;
         public IVirtualControllerManager ControllerMngr { get; private set; } = null;
-        public ConsoleBase CurConsole { get; private set; } = null;
+        public GameConsole CurConsole { get; private set; } = null;
 
         private Parser InputParser = null;
 
@@ -269,7 +270,7 @@ namespace TRBot.Core
             }
 
             //If there are no valid inputs, don't attempt to parse
-            if (CurConsole.ValidInputs == null || CurConsole.ValidInputs.Length == 0)
+            if (CurConsole.ValidInputs == null || CurConsole.ValidInputs.Count == 0)
             {
                 return;
             }

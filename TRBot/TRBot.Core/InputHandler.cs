@@ -37,10 +37,10 @@ namespace TRBot.Core
         private struct InputWrapper
         {
             public Input[][] InputArray;
-            public ConsoleBase Console;
+            public GameConsole Console;
             public IVirtualControllerManager VCManager;
 
-            public InputWrapper(Input[][] inputArray, ConsoleBase console, IVirtualControllerManager vcMngr)
+            public InputWrapper(Input[][] inputArray, GameConsole console, IVirtualControllerManager vcMngr)
             {
                 InputArray = inputArray;
                 Console = console;
@@ -84,7 +84,7 @@ namespace TRBot.Core
         /// Carries out a set of inputs.
         /// </summary>
         /// <param name="inputList">A list of lists of inputs to execute.</param>
-        public static void CarryOutInput(List<List<Input>> inputList, ConsoleBase currentConsole, IVirtualControllerManager vcManager)
+        public static void CarryOutInput(List<List<Input>> inputList, GameConsole currentConsole, IVirtualControllerManager vcManager)
         {
             /*Kimimaru: We're using a thread pool for efficiency
              * Though very unlikely, there's a chance the input won't execute right away if it has to wait for a thread to be available
@@ -134,7 +134,7 @@ namespace TRBot.Core
             //This helps prevent updating controllers that weren't used at the end
             int[] usedControllerPorts = new int[controllerCount];
 
-            ConsoleBase curConsole = inputWrapper.Console;
+            GameConsole curConsole = inputWrapper.Console;
 
             //Don't check for overflow to improve performance
             unchecked
@@ -153,8 +153,8 @@ namespace TRBot.Core
                         //Get a reference to avoid copying the struct
                         ref Input input = ref inputs[j];
 
-                        //Don't do anything for a wait input
-                        if (curConsole.IsWait(input) == true)
+                        //Don't do anything for a blank input
+                        if (curConsole.IsBlankInput(input) == true)
                         {
                             continue;
                         }
@@ -209,8 +209,8 @@ namespace TRBot.Core
                                 continue;
                             }
 
-                            //Release if the input isn't held or released and isn't a wait input
-                            if (input.hold == false && input.release == false && curConsole.IsWait(input) == false)
+                            //Release if the input isn't held or released and isn't a blank input
+                            if (input.hold == false && input.release == false && curConsole.IsBlankInput(input) == false)
                             {
                                 int port = input.controllerPort;
                                 
@@ -258,7 +258,7 @@ namespace TRBot.Core
                     {
                         ref Input input = ref inputs[j];
 
-                        if (curConsole.IsWait(input) == true)
+                        if (curConsole.IsBlankInput(input) == true)
                         {
                             continue;
                         }

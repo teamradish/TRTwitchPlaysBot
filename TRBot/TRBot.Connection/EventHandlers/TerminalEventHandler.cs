@@ -231,10 +231,10 @@ namespace TRBot.Connection
         private async void WaitForMainInitialization()
         {
             //Wait for the main program to initialize
-            while (false)//BotProgram.MsgHandler == null)
-            {
-                await System.Threading.Tasks.Task.Delay(100);
-            }
+            //while (false)//BotProgram.MsgHandler == null)
+            //{
+            //    await System.Threading.Tasks.Task.Delay(100);
+            //}
 
             SetupStart();
 

@@ -9,9 +9,9 @@ namespace TRBot.Core
 {
     public static class InputHelper
     {
-        public static void PressInput(in Input input, ConsoleBase curConsole, IVirtualController vController)
+        public static void PressInput(in Input input, GameConsole curConsole, IVirtualController vController)
         {
-            if (curConsole.IsWait(input) == true)
+            if (curConsole.IsBlankInput(input) == true)
             {
                 return;
             }
@@ -21,17 +21,17 @@ namespace TRBot.Core
                 vController.PressAxis(axis.AxisVal, axis.MinAxisVal, axis.MaxAxisVal, input.percent);
 
                 //Release a button with the same name (Ex. L/R buttons on GCN)
-                if (curConsole.ButtonInputMap.TryGetValue(input.name, out InputButton btnVal) == true)
+                if (curConsole.GetButtonValue(input.name, out InputButton btnVal) == true)
                 {
                     vController.ReleaseButton(btnVal.ButtonVal);
                 }
             }
             else if (curConsole.IsButton(input) == true)
             {
-                vController.PressButton(curConsole.ButtonInputMap[input.name].ButtonVal);
+                vController.PressButton(curConsole.InputButtonMap[input.name].ButtonVal);
 
                 //Release an axis with the same name (Ex. L/R buttons on GCN)
-                if (curConsole.InputAxes.TryGetValue(input.name, out InputAxis value) == true)
+                if (curConsole.GetAxisValue(input.name, out InputAxis value) == true)
                 {
                     vController.ReleaseAxis(value.AxisVal);
                 }
@@ -40,9 +40,9 @@ namespace TRBot.Core
             vController.SetInputNamePressed(input.name);
         }
 
-        public static void ReleaseInput(in Input input, ConsoleBase curConsole, IVirtualController vController)
+        public static void ReleaseInput(in Input input, GameConsole curConsole, IVirtualController vController)
         {
-            if (curConsole.IsWait(input) == true)
+            if (curConsole.IsBlankInput(input) == true)
             {
                 return;
             }
@@ -52,17 +52,17 @@ namespace TRBot.Core
                 vController.ReleaseAxis(axis.AxisVal);
 
                 //Release a button with the same name (Ex. L/R buttons on GCN)
-                if (curConsole.ButtonInputMap.TryGetValue(input.name, out InputButton btnVal) == true)
+                if (curConsole.GetButtonValue(input.name, out InputButton btnVal) == true)
                 {
                     vController.ReleaseButton(btnVal.ButtonVal);
                 }
             }
             else if (curConsole.IsButton(input) == true)
             {
-                vController.ReleaseButton(curConsole.ButtonInputMap[input.name].ButtonVal);
+                vController.ReleaseButton(curConsole.InputButtonMap[input.name].ButtonVal);
 
                 //Release an axis with the same name (Ex. L/R buttons on GCN)
-                if (curConsole.InputAxes.TryGetValue(input.name, out InputAxis value) == true)
+                if (curConsole.GetAxisValue(input.name, out InputAxis value) == true)
                 {
                     vController.ReleaseAxis(value.AxisVal);
                 }
