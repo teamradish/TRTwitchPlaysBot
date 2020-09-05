@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace TRBot.ParserData
 {
@@ -35,11 +36,17 @@ namespace TRBot.ParserData
         /// This dictionary is used to improve the speed of macro lookups for the parser, which needs to iterate through them since there are no spaces.
         /// This is populated based on the macro data and should not be saved to disk.
         /// </summary>
+        [JsonIgnore]
         public Dictionary<char, List<InputMacro>> ParserMacroLookup = null;
 
         public InputMacroData()
         {
             
+        }
+
+        public InputMacroData(ConcurrentDictionary<string, InputMacro> macros)
+        {
+            SetMacroData(macros);
         }
 
         /// <summary>

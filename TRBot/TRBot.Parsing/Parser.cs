@@ -22,6 +22,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using TRBot.ParserData;
 
 namespace TRBot.Parsing
 {
@@ -200,9 +201,13 @@ namespace TRBot.Parsing
             return macro_contents;
         }
 
-        public string PopulateMacros(string message, ConcurrentDictionary<string, string> macros, Dictionary<char, List<string>> macroLookup)
+        public string PopulateMacros(string message, InputMacroData macroData)
         {   
-            message = message.Replace(" ", string.Empty);
+            //There are no macros, so just return the original message
+            if (macroData == null || macroData.Macros == null || macroData.Macros.Count == 0)
+            {
+                return message;
+            }
 
             const RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.IgnoreCase;
 
@@ -270,11 +275,11 @@ namespace TRBot.Parsing
                     //Look through the parser macro list for performance
                     //Handle no macro (Ex. "#" alone)
                     if (macro_name_generic.Length > 1
-                        && macroLookup.TryGetValue(macro_name_generic[1], out List<string> macroList) == true)
+                        && macroData.ParserMacroLookup.TryGetValue(macro_name_generic[1], out List<InputMacro> macroList) == true)
                     {
                         for (int i = 0; i < macroList.Count; i++)
                         {
-                            string macro = macroList[i];
+                            string macro = macroList[i].MacroName;
                     
                             if (macro_name_generic.Contains(macro) == true)
                             {
@@ -313,7 +318,7 @@ namespace TRBot.Parsing
                     foreach (var current in subs)
                     {
                         if (prev != def) str += message.Substring(prev.Item2.Item2, current.Item2.Item1 - prev.Item2.Item2);
-                        str += PopulateVariables(macros[current.Item1], current.Item3);
+                        str += PopulateVariables(macroData.Macros[current.Item1].MacroValue, current.Item3);
                         prev = current;
                     }
                     str += message.Substring(prev.Item2.Item2);
@@ -342,6 +347,32 @@ namespace TRBot.Parsing
         }
 
         /// <summary>
+        /// A convenient helper method that modifies a message so it's ready to be parsed by the parser.
+        /// </summary>
+        /// <param name="message">The message to be prepared for parsing.</param>
+        /// <param name="macroData">Data for input macros.</param>
+        /// <returns>A string ready to be parsed by the parser.</returns>
+        public string PrepParse(string message, InputMacroData macroData)
+        {
+            //Console.WriteLine("Message: " + message);
+
+            //Replace whitespace, populate macros, then expand the string
+            string noWhiteSpace = message.Replace(" ", string.Empty);
+
+            string macros = PopulateMacros(noWhiteSpace, macroData);
+            //Console.WriteLine("Macros: " + macros);
+
+            string expanded = Expandify(macros);
+            //Console.WriteLine("Expanded: " + expanded);
+
+            //Replace whitespace after populating everything and convert to lowercase
+            string readyLowered = expanded.Replace(" ", string.Empty).ToLowerInvariant();
+            //Console.WriteLine("Ready lowered: " + readyLowered);
+
+            return readyLowered;
+        }
+
+        /// <summary>
         /// Parses inputs from an expanded message.
         /// </summary>
         /// <param name="message">The expanded message.</param>
@@ -350,9 +381,6 @@ namespace TRBot.Parsing
         /// <returns>An InputSequence containing information about the parsed inputs.</returns>
         public InputSequence ParseInputs(string message, string inputRegex, in ParserOptions parserOptions)
         {
-            //Remove all whitespace
-            message = message.Replace(" ", string.Empty).ToLower();
-
             //Full Regex:
             // (&\d)?([_-])?(left|right|a)(\d+%)?((\d+ms)|(\d+s))?(\+)?
             //Replace "left", "right", etc. with all the inputs for the console

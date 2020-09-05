@@ -17,12 +17,14 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TRBot.Parsing;
+using TRBot.ParserData;
 using TRBot.Connection;
 using TRBot.Consoles;
 using TRBot.VirtualControllers;
@@ -39,6 +41,8 @@ namespace TRBot.Core
         public IClientService ClientService { get; private set; } = null;
         public IVirtualControllerManager ControllerMngr { get; private set; } = null;
         public GameConsole CurConsole { get; private set; } = null;
+
+        private InputMacroData MacroData = new InputMacroData();
 
         private Parser InputParser = null;
 
@@ -100,6 +104,11 @@ namespace TRBot.Core
             ControllerMngr = new UInputControllerManager();
             ControllerMngr.Initialize();
             ControllerMngr.InitControllers(1);
+
+            MacroData = new InputMacroData(new ConcurrentDictionary<string, InputMacro>());
+            MacroData.AddMacro(new InputMacro("#mash(*)", "[<0>34ms #34ms]*20"));
+            MacroData.AddMacro(new InputMacro("#test", "b500ms #200ms up"));
+            MacroData.AddMacro(new InputMacro("#test2", "a #200ms #test"));
 
             Console.WriteLine($"Setting up virtual controller uinput with {ControllerMngr.ControllerCount} controllers");
 
@@ -283,9 +292,10 @@ namespace TRBot.Core
             {
                 string regexStr = CurConsole.InputRegex;
 
-                string parse_message = InputParser.Expandify(e.UsrMessage.Message);//InputParser.PopulateMacros(e.UsrMessage.Message, null, null));
+                string readyMessage = InputParser.PrepParse(e.UsrMessage.Message, MacroData);
+
                 //parse_message = InputParser.PopulateSynonyms(parse_message, InputGlobals.InputSynonyms);
-                inputSequence = InputParser.ParseInputs(parse_message, regexStr, new ParserOptions(0, 200, true, 60000));
+                inputSequence = InputParser.ParseInputs(readyMessage, regexStr, new ParserOptions(0, 200, true, 60000));
                 //Console.WriteLine(inputSequence.ToString());
                 //Console.WriteLine("\nReverse Parsed: " + ReverseParser.ReverseParse(inputSequence));
                 //Console.WriteLine("\nReverse Parsed Natural:\n" + ReverseParser.ReverseParseNatural(inputSequence));
