@@ -24,22 +24,13 @@ namespace TRBot.Consoles
     /// <summary>
     /// An empty stub console.
     /// </summary>
-    public sealed class BlankConsole : ConsoleBase
+    public sealed class BlankConsole : GameConsole
     {
-        public override Dictionary<string, InputAxis> InputAxes { get; protected set; } = new Dictionary<string, InputAxis>();
-
-        public override Dictionary<string, InputButton> ButtonInputMap { get; protected set; } = new Dictionary<string, InputButton>();
-
-        public override string[] ValidInputs { get; protected set; } = new string[0];
-
-        public override bool GetAxis(in Input input, out InputAxis axis)
+        public BlankConsole()
         {
-            axis = default;
-            return false;
+            Identifier = "Blank";
+
+            UpdateInputRegex();
         }
-
-        public override bool IsAxis(in Input input) => false;
-
-        public override bool IsButton(in Input input) => false;
     }
 }

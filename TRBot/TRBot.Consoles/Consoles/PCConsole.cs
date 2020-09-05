@@ -25,59 +25,56 @@ namespace TRBot.Consoles
     /// <summary>
     /// A desktop computer.
     /// </summary>
-    public sealed class PCConsole : ConsoleBase
+    public sealed class PCConsole : GameConsole
     {
-        public override string[] ValidInputs { get; protected set; } = new string[]
+        public PCConsole()
         {
-            "left", "right", "up", "down",
-            "lclick", "mclick", "rclick",
-            "return", "space",
-            "q", "w", "e", "r", "a", "s", "d", "p",
-            "#"
-        };
+            Identifier = "PC";
 
-        public override Dictionary<string, InputAxis> InputAxes { get; protected set; } = new Dictionary<string, InputAxis>()
-        {
-            { "left", new InputAxis((int)GlobalAxisVals.AXIS_X, 0, -1) },
-            { "right", new InputAxis((int)GlobalAxisVals.AXIS_X, 0, 1) },
-            { "up", new InputAxis((int)GlobalAxisVals.AXIS_Y, 0, -1) },
-            { "down", new InputAxis((int)GlobalAxisVals.AXIS_Y, 0, 1) }
-        };
+            Initialize();
 
-        public override Dictionary<string, InputButton> ButtonInputMap { get; protected set; } = new Dictionary<string, InputButton>()
-        {
-            { "left", new InputButton((int)GlobalButtonVals.BTN1) },
-            { "right", new InputButton((int)GlobalButtonVals.BTN2) },
-            { "up", new InputButton((int)GlobalButtonVals.BTN3) },
-            { "down", new InputButton((int)GlobalButtonVals.BTN4) },
-            { "lclick", new InputButton((int)GlobalButtonVals.BTN5) },
-            { "mclick", new InputButton((int)GlobalButtonVals.BTN6) },
-            { "rclick", new InputButton((int)GlobalButtonVals.BTN7) },
-            { "return", new InputButton((int)GlobalButtonVals.BTN8) },
-            { "space", new InputButton((int)GlobalButtonVals.BTN9) },
-            { "q", new InputButton((int)GlobalButtonVals.BTN10) },
-            { "w", new InputButton((int)GlobalButtonVals.BTN11) },
-            { "e", new InputButton((int)GlobalButtonVals.BTN12) },
-            { "r", new InputButton((int)GlobalButtonVals.BTN13) },
-            { "a", new InputButton((int)GlobalButtonVals.BTN14) },
-            { "s", new InputButton((int)GlobalButtonVals.BTN15) },
-            { "d", new InputButton((int)GlobalButtonVals.BTN16) },
-            { "p", new InputButton((int)GlobalButtonVals.BTN17) }
-        };
-
-        public override bool GetAxis(in Input input, out InputAxis axis)
-        {
-            return InputAxes.TryGetValue(input.name, out axis);
+            UpdateInputRegex();
         }
 
-        public override bool IsAxis(in Input input)
+        private void Initialize()
         {
-            return InputAxes.ContainsKey(input.name);
-        }
-        
-        public override bool IsButton(in Input input)
-        {
-            return ButtonInputMap.ContainsKey(input.name);
+            ValidInputs = new List<string>(18)
+            {
+                "left", "right", "up", "down",
+                "lclick", "mclick", "rclick",
+                "return", "space",
+                "q", "w", "e", "r", "a", "s", "d", "p",
+                "#"
+            };
+
+            InputAxes = new Dictionary<string, InputAxis>(4)
+            {
+                { "left", new InputAxis((int)GlobalAxisVals.AXIS_X, 0, -1) },
+                { "right", new InputAxis((int)GlobalAxisVals.AXIS_X, 0, 1) },
+                { "up", new InputAxis((int)GlobalAxisVals.AXIS_Y, 0, -1) },
+                { "down", new InputAxis((int)GlobalAxisVals.AXIS_Y, 0, 1) }
+            };
+
+            ButtonInputMap = new Dictionary<string, InputButton>(17)
+            {
+                { "left", new InputButton((int)GlobalButtonVals.BTN1) },
+                { "right", new InputButton((int)GlobalButtonVals.BTN2) },
+                { "up", new InputButton((int)GlobalButtonVals.BTN3) },
+                { "down", new InputButton((int)GlobalButtonVals.BTN4) },
+                { "lclick", new InputButton((int)GlobalButtonVals.BTN5) },
+                { "mclick", new InputButton((int)GlobalButtonVals.BTN6) },
+                { "rclick", new InputButton((int)GlobalButtonVals.BTN7) },
+                { "return", new InputButton((int)GlobalButtonVals.BTN8) },
+                { "space", new InputButton((int)GlobalButtonVals.BTN9) },
+                { "q", new InputButton((int)GlobalButtonVals.BTN10) },
+                { "w", new InputButton((int)GlobalButtonVals.BTN11) },
+                { "e", new InputButton((int)GlobalButtonVals.BTN12) },
+                { "r", new InputButton((int)GlobalButtonVals.BTN13) },
+                { "a", new InputButton((int)GlobalButtonVals.BTN14) },
+                { "s", new InputButton((int)GlobalButtonVals.BTN15) },
+                { "d", new InputButton((int)GlobalButtonVals.BTN16) },
+                { "p", new InputButton((int)GlobalButtonVals.BTN17) }
+            };
         }
     }
 }

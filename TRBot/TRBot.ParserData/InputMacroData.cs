@@ -26,6 +26,9 @@ namespace TRBot.ParserData
     /// </summary>
     public sealed class InputMacroData
     {
+        /// <summary>
+        /// The collection of macros available.
+        /// </summary>
         public ConcurrentDictionary<string, InputMacro> Macros = null;
 
         /// <summary>

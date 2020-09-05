@@ -615,7 +615,7 @@ namespace TRBot.Parsing
         /// </summary>
         /// <param name="validInputs">The valid input names.</param>
         /// <returns>A string containing a regex expression for the parser to use.</returns>
-        public string BuildInputRegex(string[] validInputs)
+        public string BuildInputRegex(IList<string> validInputs)
         {
             return BuildInputRegex(ParseRegexStart, ParseRegexEnd, validInputs);
         }
@@ -627,7 +627,7 @@ namespace TRBot.Parsing
         /// <param name="parseRegexEnd">The end regex expression to use.</param>
         /// <param name="validInputs">The valid input names.</param>
         /// <returns>A string containing a regex expression for the parser to use.</returns>
-        public static string BuildInputRegex(string parseRegexStart, string parseRegexEnd, string[] validInputs)
+        public static string BuildInputRegex(string parseRegexStart, string parseRegexEnd, IList<string> validInputs)
         {
             //Set up the regex using the given values
             //Add longer inputs first due to how the parser works
@@ -643,7 +643,7 @@ namespace TRBot.Parsing
             foreach (string s in sorted)
             {
                 sb.Append(System.Text.RegularExpressions.Regex.Escape(s));
-                if (i != (validInputs.Length - 1))
+                if (i != (validInputs.Count - 1))
                 {
                     sb.Append('|');
                 }
