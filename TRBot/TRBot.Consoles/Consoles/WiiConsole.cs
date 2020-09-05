@@ -74,7 +74,7 @@ namespace TRBot.Consoles
                 "#"
             };
 
-            InputAxes = new Dictionary<string, InputAxis>(12)
+            InputAxesMap = new Dictionary<string, InputAxis>(12)
             {
                 { "left",       new InputAxis((int)GlobalAxisVals.AXIS_X, 0, -1) },
                 { "right",      new InputAxis((int)GlobalAxisVals.AXIS_X, 0, 1) },
@@ -94,7 +94,7 @@ namespace TRBot.Consoles
             //The Wii Remote + Nunchuk has more than 32 inputs, so since we can't fit them all, we'll need some modes to toggle
             //and change the input map based on the input scheme
             //We might have to make some sacrifices, such as fewer savestates or disallowing use of the D-pad if a Nunchuk is being used
-            ButtonInputMap = new Dictionary<string, InputButton>(38) {
+            InputButtonMap = new Dictionary<string, InputButton>(38) {
                 { "left",       new InputButton((int)GlobalButtonVals.BTN1) },  { "c",          new InputButton((int)GlobalButtonVals.BTN1) },
                 { "right",      new InputButton((int)GlobalButtonVals.BTN2) },  { "z",          new InputButton((int)GlobalButtonVals.BTN2) },
                 { "up",         new InputButton((int)GlobalButtonVals.BTN3) },  { "tleft",      new InputButton((int)GlobalButtonVals.BTN3) },

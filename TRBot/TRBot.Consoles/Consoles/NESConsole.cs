@@ -38,9 +38,9 @@ namespace TRBot.Consoles
 
         private void Initialize()
         {
-            InputAxes = new Dictionary<string, InputAxis>();
+            InputAxesMap = new Dictionary<string, InputAxis>();
 
-            ButtonInputMap = new Dictionary<string, InputButton>(20)
+            InputButtonMap = new Dictionary<string, InputButton>(20)
             {
                 { "left", new InputButton((int)GlobalButtonVals.BTN1) },
                 { "right", new InputButton((int)GlobalButtonVals.BTN2) },

@@ -50,7 +50,7 @@ namespace TRBot.Consoles
                 "#"
             };
 
-            InputAxes = new Dictionary<string, InputAxis>(10)
+            InputAxesMap = new Dictionary<string, InputAxis>(10)
             {
                 { "left", new InputAxis((int)GlobalAxisVals.AXIS_X, 0, -1) },
                 { "right", new InputAxis((int)GlobalAxisVals.AXIS_X, 0, 1) },
@@ -64,7 +64,7 @@ namespace TRBot.Consoles
                 { "r", new InputAxis((int)GlobalAxisVals.AXIS_Z, 0, 1) }
             };
 
-            ButtonInputMap = new Dictionary<string, InputButton>(32)
+            InputButtonMap = new Dictionary<string, InputButton>(32)
             {
                 { "left", new InputButton((int)GlobalButtonVals.BTN1) },
                 { "right", new InputButton((int)GlobalButtonVals.BTN2) },
@@ -112,7 +112,7 @@ namespace TRBot.Consoles
                 }
             }
 
-            return InputAxes.TryGetValue(input.name, out axis);
+            return InputAxesMap.TryGetValue(input.name, out axis);
         }
 
         public override bool IsAxis(in Input input)
@@ -122,7 +122,7 @@ namespace TRBot.Consoles
                 return (input.percent < 100);
             }
 
-            return (InputAxes.ContainsKey(input.name) == true);
+            return (InputAxesMap.ContainsKey(input.name) == true);
         }
 
         public override bool IsButton(in Input input)

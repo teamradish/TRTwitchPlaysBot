@@ -42,15 +42,16 @@ namespace TRBot.Consoles
         public List<string> ValidInputs { get; protected set; } = new List<string>(8);
 
         /// <summary>
-        /// The input axes this console supports.
+        /// The input axes map for this console.
+        /// Each value corresponds to a numbered axis on a virtual controller.
         /// </summary>
-        public Dictionary<string, InputAxis> InputAxes { get; protected set; } = new Dictionary<string, InputAxis>(8);
+        public Dictionary<string, InputAxis> InputAxesMap { get; protected set; } = new Dictionary<string, InputAxis>(8);
 
         /// <summary>
         /// The button input map for this console.
         /// Each value corresponds to a numbered button on a virtual controller.
         /// </summary>
-        public Dictionary<string, InputButton> ButtonInputMap { get; protected set; } = new Dictionary<string, InputButton>(32);
+        public Dictionary<string, InputButton> InputButtonMap { get; protected set; } = new Dictionary<string, InputButton>(32);
 
         /// <summary>
         /// The input regex for the console.
@@ -93,14 +94,14 @@ namespace TRBot.Consoles
             UpdateInputRegex();
         }
 
-        public void SetInputAxes(Dictionary<string, InputAxis> inputAxes)
+        public void SetInputAxes(Dictionary<string, InputAxis> axesMap)
         {
-            InputAxes = inputAxes;
+            InputAxesMap = axesMap;
         }
 
         public void SetButtonMap(Dictionary<string, InputButton> buttonMap)
         {
-            ButtonInputMap = buttonMap;
+            InputButtonMap = buttonMap;
         }
 
         /// <summary>
@@ -144,13 +145,14 @@ namespace TRBot.Consoles
 
         /// <summary>
         /// Adds an axis to the console.
+        /// If the axis already exists, its value will be replaced.
         /// </summary>
         /// <param name="axisName">The name of the axis to add.</param>
         /// <param name="inputAxis">The InputAxis data for this axis.</param>
         /// <returns>true if the axis was added, otherwise false.</returns>
         public bool AddAxis(string axisName, in InputAxis inputAxis)
         {
-            InputAxes[axisName] = inputAxis;
+            InputAxesMap[axisName] = inputAxis;
 
             return true;
         }
@@ -162,18 +164,19 @@ namespace TRBot.Consoles
         /// <returns>true if the axis was removed, otherwise false.</returns>
         public bool RemoveAxis(string axisName)
         {
-            return InputAxes.Remove(axisName);
+            return InputAxesMap.Remove(axisName);
         }
 
         /// <summary>
         /// Adds a button to the console.
+        /// If the button already exists, its value will be replaced.
         /// </summary>
         /// <param name="buttonName">The name of the button to add.</param>
         /// <param name="inputButton">The InputButton data for this axis.</param>
         /// <returns>true if the button was added, otherwise false.</returns>
         public bool AddButton(string buttonName, in InputButton inputButton)
         {
-            ButtonInputMap[buttonName] = inputButton;
+            InputButtonMap[buttonName] = inputButton;
 
             return true;
         }
@@ -185,10 +188,42 @@ namespace TRBot.Consoles
         /// <returns>true if the button was removed, otherwise false.</returns>
         public bool RemoveButton(string buttonName)
         {
-            return ButtonInputMap.Remove(buttonName);
+            return InputButtonMap.Remove(buttonName);
         }
 
         #endregion
+
+        /// <summary>
+        /// Tells if a given input exists for this console.
+        /// </summary>
+        /// <param name="inputName">The name of the input.</param>
+        /// <returns>true if the input name is a valid input, otherwise false.</returns>
+        public bool DoesInputExist(string inputName)
+        {
+            return ValidInputs.Contains(inputName);
+        }
+
+        /// <summary>
+        /// Tells if a given axis value exists and returns it if so.
+        /// </summary>
+        /// <param name="axisName">The name of the axis to get the value for.</param>
+        /// <param name="inputAxis">The returned InputAxis if found.</param>
+        /// <returns>true if an axis with the given name exists, otherwise false.</returns>
+        public bool GetAxisValue(string axisName, out InputAxis inputAxis)
+        {
+            return InputAxesMap.TryGetValue(axisName, out inputAxis);
+        }
+
+        /// <summary>
+        /// Tells if a given button value exists and returns it if so.
+        /// </summary>
+        /// <param name="buttonName">The name of the button to get the value for.</param>
+        /// <param name="inputButton">The returned InputButton if found.</param>
+        /// <returns>true if a button with the given name exists, otherwise false.</returns>
+        public bool GetButtonValue(string buttonName, out InputButton inputButton)
+        {
+            return InputButtonMap.TryGetValue(buttonName, out inputButton);
+        }
 
         #region Virtual Methods
 
@@ -211,7 +246,7 @@ namespace TRBot.Consoles
         /// <returns>true if the input is an axis, otherwise false.</returns>
         public virtual bool GetAxis(in Input input, out InputAxis axis)
         {
-            return InputAxes.TryGetValue(input.name, out axis);
+            return InputAxesMap.TryGetValue(input.name, out axis);
         }
 
         /// <summary>
@@ -221,7 +256,7 @@ namespace TRBot.Consoles
         /// <returns>true if the input is an axis, otherwise false.</returns>
         public virtual bool IsAxis(in Input input)
         {
-            return InputAxes.ContainsKey(input.name);
+            return InputAxesMap.ContainsKey(input.name);
         }
 
         /// <summary>
@@ -231,7 +266,7 @@ namespace TRBot.Consoles
         /// <returns>true if the input is a button, otherwise false.</returns>
         public virtual bool IsButton(in Input input)
         {
-            return ButtonInputMap.ContainsKey(input.name) == true && IsAxis(input) == false;
+            return InputButtonMap.ContainsKey(input.name) == true && IsAxis(input) == false;
         }
 
         #endregion
