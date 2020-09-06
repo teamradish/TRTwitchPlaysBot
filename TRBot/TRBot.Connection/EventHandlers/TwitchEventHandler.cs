@@ -14,8 +14,6 @@
  * along with TRBot.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#if THINGKLEE
-
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -23,6 +21,7 @@ using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Events;
+using TRBot.Parsing;
 using static TRBot.Connection.EventDelegates;
 
 namespace TRBot.Connection
@@ -34,7 +33,7 @@ namespace TRBot.Connection
     {
         public event UserSentMessage UserSentMessageEvent = null;
 
-        public event UserMadeInput UserMadeInputEvent = null;
+        //public event UserMadeInput UserMadeInputEvent = null;
 
         public event UserNewlySubscribed UserNewlySubscribedEvent = null;
 
@@ -68,17 +67,17 @@ namespace TRBot.Connection
             twitchClient.OnMessageReceived -= OnMessageReceived;
             twitchClient.OnMessageReceived += OnMessageReceived;
 
-            twitchClient.OnNewSubscriber -= OnNewSubscriber;
-            twitchClient.OnNewSubscriber += OnNewSubscriber;
+            //twitchClient.OnNewSubscriber -= OnNewSubscriber;
+            //twitchClient.OnNewSubscriber += OnNewSubscriber;
             
-            twitchClient.OnReSubscriber -= OnReSubscriber;
-            twitchClient.OnReSubscriber += OnReSubscriber;
+            //twitchClient.OnReSubscriber -= OnReSubscriber;
+            //twitchClient.OnReSubscriber += OnReSubscriber;
 
-            twitchClient.OnWhisperReceived -= OnWhisperReceived;
-            twitchClient.OnWhisperReceived += OnWhisperReceived;
+            //twitchClient.OnWhisperReceived -= OnWhisperReceived;
+            //twitchClient.OnWhisperReceived += OnWhisperReceived;
 
-            twitchClient.OnChatCommandReceived -= OnChatCommandReceived;
-            twitchClient.OnChatCommandReceived += OnChatCommandReceived;
+            //twitchClient.OnChatCommandReceived -= OnChatCommandReceived;
+            //twitchClient.OnChatCommandReceived += OnChatCommandReceived;
 
             twitchClient.OnJoinedChannel -= OnJoinedChannel;
             twitchClient.OnJoinedChannel += OnJoinedChannel;
@@ -102,10 +101,10 @@ namespace TRBot.Connection
         public void CleanUp()
         {
             twitchClient.OnMessageReceived -= OnMessageReceived;
-            twitchClient.OnNewSubscriber -= OnNewSubscriber;
-            twitchClient.OnReSubscriber -= OnReSubscriber;
-            twitchClient.OnWhisperReceived -= OnWhisperReceived;
-            twitchClient.OnChatCommandReceived -= OnChatCommandReceived;
+            //twitchClient.OnNewSubscriber -= OnNewSubscriber;
+            //twitchClient.OnReSubscriber -= OnReSubscriber;
+            //twitchClient.OnWhisperReceived -= OnWhisperReceived;
+            //twitchClient.OnChatCommandReceived -= OnChatCommandReceived;
             twitchClient.OnJoinedChannel -= OnJoinedChannel;
             twitchClient.OnBeingHosted -= OnChannelHosted;
             twitchClient.OnConnected -= OnConnected;
@@ -124,17 +123,16 @@ namespace TRBot.Connection
             OnConnectionErrorEvent = null;
             OnReconnectedEvent = null;
             OnDisconnectedEvent = null;
-            UserMadeInputEvent = null;
         }
 
         //Break up much of the message handling by sending events
         private void OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
-            User user = BotProgram.GetOrAddUser(e.ChatMessage.DisplayName, false);
+            //User user = BotProgram.GetOrAddUser(e.ChatMessage.DisplayName, false);
 
             EvtUserMessageArgs umArgs = new EvtUserMessageArgs()
             {
-                UserData = user,
+                //UserData = user,
                 UsrMessage = new EvtUserMsgData(e.ChatMessage.UserId, e.ChatMessage.Username,
                     e.ChatMessage.DisplayName, e.ChatMessage.Channel, e.ChatMessage.Message)
             };
@@ -142,10 +140,10 @@ namespace TRBot.Connection
             UserSentMessageEvent?.Invoke(umArgs);
 
             //Attempt to parse the message as an input
-            ProcessMsgAsInput(umArgs);
+            //ProcessMsgAsInput(umArgs);
         }
 
-        private void OnNewSubscriber(object sender, OnNewSubscriberArgs e)
+        /*private void OnNewSubscriber(object sender, OnNewSubscriberArgs e)
         {
             User user = BotProgram.GetOrAddUser(e.Subscriber.DisplayName, false);
 
@@ -202,7 +200,7 @@ namespace TRBot.Connection
             };
 
             ChatCommandReceivedEvent?.Invoke(chatCmdArgs);
-        }
+        }*/
 
         private void OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
@@ -273,7 +271,7 @@ namespace TRBot.Connection
         //NOTE: This would result in lots of code duplication if other streaming services were integrated
         //Is there a better way to do this?
 
-        private void ProcessMsgAsInput(EvtUserMessageArgs e)
+        /*private void ProcessMsgAsInput(EvtUserMessageArgs e)
         {
             User userData = e.UserData;
 
@@ -344,9 +342,8 @@ namespace TRBot.Connection
 
             #region Parser Post-Process Validation
             
-            /* All this validation is very slow
-             * Find a way to speed it up, ideally without integrating it directly into the parser
-             */
+            // All this validation is very slow
+            // Find a way to speed it up, ideally without integrating it directly into the parser
             
             //Check if the user has permission to perform all the inputs they attempted
             //Also validate that the controller ports they're inputting for are valid
@@ -408,8 +405,6 @@ namespace TRBot.Connection
             {
                 BotProgram.MsgHandler.QueueMessage("New inputs cannot be processed until all other inputs have stopped.");
             }
-        }
+        }*/
     }
 }
-
-#endif

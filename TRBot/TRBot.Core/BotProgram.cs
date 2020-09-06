@@ -29,6 +29,12 @@ using TRBot.Connection;
 using TRBot.Consoles;
 using TRBot.VirtualControllers;
 using Newtonsoft.Json;
+using TwitchLib;
+using TwitchLib.Client;
+using TwitchLib.Client.Models;
+using TwitchLib.Client.Events;
+using TwitchLib.Communication.Events;
+using TwitchLib.Communication.Interfaces;
 
 namespace TRBot.Core
 {
@@ -93,6 +99,11 @@ namespace TRBot.Core
             InputParser = new Parser();
 
             CurConsole = new GCConsole();
+
+            //TwitchClient client = new TwitchClient();
+            //ConnectionCredentials credentials = new ConnectionCredentials("username", "password");
+            //ClientService = new TwitchClientService(credentials, "channel",
+            //            '!', '!', true);
 
             ClientService = new TerminalClientService('!');
 

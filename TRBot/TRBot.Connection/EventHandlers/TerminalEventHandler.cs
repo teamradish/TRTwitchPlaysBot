@@ -30,7 +30,7 @@ namespace TRBot.Connection
     {
         public event UserSentMessage UserSentMessageEvent = null;
 
-        public event UserMadeInput UserMadeInputEvent = null;
+        //public event UserMadeInput UserMadeInputEvent = null;
 
         public event UserNewlySubscribed UserNewlySubscribedEvent = null;
 
@@ -86,7 +86,7 @@ namespace TRBot.Connection
         //NOTE: This would result in lots of code duplication if other streaming services were integrated
         //Is there a better way to do this?
 
-        private void ProcessMsgAsInput(EvtUserMessageArgs e)
+        /*private void ProcessMsgAsInput(EvtUserMessageArgs e)
         {
             //User userData = e.UserData;
 
@@ -162,9 +162,8 @@ namespace TRBot.Connection
 
             #region Parser Post-Process Validation
             
-            /* All this validation is very slow
-             * Find a way to speed it up, ideally without integrating it directly into the parser
-             */
+            // All this validation is very slow
+            // Find a way to speed it up, ideally without integrating it directly into the parser
             
             //Check if the user has permission to perform all the inputs they attempted
             //Also validate that the controller ports they're inputting for are valid
@@ -182,31 +181,31 @@ namespace TRBot.Connection
             //}
 
             //Lastly, check for invalid button combos given the current console
-            /*if (BotProgram.BotData.InvalidBtnCombos.InvalidCombos.TryGetValue((int)InputGlobals.CurrentConsoleVal, out List<string> invalidCombos) == true)
-            {
-                bool buttonCombosValidated = ParserPostProcess.ValidateButtonCombos(inputSequence.Inputs, invalidCombos);
+            //if (BotProgram.BotData.InvalidBtnCombos.InvalidCombos.TryGetValue((int)InputGlobals.CurrentConsoleVal, out List<string> invalidCombos) == true)
+            //{
+            //    bool buttonCombosValidated = ParserPostProcess.ValidateButtonCombos(inputSequence.Inputs, invalidCombos);
 
-                if (buttonCombosValidated == false)
-                {
-                    string msg = "Invalid input: buttons ({0}) are not allowed to be pressed at the same time.";
-                    string combos = string.Empty;
-                    
-                    for (int i = 0; i < invalidCombos.Count; i++)
-                    {
-                        combos += "\"" + invalidCombos[i] + "\"";
-                        
-                        if (i < (invalidCombos.Count - 1))
-                        {
-                            combos += ", ";
-                        }
-                    }
-                    
-                    msg = string.Format(msg, combos);
-                    BotProgram.MsgHandler.QueueMessage(msg);
-                    
-                    return;
-                }
-            }*/
+            //    if (buttonCombosValidated == false)
+            //    {
+            //        string msg = "Invalid input: buttons ({0}) are not allowed to be pressed at the same time.";
+            //        string combos = string.Empty;
+            //        
+            //        for (int i = 0; i < invalidCombos.Count; i++)
+            //        {
+            //            combos += "\"" + invalidCombos[i] + "\"";
+            //            
+            //            if (i < (invalidCombos.Count - 1))
+            //            {
+            //                combos += ", ";
+            //            }
+            //        }
+            //        
+            //        msg = string.Format(msg, combos);
+            //        BotProgram.MsgHandler.QueueMessage(msg);
+            //        
+            //        return;
+            //    }
+            //}
 
             #endregion
 
@@ -226,7 +225,7 @@ namespace TRBot.Connection
             {
                 //BotProgram.MsgHandler.QueueMessage("New inputs cannot be processed until all other inputs have stopped.");
             }
-        }
+        }*/
 
         private async void WaitForMainInitialization()
         {

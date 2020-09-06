@@ -14,8 +14,6 @@
  * along with TRBot.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#if DELKREKL
-
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -175,5 +173,3 @@ namespace TRBot.Connection
         }
     }
 }
-
-#endif
