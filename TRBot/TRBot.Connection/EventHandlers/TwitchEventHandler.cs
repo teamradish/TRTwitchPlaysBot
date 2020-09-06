@@ -67,17 +67,17 @@ namespace TRBot.Connection
             twitchClient.OnMessageReceived -= OnMessageReceived;
             twitchClient.OnMessageReceived += OnMessageReceived;
 
-            //twitchClient.OnNewSubscriber -= OnNewSubscriber;
-            //twitchClient.OnNewSubscriber += OnNewSubscriber;
+            twitchClient.OnNewSubscriber -= OnNewSubscriber;
+            twitchClient.OnNewSubscriber += OnNewSubscriber;
             
-            //twitchClient.OnReSubscriber -= OnReSubscriber;
-            //twitchClient.OnReSubscriber += OnReSubscriber;
+            twitchClient.OnReSubscriber -= OnReSubscriber;
+            twitchClient.OnReSubscriber += OnReSubscriber;
 
-            //twitchClient.OnWhisperReceived -= OnWhisperReceived;
-            //twitchClient.OnWhisperReceived += OnWhisperReceived;
+            twitchClient.OnWhisperReceived -= OnWhisperReceived;
+            twitchClient.OnWhisperReceived += OnWhisperReceived;
 
-            //twitchClient.OnChatCommandReceived -= OnChatCommandReceived;
-            //twitchClient.OnChatCommandReceived += OnChatCommandReceived;
+            twitchClient.OnChatCommandReceived -= OnChatCommandReceived;
+            twitchClient.OnChatCommandReceived += OnChatCommandReceived;
 
             twitchClient.OnJoinedChannel -= OnJoinedChannel;
             twitchClient.OnJoinedChannel += OnJoinedChannel;
@@ -101,10 +101,10 @@ namespace TRBot.Connection
         public void CleanUp()
         {
             twitchClient.OnMessageReceived -= OnMessageReceived;
-            //twitchClient.OnNewSubscriber -= OnNewSubscriber;
-            //twitchClient.OnReSubscriber -= OnReSubscriber;
-            //twitchClient.OnWhisperReceived -= OnWhisperReceived;
-            //twitchClient.OnChatCommandReceived -= OnChatCommandReceived;
+            twitchClient.OnNewSubscriber -= OnNewSubscriber;
+            twitchClient.OnReSubscriber -= OnReSubscriber;
+            twitchClient.OnWhisperReceived -= OnWhisperReceived;
+            twitchClient.OnChatCommandReceived -= OnChatCommandReceived;
             twitchClient.OnJoinedChannel -= OnJoinedChannel;
             twitchClient.OnBeingHosted -= OnChannelHosted;
             twitchClient.OnConnected -= OnConnected;
@@ -143,13 +143,10 @@ namespace TRBot.Connection
             //ProcessMsgAsInput(umArgs);
         }
 
-        /*private void OnNewSubscriber(object sender, OnNewSubscriberArgs e)
+        private void OnNewSubscriber(object sender, OnNewSubscriberArgs e)
         {
-            User user = BotProgram.GetOrAddUser(e.Subscriber.DisplayName, false);
-
             EvtOnSubscriptionArgs subArgs = new EvtOnSubscriptionArgs
             {
-                UserData = user,
                 SubscriptionData = new EvtSubscriptionData(e.Subscriber.UserId, e.Subscriber.DisplayName,
                     e.Subscriber.DisplayName)
             };
@@ -159,11 +156,8 @@ namespace TRBot.Connection
 
         private void OnReSubscriber(object sender, OnReSubscriberArgs e)
         {
-            User user = BotProgram.GetOrAddUser(e.ReSubscriber.DisplayName, false);
-
             EvtOnReSubscriptionArgs reSubArgs = new EvtOnReSubscriptionArgs
             {
-                UserData = user,
                 ReSubscriptionData = new EvtReSubscriptionData(e.ReSubscriber.UserId, e.ReSubscriber.DisplayName,
                     e.ReSubscriber.DisplayName, e.ReSubscriber.Months)
             };
@@ -185,8 +179,6 @@ namespace TRBot.Connection
 
         private void OnChatCommandReceived(object sender, OnChatCommandReceivedArgs e)
         {
-            User user = BotProgram.GetOrAddUser(e.Command.ChatMessage.DisplayName, false);
-
             ChatMessage cMsg = e.Command.ChatMessage;
 
             EvtUserMsgData msgData = new EvtUserMsgData(cMsg.UserId, cMsg.Username, cMsg.DisplayName,
@@ -194,13 +186,12 @@ namespace TRBot.Connection
 
             EvtChatCommandArgs chatCmdArgs = new EvtChatCommandArgs
             {
-                UserData = user,
                 Command = new EvtChatCommandData(e.Command.ArgumentsAsList, e.Command.ArgumentsAsString,
                     msgData, e.Command.CommandIdentifier, e.Command.CommandText)
             };
 
             ChatCommandReceivedEvent?.Invoke(chatCmdArgs);
-        }*/
+        }
 
         private void OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {

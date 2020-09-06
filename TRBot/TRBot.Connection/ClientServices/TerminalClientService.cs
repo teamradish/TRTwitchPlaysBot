@@ -63,9 +63,7 @@ namespace TRBot.Connection
         /// </summary>
         public void Initialize()
         {
-            //User dummyUser = DummyUserSetup();
-
-            EventHandler = new TerminalEventHandler(CommandIdentifier);//dummyUser);
+            EventHandler = new TerminalEventHandler(CommandIdentifier);
 
             EventHandler.OnJoinedChannelEvent -= OnClientJoinedChannel;
             EventHandler.OnJoinedChannelEvent += OnClientJoinedChannel;
@@ -73,79 +71,11 @@ namespace TRBot.Connection
             Initialized = true;
         }
 
-        /*private User DummyUserSetup()
-        {
-            //Set name
-            string line = string.Empty;
-            while (string.IsNullOrEmpty(line) == true)
-            {
-                Console.WriteLine("Please choose a valid name for your user. This can be a valid user in your BotData.");
-                line = Console.ReadLine();
-            }
-
-            User user = BotProgram.GetUser(line, false);
-
-            if (user != null)
-            {
-                return user;
-            }
-
-            string userName = line;
-
-            //Set level
-            int level = -1;
-            line = string.Empty;
-
-            while (level < 0)
-            {
-                Console.WriteLine("Please choose an access level for your user.");
-                line = Console.ReadLine();
-
-                AccessLevels.Levels[] levelArray = EnumUtility.GetValues<AccessLevels.Levels>.EnumValues;
-
-                if (int.TryParse(line, out int levelNum) == false)
-                {
-                    Console.WriteLine("Invalid level specified.");
-                    continue;
-                }
-
-                bool found = false;
-                string lvlName = string.Empty;
-
-                for (int i = 0; i < levelArray.Length; i++)
-                {
-                    if (levelNum == (int)levelArray[i])
-                    {
-                        found = true;
-                        lvlName = levelArray[i].ToString();
-                        break;
-                    }
-                }
-
-                if (found == false)
-                {
-                    Console.WriteLine("Invalid level specified.");
-                    continue;
-                }
-
-                level = levelNum;
-            }
-
-            //Return new user
-            user = new User();
-            user.Name = userName;
-            user.Level = level;
-
-            return user;
-        }*/
-
         /// <summary>
         /// Connects the client.
         /// </summary>
         public void Connect()
         {
-            //BotProgram.MsgHandler.SetIgnoreConsoleLog(true);
-
             EventHandler.Initialize();
 
             Connected = true;
@@ -156,8 +86,6 @@ namespace TRBot.Connection
         /// </summary>
         public void Disconnect()
         {
-            //BotProgram.MsgHandler.SetIgnoreConsoleLog(true);
-
             JoinedChannels?.Clear();
             Connected = false;
         }

@@ -28,6 +28,7 @@ using TRBot.ParserData;
 using TRBot.Connection;
 using TRBot.Consoles;
 using TRBot.VirtualControllers;
+using TRBot.Common;
 using Newtonsoft.Json;
 using TwitchLib;
 using TwitchLib.Client;
@@ -47,6 +48,8 @@ namespace TRBot.Core
         public IClientService ClientService { get; private set; } = null;
         public IVirtualControllerManager ControllerMngr { get; private set; } = null;
         public GameConsole CurConsole { get; private set; } = null;
+        
+        public BotMessageHandler MsgHandler { get; private set; } = new BotMessageHandler();
 
         private InputMacroCollection MacroData = new InputMacroCollection();
         private InputSynonymCollection SynonymData = new InputSynonymCollection();
@@ -75,7 +78,7 @@ namespace TRBot.Core
             //CommandHandler.CleanUp();
             ClientService?.CleanUp();
 
-            //MsgHandler?.CleanUp();
+            MsgHandler?.CleanUp();
 
             if (ClientService?.IsConnected == true)
                 ClientService.Disconnect();
@@ -102,10 +105,13 @@ namespace TRBot.Core
 
             //TwitchClient client = new TwitchClient();
             //ConnectionCredentials credentials = new ConnectionCredentials("username", "password");
-            //ClientService = new TwitchClientService(credentials, "channel",
-            //            '!', '!', true);
+            //ClientService = new TwitchClientService(credentials, "channel", '!', '!', true);
 
             ClientService = new TerminalClientService('!');
+
+            MsgHandler.SetLogToConsole(false);
+            MsgHandler.SetClientService(ClientService);
+            MsgHandler.SetMessageCooldown(1000d);
 
             //Initialize service
             ClientService.Initialize();
@@ -151,7 +157,7 @@ namespace TRBot.Core
                 DateTime now = DateTime.Now;
 
                 //Update queued messages
-                //MsgHandler.Update(now);
+                MsgHandler.Update(now);
 
                 //Update routines
                 //RoutineHandler.Update(now);
@@ -196,22 +202,24 @@ namespace TRBot.Core
 
         private void OnConnected(EvtConnectedArgs e)
         {
-            Console.WriteLine($"kimimarubot connected!");
+            MsgHandler.QueueMessage($"kimimarubot connected!");
         }
 
         private void OnConnectionError(EvtConnectionErrorArgs e)
         {
-            Console.WriteLine($"Failed to connect: {e.Error.Message}");
+            MsgHandler.QueueMessage($"Failed to connect: {e.Error.Message}");
         }
 
         private void OnJoinedChannel(EvtJoinedChannelArgs e)
         {
-            Console.WriteLine($"Joined channel \"{e.Channel}\"");
+            MsgHandler.QueueMessage($"Joined channel \"{e.Channel}\"");
+
+            MsgHandler.SetChannelName(e.Channel);
         }
 
         private void OnChatCommandReceived(EvtChatCommandArgs e)
         {
-            
+            MsgHandler.QueueMessage($"Received command \"{e.Command.CommandText}\"");
         }
 
         private void OnUserSentMessage(EvtUserMessageArgs e)
@@ -334,8 +342,7 @@ namespace TRBot.Core
                 //Display error message for invalid inputs
                 if (inputSequence.InputValidationType == InputValidationTypes.Invalid)
                 {
-                    Console.WriteLine(inputSequence.Error);
-                    //BotProgram.MsgHandler.QueueMessage(inputSequence.Error);
+                    MsgHandler.QueueMessage(inputSequence.Error);
                 }
 
                 return;
