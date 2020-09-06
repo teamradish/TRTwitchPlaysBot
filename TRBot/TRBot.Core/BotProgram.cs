@@ -42,7 +42,8 @@ namespace TRBot.Core
         public IVirtualControllerManager ControllerMngr { get; private set; } = null;
         public GameConsole CurConsole { get; private set; } = null;
 
-        private InputMacroData MacroData = new InputMacroData();
+        private InputMacroCollection MacroData = new InputMacroCollection();
+        private InputSynonymCollection SynonymData = new InputSynonymCollection();
 
         private Parser InputParser = null;
 
@@ -105,10 +106,14 @@ namespace TRBot.Core
             ControllerMngr.Initialize();
             ControllerMngr.InitControllers(1);
 
-            MacroData = new InputMacroData(new ConcurrentDictionary<string, InputMacro>());
+            MacroData = new InputMacroCollection(new ConcurrentDictionary<string, InputMacro>());
             MacroData.AddMacro(new InputMacro("#mash(*)", "[<0>34ms #34ms]*20"));
             MacroData.AddMacro(new InputMacro("#test", "b500ms #200ms up"));
             MacroData.AddMacro(new InputMacro("#test2", "a #200ms #test"));
+
+            SynonymData = new InputSynonymCollection(new ConcurrentDictionary<string, InputSynonym>());
+            SynonymData.AddSynonym(new InputSynonym(".", "#"));
+            SynonymData.AddSynonym(new InputSynonym("aandup", "a+up"));
 
             Console.WriteLine($"Setting up virtual controller uinput with {ControllerMngr.ControllerCount} controllers");
 
@@ -292,7 +297,7 @@ namespace TRBot.Core
             {
                 string regexStr = CurConsole.InputRegex;
 
-                string readyMessage = InputParser.PrepParse(e.UsrMessage.Message, MacroData);
+                string readyMessage = InputParser.PrepParse(e.UsrMessage.Message, MacroData, SynonymData);
 
                 //parse_message = InputParser.PopulateSynonyms(parse_message, InputGlobals.InputSynonyms);
                 inputSequence = InputParser.ParseInputs(readyMessage, regexStr, new ParserOptions(0, 200, true, 60000));

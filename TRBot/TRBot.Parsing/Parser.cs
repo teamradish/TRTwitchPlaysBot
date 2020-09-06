@@ -201,7 +201,7 @@ namespace TRBot.Parsing
             return macro_contents;
         }
 
-        public string PopulateMacros(string message, InputMacroData macroData)
+        public string PopulateMacros(string message, InputMacroCollection macroData)
         {   
             //There are no macros, so just return the original message
             if (macroData == null || macroData.Macros == null || macroData.Macros.Count == 0)
@@ -333,13 +333,13 @@ namespace TRBot.Parsing
             return message;
         }
 
-        public string PopulateSynonyms(string message, Dictionary<string, string> inputSynonyms)
+        public string PopulateSynonyms(string message, InputSynonymCollection inputSynonyms)
         {
             if (inputSynonyms != null)
             {
-                foreach (string synonym in inputSynonyms.Keys)
+                foreach (string synonym in inputSynonyms.Synonyms.Keys)
                 {
-                    message = message.Replace(synonym, inputSynonyms[synonym]);
+                    message = message.Replace(synonym, inputSynonyms.Synonyms[synonym].SynonymValue);
                 }
             }
 
@@ -351,8 +351,9 @@ namespace TRBot.Parsing
         /// </summary>
         /// <param name="message">The message to be prepared for parsing.</param>
         /// <param name="macroData">Data for input macros.</param>
+        /// <param name="synonymData">Data for input synonyms.</param>
         /// <returns>A string ready to be parsed by the parser.</returns>
-        public string PrepParse(string message, InputMacroData macroData)
+        public string PrepParse(string message, InputMacroCollection macroData, InputSynonymCollection synonymData)
         {
             //Console.WriteLine("Message: " + message);
 
@@ -362,7 +363,10 @@ namespace TRBot.Parsing
             string macros = PopulateMacros(noWhiteSpace, macroData);
             //Console.WriteLine("Macros: " + macros);
 
-            string expanded = Expandify(macros);
+            string synonyms = PopulateSynonyms(macros, synonymData);
+            //Console.WriteLine("Synonyms: " + synonyms);
+
+            string expanded = Expandify(synonyms);
             //Console.WriteLine("Expanded: " + expanded);
 
             //Replace whitespace after populating everything and convert to lowercase

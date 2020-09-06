@@ -23,9 +23,9 @@ using Newtonsoft.Json;
 namespace TRBot.ParserData
 {
     /// <summary>
-    /// Data for input macros.
+    /// Collection for input macros.
     /// </summary>
-    public sealed class InputMacroData
+    public sealed class InputMacroCollection
     {
         /// <summary>
         /// The collection of macros available.
@@ -39,12 +39,12 @@ namespace TRBot.ParserData
         [JsonIgnore]
         public Dictionary<char, List<InputMacro>> ParserMacroLookup = null;
 
-        public InputMacroData()
+        public InputMacroCollection()
         {
             
         }
 
-        public InputMacroData(ConcurrentDictionary<string, InputMacro> macros)
+        public InputMacroCollection(ConcurrentDictionary<string, InputMacro> macros)
         {
             SetMacroData(macros);
         }
@@ -75,7 +75,7 @@ namespace TRBot.ParserData
         }
 
         /// <summary>
-        /// Adds a macro to the data.
+        /// Adds a macro to the collection.
         /// </summary>
         /// <param name="inputMacro">The macro to add.</param>
         public void AddMacro(in InputMacro inputMacro)
@@ -86,7 +86,7 @@ namespace TRBot.ParserData
         }
 
         /// <summary>
-        /// Removes a macro from the data.
+        /// Removes a macro from the collection.
         /// </summary>
         /// <returns>true if the macro was successfully removed, otherwise false.</returns>
         public bool RemoveMacro(in InputMacro inputMacro)
@@ -95,7 +95,7 @@ namespace TRBot.ParserData
         }
 
         /// <summary>
-        /// Removes a macro from the data.
+        /// Removes a macro from the collection.
         /// </summary>
         /// <param name="macroName">The name of the macro to remove.</param>
         /// <returns>true if the macro was successfully removed, otherwise false.</returns>
