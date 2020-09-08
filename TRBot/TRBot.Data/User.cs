@@ -35,7 +35,7 @@ namespace TRBot.Data
         public int Port;
         public int Subscriber;
         public int BetCounter;
-        public bool AutoWhitelisted = false;
+        public bool AutoPromoted = false;
         public bool OptedOut = false;
 
         /// <summary>
@@ -100,13 +100,13 @@ namespace TRBot.Data
         }
 
         /// <summary>
-        /// Sets the user's auto whitelisted status.
-        /// This is only applicable if <see cref=BotProgram.Settings.AutoWhitelistEnabled> is true. 
+        /// Sets the user's auto promoted status.
+        /// This is only applicable if auto promotion is enabled. 
         /// </summary>
-        /// <param name="autoWhitelisted">Whether the user was automatically whitelisted or not.</param>
-        public void SetAutoWhitelist(in bool autoWhitelisted)
+        /// <param name="autoPromoted">Whether the user was automatically promoted or not.</param>
+        public void SetAutoPromote(in bool autoPromoted)
         {
-            AutoWhitelisted = autoWhitelisted;
+            AutoPromoted = autoPromoted;
         }
 
         /// <summary>
