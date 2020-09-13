@@ -37,6 +37,7 @@ namespace TRBot.Data
         public int BetCounter;
         public bool AutoPromoted = false;
         public bool OptedOut = false;
+        public List<string, string> Permissions = new List<string>();
 
         /// <summary>
         /// Adds to the user's credits.
@@ -117,6 +118,22 @@ namespace TRBot.Data
         public void SetOptOut(in bool optedOut)
         {
             OptedOut = optedOut;
+        }
+
+        public bool AddPermission(string permission)
+        {
+            if (Permissions.Contains(permission) == true)
+            {
+                return false;
+            }
+
+            Permissions.Add(permission);
+            return true;
+        }
+
+        public bool RemovePermission(string permission)
+        {
+            return Permissions.Remove(permission);
         }
     }
 }
