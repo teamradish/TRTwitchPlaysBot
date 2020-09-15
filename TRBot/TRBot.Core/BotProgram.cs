@@ -435,12 +435,5 @@ namespace TRBot.Core
         }
 
 #endregion
-
-        public class Settings
-        {
-            public ClientServiceSettings ClientSettings = null;
-            public MessageSettings MsgSettings = null;
-            public BingoSettings BingoSettings = null;
-        }
     }
 }
