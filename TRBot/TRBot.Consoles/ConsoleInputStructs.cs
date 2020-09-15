@@ -41,6 +41,13 @@ namespace TRBot.Consoles
         public double MaxAxisVal;
 
         /// <summary>
+        /// The maximum percent this axis can be pressed. If pressed above this amount, it's considered a button press.
+        /// <para>This is useful only for axes and buttons with shared names. 
+        /// For example, the GameCube's "L" and "R" inputs function both as axes and buttons.</para>
+        /// </summary>
+        public int MaxPercentPressed;
+
+        /// <summary>
         /// Constructs an input axis.
         /// </summary>
         /// <param name="axisVal">The value of the input axis.</param>
@@ -51,6 +58,22 @@ namespace TRBot.Consoles
             AxisVal = axisVal;
             MinAxisVal = Math.Clamp(minAxisVal, -1d, 1d);
             MaxAxisVal = Math.Clamp(maxAxisVal, -1d, 1d);
+            MaxPercentPressed = 100;
+        }
+
+        /// <summary>
+        /// Constructs an input axis.
+        /// </summary>
+        /// <param name="axisVal">The value of the input axis.</param>
+        /// <param name="minAxisVal">The normalized minimum value of the axis. This is clamped from -1 to 1.</param>
+        /// <param name="maxAxisVal">The normalized maximum value of the axis. This is clamped from -1 to 1.</param>
+        /// <param name="maxPercentPressed">The maximum percent the axis can be pressed. This is clamped from 0 to 100.</param>
+        public InputAxis(in int axisVal, in double minAxisVal, in double maxAxisVal, in int maxPercentPressed)
+        {
+            AxisVal = axisVal;
+            MinAxisVal = Math.Clamp(minAxisVal, -1d, 1d);
+            MaxAxisVal = Math.Clamp(maxAxisVal, -1d, 1d);
+            MaxPercentPressed = Math.Clamp(maxPercentPressed, 0, 100);
         }
 
         public override bool Equals(object obj)
@@ -71,13 +94,15 @@ namespace TRBot.Consoles
                 hash = (hash * 23) + AxisVal.GetHashCode();
                 hash = (hash * 23) + MinAxisVal.GetHashCode();
                 hash = (hash * 23) + MaxAxisVal.GetHashCode();
+                hash = (hash * 23) + MaxPercentPressed.GetHashCode();
                 return hash;
             }
         }
 
         public static bool operator==(InputAxis a, InputAxis b)
         {
-            return (a.AxisVal == b.AxisVal && a.MinAxisVal == b.MinAxisVal && a.MaxAxisVal == b.MaxAxisVal);
+            return (a.AxisVal == b.AxisVal && a.MinAxisVal == b.MinAxisVal && a.MaxAxisVal == b.MaxAxisVal
+                && a.MaxPercentPressed == b.MaxPercentPressed);
         }
 
         public static bool operator!=(InputAxis a, InputAxis b)

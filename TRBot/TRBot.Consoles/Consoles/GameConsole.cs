@@ -66,7 +66,7 @@ namespace TRBot.Consoles
 
         public GameConsole()
         {
-            
+
         }
 
         public GameConsole(string identifier, List<string> validInputs,
@@ -248,7 +248,20 @@ namespace TRBot.Consoles
         /// <returns>true if the input is an axis, otherwise false.</returns>
         public virtual bool GetAxis(in Input input, out InputAxis axis)
         {
-            return InputAxesMap.TryGetValue(input.name, out axis);
+            bool found = InputAxesMap.TryGetValue(input.name, out axis);
+            if (found == false)
+            {
+                return false;
+            }
+
+            //Check if the percent pressed is less or equal to the max percentage allowed by the axis
+            if (input.percent <= axis.MaxPercentPressed)
+            {
+                return true;
+            }
+
+            axis = default;
+            return false;
         }
 
         /// <summary>
@@ -258,7 +271,7 @@ namespace TRBot.Consoles
         /// <returns>true if the input is an axis, otherwise false.</returns>
         public virtual bool IsAxis(in Input input)
         {
-            return InputAxesMap.ContainsKey(input.name);
+            return GetAxis(input, out InputAxis axis);
         }
 
         /// <summary>

@@ -60,8 +60,8 @@ namespace TRBot.Consoles
                 { "cright", new InputAxis((int)GlobalAxisVals.AXIS_RX, 0, 1) },
                 { "cup", new InputAxis((int)GlobalAxisVals.AXIS_RY, 0, -1) },
                 { "cdown", new InputAxis((int)GlobalAxisVals.AXIS_RY, 0, 1) },
-                { "l", new InputAxis((int)GlobalAxisVals.AXIS_RZ, 0, 1) },
-                { "r", new InputAxis((int)GlobalAxisVals.AXIS_Z, 0, 1) }
+                { "l", new InputAxis((int)GlobalAxisVals.AXIS_RZ, 0, 1, 99) },
+                { "r", new InputAxis((int)GlobalAxisVals.AXIS_Z, 0, 1, 99) }
             };
 
             InputButtonMap = new Dictionary<string, InputButton>(32)
@@ -99,40 +99,6 @@ namespace TRBot.Consoles
                 { "x", new InputButton((int)GlobalButtonVals.BTN31) },
                 { "y", new InputButton((int)GlobalButtonVals.BTN32) },
             };
-        }
-
-        public override bool GetAxis(in Input input, out InputAxis axis)
-        {
-            if (input.name == "l" || input.name == "r")
-            {
-                if (input.percent == 100)
-                {
-                    axis = default;
-                    return false;
-                }
-            }
-
-            return InputAxesMap.TryGetValue(input.name, out axis);
-        }
-
-        public override bool IsAxis(in Input input)
-        {
-            if (input.name == "l" || input.name == "r")
-            {
-                return (input.percent < 100);
-            }
-
-            return (InputAxesMap.ContainsKey(input.name) == true);
-        }
-
-        public override bool IsButton(in Input input)
-        {
-            if (input.name == "l" || input.name == "r")
-            {
-                return (input.percent == 100);
-            }
-
-            return base.IsButton(input);
         }
     }
 }

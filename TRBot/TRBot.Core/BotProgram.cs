@@ -29,6 +29,7 @@ using TRBot.Connection;
 using TRBot.Consoles;
 using TRBot.VirtualControllers;
 using TRBot.Common;
+using TRBot.Data;
 using Newtonsoft.Json;
 using TwitchLib;
 using TwitchLib.Client;
@@ -437,7 +438,7 @@ namespace TRBot.Core
 
         public class Settings
         {
-            public ClientSettings ClientSettings = null;
+            public ClientServiceSettings ClientSettings = null;
             public MessageSettings MsgSettings = null;
             public BingoSettings BingoSettings = null;
         }
