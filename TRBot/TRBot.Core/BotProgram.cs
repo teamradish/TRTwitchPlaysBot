@@ -139,7 +139,10 @@ namespace TRBot.Core
 
             Console.WriteLine($"Setting up virtual controller uinput with {ControllerMngr.ControllerCount} controllers");
 
-            SqliteManager = new SQLiteManager($"{AppDomain.CurrentDomain.BaseDirectory}/Data/TRBot.db");
+            SqliteManager = new SQLiteManager(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "TRBotData.db"),
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
+                SQLiteManager.DEFAULT_SCHEMA_RELATIVE_ROOT, SQLiteManager.DEFAULT_SCHEMA_FILE_NAME));
+            
             SqliteManager.Initialize();
             SqliteManager.PrintVersion();
 

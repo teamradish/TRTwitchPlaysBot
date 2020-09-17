@@ -17,21 +17,27 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Data;
+using System.Data.SQLite;
 using System.IO;
-using Microsoft.Data.Sqlite;
 
 namespace TRBot.Data
 {
     public class SQLiteManager
     {
-        private SqliteConnection SQLiteConnection = null;
+        public const string DEFAULT_SCHEMA_RELATIVE_ROOT = "SQLiteSchema";
+        public const string DEFAULT_SCHEMA_FILE_NAME = "TRBotData.sql";
+
+        private SQLiteConnection SqLiteConnection = null;
         private string DatabasePath = string.Empty;
+        private string SchemaPath = string.Empty;
 
         public bool Initialized { get; private set; } = false;
 
-        public SQLiteManager(string databasePath)
+        public SQLiteManager(string databasePath, string schemaPath)
         {
             DatabasePath = databasePath;
+            SchemaPath = schemaPath;
         }
 
         public void Initialize()
@@ -51,8 +57,36 @@ namespace TRBot.Data
                 Directory.CreateDirectory(dirName);
             }
 
-            SQLiteConnection = new SqliteConnection($"data source={DatabasePath}");
-            SQLiteConnection.Open();
+            //Check if the database exists
+            bool dbExists = File.Exists(DatabasePath);
+            bool schemaExists = File.Exists(SchemaPath);
+
+            SqLiteConnection = new SQLiteConnection($"data source={DatabasePath}");
+            SqLiteConnection.Open();
+
+            //Console.WriteLine($"dbExists at {DatabasePath}: {dbExists} | schemaExists at {SchemaPath}: {schemaExists}");
+
+            DataTable tables = SqLiteConnection.GetSchema("Tables");
+
+            //Console.WriteLine("Table Rows: " + tables.Rows.Count);
+
+            //If the database didn't exist and the schema does,
+            //or if the database is empty, update the db with the schema
+            //In this case, empty also means having only the "sqlite_sequence" row in the "Tables" 
+            if ((dbExists == false && schemaExists == true) || tables.Rows.Count <= 1)
+            {
+                //Read the schema
+                string schemaText = File.ReadAllText(SchemaPath);
+
+                using SQLiteCommand cmd = new SQLiteCommand();
+                
+                //Execute the schema to create the tables
+                cmd.CommandText = schemaText;
+                cmd.Connection = SqLiteConnection;
+                cmd.ExecuteNonQuery();
+
+                Console.WriteLine($"Imported schema at {SchemaPath} to database!");
+            }
 
             Initialized = true;
         }
@@ -61,7 +95,7 @@ namespace TRBot.Data
         {
             string stm = "SELECT SQLITE_VERSION();";
 
-            using SqliteCommand cmd = new SqliteCommand(stm, SQLiteConnection);
+            using SQLiteCommand cmd = new SQLiteCommand(stm, SqLiteConnection);
             string version = cmd.ExecuteScalar().ToString();
             
             Console.WriteLine($"SQLite version: {version}");
@@ -69,8 +103,8 @@ namespace TRBot.Data
 
         public void CleanUp()
         {
-            SQLiteConnection?.Dispose();
-            SQLiteConnection = null;
+            SqLiteConnection?.Dispose();
+            SqLiteConnection = null;
 
             Initialized = false;
         }
