@@ -2,7 +2,7 @@ BEGIN TRANSACTION;
 CREATE TABLE IF NOT EXISTS "settings" (
 	"id"	INTEGER DEFAULT 0,
 	"key"	TEXT DEFAULT "",
-	"value_str"	INTEGER DEFAULT "",
+	"value_str"	TEXT DEFAULT "",
 	"value_int"	INTEGER DEFAULT 0,
 	PRIMARY KEY("id")
 );

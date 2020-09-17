@@ -42,7 +42,7 @@ namespace TRBot.Core
 {
     public sealed class BotProgram : IDisposable
     {
-        private static BotProgram instance = null;
+        //private static BotProgram instance = null;
 
         public bool Initialized { get; private set; } = false;
 
@@ -91,7 +91,7 @@ namespace TRBot.Core
 
             SqliteManager?.CleanUp();
 
-            instance = null;
+            //instance = null;
         }
 
         public void Initialize()

@@ -101,6 +101,22 @@ namespace TRBot.Data
             Console.WriteLine($"SQLite version: {version}");
         }
 
+        public object ExecuteScalar(string sqliteCommand)
+        {
+            using SQLiteCommand newcmd = new SQLiteCommand(sqliteCommand, SqLiteConnection);
+            return newcmd.ExecuteScalar();
+        }
+
+        public long GetSettingNum(string settingName)
+        {
+            return (long)ExecuteScalar($"select value_int from settings where key like \'{settingName}\';");
+        }
+
+        public string GetSettingString(string settingName)
+        {
+            return (string)ExecuteScalar($"select value_str from settings where key like \'{settingName}\';");
+        }
+
         public void CleanUp()
         {
             SqLiteConnection?.Dispose();
