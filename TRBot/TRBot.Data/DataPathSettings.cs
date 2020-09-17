@@ -41,6 +41,7 @@ namespace TRBot.Data
         /// <summary>
         /// Returns the path to the data folder.
         /// </summary>
+        /// <returns>The path to the data folder.</returns>
         public string GetBaseDataPath()
         {
             if (UseRelativePath == true)
@@ -52,8 +53,9 @@ namespace TRBot.Data
         }
 
         /// <summary>
-        /// Returns the full path to another file or folder relative to the data folder.
+        /// Returns the full path to another file or folder from the base data folder.
         /// </summary>
+        /// <param name="newPath">The file or folder from the data folder.</param>
         public string GetFullPathToData(string newPath)
         {
             return Path.Combine(GetBaseDataPath(), newPath);

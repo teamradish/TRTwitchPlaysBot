@@ -57,6 +57,8 @@ namespace TRBot.Core
 
         private Parser InputParser = null;
 
+        private SQLiteManager SqliteManager = null;
+
         public BotProgram()
         {
             //Below normal priority
@@ -86,6 +88,8 @@ namespace TRBot.Core
 
             //Clean up and relinquish the virtual controllers when we're done
             ControllerMngr?.CleanUp();
+
+            SqliteManager?.CleanUp();
 
             instance = null;
         }
@@ -134,6 +138,10 @@ namespace TRBot.Core
             SynonymData.AddSynonym(new InputSynonym("aandup", "a+up"));
 
             Console.WriteLine($"Setting up virtual controller uinput with {ControllerMngr.ControllerCount} controllers");
+
+            SqliteManager = new SQLiteManager($"{AppDomain.CurrentDomain.BaseDirectory}/Data/TRBot.db");
+            SqliteManager.Initialize();
+            SqliteManager.PrintVersion();
 
             Initialized = true;
         }
