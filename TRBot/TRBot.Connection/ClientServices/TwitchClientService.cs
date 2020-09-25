@@ -47,6 +47,11 @@ namespace TRBot.Connection
         public bool IsInitialized => (twitchClient?.IsInitialized == true);
 
         /// <summary>
+        /// Tells the client's operation type.
+        /// </summary>
+        public OperationTypes OperationType => OperationTypes.Online;
+
+        /// <summary>
         /// Tells if the client is connected.
         /// </summary>
         public bool IsConnected => (twitchClient?.IsConnected == true);

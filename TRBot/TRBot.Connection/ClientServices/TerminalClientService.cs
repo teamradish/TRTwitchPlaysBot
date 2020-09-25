@@ -39,6 +39,11 @@ namespace TRBot.Connection
         public bool IsInitialized => Initialized;
 
         /// <summary>
+        /// Tells the client's operation type.
+        /// </summary>
+        public OperationTypes OperationType => OperationTypes.Offline;
+
+        /// <summary>
         /// Tells if the client is connected.
         /// </summary>
         public bool IsConnected => Connected;

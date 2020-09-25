@@ -31,12 +31,13 @@ namespace TRBot.Utilities
         /// <summary>
         /// Validates if a path exists and creates it if not.
         /// </summary>
-        /// <returns>true if the path exists, false if the path doesn't exist and cannot be created.</returns>
+        /// <param name="path">A valid path name to check or create.</param>
+        /// <returns>true if the path exists or is created, false if the path doesn't exist and cannot be created.</returns>
         public static bool ValidatePath(string path)
         {
             if (Directory.Exists(path) == false)
             {
-                Console.WriteLine($"Folder at path \"{path}\" does not exist; creating");
+                //Console.WriteLine($"Folder at path \"{path}\" does not exist; creating");
 
                 try
                 {
@@ -50,6 +51,18 @@ namespace TRBot.Utilities
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Validates if a path leading up to a file exists and creates it if not.
+        /// </summary>
+        /// <param name="path">A valid path, including the file name, to check or create.</param>
+        /// <returns>true if the path for the file exists or is created, false if the path for the file doesn't exist and cannot be created.</returns>
+        public static bool ValidatePathForFile(string path)
+        {
+            string dirName = Path.GetDirectoryName(path);
+
+            return ValidatePath(dirName);
         }
 
         /// <summary>

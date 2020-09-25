@@ -57,8 +57,6 @@ namespace TRBot.Core
 
         private Parser InputParser = null;
 
-        private SQLiteManager SqliteManager = null;
-
         public BotProgram()
         {
             //Below normal priority
@@ -89,8 +87,6 @@ namespace TRBot.Core
             //Clean up and relinquish the virtual controllers when we're done
             ControllerMngr?.CleanUp();
 
-            SqliteManager?.CleanUp();
-
             //instance = null;
         }
 
@@ -107,6 +103,8 @@ namespace TRBot.Core
             InputParser = new Parser();
 
             CurConsole = new GCConsole();
+
+            //Utilities.FileHelpers.SaveToTextFile(Environment.CurrentDirectory, "test.txt", JsonConvert.SerializeObject(CurConsole, Formatting.Indented));
 
             //TwitchClient client = new TwitchClient();
             //ConnectionCredentials credentials = new ConnectionCredentials("username", "password");
@@ -139,12 +137,15 @@ namespace TRBot.Core
 
             Console.WriteLine($"Setting up virtual controller uinput with {ControllerMngr.ControllerCount} controllers");
 
-            SqliteManager = new SQLiteManager(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "TRBotData.db"),
-                Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
-                SQLiteManager.DEFAULT_SCHEMA_RELATIVE_ROOT, SQLiteManager.DEFAULT_SCHEMA_FILE_NAME));
-            
-            SqliteManager.Initialize();
-            SqliteManager.PrintVersion();
+            string databasePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "TRBotData.db");
+
+            Utilities.FileHelpers.ValidatePathForFile(databasePath);
+
+            using (BotDBContext context = new BotDBContext(databasePath))
+            {
+                //Ensure database creation
+                bool created = context.Database.EnsureCreated();
+            }
 
             Initialized = true;
         }

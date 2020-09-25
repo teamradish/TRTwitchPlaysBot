@@ -28,16 +28,16 @@ namespace TRBot.Data
         /// <summary>
         /// The date and time of the log in string form.
         /// </summary>
-        public string DateTimeString;
+        public string DateTimeString { get; set; } = string.Empty;
         
         /// <summary>
         /// The name of the user that made the log.
         /// </summary>
-        public string User;
+        public string User { get; set; } = string.Empty;
 
         /// <summary>
         /// The log message.
         /// </summary>
-        public string LogMessage;
+        public string LogMessage { get; set; } = string.Empty;
     }
 }

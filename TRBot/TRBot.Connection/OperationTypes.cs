@@ -17,22 +17,25 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TwitchLib.Client;
+using TwitchLib.Client.Events;
+using TwitchLib.Communication.Events;
 
-namespace TRBot.Data
+namespace TRBot.Connection
 {
     /// <summary>
-    /// Settings for the chat bot.
+    /// The types of connections for client services.
     /// </summary>
-    public sealed class ChatBotSettings
+    public enum OperationTypes
     {
         /// <summary>
-        /// If true, will acknowledge that a chat bot is in use and allow interacting with it, provided it's set up.
+        /// This client service operates offline.
         /// </summary>
-        public bool UseChatBot = false;
-
+        Offline = 0,
+        
         /// <summary>
-        /// The path to the chat bot socket that is used to interact with the chat bot. 
+        /// This client service operates online and requires an active internet connection to function.
         /// </summary>
-        public string ChatbotSocketFilePath = string.Empty;//Globals.GetDataFilePath("ChatterBotSocket");
+        Online = 1
     }
 }
