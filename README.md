@@ -39,6 +39,14 @@ When building, make sure to define the correct preprocessor directives in the .c
 ## Running Tests
 All unit tests are in the **TRBot.Tests** project. Simply run `dotnet test` inside this directory or the base **TRBot** directory to run the tests.
 
+## Migrations
+TRBot uses a SQLite database with Entity Framework Core to store and manage its data. If you make code changes to any entities or contexts that affects the database, such as adding/deleting/renaming a field, you will need to add a new migration:
+
+* Go to the **TRBot.Data** project and run `dotnet ef migrations list` to list all migrations. Take note of the furthest one down, which is the most recent.
+* Run `dotnet ef migrations add (migrationhere)`, where "(migrationhere)" is the name of the migration.
+
+Afterwards, simply run TRBot to apply the new migration and update the database.
+
 ## Getting Started
 Please see the [Getting Started](https://github.com/teamradish/TRTwitchPlaysBot/Wiki/Getting-Started.md) guide for setting up TRBot.
 

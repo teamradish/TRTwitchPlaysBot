@@ -30,8 +30,10 @@ namespace TRBot.Data
     /// </summary>
     public class BotDBContext : DbContext
     {
-        //Use a property here to lazy load and avoid requiring Set<T>()
+        //We use properties here to lazy load and avoid needing Set<T>() to load the collections
         public DbSet<Settings> SettingCollection { get; set; } = null;
+        public DbSet<GameLog> GameLogs { get; set; } = null; 
+        
         private string Datasource = string.Empty;
 
         public BotDBContext()
@@ -60,6 +62,12 @@ namespace TRBot.Data
                 entity.Property(e => e.key).HasDefaultValue(string.Empty);
                 entity.Property(e => e.value_str).HasDefaultValue(string.Empty);
                 entity.Property(e => e.value_int).HasDefaultValue(0L);
+            });
+
+            modelBuilder.Entity<GameLog>().ToTable("GameLogs", "gamelogs");
+            modelBuilder.Entity<GameLog>(entity => 
+            {
+                entity.HasKey(e => e.id);
             });
 
            base.OnModelCreating(modelBuilder);

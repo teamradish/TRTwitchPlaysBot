@@ -37,6 +37,8 @@ using TwitchLib.Client.Models;
 using TwitchLib.Client.Events;
 using TwitchLib.Communication.Events;
 using TwitchLib.Communication.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace TRBot.Core
 {
@@ -143,8 +145,8 @@ namespace TRBot.Core
 
             using (BotDBContext context = new BotDBContext(databasePath))
             {
-                //Ensure database creation
-                bool created = context.Database.EnsureCreated();
+                //Ensure database creation and that migrations are applied
+                context.Database.Migrate();
             }
 
             Initialized = true;

@@ -26,9 +26,14 @@ namespace TRBot.Data
     public sealed class GameLog
     {
         /// <summary>
-        /// The date and time of the log in string form.
+        /// The game log's ID.
         /// </summary>
-        public string DateTimeString { get; set; } = string.Empty;
+        public int id { get; set; } = 0;
+
+        /// <summary>
+        /// The date and time of the log.
+        /// </summary>
+        public DateTime LogDateTime { get; set; } = default;
         
         /// <summary>
         /// The name of the user that made the log.
@@ -39,5 +44,10 @@ namespace TRBot.Data
         /// The log message.
         /// </summary>
         public string LogMessage { get; set; } = string.Empty;
+
+        public GameLog()
+        {
+
+        }
     }
 }
