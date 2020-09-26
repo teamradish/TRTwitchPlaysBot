@@ -47,13 +47,15 @@ namespace TRBot.Utilities
 
         /// <summary>
         /// Splits a string into multiple parts with each part's length being less than or equal to a given max character count.
-        /// <summary>
+        /// </summary>
         /// <param name="text">The text to split.</param>
         /// <param name="maxCharCount">The maximum number of characters to have in each section.</param>
         /// <returns>A List containing the split strings.</returns>
         public static List<string> SplitStringWithinCharCount(string text, in int maxCharCount)
         {
-            //No text, return empty
+            return SplitStringWithinCharCount(text, maxCharCount, string.Empty);
+
+            /*//No text, return empty
             if (string.IsNullOrEmpty(text) == true)
             {
                 return new List<string>();
@@ -70,9 +72,7 @@ namespace TRBot.Utilities
             List<string> textList = new List<string>(listCapacity);
 
             int totalChars = text.Length;
-
             int startIndex = 0;
-            StringBuilder strBuilder = new StringBuilder(maxCharCount);
 
             //Keep going until we reach the end of the string
             while (startIndex < totalChars)
@@ -85,31 +85,30 @@ namespace TRBot.Utilities
                     appendCount = totalChars - startIndex;
                 }
 
-                strBuilder.Append(text, startIndex, appendCount);
+                string splitStr = text.Substring(startIndex, appendCount);
                 
                 startIndex += appendCount;
 
                 //Add this section of the string to the list
-                string splitStr = strBuilder.ToString();
                 textList.Add(splitStr);
-
-                strBuilder.Clear();
             }
 
-            return textList;
+            return textList;*/
         }
 
         /// <summary>
         /// Splits a string into multiple parts with each part's length being less than or equal to a given max character count.
         /// If it encounters the given character separator near the end of the max character count, it will cut the part there and continue.
-        /// <summary>
+        /// </summary>
         /// <param name="text">The text to split.</param>
         /// <param name="maxCharCount">The maximum number of characters to have in each section.</param>
         /// <param name="separatorChar">The character to determine the early cutoff.</param>
         /// <returns>A List containing the split strings.</returns>
-        public static List<string> FitTextWithinCharCount(string text, in int maxCharCount, in char separatorChar)
+        public static List<string> SplitStringWithinCharCount(string text, in int maxCharCount, in char separatorChar)
         {
-            //No text, return empty
+            return SplitStringWithinCharCount(text, maxCharCount, new string(separatorChar, 1));
+
+            /*//No text, return empty
             if (string.IsNullOrEmpty(text) == true)
             {
                 return new List<string>();
@@ -126,9 +125,7 @@ namespace TRBot.Utilities
             List<string> textList = new List<string>(listCapacity);
 
             int totalChars = text.Length;
-
             int startIndex = 0;
-            StringBuilder strBuilder = new StringBuilder(maxCharCount);
 
             //Keep going until we reach the end of the string
             while (startIndex < totalChars)
@@ -161,28 +158,26 @@ namespace TRBot.Utilities
                     }
                 }
 
-                strBuilder.Append(text, startIndex, appendCount);
+                string splitStr = text.Substring(startIndex, appendCount);
                 
                 startIndex += appendCount;
 
-                string splitStr = strBuilder.ToString();
+                //Add this section of the string to the list
                 textList.Add(splitStr);
-
-                strBuilder.Clear();
             }
 
-            return textList;
+            return textList;*/
         }
 
         /// <summary>
         /// Splits a string into multiple parts with each part's length being less than or equal to a given max character count.
         /// If it encounters the given string separator near the end of the max character count, it will cut the part there and continue.
-        /// <summary>
+        /// </summary>
         /// <param name="text">The text to split.</param>
         /// <param name="maxCharCount">The maximum number of characters to have in each section.</param>
         /// <param name="separatorStr">The string to determine the early cutoff</param>
         /// <returns>A List containing the split strings.</returns>
-        public static List<string> FitTextWithinCharCount(string text, in int maxCharCount, string separatorStr)
+        public static List<string> SplitStringWithinCharCount(string text, in int maxCharCount, string separatorStr)
         {
             //No text, return empty
             if (string.IsNullOrEmpty(text) == true)
@@ -201,9 +196,7 @@ namespace TRBot.Utilities
             List<string> textList = new List<string>(listCapacity);
 
             int totalChars = text.Length;
-
             int startIndex = 0;
-            StringBuilder strBuilder = new StringBuilder(maxCharCount);
 
             //Keep going until we reach the end of the string
             while (startIndex < totalChars)
@@ -217,7 +210,8 @@ namespace TRBot.Utilities
                     appendCount = totalChars - startIndex;
                     endIndex = totalChars - 1;
                 }
-                else
+                //If the separator isn't given, ignore it
+                else if (string.IsNullOrEmpty(separatorStr) == false)
                 {
                     //Find the last instance of the separator in our range
                     int separatorIndex = text.LastIndexOf(separatorStr, endIndex, appendCount);
@@ -236,14 +230,12 @@ namespace TRBot.Utilities
                     }
                 }
 
-                strBuilder.Append(text, startIndex, appendCount);
+                string splitStr = text.Substring(startIndex, appendCount);
                 
                 startIndex += appendCount;
 
-                string splitStr = strBuilder.ToString();
+                //Add this section of the string to the list
                 textList.Add(splitStr);
-
-                strBuilder.Clear();
             }
 
             return textList;
