@@ -37,8 +37,6 @@ using TwitchLib.Client.Models;
 using TwitchLib.Client.Events;
 using TwitchLib.Communication.Events;
 using TwitchLib.Communication.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 
 namespace TRBot.Core
 {
@@ -139,15 +137,20 @@ namespace TRBot.Core
 
             Console.WriteLine($"Setting up virtual controller uinput with {ControllerMngr.ControllerCount} controllers");
 
+            //Initialize database
             string databasePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "TRBotData.db");
 
-            Utilities.FileHelpers.ValidatePathForFile(databasePath);
-
-            using (BotDBContext context = new BotDBContext(databasePath))
+            Console.WriteLine($"Validating database at: {databasePath}");
+            if (Utilities.FileHelpers.ValidatePathForFile(databasePath) == false)
             {
-                //Ensure database creation and that migrations are applied
-                context.Database.Migrate();
+                Console.WriteLine($"Cannot create database path at {databasePath}. Check if you have permission to write to this directory. Aborting.");
+                return;
             }
+            
+            Console.WriteLine("Database path validated! Initializing database and importing migrations.");
+
+            DatabaseManager.SetDatabasePath(databasePath);
+            DatabaseManager.InitAndMigrateContext();
 
             Initialized = true;
         }

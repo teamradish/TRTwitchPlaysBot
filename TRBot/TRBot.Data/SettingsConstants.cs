@@ -34,9 +34,11 @@ namespace TRBot.Data
 
         public const string CHATBOT_ENABLED = "chatbot_enabled";
         public const string CHATBOT_SOCKET_PATH = "chatbot_socket_path";
-        
+        public const string CHATBOT_SOCKET_PATH_IS_RELATIVE = "chatbot_socket_path_is_relative";
+
         public const string BINGO_ENABLED = "bingo_enabled";
         public const string BINGO_PIPE_PATH = "bingo_pipe_path";
+        public const string BINGO_PIPE_PATH_IS_RELATIVE = "bingo_pipe_path_is_relative";
 
         public const string CLIENT_SERVICE_TYPE = "client_service_type";
 
@@ -55,5 +57,16 @@ namespace TRBot.Data
         public const string BEING_HOSTED_MESSAGE = "being_hosted_message";
         public const string NEW_SUBSCRIBER_MESSAGE = "new_subscriber_message";
         public const string RESUBSCRIBER_MESSAGE = "resubscriber_message";
+
+        public const string GAME_MESSAGE = "game_message";
+        public const string GAME_MESSAGE_PATH = "game_message_path";
+        public const string GAME_MESSAGE_PATH_IS_RELATIVE = "game_message_path_is_relative";
+        public const string INFO_MESSAGE = "info_message";
+
+        public const string DEFAULT_INPUT_DURATION = "default_input_duration";
+        public const string MAX_INPUT_DURATION = "max_input_duration";
+        
+        public const string LAST_CONSOLE = "last_console";
+        public const string JOYSTICK_COUNT = "joystick_count";
     }
 }
