@@ -151,6 +151,11 @@ namespace TRBot.Core
 
             DatabaseManager.SetDatabasePath(databasePath);
             DatabaseManager.InitAndMigrateContext();
+            
+            Console.WriteLine("Adding default values for non-existent database settings.");
+
+            //Check for and initialize default values if the database was newly created or needs updating
+            InitDefaultData();
 
             Initialized = true;
         }
@@ -452,5 +457,34 @@ namespace TRBot.Core
         }
 
 #endregion
+
+        /// <summary>
+        /// Initializes default values for data.
+        /// </summary>
+        private void InitDefaultData()
+        {
+            using (BotDBContext dbContext = DatabaseManager.OpenContext())
+            {
+                //Check all settings with the defaults
+                List<Settings> settings = DefaultData.GetDefaultSettings();
+                if (dbContext.SettingCollection.Count() < settings.Count)
+                {
+                    for (int i = 0; i < settings.Count; i++)
+                    {
+                        Settings setting = settings[i];
+
+                        //See if the setting exists
+                        Settings foundSetting = dbContext.SettingCollection.FirstOrDefault((set) => set.key == setting.key);
+                        if (foundSetting == null)
+                        {
+                            //Default setting does not exist, so add it
+                            dbContext.SettingCollection.Add(settings[i]);
+                        }
+                    }
+                }
+
+                dbContext.SaveChanges();
+            }
+        }
     }
 }
