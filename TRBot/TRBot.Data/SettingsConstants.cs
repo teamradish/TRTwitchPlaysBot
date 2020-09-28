@@ -67,6 +67,7 @@ namespace TRBot.Data
         public const string MAX_INPUT_DURATION = "max_input_duration";
         
         public const string LAST_CONSOLE = "last_console";
+        public const string LAST_VCONTROLLER_TYPE = "last_vcontroller_type";
         public const string JOYSTICK_COUNT = "joystick_count";
     }
 }

@@ -29,6 +29,7 @@ using TRBot.Connection;
 using TRBot.Consoles;
 using TRBot.VirtualControllers;
 using TRBot.Common;
+using TRBot.Utilities;
 using TRBot.Data;
 using Newtonsoft.Json;
 using TwitchLib;
@@ -127,21 +128,6 @@ namespace TRBot.Core
             UnsubscribeEvents();
             SubscribeEvents();
 
-            ControllerMngr = new UInputControllerManager();
-            ControllerMngr.Initialize();
-            ControllerMngr.InitControllers(1);
-
-            MacroData = new InputMacroCollection(new ConcurrentDictionary<string, InputMacro>());
-            MacroData.AddMacro(new InputMacro("#mash(*)", "[<0>34ms #34ms]*20"));
-            MacroData.AddMacro(new InputMacro("#test", "b500ms #200ms up"));
-            MacroData.AddMacro(new InputMacro("#test2", "a #200ms #test"));
-
-            SynonymData = new InputSynonymCollection(new ConcurrentDictionary<string, InputSynonym>());
-            SynonymData.AddSynonym(new InputSynonym(".", "#"));
-            SynonymData.AddSynonym(new InputSynonym("aandup", "a+up"));
-
-            Console.WriteLine($"Setting up virtual controller uinput with {ControllerMngr.ControllerCount} controllers");
-
             //Initialize database
             string databasePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "TRBotData.db");
 
@@ -161,6 +147,23 @@ namespace TRBot.Core
 
             //Check for and initialize default values if the database was newly created or needs updating
             InitDefaultData();
+
+            VirtualControllerTypes lastVControllerType = ValidateVirtualControllerType();
+
+            ControllerMngr = VControllerHelper.GetVControllerMngrForType(lastVControllerType);
+            ControllerMngr.Initialize();
+            ControllerMngr.InitControllers(1);
+
+            //MacroData = new InputMacroCollection(new ConcurrentDictionary<string, InputMacro>());
+            //MacroData.AddMacro(new InputMacro("#mash(*)", "[<0>34ms #34ms]*20"));
+            //MacroData.AddMacro(new InputMacro("#test", "b500ms #200ms up"));
+            //MacroData.AddMacro(new InputMacro("#test2", "a #200ms #test"));
+
+            //SynonymData = new InputSynonymCollection(new ConcurrentDictionary<string, InputSynonym>());
+            //SynonymData.AddSynonym(new InputSynonym(".", "#"));
+            //SynonymData.AddSynonym(new InputSynonym("aandup", "a+up"));
+
+            Console.WriteLine($"Setting up virtual controller {lastVControllerType} with {ControllerMngr.ControllerCount} controllers");
 
             Initialized = true;
         }
@@ -201,7 +204,7 @@ namespace TRBot.Core
                     //but the database can manually be changed to have lower values 
                     threadSleep = Math.Clamp((int)threadSleepSetting.value_int, 0, int.MaxValue);
                 }
-                
+
                 Thread.Sleep(threadSleep);
             }
         }
@@ -502,6 +505,38 @@ namespace TRBot.Core
 
                 dbContext.SaveChanges();
             }
+        }
+
+        private VirtualControllerTypes ValidateVirtualControllerType()
+        {
+            VirtualControllerTypes lastVControllerType = VirtualControllerTypes.Invalid;
+            using (BotDBContext dbContext = DatabaseManager.OpenContext())
+            {
+                //Validate the last virtual controller type
+                Settings vControllerSetting = dbContext.SettingCollection.FirstOrDefault((set) => set.key == SettingsConstants.LAST_VCONTROLLER_TYPE);
+                if (vControllerSetting != null)
+                {
+                    lastVControllerType = (VirtualControllerTypes)vControllerSetting.value_int;
+                }
+
+                //Check if the virtual controller type is supported on this platform
+                if (VControllerHelper.IsVControllerSupported(lastVControllerType, OSPlatform.CurrentOS) == false)
+                {
+                    //It's not supported, so switch it to prevent issues on this platform
+                    VirtualControllerTypes defaultVContType = VControllerHelper.GetDefaultVControllerTypeForPlatform(OSPlatform.CurrentOS);
+                    if (vControllerSetting != null)
+                    {
+                        vControllerSetting.value_int = (long)defaultVContType;
+                    }
+
+                    Console.WriteLine($"Current virtual controller {lastVControllerType} is not supported by the {OSPlatform.CurrentOS} platform. Switched it to the default of {defaultVContType} for this platform.");
+                    lastVControllerType = defaultVContType;
+
+                    dbContext.SaveChanges();
+                }
+            }
+
+            return lastVControllerType;
         }
 
         private bool FindThreadSleepTime(Settings setting)

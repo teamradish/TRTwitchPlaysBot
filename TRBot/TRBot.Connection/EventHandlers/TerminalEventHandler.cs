@@ -227,7 +227,7 @@ namespace TRBot.Connection
             }
         }*/
 
-        private async void WaitForMainInitialization()
+        private /*async*/ void WaitForMainInitialization()
         {
             //Wait for the main program to initialize
             //while (false)//BotProgram.MsgHandler == null)

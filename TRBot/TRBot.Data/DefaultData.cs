@@ -68,7 +68,8 @@ namespace TRBot.Data
                 SettingsHelper(DEFAULT_INPUT_DURATION, 200L),
                 SettingsHelper(MAX_INPUT_DURATION, 60000L),
                 SettingsHelper(LAST_CONSOLE, 0L),
-                SettingsHelper(JOYSTICK_COUNT, 1L)
+                SettingsHelper(LAST_VCONTROLLER_TYPE, (long)VirtualControllerTypes.vJoy),
+                SettingsHelper(JOYSTICK_COUNT, 1L),
             };
 
             return defaultSettings;
