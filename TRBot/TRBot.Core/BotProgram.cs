@@ -57,6 +57,9 @@ namespace TRBot.Core
 
         private Parser InputParser = null;
 
+        //Store the function to reduce garbage, since this is happening constantly
+        private Func<Settings, bool> ThreadSleepFindFunc = null;
+
         public BotProgram()
         {
             //Below normal priority
@@ -64,6 +67,8 @@ namespace TRBot.Core
             Process thisProcess = Process.GetCurrentProcess();
             thisProcess.PriorityBoostEnabled = false;
             thisProcess.PriorityClass = ProcessPriorityClass.BelowNormal;
+
+            ThreadSleepFindFunc = FindThreadSleepTime;
         }
 
         //Clean up anything we need to here
@@ -185,7 +190,19 @@ namespace TRBot.Core
                 //Update routines
                 //RoutineHandler.Update(now);
 
-                Thread.Sleep(100);
+                int threadSleep = 100;
+
+                //Get the thread sleep value from the database
+                using (BotDBContext context = DatabaseManager.OpenContext())
+                {
+                    Settings threadSleepSetting = context.SettingCollection.FirstOrDefault(ThreadSleepFindFunc);
+
+                    //Clamp to avoid an exception - the code that changes this should handle values below 0,
+                    //but the database can manually be changed to have lower values 
+                    threadSleep = Math.Clamp((int)threadSleepSetting.value_int, 0, int.MaxValue);
+                }
+                
+                Thread.Sleep(threadSleep);
             }
         }
 
@@ -485,6 +502,11 @@ namespace TRBot.Core
 
                 dbContext.SaveChanges();
             }
+        }
+
+        private bool FindThreadSleepTime(Settings setting)
+        {
+            return (setting.key == SettingsConstants.MAIN_THREAD_SLEEP);
         }
     }
 }
