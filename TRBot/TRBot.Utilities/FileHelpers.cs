@@ -106,6 +106,7 @@ namespace TRBot.Utilities
             }
 
             string fullPath = Path.Combine(path, fileName);
+            
             if (File.Exists(fullPath) == false)
             {
                 //Create the file if it doesn't exist
@@ -124,7 +125,7 @@ namespace TRBot.Utilities
             //Try to read the file
             try
             {
-                return File.ReadAllText(path);
+                return File.ReadAllText(fullPath);
             }
             catch (Exception exception)
             {

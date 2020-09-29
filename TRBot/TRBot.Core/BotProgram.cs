@@ -58,7 +58,7 @@ namespace TRBot.Core
 
         private Parser InputParser = null;
 
-        //Store the function to reduce garbage, since this is happening constantly
+        //Store the function to reduce garbage, since this one is being called constantly
         private Func<Settings, bool> ThreadSleepFindFunc = null;
 
         public BotProgram()
@@ -104,32 +104,12 @@ namespace TRBot.Core
             //Kimimaru: Use invariant culture
             Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
-            Console.WriteLine($"Setting up client service: Terminal");
-
             InputParser = new Parser();
 
             CurConsole = new GCConsole();
 
-            //Utilities.FileHelpers.SaveToTextFile(Environment.CurrentDirectory, "test.txt", JsonConvert.SerializeObject(CurConsole, Formatting.Indented));
-
-            //TwitchClient client = new TwitchClient();
-            //ConnectionCredentials credentials = new ConnectionCredentials("username", "password");
-            //ClientService = new TwitchClientService(credentials, "channel", '!', '!', true);
-
-            ClientService = new TerminalClientService('!');
-
-            MsgHandler.SetLogToConsole(false);
-            MsgHandler.SetClientService(ClientService);
-            MsgHandler.SetMessageCooldown(1000d);
-
-            //Initialize service
-            ClientService.Initialize();
-
-            UnsubscribeEvents();
-            SubscribeEvents();
-
             //Initialize database
-            string databasePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "TRBotData.db");
+            string databasePath = Path.Combine(DataConstants.DataFolderPath, "TRBotData.db");
 
             Console.WriteLine($"Validating database at: {databasePath}");
             if (Utilities.FileHelpers.ValidatePathForFile(databasePath) == false)
@@ -148,22 +128,54 @@ namespace TRBot.Core
             //Check for and initialize default values if the database was newly created or needs updating
             InitDefaultData();
 
+            Console.WriteLine("Initializing client service");
+
+            //Initialize client service
+            InitClientService();
+
+            //If the client service doesn't exist, we can't continue
+            if (ClientService == null)
+            {
+                Console.WriteLine("Client service failed to initialize; please check your settings. Aborting.");
+                return;
+            }
+
+            //Set client service and message cooldown
+            MsgHandler.SetClientService(ClientService);
+
+            long msgCooldown = DataHelper.GetSettingInt(SettingsConstants.MESSAGE_COOLDOWN, 1000L);
+            MsgHandler.SetMessageCooldown(msgCooldown);
+
+            //Subscribe to events
+            UnsubscribeEvents();
+            SubscribeEvents();
+
+            Console.WriteLine("Setting up virtual controller manager.");
+
             VirtualControllerTypes lastVControllerType = ValidateVirtualControllerType();
 
             ControllerMngr = VControllerHelper.GetVControllerMngrForType(lastVControllerType);
+
+            //No controller manager - there's a problem
+            if (ControllerMngr == null)
+            {
+                Console.WriteLine($"Virtual controller manager failed to initialize. This indicates an invalid {SettingsConstants.LAST_VCONTROLLER_TYPE} setting in the database or an unimplemented platform. Aborting.");
+                return;
+            }
+
             ControllerMngr.Initialize();
-            ControllerMngr.InitControllers(1);
+            int acquiredCount = ControllerMngr.InitControllers(1);
 
-            //MacroData = new InputMacroCollection(new ConcurrentDictionary<string, InputMacro>());
-            //MacroData.AddMacro(new InputMacro("#mash(*)", "[<0>34ms #34ms]*20"));
-            //MacroData.AddMacro(new InputMacro("#test", "b500ms #200ms up"));
-            //MacroData.AddMacro(new InputMacro("#test2", "a #200ms #test"));
+            Console.WriteLine($"Setting up virtual controller {lastVControllerType} and acquired {acquiredCount} controllers!");
 
-            //SynonymData = new InputSynonymCollection(new ConcurrentDictionary<string, InputSynonym>());
-            //SynonymData.AddSynonym(new InputSynonym(".", "#"));
-            //SynonymData.AddSynonym(new InputSynonym("aandup", "a+up"));
+            MacroData = new InputMacroCollection(new ConcurrentDictionary<string, InputMacro>());
+            MacroData.AddMacro(new InputMacro("#mash(*)", "[<0>34ms #34ms]*20"));
+            MacroData.AddMacro(new InputMacro("#test", "b500ms #200ms up"));
+            MacroData.AddMacro(new InputMacro("#test2", "a #200ms #test"));
 
-            Console.WriteLine($"Setting up virtual controller {lastVControllerType} with {ControllerMngr.ControllerCount} controllers");
+            SynonymData = new InputSynonymCollection(new ConcurrentDictionary<string, InputSynonym>());
+            SynonymData.AddSynonym(new InputSynonym(".", "#"));
+            SynonymData.AddSynonym(new InputSynonym("aandup", "a+up"));
 
             Initialized = true;
         }
@@ -245,7 +257,7 @@ namespace TRBot.Core
 
         private void OnConnected(EvtConnectedArgs e)
         {
-            MsgHandler.QueueMessage($"kimimarubot connected!");
+            Console.WriteLine($"Bot connected!");
         }
 
         private void OnConnectionError(EvtConnectionErrorArgs e)
@@ -255,9 +267,12 @@ namespace TRBot.Core
 
         private void OnJoinedChannel(EvtJoinedChannelArgs e)
         {
-            MsgHandler.QueueMessage($"Joined channel \"{e.Channel}\"");
+            Console.WriteLine($"Joined channel \"{e.Channel}\"");
 
             MsgHandler.SetChannelName(e.Channel);
+
+            string connectMessage = DataHelper.GetSettingString(SettingsConstants.CONNECT_MESSAGE, "Connected!");
+            MsgHandler.QueueMessage(connectMessage);
         }
 
         private void OnChatCommandReceived(EvtChatCommandArgs e)
@@ -537,6 +552,52 @@ namespace TRBot.Core
             }
 
             return lastVControllerType;
+        }
+
+        private void InitClientService()
+        {
+            ClientServiceTypes clientServiceType = ClientServiceTypes.Terminal;
+            using (BotDBContext dbContext = DatabaseManager.OpenContext())
+            {
+                Settings setting = dbContext.SettingCollection.FirstOrDefault((set) => set.key == SettingsConstants.CLIENT_SERVICE_TYPE);
+
+                if (setting != null)
+                {
+                    clientServiceType = (ClientServiceTypes)setting.value_int;
+                }
+                else
+                {
+                    Console.WriteLine($"Database does not contain the {SettingsConstants.CLIENT_SERVICE_TYPE} setting. It will default to {clientServiceType}.");
+                }
+            }
+
+            Console.WriteLine($"Setting up client service: {clientServiceType}");
+
+            if (clientServiceType == ClientServiceTypes.Terminal)
+            {
+                ClientService = new TerminalClientService(DataConstants.COMMAND_IDENTIFIER);
+
+                MsgHandler.SetLogToConsole(false);
+            }
+            else if (clientServiceType == ClientServiceTypes.Twitch)
+            {
+                TwitchLoginSettings twitchSettings = ConnectionHelper.ValidateTwitchCredentialsPresent(DataConstants.DataFolderPath,
+                    TwitchConstants.LOGIN_SETTINGS_FILENAME);
+
+                //If either of these fields are empty, the data is invalid
+                if (string.IsNullOrEmpty(twitchSettings.ChannelName) || string.IsNullOrEmpty(twitchSettings.Password)
+                    || string.IsNullOrEmpty(twitchSettings.BotName))
+                {
+                    Console.WriteLine($"Twitch login settings are invalid. Please modify the data in the {TwitchConstants.LOGIN_SETTINGS_FILENAME} file.");
+                }
+
+                TwitchClient client = new TwitchClient();
+                ConnectionCredentials credentials = ConnectionHelper.MakeCredentialsFromTwitchLogin(twitchSettings);
+                ClientService = new TwitchClientService(credentials, twitchSettings.ChannelName, DataConstants.COMMAND_IDENTIFIER, DataConstants.COMMAND_IDENTIFIER, true);
+            }
+
+            //Initialize service
+            ClientService?.Initialize();
         }
 
         private bool FindThreadSleepTime(Settings setting)

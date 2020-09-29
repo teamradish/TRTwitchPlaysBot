@@ -34,7 +34,7 @@ namespace TRBot.Common
         private IClientService ClientService = null;
 
         private string ChannelName = string.Empty;
-        private double MessageCooldown = 1000d;
+        private long MessageCooldown = 1000L;
 
         /// <summary>
         /// Whether to also log bot messages to the console.
@@ -48,7 +48,7 @@ namespace TRBot.Common
 
         }
 
-        public BotMessageHandler(IClientService clientService, string channelName, in double messageCooldown)
+        public BotMessageHandler(IClientService clientService, string channelName, in long messageCooldown)
         {
             SetClientService(clientService);
             SetChannelName(channelName);
@@ -70,7 +70,7 @@ namespace TRBot.Common
             ChannelName = channelName;
         }
 
-        public void SetMessageCooldown(in double messageCooldown)
+        public void SetMessageCooldown(in long messageCooldown)
         {
             MessageCooldown = messageCooldown;
         }
