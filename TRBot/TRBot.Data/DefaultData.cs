@@ -63,6 +63,7 @@ namespace TRBot.Data
                 SettingsHelper(BEING_HOSTED_MESSAGE, "Thank you for hosting, {0}!!"),
                 SettingsHelper(NEW_SUBSCRIBER_MESSAGE, "Thank you for subscribing, {0} :D !!"),
                 SettingsHelper(RESUBSCRIBER_MESSAGE, "Thank you for subscribing for {1} months, {0} :D !!"),
+                SettingsHelper(SOURCE_CODE_MESSAGE, "This bot is free software licensed under the AGPL v3.0. The code repository and full license terms are at https://github.com/teamradish/TRTwitchPlaysBot - You have the right to obtain source code for the streamer's deployed version of the software."),
                 SettingsHelper(GAME_MESSAGE, "Message"),
                 SettingsHelper(INFO_MESSAGE, "Welcome to the channel! You can play games by submitting messages in chat. Type !inputs to see all available buttons."),
                 SettingsHelper(DEFAULT_INPUT_DURATION, 200L),

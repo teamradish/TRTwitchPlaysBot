@@ -31,6 +31,7 @@ using TRBot.VirtualControllers;
 using TRBot.Common;
 using TRBot.Utilities;
 using TRBot.Data;
+using TRBot.Commands;
 using Newtonsoft.Json;
 using TwitchLib;
 using TwitchLib.Client;
@@ -57,6 +58,7 @@ namespace TRBot.Core
         private InputSynonymCollection SynonymData = new InputSynonymCollection();
 
         private Parser InputParser = null;
+        private CommandHandler CmdHandler = null;
 
         //Store the function to reduce garbage, since this one is being called constantly
         private Func<Settings, bool> ThreadSleepFindFunc = null;
@@ -86,6 +88,7 @@ namespace TRBot.Core
             ClientService?.CleanUp();
 
             MsgHandler?.CleanUp();
+            CmdHandler?.CleanUp();
 
             if (ClientService?.IsConnected == true)
                 ClientService.Disconnect();
@@ -126,7 +129,12 @@ namespace TRBot.Core
             Console.WriteLine("Adding default values for non-existent database settings.");
 
             //Check for and initialize default values if the database was newly created or needs updating
-            InitDefaultData();
+            InitDefaultData(out int entries);
+
+            if (entries > 0)
+            {
+                Console.WriteLine($"Added {entries} additional entries to the database."); 
+            }
 
             Console.WriteLine("Initializing client service");
 
@@ -176,6 +184,9 @@ namespace TRBot.Core
             SynonymData = new InputSynonymCollection(new ConcurrentDictionary<string, InputSynonym>());
             SynonymData.AddSynonym(new InputSynonym(".", "#"));
             SynonymData.AddSynonym(new InputSynonym("aandup", "a+up"));
+
+            CmdHandler = new CommandHandler();
+            CmdHandler.Initialize(MsgHandler);
 
             Initialized = true;
         }
@@ -278,6 +289,8 @@ namespace TRBot.Core
         private void OnChatCommandReceived(EvtChatCommandArgs e)
         {
             MsgHandler.QueueMessage($"Received command \"{e.Command.CommandText}\"");
+
+            CmdHandler.HandleCommand(e);            
         }
 
         private void OnUserSentMessage(EvtUserMessageArgs e)
@@ -355,7 +368,7 @@ namespace TRBot.Core
             //User userData = e.UserData;
 
             //Ignore commands as inputs
-            if (e.UsrMessage.Message.StartsWith('!') == true)
+            if (e.UsrMessage.Message.StartsWith(DataConstants.COMMAND_IDENTIFIER) == true)
             {
                 return;
             }
@@ -496,8 +509,10 @@ namespace TRBot.Core
         /// <summary>
         /// Initializes default values for data.
         /// </summary>
-        private void InitDefaultData()
+        private void InitDefaultData(out int entriesAdded)
         {
+            entriesAdded = 0;
+            
             using (BotDBContext dbContext = DatabaseManager.OpenContext())
             {
                 //Check all settings with the defaults
@@ -514,6 +529,8 @@ namespace TRBot.Core
                         {
                             //Default setting does not exist, so add it
                             dbContext.SettingCollection.Add(settings[i]);
+
+                            entriesAdded++;
                         }
                     }
                 }

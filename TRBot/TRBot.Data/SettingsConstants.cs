@@ -57,6 +57,7 @@ namespace TRBot.Data
         public const string BEING_HOSTED_MESSAGE = "being_hosted_message";
         public const string NEW_SUBSCRIBER_MESSAGE = "new_subscriber_message";
         public const string RESUBSCRIBER_MESSAGE = "resubscriber_message";
+        public const string SOURCE_CODE_MESSAGE = "source_code_message";
 
         public const string GAME_MESSAGE = "game_message";
         public const string GAME_MESSAGE_PATH = "game_message_path";

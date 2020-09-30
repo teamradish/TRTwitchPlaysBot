@@ -63,6 +63,7 @@ namespace TRBot.Data
                 entity.Property(e => e.key).HasDefaultValue(string.Empty);
                 entity.Property(e => e.value_str).HasDefaultValue(string.Empty);
                 entity.Property(e => e.value_int).HasDefaultValue(0L);
+                entity.HasIndex(e => e.key).IsUnique();
             });
 
             modelBuilder.Entity<GameLog>().ToTable("GameLogs", "gamelogs");

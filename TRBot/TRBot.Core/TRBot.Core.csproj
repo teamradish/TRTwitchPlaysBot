@@ -9,6 +9,7 @@
     <ProjectReference Include="..\TRBot.ParserData\TRBot.ParserData.csproj" />
     <ProjectReference Include="..\TRBot.Common\TRBot.Common.csproj" />
     <ProjectReference Include="..\TRBot.Data\TRBot.Data.csproj" />
+    <ProjectReference Include="..\TRBot.Commands\TRBot.Commands.csproj" />
   </ItemGroup>
 
   <ItemGroup>

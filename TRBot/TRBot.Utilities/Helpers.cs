@@ -47,6 +47,87 @@ namespace TRBot.Utilities
 
         /// <summary>
         /// Splits a string into multiple parts with each part's length being less than or equal to a given max character count.
+        /// This overload returns both the original text and the text list.
+        /// The returned text list is null if the text is already within the max character count.
+        /// </summary>
+        /// <param name="text">The text to split.</param>
+        /// <param name="maxCharCount">The maximum number of characters to have in each section.</param>
+        /// <param name="textList">The returned text list.</param>
+        /// <returns>The original text and a List containing the split strings.
+        /// The list is null if the text is already within the max character count.</returns>
+        public static string SplitStringWithinCharCount(string text, in int maxCharCount, out List<string> textList)
+        {
+            return SplitStringWithinCharCount(text, maxCharCount, string.Empty, out textList);
+        }
+
+        /// <summary>
+        /// Splits a string into multiple parts with each part's length being less than or equal to a given max character count.
+        /// This overload returns both the original text and the text list.
+        /// The returned text list is null if the text is already within the max character count.
+        /// </summary>
+        /// <param name="text">The text to split.</param>
+        /// <param name="maxCharCount">The maximum number of characters to have in each section.</param>
+        /// <param name="separatorChar">The character to determine the early cutoff.</param>
+        /// <param name="textList">The returned text list.</param>
+        /// <returns>The original text and a List containing the split strings.
+        /// The list is null if the text is already within the max character count.</returns>
+        public static string SplitStringWithinCharCount(string text, in int maxCharCount, char separatorChar,
+            out List<string> textList)
+        {
+            //No text, return empty
+            if (string.IsNullOrEmpty(text) == true)
+            {
+                textList = null;
+                return text;
+            }
+
+            //All the text already fits in the character count, so simply return it
+            if (text.Length <= maxCharCount)
+            {
+                textList = null;
+                return text;
+            }
+
+            textList = SplitStringWithinCharCount(text, maxCharCount, separatorChar);
+
+            return text;
+        }
+
+        /// <summary>
+        /// Splits a string into multiple parts with each part's length being less than or equal to a given max character count.
+        /// This overload returns both the original text and the text list.
+        /// The returned text list is null if the text is already within the max character count.
+        /// </summary>
+        /// <param name="text">The text to split.</param>
+        /// <param name="maxCharCount">The maximum number of characters to have in each section.</param>
+        /// <param name="separatorStr">The string to determine the early cutoff.</param>
+        /// <param name="textList">The returned text list.</param>
+        /// <returns>The original text and a List containing the split strings.
+        /// The list is null if the text is already within the max character count.</returns>
+        public static string SplitStringWithinCharCount(string text, in int maxCharCount, string separatorStr,
+            out List<string> textList)
+        {
+            //No text, return empty
+            if (string.IsNullOrEmpty(text) == true)
+            {
+                textList = null;
+                return text;
+            }
+
+            //All the text already fits in the character count, so simply return it
+            if (text.Length <= maxCharCount)
+            {
+                textList = null;
+                return text;
+            }
+
+            textList = SplitStringWithinCharCount(text, maxCharCount, separatorStr);
+
+            return text;
+        }
+
+        /// <summary>
+        /// Splits a string into multiple parts with each part's length being less than or equal to a given max character count.
         /// </summary>
         /// <param name="text">The text to split.</param>
         /// <param name="maxCharCount">The maximum number of characters to have in each section.</param>
@@ -175,7 +256,7 @@ namespace TRBot.Utilities
         /// </summary>
         /// <param name="text">The text to split.</param>
         /// <param name="maxCharCount">The maximum number of characters to have in each section.</param>
-        /// <param name="separatorStr">The string to determine the early cutoff</param>
+        /// <param name="separatorStr">The string to determine the early cutoff.</param>
         /// <returns>A List containing the split strings.</returns>
         public static List<string> SplitStringWithinCharCount(string text, in int maxCharCount, string separatorStr)
         {

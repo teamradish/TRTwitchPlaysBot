@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\TRBot.Utilities\TRBot.Utilities.csproj" />
+    <ProjectReference Include="..\TRBot.Data\TRBot.Data.csproj" />
+    <ProjectReference Include="..\TRBot.Parsing\TRBot.Parsing.csproj" />
+    <ProjectReference Include="..\TRBot.ParserData\TRBot.ParserData.csproj" />
+    <ProjectReference Include="..\TRBot.VirtualControllers\TRBot.VirtualControllers.csproj" />
+    <ProjectReference Include="..\TRBot.Common\TRBot.Common.csproj" />
+    <ProjectReference Include="..\TRBot.Consoles\TRBot.Consoles.csproj" />
+    <ProjectReference Include="..\TRBot.Connection\TRBot.Connection.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+</Project>
