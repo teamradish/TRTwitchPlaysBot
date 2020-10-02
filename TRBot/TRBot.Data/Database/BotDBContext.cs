@@ -83,6 +83,9 @@ namespace TRBot.Data
             modelBuilder.Entity<CommandData>(entity =>
             {
                 entity.HasKey(e => e.id);
+                entity.Property(e => e.level).HasDefaultValue(0);
+                entity.Property(e => e.enabled).HasDefaultValue(1);
+                entity.Property(e => e.display_in_list).HasDefaultValue(1);
                 entity.HasIndex(e => e.name).IsUnique();
             });
 

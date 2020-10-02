@@ -30,7 +30,8 @@ namespace TRBot.Commands
     /// </summary>
     public abstract class BaseCommand
     {
-        public bool HiddenFromHelp = false;
+        public bool Enabled = true;
+        public bool DisplayInHelp = true;
 
         public BaseCommand()
         {

@@ -25,8 +25,20 @@ namespace TRBot.Data.Migrations
                     b.Property<string>("class_name")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("display_in_list")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(1);
+
+                    b.Property<int>("enabled")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(1);
+
                     b.Property<int>("level")
-                        .HasColumnType("INTEGER");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(0);
 
                     b.Property<string>("name")
                         .HasColumnType("TEXT");

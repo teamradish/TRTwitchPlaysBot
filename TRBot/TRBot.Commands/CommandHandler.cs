@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,14 +32,13 @@ namespace TRBot.Commands
     /// </summary>
     public class CommandHandler
     {
-        private Dictionary<string, BaseCommand> AllCommands = new Dictionary<string, BaseCommand>(32);
+        private ConcurrentDictionary<string, BaseCommand> AllCommands = new ConcurrentDictionary<string, BaseCommand>(Environment.ProcessorCount * 2, 32);
         private BotMessageHandler MessageHandler = null;
         private DataReloader DataReloader = null;
 
         public CommandHandler()
         {
-            //AllCommands.Add("sourcecode", new MessageCommand(SettingsConstants.SOURCE_CODE_MESSAGE, string.Empty));
-            //AllCommands.Add("info", new MessageCommand(SettingsConstants.INFO_MESSAGE, string.Empty));
+
         }
 
         public void Initialize(BotMessageHandler messageHandler, DataReloader dataReloader)
@@ -81,9 +81,77 @@ namespace TRBot.Commands
                     return;
                 }
 
+                //Return if the command is disabled
+                if (command.Enabled == false)
+                {
+                    return;
+                }
+
                 //Execute the command
                 command.ExecuteCommand(args);
             }
+        }
+
+        public BaseCommand GetCommand(string commandName)
+        {
+            AllCommands.TryGetValue(commandName, out BaseCommand command);
+
+            return command;
+        }
+
+        public bool AddCommand(string commandName, string commandTypeName, object[] constructorData)
+        {
+            Type commandType = Type.GetType(commandTypeName, false, true);
+            if (commandType == null)
+            {
+                MessageHandler.QueueMessage($"Cannot find command \"{commandName}\" type \"{commandTypeName}\".");
+                return false;
+            }
+
+            BaseCommand command = null;
+
+            //Try to create an instance
+            try
+            {
+                command = (BaseCommand)Activator.CreateInstance(commandType, constructorData);
+            }
+            catch (Exception e)
+            {
+                MessageHandler.QueueMessage($"Unable to add command \"{commandName}\": \"{e.Message}\"");
+            }
+
+            return AddCommand(commandName, command);
+        }
+
+        public bool AddCommand(string commandName, BaseCommand command)
+        {
+            if (command == null)
+            {
+                Console.WriteLine("Cannot add null command.");
+                return false;
+            }
+
+            //Clean up the existing command before overwriting it with the new value
+            if (AllCommands.TryGetValue(commandName, out BaseCommand existingCmd) == true)
+            {
+                existingCmd.CleanUp();
+            }
+
+            //Set and initialize the command
+            AllCommands[commandName] = command;
+            AllCommands[commandName].Initialize(MessageHandler, DataReloader);
+
+            return true;
+        }
+
+        public bool RemoveCommand(string commandName)
+        {
+            bool removed = AllCommands.Remove(commandName, out BaseCommand command);
+            
+            //Clean up the command
+            command.CleanUp();
+
+            return removed;
         }
 
         private void InitializeCommands()
@@ -114,7 +182,7 @@ namespace TRBot.Commands
                     Type commandType = Type.GetType(cmdData.class_name, false, true);
                     if (commandType == null)
                     {
-                        MessageHandler.QueueMessage($"Cannot find command type \"{cmdData.class_name}\": skipping");
+                        MessageHandler.QueueMessage($"Cannot find command type \"{cmdData.class_name}\" - skipping.");
                         continue;
                     }
 
@@ -137,7 +205,11 @@ namespace TRBot.Commands
                     //Create the type
                     try
                     {
-                        AllCommands[cmdData.name] = (BaseCommand)Activator.CreateInstance(commandType, constructorParams);
+                        BaseCommand baseCmd = (BaseCommand)Activator.CreateInstance(commandType, constructorParams);
+                        baseCmd.Enabled = cmdData.enabled > 0;
+                        baseCmd.DisplayInHelp = cmdData.display_in_list > 0;
+
+                        AllCommands[cmdData.name] = baseCmd;
                     }
                     catch (Exception e)
                     {

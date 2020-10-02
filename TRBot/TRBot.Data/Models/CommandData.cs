@@ -46,6 +46,16 @@ namespace TRBot.Data
         public int level { get; set; } = 0;
 
         /// <summary>
+        /// Whether the command is enabled or not.
+        /// </summary>
+        public int enabled { get; set; } = 1;
+
+        /// <summary>
+        /// Whether to display the command in the command list.
+        /// </summary>
+        public int display_in_list { get; set; } = 1;
+
+        /// <summary>
         /// An additional value for the command.
         /// </summary>
         public string value_str { get; set; } = string.Empty;
@@ -55,14 +65,18 @@ namespace TRBot.Data
 
         }
 
-        public CommandData(string cmdName, string className, in int lvl)
+        public CommandData(string cmdName, string className, in int lvl, in bool cmdEnabled, in bool displayInList)
         {
             name = cmdName;
             class_name = className;
             level = lvl;
+            enabled = cmdEnabled == true ? 1 : 0;
+            display_in_list = displayInList == true ? 1 : 0;
         }
 
-        public CommandData(string cmdName, string className, in int lvl, string valueStr) : this(cmdName, className, lvl)
+        public CommandData(string cmdName, string className, in int lvl, in bool cmdEnabled, in bool displayInList,
+            string valueStr)
+            : this(cmdName, className, lvl, cmdEnabled, displayInList)
         {
             value_str = valueStr;
         }
