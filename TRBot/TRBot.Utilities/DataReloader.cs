@@ -19,34 +19,40 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TRBot.Connection;
-using TRBot.Common;
-using TRBot.Utilities;
 
-namespace TRBot.Commands
+namespace TRBot.Utilities
 {
     /// <summary>
-    /// Base class for a command.
+    /// Notifies subscribers when data should be reloaded.
     /// </summary>
-    public abstract class BaseCommand
+    public class DataReloader
     {
-        public bool HiddenFromHelp = false;
+        /// <summary>
+        /// A delegate for data reloading.
+        /// </summary>
+        public delegate void OnDataReloaded();
+        
+        /// <summary>
+        /// An event invoked when data has been reloaded.
+        /// </summary>
+        public event OnDataReloaded DataReloadedEvent = null;
 
-        public BaseCommand()
+        public DataReloader()
         {
-            
+
         }
 
-        public virtual void Initialize(BotMessageHandler messageHandler, DataReloader dataReloader)
+        public void CleanUp()
         {
-
+            DataReloadedEvent = null;
         }
 
-        public virtual void CleanUp()
+        /// <summary>
+        /// Invokes a data reload.
+        /// </summary>
+        public void ReloadData()
         {
-            
+            DataReloadedEvent?.Invoke();
         }
-
-        public abstract void ExecuteCommand(EvtChatCommandArgs args);
     }
 }

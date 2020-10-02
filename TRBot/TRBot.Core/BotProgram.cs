@@ -59,6 +59,7 @@ namespace TRBot.Core
 
         private Parser InputParser = null;
         private CommandHandler CmdHandler = null;
+        private DataReloader DataReloader = new DataReloader();
 
         //Store the function to reduce garbage, since this one is being called constantly
         private Func<Settings, bool> ThreadSleepFindFunc = null;
@@ -89,6 +90,7 @@ namespace TRBot.Core
 
             MsgHandler?.CleanUp();
             CmdHandler?.CleanUp();
+            DataReloader?.CleanUp();
 
             if (ClientService?.IsConnected == true)
                 ClientService.Disconnect();
@@ -186,7 +188,7 @@ namespace TRBot.Core
             SynonymData.AddSynonym(new InputSynonym("aandup", "a+up"));
 
             CmdHandler = new CommandHandler();
-            CmdHandler.Initialize(MsgHandler);
+            CmdHandler.Initialize(MsgHandler, DataReloader);
 
             Initialized = true;
         }
@@ -528,7 +530,26 @@ namespace TRBot.Core
                         if (foundSetting == null)
                         {
                             //Default setting does not exist, so add it
-                            dbContext.SettingCollection.Add(settings[i]);
+                            dbContext.SettingCollection.Add(setting);
+
+                            entriesAdded++;
+                        }
+                    }
+                }
+
+                List<CommandData> cmdData = DefaultData.GetDefaultCommands();
+                if (dbContext.Commands.Count() < cmdData.Count)
+                {
+                    for (int i = 0; i < cmdData.Count; i++)
+                    {
+                        CommandData commandData = cmdData[i];
+
+                        //See if the command data exists
+                        CommandData foundCommand = dbContext.Commands.FirstOrDefault((cmd) => cmd.name == commandData.name);
+                        if (foundCommand == null)
+                        {
+                            //Default command does not exist, so add it
+                            dbContext.Commands.Add(commandData);
 
                             entriesAdded++;
                         }

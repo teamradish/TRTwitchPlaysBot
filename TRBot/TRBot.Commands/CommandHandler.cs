@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using TRBot.Connection;
 using TRBot.Data;
 using TRBot.Common;
+using TRBot.Utilities;
 
 namespace TRBot.Commands
 {
@@ -32,31 +33,34 @@ namespace TRBot.Commands
     {
         private Dictionary<string, BaseCommand> AllCommands = new Dictionary<string, BaseCommand>(32);
         private BotMessageHandler MessageHandler = null;
+        private DataReloader DataReloader = null;
 
         public CommandHandler()
         {
-            AllCommands.Add("sourcecode", new MessageCommand(SettingsConstants.SOURCE_CODE_MESSAGE, string.Empty));
-            AllCommands.Add("info", new MessageCommand(SettingsConstants.INFO_MESSAGE, string.Empty));
+            //AllCommands.Add("sourcecode", new MessageCommand(SettingsConstants.SOURCE_CODE_MESSAGE, string.Empty));
+            //AllCommands.Add("info", new MessageCommand(SettingsConstants.INFO_MESSAGE, string.Empty));
         }
 
-        public void Initialize(BotMessageHandler messageHandler)
+        public void Initialize(BotMessageHandler messageHandler, DataReloader dataReloader)
         {
             MessageHandler = messageHandler;
+            DataReloader = dataReloader;
 
-            foreach (KeyValuePair<string, BaseCommand> cmd in AllCommands)
-            {
-                cmd.Value.Initialize(messageHandler);
-            }
+            DataReloader.DataReloadedEvent -= OnDataReloaded;
+            DataReloader.DataReloadedEvent += OnDataReloaded;
+
+            PopulateCommandsFromDB();            
+            InitializeCommands();
         }
 
         public void CleanUp()
         {
-            MessageHandler = null;
+            DataReloader.DataReloadedEvent -= OnDataReloaded;
 
-            foreach (KeyValuePair<string, BaseCommand> cmd in AllCommands)
-            {
-                cmd.Value.CleanUp();
-            }
+            MessageHandler = null;
+            DataReloader = null;
+
+            CleanUpCommands();
         }
 
         public void HandleCommand(EvtChatCommandArgs args)
@@ -80,6 +84,79 @@ namespace TRBot.Commands
                 //Execute the command
                 command.ExecuteCommand(args);
             }
+        }
+
+        private void InitializeCommands()
+        {
+            foreach (KeyValuePair<string, BaseCommand> cmd in AllCommands)
+            {
+                cmd.Value.Initialize(MessageHandler, DataReloader);
+            }
+        }
+
+        private void CleanUpCommands()
+        {
+            foreach (KeyValuePair<string, BaseCommand> cmd in AllCommands)
+            {
+                cmd.Value.CleanUp();
+            }
+        }
+
+        private void PopulateCommandsFromDB()
+        {
+            object[] parameters = null;
+
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                foreach (CommandData cmdData in context.Commands)
+                {
+                    //Find the type corresponding to this class name
+                    Type commandType = Type.GetType(cmdData.class_name, false, true);
+                    if (commandType == null)
+                    {
+                        MessageHandler.QueueMessage($"Cannot find command type \"{cmdData.class_name}\": skipping");
+                        continue;
+                    }
+
+                    //Get arguments
+                    object[] constructorParams = Array.Empty<object>();
+                    if (string.IsNullOrEmpty(cmdData.value_str) == false)
+                    {
+                        if (parameters == null)
+                        {
+                            parameters = new object[1] { cmdData.value_str };
+                        }
+                        else
+                        {
+                            parameters[0] = cmdData.value_str;
+                        }
+
+                        constructorParams = parameters;
+                    }
+
+                    //Create the type
+                    try
+                    {
+                        AllCommands[cmdData.name] = (BaseCommand)Activator.CreateInstance(commandType, constructorParams);
+                    }
+                    catch (Exception e)
+                    {
+                        MessageHandler.QueueMessage($"Unable to create class type \"{cmdData.class_name}\": {e.Message}");
+                    }
+                }
+            }
+        }
+
+        private void OnDataReloaded()
+        {
+            //Clean up and clear all commands
+            CleanUpCommands();
+            AllCommands.Clear();
+
+            PopulateCommandsFromDB();
+
+            //Re-initialize all commands
+            InitializeCommands();
         }
     }
 }

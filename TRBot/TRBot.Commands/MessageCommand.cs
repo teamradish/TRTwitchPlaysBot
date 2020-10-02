@@ -41,13 +41,18 @@ namespace TRBot.Commands
             
         }
 
+        public MessageCommand(string databaseMsgKey)
+        {
+            DatabaseMessageKey = databaseMsgKey;
+        }
+
         public MessageCommand(string databaseMsgKey, string fallbackMessage)
         {
             DatabaseMessageKey = databaseMsgKey;
             FallbackMessage = fallbackMessage;
         }
 
-        public override void Initialize(BotMessageHandler messageHandler)
+        public override void Initialize(BotMessageHandler messageHandler, DataReloader dataReloader)
         {
             MessageHandler = messageHandler;
         }

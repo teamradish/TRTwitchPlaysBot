@@ -32,6 +32,8 @@ namespace TRBot.Data
         public string value_str { get; set; } = string.Empty;
         public long value_int { get; set; } = 0L;
 
+        public bool GetBool => (value_int == 0L) ? false : true;
+
         public Settings()
         {
 

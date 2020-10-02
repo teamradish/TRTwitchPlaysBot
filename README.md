@@ -63,5 +63,9 @@ TRBot is free software; you are free to run, study, modify, and redistribute it.
 
 See the [LICENSE](https://github.com/teamradish/TRTwitchPlaysBot/blob/master/LICENSE) file for the full terms. See the [Dependency Licenses](https://github.com/teamradish/TRTwitchPlaysBot/blob/master/Dependency%20Licenses) file for the licenses of third party libraries used by TRBot.
 
+## Contributing
+Issues and pull requests are greatly encouraged!
 
-Liberapay: https://liberapay.com/kimimaru/
+Developing software takes considerable time and effort, and we have poured hundreds of hours into making TRBot as powerful as it is and freely available to everyone in our spare time. Kindly consider donating to us on Liberapay: https://liberapay.com/kimimaru/
+
+All donations go towards improving TRBot, and if enough donations have been met, working on it full-time.

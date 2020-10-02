@@ -92,5 +92,25 @@ namespace TRBot.Data
         }
 
         #endregion
+
+        #region Command Data
+
+        /// <summary>
+        /// Returns a list of CommandData objects containing recommended default values.
+        /// </summary>
+        /// <returns>A list of CommandData objects with their default values.</returns>
+        public static List<CommandData> GetDefaultCommands()
+        {
+            List<CommandData> defaultCommands = new List<CommandData>()
+            {
+                new CommandData("sourcecode", "TRBot.Commands.MessageCommand", 0, SettingsConstants.SOURCE_CODE_MESSAGE),
+                new CommandData("info", "TRBot.Commands.MessageCommand", 0, SettingsConstants.INFO_MESSAGE),
+                new CommandData("reload", "TRBot.Commands.ReloadCommand", 3)
+            };
+
+            return defaultCommands;
+        }
+
+        #endregion
     }
 }

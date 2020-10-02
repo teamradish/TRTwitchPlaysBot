@@ -22,31 +22,40 @@ using System.Threading.Tasks;
 using TRBot.Connection;
 using TRBot.Common;
 using TRBot.Utilities;
+using TRBot.Data;
 
 namespace TRBot.Commands
 {
     /// <summary>
-    /// Base class for a command.
+    /// A command that notifies all data should be reloaded.
     /// </summary>
-    public abstract class BaseCommand
+    public sealed class ReloadCommand : BaseCommand
     {
-        public bool HiddenFromHelp = false;
+        private BotMessageHandler MessageHandler = null;
+        private DataReloader DataReloader = null;
 
-        public BaseCommand()
+        public ReloadCommand()
         {
             
         }
 
-        public virtual void Initialize(BotMessageHandler messageHandler, DataReloader dataReloader)
+        public override void Initialize(BotMessageHandler messageHandler, DataReloader dataReloader)
         {
-
+            MessageHandler = messageHandler;
+            DataReloader = dataReloader;
         }
 
-        public virtual void CleanUp()
+        public override void CleanUp()
         {
-            
+            DataReloader = null;
         }
 
-        public abstract void ExecuteCommand(EvtChatCommandArgs args);
+        public override void ExecuteCommand(EvtChatCommandArgs args)
+        {
+            //Reload the data
+            DataReloader.ReloadData();
+
+            MessageHandler.QueueMessage("Finished reloading data!");
+        }
     }
 }

@@ -34,7 +34,8 @@ namespace TRBot.Data
         public DbSet<Settings> SettingCollection { get; set; } = null;
         public DbSet<GameLog> GameLogs { get; set; } = null; 
         public DbSet<SavestateLog> SavestateLogs { get; set; } = null;
-        
+        public DbSet<CommandData> Commands { get; set; } = null;
+
         private string Datasource = string.Empty;
 
         public BotDBContext()
@@ -76,6 +77,13 @@ namespace TRBot.Data
             modelBuilder.Entity<SavestateLog>(entity =>
             {
                 entity.HasKey(e => e.id);
+            });
+
+            modelBuilder.Entity<CommandData>().ToTable("CommandData", "commanddata");
+            modelBuilder.Entity<CommandData>(entity =>
+            {
+                entity.HasKey(e => e.id);
+                entity.HasIndex(e => e.name).IsUnique();
             });
 
            base.OnModelCreating(modelBuilder);
