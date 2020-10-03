@@ -35,6 +35,7 @@ namespace TRBot.Data
         public DbSet<GameLog> GameLogs { get; set; } = null; 
         public DbSet<SavestateLog> SavestateLogs { get; set; } = null;
         public DbSet<CommandData> Commands { get; set; } = null;
+        public DbSet<Meme> Memes { get; set; } = null;
 
         private string Datasource = string.Empty;
 
@@ -87,6 +88,13 @@ namespace TRBot.Data
                 entity.Property(e => e.enabled).HasDefaultValue(1);
                 entity.Property(e => e.display_in_list).HasDefaultValue(1);
                 entity.HasIndex(e => e.name).IsUnique();
+            });
+
+            modelBuilder.Entity<Meme>().ToTable("Memes", "memes");
+            modelBuilder.Entity<Meme>(entity =>
+            {
+                entity.HasKey(e => e.ID);
+                entity.HasIndex(e => e.MemeName).IsUnique();
             });
 
            base.OnModelCreating(modelBuilder);

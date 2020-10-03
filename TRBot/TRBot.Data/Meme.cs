@@ -24,6 +24,54 @@ namespace TRBot.Data
     /// <summary>
     /// Represents a meme.
     /// </summary>
+    public class Meme
+    {
+        /// <summary>
+        /// The ID of the meme.
+        /// </summary>
+        public int ID { get; set; } = 0;
+
+        /// <summary>
+        /// The name of the meme.
+        /// </summary>
+        public string MemeName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The value of the meme.
+        /// </summary>
+        public string MemeValue { get; set; } = string.Empty;
+
+        public Meme()
+        {
+
+        }
+
+        public Meme(string memeName, string memeValue)
+        {
+            MemeName = memeName;
+            MemeValue = memeValue;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 29;
+                hash = (hash * 41) + MemeName.GetHashCode();
+                hash = (hash * 41) + MemeValue.GetHashCode();
+                return hash;
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"\"{MemeName}\":\"{MemeValue}\"";
+        }
+    }
+
+    /*/// <summary>
+    /// Represents a meme.
+    /// </summary>
     public struct Meme
     {
         /// <summary>
@@ -76,5 +124,5 @@ namespace TRBot.Data
         {
             return $"\"{MemeName}\":\"{MemeValue}\"";
         }
-    }
+    }*/
 }

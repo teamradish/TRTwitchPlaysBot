@@ -297,6 +297,17 @@ namespace TRBot.Core
 
         private void OnUserSentMessage(EvtUserMessageArgs e)
         {
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                //Check for memes
+                string possibleMeme = e.UsrMessage.Message.ToLower();
+                Meme meme = context.Memes.FirstOrDefault((m) => m.MemeName == possibleMeme);
+                if (meme != null)
+                {
+                    MsgHandler.QueueMessage(meme.MemeValue);
+                } 
+            }
+
             ProcessMsgAsInput(e);
         }
 
