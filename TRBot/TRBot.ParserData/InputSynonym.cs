@@ -24,6 +24,54 @@ namespace TRBot.ParserData
     /// <summary>
     /// Represents an input synonym.
     /// </summary>
+    public class InputSynonym
+    {
+        /// <summary>
+        /// The ID of the synonym.
+        /// </summary>
+        public int id { get; set; } = 0;
+
+        /// <summary>
+        /// The name of the synonym.
+        /// </summary>
+        public string SynonymName { get; set; } = string.Empty;
+        
+        /// <summary>
+        /// The value of the synonym.
+        /// </summary>
+        public string SynonymValue { get; set; } = string.Empty;
+
+        public InputSynonym()
+        {
+
+        }
+
+        public InputSynonym(string synonymName, string synonymValue)
+        {
+            SynonymName = synonymName;
+            SynonymValue = synonymValue;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 29;
+                hash = (hash * 37) + SynonymName.GetHashCode();
+                hash = (hash * 37) + SynonymValue.GetHashCode();
+                return hash;
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"\"{SynonymName}\":\"{SynonymValue}\"";
+        }
+    }
+
+    /*/// <summary>
+    /// Represents an input synonym.
+    /// </summary>
     public struct InputSynonym
     {
         /// <summary>
@@ -76,5 +124,5 @@ namespace TRBot.ParserData
         {
             return $"\"{SynonymName}\":\"{SynonymValue}\"";
         }
-    }
+    }*/
 }

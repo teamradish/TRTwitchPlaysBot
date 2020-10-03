@@ -375,13 +375,13 @@ namespace TRBot.Parsing
             return message;
         }
 
-        public string PopulateSynonyms(string message, InputSynonymCollection inputSynonyms)
+        public string PopulateSynonyms(string message, IEnumerable<InputSynonym> inputSynonyms)
         {
             if (inputSynonyms != null)
             {
-                foreach (string synonym in inputSynonyms.Synonyms.Keys)
+                foreach (InputSynonym synonym in inputSynonyms)
                 {
-                    message = message.Replace(synonym, inputSynonyms.Synonyms[synonym].SynonymValue);
+                    message = message.Replace(synonym.SynonymName, synonym.SynonymValue);
                 }
             }
 
@@ -395,7 +395,7 @@ namespace TRBot.Parsing
         /// <param name="macroData">Data for input macros.</param>
         /// <param name="synonymData">Data for input synonyms.</param>
         /// <returns>A string ready to be parsed by the parser.</returns>
-        public string PrepParse(string message, IQueryable<InputMacro> macroData, InputSynonymCollection synonymData)
+        public string PrepParse(string message, IQueryable<InputMacro> macroData, IEnumerable<InputSynonym> synonymData)
         {
             //Console.WriteLine("Message: " + message);
 

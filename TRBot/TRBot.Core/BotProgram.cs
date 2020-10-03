@@ -400,7 +400,7 @@ namespace TRBot.Core
                 string readyMessage = string.Empty;
                 using (BotDBContext context = DatabaseManager.OpenContext())
                 {
-                    readyMessage = InputParser.PrepParse(e.UsrMessage.Message, context.Macros, SynonymData);
+                    readyMessage = InputParser.PrepParse(e.UsrMessage.Message, context.Macros, context.InputSynonyms);
                 }
 
                 //parse_message = InputParser.PopulateSynonyms(parse_message, InputGlobals.InputSynonyms);

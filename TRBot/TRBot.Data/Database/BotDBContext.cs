@@ -38,6 +38,7 @@ namespace TRBot.Data
         public DbSet<CommandData> Commands { get; set; } = null;
         public DbSet<Meme> Memes { get; set; } = null;
         public DbSet<InputMacro> Macros { get; set; } = null;
+        public DbSet<InputSynonym> InputSynonyms { get; set; } = null;
 
         private string Datasource = string.Empty;
 
@@ -106,6 +107,15 @@ namespace TRBot.Data
                 entity.Property(e => e.MacroName).HasDefaultValue(string.Empty);
                 entity.Property(e => e.MacroValue).HasDefaultValue(string.Empty);
                 entity.HasIndex(e => e.MacroName).IsUnique();
+            });
+
+            modelBuilder.Entity<InputSynonym>().ToTable("InputSynonyms", "inputsynonyms");
+            modelBuilder.Entity<InputSynonym>(entity =>
+            {
+                entity.HasKey(e => e.id);
+                entity.Property(e => e.SynonymName).HasDefaultValue(string.Empty);
+                entity.Property(e => e.SynonymValue).HasDefaultValue(string.Empty);
+                entity.HasIndex(e => e.SynonymName).IsUnique();
             });
 
            base.OnModelCreating(modelBuilder);
