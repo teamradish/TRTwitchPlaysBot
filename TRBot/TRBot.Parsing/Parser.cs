@@ -201,10 +201,10 @@ namespace TRBot.Parsing
             return macro_contents;
         }
 
-        public string PopulateMacros(string message, InputMacroCollection macroData)
+        public string PopulateMacros(string message, IQueryable<InputMacro> macroData)
         {   
             //There are no macros, so just return the original message
-            if (macroData == null || macroData.Macros == null || macroData.Macros.Count == 0)
+            if (macroData == null || macroData.Count() == 0)
             {
                 return message;
             }
@@ -222,7 +222,7 @@ namespace TRBot.Parsing
             while (count < MAX_RECURSION && found_macro == true)
             {
                 found_macro = false;
-                MatchCollection possible_macros = Regex.Matches(message, @"#[a-zA-Z0-9\(\,\.\+_\-&]*", regexOptions);
+                MatchCollection possible_macros = Regex.Matches(message, @"#[a-zA-Z0-9\(\,\.\+_\-&%]*", regexOptions);
 
                 //Console.WriteLine($"Possible macros: {possible_macros} | {possible_macros.Count}");
 
@@ -235,9 +235,18 @@ namespace TRBot.Parsing
 
                     string macro_name_generic = string.Empty;
                     int arg_index = macro_name.IndexOf("(");
+
                     if (arg_index != -1)
                     {
-                        //Console.WriteLine($"Arg Index: {arg_index} | P index: {p.Index} | P len: {p.Length}");
+                        //Console.WriteLine($"Arg Index: {arg_index} | P index: {p.Index} | P len: {p.Length} | message Len: {message.Length}");
+
+                        int maxIndex = p.Index + p.Length;
+
+                        //This doesn't parse correctly - there's a missing ')', so simply return
+                        if (maxIndex >= message.Length)
+                        {
+                            return message;
+                        }
 
                         string sub = message.Substring(p.Index, p.Length + 1);
 
@@ -269,14 +278,29 @@ namespace TRBot.Parsing
                         macro_name_generic = macro_name;
                     }
 
+                    //Console.WriteLine($"Macro name generic: \"{macro_name_generic}\" | Len: {macro_name_generic.Length}");
+
                     string longest = string.Empty;
                     int end = 0;
 
                     //Look through the parser macro list for performance
                     //Handle no macro (Ex. "#" alone)
-                    if (macro_name_generic.Length > 1
-                        && macroData.ParserMacroLookup.TryGetValue(macro_name_generic[1], out List<InputMacro> macroList) == true)
+                    if (macro_name_generic.Length > 1)
+                        //&& macroData.ParserMacroLookup.TryGetValue(macro_name_generic[1], out List<InputMacro> macroList) == true)
                     {
+                        //Use string comparison for the first two characters
+                        //If the IQueryable is from a database such as SQLite, we can't do character comparisons in a Where clause
+                        //This may be a performance regression from the previous dictionary lookup,
+                        //but at the same time there may be indexing on the data; conduct tests to make sure and note it
+                        string startedWith = macro_name_generic.Substring(0, 2);
+                        List<InputMacro> macroList = macroData.Where((m) => m.MacroName.StartsWith(startedWith)).ToList();
+
+                        //Console.WriteLine($"Found {macroList.Count} macros starting with \"{startedWith}\"");
+
+                        //Go through each macro and find the longest match
+                        //This ensures it works with other inputs as well
+                        //For instance, if "#test" is a macro and the input is "#testa",
+                        //it should perform "#test" followed by "a" instead of stopping because it couldn't find "#testa"
                         for (int i = 0; i < macroList.Count; i++)
                         {
                             string macro = macroList[i].MacroName;
@@ -291,6 +315,8 @@ namespace TRBot.Parsing
 
                     if (string.IsNullOrEmpty(longest) == false)
                     {
+                        //Console.WriteLine($"Longest match found is \"{longest}\"");
+
                         if (subs == null)
                             subs = new List<(string, (int, int), List<string>)>(4);
 
@@ -317,8 +343,24 @@ namespace TRBot.Parsing
                     (string, (int, int), List<string>) prev = default;
                     foreach (var current in subs)
                     {
-                        if (prev != def) str += message.Substring(prev.Item2.Item2, current.Item2.Item1 - prev.Item2.Item2);
-                        str += PopulateVariables(macroData.Macros[current.Item1].MacroValue, current.Item3);
+                        InputMacro inpMacro = macroData.FirstOrDefault((mac) => mac.MacroName == current.Item1);
+
+                        //The collection must have been modified at some point in between parsing and now if this macro is null
+                        //There's nothing we can do here since there are no valid inputs mapped to the macro, so return
+                        if (inpMacro == null)
+                        {
+                            Console.WriteLine($"Error: Macro \"{current.Item1}\" was removed while parsing - exiting macro parsing.");
+                            return message;
+                        }
+
+                        if (prev != def)
+                        {
+                            str += message.Substring(prev.Item2.Item2, current.Item2.Item1 - prev.Item2.Item2);
+                        }
+
+                        string macroValue = macroData.FirstOrDefault((mac) => mac.MacroName == current.Item1).MacroValue;
+
+                        str += PopulateVariables(macroValue, current.Item3);
                         prev = current;
                     }
                     str += message.Substring(prev.Item2.Item2);
@@ -353,7 +395,7 @@ namespace TRBot.Parsing
         /// <param name="macroData">Data for input macros.</param>
         /// <param name="synonymData">Data for input synonyms.</param>
         /// <returns>A string ready to be parsed by the parser.</returns>
-        public string PrepParse(string message, InputMacroCollection macroData, InputSynonymCollection synonymData)
+        public string PrepParse(string message, IQueryable<InputMacro> macroData, InputSynonymCollection synonymData)
         {
             //Console.WriteLine("Message: " + message);
 

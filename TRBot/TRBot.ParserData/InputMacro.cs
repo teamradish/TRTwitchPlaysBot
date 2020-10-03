@@ -24,6 +24,54 @@ namespace TRBot.ParserData
     /// <summary>
     /// Represents an input macro.
     /// </summary>
+    public class InputMacro
+    {
+        /// <summary>
+        /// The ID of the macro.
+        /// </summary>
+        public int id { get; set; } = 0;
+
+        /// <summary>
+        /// The name of the macro.
+        /// </summary>
+        public string MacroName { get; set; } = string.Empty;
+        
+        /// <summary>
+        /// The value of the macro.
+        /// </summary>
+        public string MacroValue { get; set; } = string.Empty;
+
+        public InputMacro()
+        {
+
+        }
+
+        public InputMacro(string macroName, string macroValue)
+        {
+            MacroName = macroName;
+            MacroValue = macroValue;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 11;
+                hash = (hash * 37) + MacroName.GetHashCode();
+                hash = (hash * 37) + MacroValue.GetHashCode();
+                return hash;
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"\"{MacroName}\" = \"{MacroValue}\"";
+        }
+    }
+
+    /*/// <summary>
+    /// Represents an input macro.
+    /// </summary>
     public struct InputMacro
     {
         /// <summary>
@@ -76,5 +124,5 @@ namespace TRBot.ParserData
         {
             return $"\"{MacroName}\" = \"{MacroValue}\"";
         }
-    }
+    }*/
 }

@@ -54,7 +54,6 @@ namespace TRBot.Core
         
         public BotMessageHandler MsgHandler { get; private set; } = new BotMessageHandler();
 
-        private InputMacroCollection MacroData = new InputMacroCollection();
         private InputSynonymCollection SynonymData = new InputSynonymCollection();
 
         private Parser InputParser = null;
@@ -177,11 +176,6 @@ namespace TRBot.Core
             int acquiredCount = ControllerMngr.InitControllers(1);
 
             Console.WriteLine($"Setting up virtual controller {lastVControllerType} and acquired {acquiredCount} controllers!");
-
-            MacroData = new InputMacroCollection(new ConcurrentDictionary<string, InputMacro>());
-            MacroData.AddMacro(new InputMacro("#mash(*)", "[<0>34ms #34ms]*20"));
-            MacroData.AddMacro(new InputMacro("#test", "b500ms #200ms up"));
-            MacroData.AddMacro(new InputMacro("#test2", "a #200ms #test"));
 
             SynonymData = new InputSynonymCollection(new ConcurrentDictionary<string, InputSynonym>());
             SynonymData.AddSynonym(new InputSynonym(".", "#"));
@@ -398,12 +392,19 @@ namespace TRBot.Core
 
             try
             {
+                int defaultDur = (int)DataHelper.GetSettingInt(SettingsConstants.DEFAULT_INPUT_DURATION, 200L);
+                int maxDur = (int)DataHelper.GetSettingInt(SettingsConstants.MAX_INPUT_DURATION, 60000L);
+
                 string regexStr = CurConsole.InputRegex;
 
-                string readyMessage = InputParser.PrepParse(e.UsrMessage.Message, MacroData, SynonymData);
+                string readyMessage = string.Empty;
+                using (BotDBContext context = DatabaseManager.OpenContext())
+                {
+                    readyMessage = InputParser.PrepParse(e.UsrMessage.Message, context.Macros, SynonymData);
+                }
 
                 //parse_message = InputParser.PopulateSynonyms(parse_message, InputGlobals.InputSynonyms);
-                inputSequence = InputParser.ParseInputs(readyMessage, regexStr, new ParserOptions(0, 200, true, 60000));
+                inputSequence = InputParser.ParseInputs(readyMessage, regexStr, new ParserOptions(0, defaultDur, true, maxDur));
                 //Console.WriteLine(inputSequence.ToString());
                 //Console.WriteLine("\nReverse Parsed: " + ReverseParser.ReverseParse(inputSequence));
                 //Console.WriteLine("\nReverse Parsed Natural:\n" + ReverseParser.ReverseParseNatural(inputSequence));
@@ -415,7 +416,7 @@ namespace TRBot.Core
                 //Kimimaru: Sanitize parsing exceptions
                 //Most of these are currently caused by differences in how C# and Python handle slicing strings (Substring() vs string[:])
                 //One example that throws this that shouldn't is "#mash(w234"
-                //BotProgram.MsgHandler.QueueMessage($"ERROR: {excMsg}");
+                MsgHandler.QueueMessage($"ERROR: {excMsg} | {exception.StackTrace}");
                 inputSequence.InputValidationType = InputValidationTypes.Invalid;
                 //parsedVal.Item1 = false;
             }

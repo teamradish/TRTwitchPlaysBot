@@ -20,6 +20,7 @@ using System.Text;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
+using TRBot.ParserData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
@@ -36,6 +37,7 @@ namespace TRBot.Data
         public DbSet<SavestateLog> SavestateLogs { get; set; } = null;
         public DbSet<CommandData> Commands { get; set; } = null;
         public DbSet<Meme> Memes { get; set; } = null;
+        public DbSet<InputMacro> Macros { get; set; } = null;
 
         private string Datasource = string.Empty;
 
@@ -95,6 +97,15 @@ namespace TRBot.Data
             {
                 entity.HasKey(e => e.ID);
                 entity.HasIndex(e => e.MemeName).IsUnique();
+            });
+
+            modelBuilder.Entity<InputMacro>().ToTable("Macros", "macros");
+            modelBuilder.Entity<InputMacro>(entity =>
+            {
+                entity.HasKey(e => e.id);
+                entity.Property(e => e.MacroName).HasDefaultValue(string.Empty);
+                entity.Property(e => e.MacroValue).HasDefaultValue(string.Empty);
+                entity.HasIndex(e => e.MacroName).IsUnique();
             });
 
            base.OnModelCreating(modelBuilder);
