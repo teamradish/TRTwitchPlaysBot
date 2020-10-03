@@ -573,16 +573,16 @@ namespace TRBot.Core
                 }
 
                 //Check if the virtual controller type is supported on this platform
-                if (VControllerHelper.IsVControllerSupported(lastVControllerType, OSPlatform.CurrentOS) == false)
+                if (VControllerHelper.IsVControllerSupported(lastVControllerType, TRBotOSPlatform.CurrentOS) == false)
                 {
                     //It's not supported, so switch it to prevent issues on this platform
-                    VirtualControllerTypes defaultVContType = VControllerHelper.GetDefaultVControllerTypeForPlatform(OSPlatform.CurrentOS);
+                    VirtualControllerTypes defaultVContType = VControllerHelper.GetDefaultVControllerTypeForPlatform(TRBotOSPlatform.CurrentOS);
                     if (vControllerSetting != null)
                     {
                         vControllerSetting.value_int = (long)defaultVContType;
                     }
 
-                    Console.WriteLine($"Current virtual controller {lastVControllerType} is not supported by the {OSPlatform.CurrentOS} platform. Switched it to the default of {defaultVContType} for this platform.");
+                    Console.WriteLine($"Current virtual controller {lastVControllerType} is not supported by the {TRBotOSPlatform.CurrentOS} platform. Switched it to the default of {defaultVContType} for this platform.");
                     lastVControllerType = defaultVContType;
 
                     dbContext.SaveChanges();

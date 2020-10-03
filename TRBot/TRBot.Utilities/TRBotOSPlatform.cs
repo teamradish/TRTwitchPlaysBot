@@ -20,13 +20,14 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace TRBot.Utilities
 {
     /// <summary>
     /// Operating systems.
     /// </summary>
-    public static class OSPlatform
+    public static class TRBotOSPlatform
     {
         /// <summary>
         /// Operating systems supported by TRBot.
@@ -43,16 +44,21 @@ namespace TRBot.Utilities
         /// </summary>
         public static readonly OS CurrentOS = OS.Other;
 
-        static OSPlatform()
+        static TRBotOSPlatform()
         {
-            //Retrieve the operating system type based on preprocessor directives
-            #if WINDOWS
+            //Retrieve the operating system type
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) == true)
+            {
                 CurrentOS = OS.Windows;
-            #elif LINUX
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) == true)
+            {
                 CurrentOS = OS.GNULinux;
-            #else
+            }
+            else
+            {
                 CurrentOS = OS.Other;
-            #endif
+            }
         }
     }
 }

@@ -19,12 +19,12 @@ namespace TRBot.Core
         /// </summary>
         /// <param name="operatingSystem">The operating system to get the default virtual controller type for.</param>
         /// <returns>The default virtual controller type of the given operating system.</returns>
-        public static VirtualControllerTypes GetDefaultVControllerTypeForPlatform(in OSPlatform.OS operatingSystem)
+        public static VirtualControllerTypes GetDefaultVControllerTypeForPlatform(in TRBotOSPlatform.OS operatingSystem)
         {
             switch (operatingSystem)
             {
-                case OSPlatform.OS.Windows: return VirtualControllerTypes.vJoy;
-                case OSPlatform.OS.GNULinux: return VirtualControllerTypes.uinput;
+                case TRBotOSPlatform.OS.Windows: return VirtualControllerTypes.vJoy;
+                case TRBotOSPlatform.OS.GNULinux: return VirtualControllerTypes.uinput;
                 default: return VirtualControllerTypes.Invalid;
             }
         }
@@ -34,12 +34,12 @@ namespace TRBot.Core
         /// </summary>
         /// <param name="operatingSystem">The operating system to get the default virtual controller manager for.</param>
         /// <returns>The default virtual controller manager of the given operating system.</returns>
-        public static IVirtualControllerManager GetDefaultVControllerMngrForPlatform(in OSPlatform.OS operatingSystem)
+        public static IVirtualControllerManager GetDefaultVControllerMngrForPlatform(in TRBotOSPlatform.OS operatingSystem)
         {
             switch (operatingSystem)
             {
-                case OSPlatform.OS.Windows: return new VJoyControllerManager();
-                case OSPlatform.OS.GNULinux: return new UInputControllerManager();
+                case TRBotOSPlatform.OS.Windows: return new VJoyControllerManager();
+                case TRBotOSPlatform.OS.GNULinux: return new UInputControllerManager();
                 default: return null;
             }
         }
@@ -66,16 +66,16 @@ namespace TRBot.Core
         /// <param name="vControllerType">The virtual controller type.</param>
         /// <param name="operatingSystem">The operating system.</param>
         /// <returns>true if the given virtual controller type is supported by the given operating system, otherwise false.</returns>
-        public static bool IsVControllerSupported(in VirtualControllerTypes vControllerType, in OSPlatform.OS operatingSystem)
+        public static bool IsVControllerSupported(in VirtualControllerTypes vControllerType, in TRBotOSPlatform.OS operatingSystem)
         {
             switch (vControllerType)
             {
                 case VirtualControllerTypes.vJoy:
-                    return operatingSystem == OSPlatform.OS.Windows;
+                    return operatingSystem == TRBotOSPlatform.OS.Windows;
                 case VirtualControllerTypes.uinput:
-                    return operatingSystem == OSPlatform.OS.GNULinux;
+                    return operatingSystem == TRBotOSPlatform.OS.GNULinux;
                 case VirtualControllerTypes.xdotool:
-                    return operatingSystem == OSPlatform.OS.GNULinux;
+                    return operatingSystem == TRBotOSPlatform.OS.GNULinux;
                 default:
                     return false;
             }
