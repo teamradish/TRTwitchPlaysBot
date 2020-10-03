@@ -29,7 +29,7 @@ namespace TRBot.Consoles
     {
         public PCConsole()
         {
-            Identifier = "PC";
+            Name = "PC";
 
             Initialize();
 
@@ -38,7 +38,29 @@ namespace TRBot.Consoles
 
         private void Initialize()
         {
-            ValidInputs = new List<string>(18)
+            ConsoleInputs = new Dictionary<string, InputData>(18)
+            {
+                { "left",       InputData.CreateAxis("left", (int)GlobalAxisVals.AXIS_X, 0, -1) },
+                { "right",      InputData.CreateAxis("right", (int)GlobalAxisVals.AXIS_X, 0, 1) },
+                { "up",         InputData.CreateAxis("up", (int)GlobalAxisVals.AXIS_Y, 0, -1) },
+                { "down",       InputData.CreateAxis("down", (int)GlobalAxisVals.AXIS_Y, 0, 1) },
+
+                { "lclick",     InputData.CreateButton("lclick", (int)GlobalButtonVals.BTN5) },
+                { "mclick",     InputData.CreateButton("mclick", (int)GlobalButtonVals.BTN6) },
+                { "rclick",     InputData.CreateButton("rclick", (int)GlobalButtonVals.BTN7) },
+                { "return",     InputData.CreateButton("return", (int)GlobalButtonVals.BTN8) },
+                { "space",      InputData.CreateButton("space", (int)GlobalButtonVals.BTN9) },
+                { "q",          InputData.CreateButton("q", (int)GlobalButtonVals.BTN10) },
+                { "w",          InputData.CreateButton("w", (int)GlobalButtonVals.BTN11) },
+                { "e",          InputData.CreateButton("e", (int)GlobalButtonVals.BTN12) },
+                { "r",          InputData.CreateButton("r", (int)GlobalButtonVals.BTN13) },
+                { "a",          InputData.CreateButton("a", (int)GlobalButtonVals.BTN14) },
+                { "s",          InputData.CreateButton("s", (int)GlobalButtonVals.BTN15) },
+                { "d",          InputData.CreateButton("d", (int)GlobalButtonVals.BTN16) },
+                { "p",          InputData.CreateButton("p", (int)GlobalButtonVals.BTN17) }
+            };
+
+            /*ValidInputs = new List<string>(18)
             {
                 "left", "right", "up", "down",
                 "lclick", "mclick", "rclick",
@@ -74,7 +96,7 @@ namespace TRBot.Consoles
                 { "s", new InputButton((int)GlobalButtonVals.BTN15) },
                 { "d", new InputButton((int)GlobalButtonVals.BTN16) },
                 { "p", new InputButton((int)GlobalButtonVals.BTN17) }
-            };
+            };*/
         }
     }
 }

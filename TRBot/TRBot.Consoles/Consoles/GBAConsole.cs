@@ -29,7 +29,7 @@ namespace TRBot.Consoles
     {
         public GBAConsole()
         {
-            Identifier = "GBA";
+            Name = "GBA";
             
             Initialize();
 
@@ -38,41 +38,68 @@ namespace TRBot.Consoles
 
         private void Initialize()
         {
-            InputAxesMap = new Dictionary<string, InputAxis>();
-
-            InputButtonMap = new Dictionary<string, InputButton>(22)
+            ConsoleInputs = new Dictionary<string, InputData>(23)
             {
-                { "left", new InputButton((int)GlobalButtonVals.BTN1) },
-                { "right", new InputButton((int)GlobalButtonVals.BTN2) },
-                { "up", new InputButton((int)GlobalButtonVals.BTN3) },
-                { "down", new InputButton((int)GlobalButtonVals.BTN4) },
-                { "a", new InputButton((int)GlobalButtonVals.BTN5) },
-                { "b", new InputButton((int)GlobalButtonVals.BTN6) },
-                { "select", new InputButton((int)GlobalButtonVals.BTN7) },
-                { "start", new InputButton((int)GlobalButtonVals.BTN8) },
-                { "ss1", new InputButton((int)GlobalButtonVals.BTN19) },
-                { "ss2", new InputButton((int)GlobalButtonVals.BTN20) },
-                { "ss3", new InputButton((int)GlobalButtonVals.BTN21) },
-                { "ss4", new InputButton((int)GlobalButtonVals.BTN22) },
-                { "ss5", new InputButton((int)GlobalButtonVals.BTN23) },
-                { "ss6", new InputButton((int)GlobalButtonVals.BTN24) },
-                { "ls1", new InputButton((int)GlobalButtonVals.BTN25) },
-                { "ls2", new InputButton((int)GlobalButtonVals.BTN26) },
-                { "ls3", new InputButton((int)GlobalButtonVals.BTN27) },
-                { "ls4", new InputButton((int)GlobalButtonVals.BTN28) },
-                { "ls5", new InputButton((int)GlobalButtonVals.BTN29) },
-                { "ls6", new InputButton((int)GlobalButtonVals.BTN30) },
-                { "l", new InputButton((int)GlobalButtonVals.BTN31) },
-                { "r", new InputButton((int)GlobalButtonVals.BTN32) }
+                { "left", InputData.CreateButton("left", (int)GlobalButtonVals.BTN1) },
+                { "right", InputData.CreateButton("right", (int)GlobalButtonVals.BTN2) },
+                { "up", InputData.CreateButton("up", (int)GlobalButtonVals.BTN3) },
+                { "down", InputData.CreateButton("down", (int)GlobalButtonVals.BTN4) },
+                { "a", InputData.CreateButton("a", (int)GlobalButtonVals.BTN5) },
+                { "b", InputData.CreateButton("b", (int)GlobalButtonVals.BTN6) },
+                { "select", InputData.CreateButton("select", (int)GlobalButtonVals.BTN7) },
+                { "start", InputData.CreateButton("start", (int)GlobalButtonVals.BTN8) },
+                { "ss1", InputData.CreateButton("ss1", (int)GlobalButtonVals.BTN19) },
+                { "ss2", InputData.CreateButton("ss2", (int)GlobalButtonVals.BTN20) },
+                { "ss3", InputData.CreateButton("ss3", (int)GlobalButtonVals.BTN21) },
+                { "ss4", InputData.CreateButton("ss4", (int)GlobalButtonVals.BTN22) },
+                { "ss5", InputData.CreateButton("ss5", (int)GlobalButtonVals.BTN23) },
+                { "ss6", InputData.CreateButton("ss6", (int)GlobalButtonVals.BTN24) },
+                { "ls1", InputData.CreateButton("ls1", (int)GlobalButtonVals.BTN25) },
+                { "ls2", InputData.CreateButton("ls2", (int)GlobalButtonVals.BTN26) },
+                { "ls3", InputData.CreateButton("ls3", (int)GlobalButtonVals.BTN27) },
+                { "ls4", InputData.CreateButton("ls4", (int)GlobalButtonVals.BTN28) },
+                { "ls5", InputData.CreateButton("ls5", (int)GlobalButtonVals.BTN29) },
+                { "ls6", InputData.CreateButton("ls6", (int)GlobalButtonVals.BTN30) },
+                { "l", InputData.CreateButton("l", (int)GlobalButtonVals.BTN31) },
+                { "r", InputData.CreateButton("r", (int)GlobalButtonVals.BTN32) },
+                { "#", InputData.CreateBlank("#") }
             };
 
-            ValidInputs = new List<string>(23)
-            {
-                "up", "down", "left", "right", "a", "b", "select", "start", "l", "r",
-                "ss1", "ss2", "ss3", "ss4", "ss5", "ss6",
-                "ls1", "ls2", "ls3", "ls4", "ls5", "ls6",
-                "#"
-            };
+            //InputAxesMap = new Dictionary<string, InputAxis>();
+
+            //InputButtonMap = new Dictionary<string, InputButton>(22)
+            //{
+            //    { "left", new InputButton((int)GlobalButtonVals.BTN1) },
+            //    { "right", new InputButton((int)GlobalButtonVals.BTN2) },
+            //    { "up", new InputButton((int)GlobalButtonVals.BTN3) },
+            //    { "down", new InputButton((int)GlobalButtonVals.BTN4) },
+            //    { "a", new InputButton((int)GlobalButtonVals.BTN5) },
+            //    { "b", new InputButton((int)GlobalButtonVals.BTN6) },
+            //    { "select", new InputButton((int)GlobalButtonVals.BTN7) },
+            //    { "start", new InputButton((int)GlobalButtonVals.BTN8) },
+            //    { "ss1", new InputButton((int)GlobalButtonVals.BTN19) },
+            //    { "ss2", new InputButton((int)GlobalButtonVals.BTN20) },
+            //    { "ss3", new InputButton((int)GlobalButtonVals.BTN21) },
+            //    { "ss4", new InputButton((int)GlobalButtonVals.BTN22) },
+            //    { "ss5", new InputButton((int)GlobalButtonVals.BTN23) },
+            //    { "ss6", new InputButton((int)GlobalButtonVals.BTN24) },
+            //    { "ls1", new InputButton((int)GlobalButtonVals.BTN25) },
+            //    { "ls2", new InputButton((int)GlobalButtonVals.BTN26) },
+            //    { "ls3", new InputButton((int)GlobalButtonVals.BTN27) },
+            //    { "ls4", new InputButton((int)GlobalButtonVals.BTN28) },
+            //    { "ls5", new InputButton((int)GlobalButtonVals.BTN29) },
+            //    { "ls6", new InputButton((int)GlobalButtonVals.BTN30) },
+            //    { "l", new InputButton((int)GlobalButtonVals.BTN31) },
+            //    { "r", new InputButton((int)GlobalButtonVals.BTN32) }
+            //};
+
+            //ValidInputs = new List<string>(23)
+            //{
+            //    "up", "down", "left", "right", "a", "b", "select", "start", "l", "r",
+            //    "ss1", "ss2", "ss3", "ss4", "ss5", "ss6",
+            //    "ls1", "ls2", "ls3", "ls4", "ls5", "ls6",
+            //    "#"
+            //};
         }
     }
 }

@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Runtime.CompilerServices;
 using TRBot.Parsing;
+using TRBot.Utilities;
 using Newtonsoft.Json;
 
 namespace TRBot.Consoles
@@ -33,31 +34,36 @@ namespace TRBot.Consoles
         #region Properties
 
         /// <summary>
-        /// The console's identifier.
+        /// The name of the console.
         /// </summary>
-        public string Identifier { get; protected set; } = "GameConsole";
+        public string Name { get; protected set; } = "GameConsole";
 
         /// <summary>
-        /// The valid inputs for this console.
+        /// All the input data for this console.
         /// </summary>
-        public List<string> ValidInputs { get; protected set; } = new List<string>(8);
+        public Dictionary<string, InputData> ConsoleInputs { get; protected set; } = new Dictionary<string, InputData>(8);
 
-        /// <summary>
-        /// The input axes map for this console.
-        /// Each value corresponds to a numbered axis on a virtual controller.
-        /// </summary>
-        public Dictionary<string, InputAxis> InputAxesMap { get; protected set; } = new Dictionary<string, InputAxis>(8);
+        // <summary>
+        // The valid inputs for this console.
+        // </summary>
+        //public List<string> ValidInputs { get; protected set; } = new List<string>(8);
 
-        /// <summary>
-        /// The button input map for this console.
-        /// Each value corresponds to a numbered button on a virtual controller.
-        /// </summary>
-        public Dictionary<string, InputButton> InputButtonMap { get; protected set; } = new Dictionary<string, InputButton>(32);
+        // <summary>
+        // The input axes map for this console.
+        // Each value corresponds to a numbered axis on a virtual controller.
+        // </summary>
+        //public Dictionary<string, InputAxis> InputAxesMap { get; protected set; } = new Dictionary<string, InputAxis>(8);
+
+        // <summary>
+        // The button input map for this console.
+        // Each value corresponds to a numbered button on a virtual controller.
+        // </summary>
+        //public Dictionary<string, InputButton> InputButtonMap { get; protected set; } = new Dictionary<string, InputButton>(32);
 
         /// <summary>
         /// The input regex for the console.
         /// Update this with <see cref="UpdateInputRegex"/> to warm the regex expression for the parser.
-        /// Modifying <see cref="ValidInputs"/> will also update this value.
+        /// Modifying <see cref="ConsoleInputs"/> will also update this value.
         /// </summary>
         [JsonIgnore]
         public string InputRegex { get; private set; } = string.Empty;
@@ -69,27 +75,43 @@ namespace TRBot.Consoles
 
         }
 
-        public GameConsole(string identifier, List<string> validInputs,
-            Dictionary<string, InputAxis> inputAxes, Dictionary<string, InputButton> buttonInputMap)
+        public GameConsole(string name, Dictionary<string, InputData> consoleInputs)
         {
-            Identifier = identifier;
-            
-            SetValidInputs(validInputs);
-            SetInputAxes(inputAxes);
-            SetButtonMap(buttonInputMap);
+            Name = name;
+
+            SetConsoleInputs(consoleInputs);
 
             UpdateInputRegex();
         }
 
+        //public GameConsole(string identifier, List<string> validInputs,
+        //    Dictionary<string, InputAxis> inputAxes, Dictionary<string, InputButton> buttonInputMap)
+        //{
+        //    Name = identifier;
+        //    
+        //    SetValidInputs(validInputs);
+        //    SetInputAxes(inputAxes);
+        //    SetButtonMap(buttonInputMap);
+        //
+        //    UpdateInputRegex();
+        //}
+
         #region Modifications
 
-        /// <summary>
-        /// Sets the valid inputs for the console.
-        /// This updates the input regex.
-        /// </summary>
-        /// <param name="inputName">The valid inputs to set.</param>
-        /// <returns>true if the input was removed, otherwise false.</returns>
-        public void SetValidInputs(List<string> validInputs)
+        public void SetConsoleInputs(Dictionary<string, InputData> consoleInputs)
+        {
+            ConsoleInputs = consoleInputs;
+
+            UpdateInputRegex();
+        }
+
+        // <summary>
+        // Sets the valid inputs for the console.
+        // This updates the input regex.
+        // </summary>
+        // <param name="inputName">The valid inputs to set.</param>
+        // <returns>true if the input was removed, otherwise false.</returns>
+        /*public void SetValidInputs(List<string> validInputs)
         {
             ValidInputs = validInputs;
 
@@ -104,8 +126,48 @@ namespace TRBot.Consoles
         public void SetButtonMap(Dictionary<string, InputButton> buttonMap)
         {
             InputButtonMap = buttonMap;
+        }*/
+
+        /// <summary>
+        /// Adds an input to the console. If the input already exists, it will be updated with the new value.
+        /// This updates the input regex if the input did not previously exist.
+        /// </summary>
+        /// <param name="inputName">The name of the input to add.</param>
+        /// <param name="inputData">The data corresponding to the input.</param>
+        /// <returns>true if the input was added, otherwise false.</returns>
+        public bool AddInput(string inputName, InputData inputData)
+        {
+            bool existed = ConsoleInputs.ContainsKey(inputName);
+
+            ConsoleInputs[inputName] = inputData;
+
+            if (existed == false)
+            {
+                UpdateInputRegex();
+            }
+
+            return true;
         }
 
+        /// <summary>
+        /// Removes an input from the console.
+        /// This updates the input regex if removed.
+        /// </summary>
+        /// <param name="inputName">The name of the input to remove.</param>
+        /// <returns>true if the input was removed, otherwise false.</returns>
+        public bool RemoveInput(string inputName)
+        {
+            bool removed = ConsoleInputs.Remove(inputName);
+
+            if (removed == true)
+            {
+                UpdateInputRegex();
+            }
+
+            return removed;
+        }
+
+        /*
         /// <summary>
         /// Adds an input to the console. Duplicates are ignored.
         /// This updates the input regex if added.
@@ -191,7 +253,7 @@ namespace TRBot.Consoles
         public bool RemoveButton(string buttonName)
         {
             return InputButtonMap.Remove(buttonName);
-        }
+        }*/
 
         #endregion
 
@@ -202,7 +264,8 @@ namespace TRBot.Consoles
         /// <returns>true if the input name is a valid input, otherwise false.</returns>
         public bool DoesInputExist(string inputName)
         {
-            return ValidInputs.Contains(inputName);
+            return ConsoleInputs.ContainsKey(inputName);
+            //return ValidInputs.Contains(inputName);
         }
 
         /// <summary>
@@ -213,7 +276,16 @@ namespace TRBot.Consoles
         /// <returns>true if an axis with the given name exists, otherwise false.</returns>
         public bool GetAxisValue(string axisName, out InputAxis inputAxis)
         {
-            return InputAxesMap.TryGetValue(axisName, out inputAxis);
+            if (ConsoleInputs.TryGetValue(axisName, out InputData inputData) == false
+                || EnumUtility.HasEnumVal(inputData.InputType, (long)InputTypes.Axis) == false)
+            {
+                inputAxis = default;
+                return false;
+            }
+
+            inputAxis = new InputAxis(inputData.AxisValue, inputData.MinAxisVal, inputData.MaxAxisVal, inputData.MaxAxisPercent);
+            return true;
+            //return InputAxesMap.TryGetValue(axisName, out inputAxis);
         }
 
         /// <summary>
@@ -224,7 +296,16 @@ namespace TRBot.Consoles
         /// <returns>true if a button with the given name exists, otherwise false.</returns>
         public bool GetButtonValue(string buttonName, out InputButton inputButton)
         {
-            return InputButtonMap.TryGetValue(buttonName, out inputButton);
+            if (ConsoleInputs.TryGetValue(buttonName, out InputData inputData) == false
+                || EnumUtility.HasEnumVal(inputData.InputType, (long)InputTypes.Button) == false)
+            {
+                inputButton = default;
+                return false;
+            }
+
+            inputButton = new InputButton((uint)inputData.ButtonValue);
+            return true;
+            //return InputButtonMap.TryGetValue(buttonName, out inputButton);
         }
 
         #region Virtual Methods
@@ -246,22 +327,38 @@ namespace TRBot.Consoles
         /// <param name="input">The input to check.</param>
         /// <param name="axis">The InputAxis value that is assigned. If no axis is found, the default value.</param>
         /// <returns>true if the input is an axis, otherwise false.</returns>
-        public virtual bool GetAxis(in Input input, out InputAxis axis)
+        public virtual bool GetAxis(in ParsedInput input, out InputAxis axis)
         {
-            bool found = InputAxesMap.TryGetValue(input.name, out axis);
-            if (found == false)
+            ConsoleInputs.TryGetValue(input.name, out InputData inputData);
+
+            if (inputData == null || EnumUtility.HasEnumVal(inputData.InputType, (long)InputTypes.Axis) == false)
             {
+                axis = default;
                 return false;
             }
 
-            //Check if the percent pressed is less or equal to the max percentage allowed by the axis
-            if (input.percent <= axis.MaxPercentPressed)
+            if (input.percent <= inputData.MaxAxisPercent)
             {
+                axis = new InputAxis(inputData.AxisValue, inputData.MinAxisVal, inputData.MaxAxisVal, inputData.MaxAxisPercent);
                 return true;
             }
 
             axis = default;
             return false;
+            //bool found = InputAxesMap.TryGetValue(input.name, out axis);
+            //if (found == false)
+            //{
+            //    return false;
+            //}
+
+            ////Check if the percent pressed is less or equal to the max percentage allowed by the axis
+            //if (input.percent <= axis.MaxPercentPressed)
+            //{
+            //    return true;
+            //}
+
+            //axis = default;
+            //return false;
         }
 
         /// <summary>
@@ -269,7 +366,7 @@ namespace TRBot.Consoles
         /// </summary>
         /// <param name="input">The input to check.</param>
         /// <returns>true if the input is an axis, otherwise false.</returns>
-        public virtual bool IsAxis(in Input input)
+        public virtual bool IsAxis(in ParsedInput input)
         {
             return GetAxis(input, out InputAxis axis);
         }
@@ -279,9 +376,18 @@ namespace TRBot.Consoles
         /// </summary>
         /// <param name="input">The input to check.</param>
         /// <returns>true if the input is a button, otherwise false.</returns>
-        public virtual bool IsButton(in Input input)
+        public virtual bool IsButton(in ParsedInput input)
         {
-            return InputButtonMap.ContainsKey(input.name) == true && IsAxis(input) == false;
+            ConsoleInputs.TryGetValue(input.name, out InputData inputData);
+
+            if (inputData == null)
+            {
+                return false;
+            }
+
+            return (EnumUtility.HasEnumVal(inputData.InputType, (long)InputTypes.Button) == true && IsAxis(input) == false);
+
+            //return InputButtonMap.ContainsKey(input.name) == true && IsAxis(input) == false;
         }
 
         #endregion
@@ -294,9 +400,17 @@ namespace TRBot.Consoles
         /// <param name="input">The input to check.</param>
         /// <returns>true if the input is not a button or axes, otherwise false.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsBlankInput(in Input input)
+        public bool IsBlankInput(in ParsedInput input)
         {
-            return IsButton(input) == false && IsAxis(input) == false;
+            ConsoleInputs.TryGetValue(input.name, out InputData inputData);
+
+            if (inputData == null || inputData.InputType == (int)InputTypes.None)
+            {
+                return true;
+            }
+
+            return false;
+            //return IsButton(input) == false && IsAxis(input) == false;
         }
 
         /// <summary>
@@ -304,7 +418,7 @@ namespace TRBot.Consoles
         /// </summary>
         public void UpdateInputRegex()
         {
-            InputRegex = Parser.BuildInputRegex(Parser.DEFAULT_PARSE_REGEX_START, Parser.DEFAULT_PARSE_REGEX_END, ValidInputs);
+            InputRegex = Parser.BuildInputRegex(Parser.DEFAULT_PARSE_REGEX_START, Parser.DEFAULT_PARSE_REGEX_END, ConsoleInputs.Keys.ToArray());//ValidInputs);
         }
 
         #endregion

@@ -21,6 +21,94 @@ using System.Text;
 namespace TRBot.Consoles
 {
     /// <summary>
+    /// The types of inputs.
+    /// This is a bitwise field.
+    /// </summary>
+    [Flags]
+    public enum InputTypes
+    {
+        None = 0,
+        Button = 1 << 0,
+        Axis = 1 << 1
+    }
+
+    /// <summary>
+    /// Represents input data.
+    /// </summary>
+    public class InputData
+    {
+        public string Name { get; set; } = string.Empty;
+        public int ButtonValue { get; set; } = 0;
+        public int AxisValue { get; set; } = 0;
+        public int InputType { get; set; } = 0;
+        public int MinAxisVal { get; set; } = 0;
+        public int MaxAxisVal { get; set; } = 1;
+        public int MaxAxisPercent { get; set; } = 100;
+
+        public InputData()
+        {
+
+        }
+
+        public InputData(string name, in int buttonValue, in int axisValue, in int inputType,
+            in int minAxisVal, in int maxAxisVal, in int maxAxisPercent)
+        {
+            Name = name;
+            ButtonValue = buttonValue;
+            AxisValue = axisValue;
+            InputType = inputType;
+            MinAxisVal = minAxisVal;
+            MaxAxisVal = maxAxisVal;
+            MaxAxisPercent = maxAxisPercent;
+        }
+
+        public static InputData CreateBlank(string name)
+        {
+            InputData blankInput = new InputData();
+            blankInput.Name = name;
+            blankInput.InputType = (int)InputTypes.None;
+
+            return blankInput;
+        }
+
+        public static InputData CreateButton(string name, in int buttonValue)
+        {
+            InputData btnData = new InputData();
+            btnData.Name = name;
+            btnData.ButtonValue = buttonValue;
+            btnData.InputType = (int)InputTypes.Button;
+
+            return btnData;
+        }
+
+        public static InputData CreateAxis(string name, in int axisValue, in int minAxisVal, in int maxAxisVal)
+        {
+            InputData btnData = new InputData();
+            btnData.Name = name;
+            btnData.AxisValue = axisValue;
+            btnData.InputType = (int)InputTypes.Axis;
+            btnData.MinAxisVal = minAxisVal;
+            btnData.MaxAxisVal = maxAxisVal;
+            btnData.MaxAxisPercent = 100;
+
+            return btnData;
+        }
+
+        public static InputData CreateAxis(string name, in int axisValue, in int minAxisVal, in int maxAxisVal, in int maxAxisPercent)
+        {
+            InputData btnData = new InputData();
+            btnData.Name = name;
+            btnData.AxisValue = axisValue;
+            btnData.InputType = (int)InputTypes.Axis;
+            btnData.MinAxisVal = minAxisVal;
+            btnData.MaxAxisVal = maxAxisVal;
+            btnData.MaxAxisPercent = maxAxisPercent;
+
+            return btnData;
+        }
+    }
+
+    /// <summary>
     /// Represents an input axis. Min and max axis values are normalized in the range -1.0 to 1.0.
     /// </summary>
     public struct InputAxis

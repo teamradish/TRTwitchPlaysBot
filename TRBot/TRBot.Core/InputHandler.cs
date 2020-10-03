@@ -36,11 +36,11 @@ namespace TRBot.Core
         /// </summary>
         private struct InputWrapper
         {
-            public Input[][] InputArray;
+            public ParsedInput[][] InputArray;
             public GameConsole Console;
             public IVirtualControllerManager VCManager;
 
-            public InputWrapper(Input[][] inputArray, GameConsole console, IVirtualControllerManager vcMngr)
+            public InputWrapper(ParsedInput[][] inputArray, GameConsole console, IVirtualControllerManager vcMngr)
             {
                 InputArray = inputArray;
                 Console = console;
@@ -84,7 +84,7 @@ namespace TRBot.Core
         /// Carries out a set of inputs.
         /// </summary>
         /// <param name="inputList">A list of lists of inputs to execute.</param>
-        public static void CarryOutInput(List<List<Input>> inputList, GameConsole currentConsole, IVirtualControllerManager vcManager)
+        public static void CarryOutInput(List<List<ParsedInput>> inputList, GameConsole currentConsole, IVirtualControllerManager vcManager)
         {
             /*Kimimaru: We're using a thread pool for efficiency
              * Though very unlikely, there's a chance the input won't execute right away if it has to wait for a thread to be available
@@ -98,7 +98,7 @@ namespace TRBot.Core
             //and lets us bypass redundant copying and bounds checks in certain instances
             //This matters once we've begun processing inputs since we're
             //trying to reduce the delay between pressing and releasing inputs as much as we can
-            Input[][] inputArray = new Input[inputList.Count][];
+            ParsedInput[][] inputArray = new ParsedInput[inputList.Count][];
             for (int i = 0; i < inputArray.Length; i++)
             {
                 inputArray[i] = inputList[i].ToArray();
@@ -120,7 +120,7 @@ namespace TRBot.Core
 
             //Get the input list - this should have been validated beforehand
             InputWrapper inputWrapper = (InputWrapper)obj;
-            Input[][] inputArray = inputWrapper.InputArray;
+            ParsedInput[][] inputArray = inputWrapper.InputArray;
 
             Stopwatch sw = new Stopwatch();
 
@@ -141,7 +141,7 @@ namespace TRBot.Core
             {
                 for (int i = 0; i < inputArray.Length; i++)
                 {
-                    ref Input[] inputs = ref inputArray[i];
+                    ref ParsedInput[] inputs = ref inputArray[i];
 
                     indices.Clear();
 
@@ -151,7 +151,7 @@ namespace TRBot.Core
                         indices.Add(j);
 
                         //Get a reference to avoid copying the struct
-                        ref Input input = ref inputs[j];
+                        ref ParsedInput input = ref inputs[j];
 
                         //Don't do anything for a blank input
                         if (curConsole.IsBlankInput(input) == true)
@@ -202,7 +202,7 @@ namespace TRBot.Core
                         //Release buttons when we should
                         for (int j = indices.Count - 1; j >= 0; j--)
                         {
-                            ref Input input = ref inputs[indices[j]];
+                            ref ParsedInput input = ref inputs[indices[j]];
 
                             if (sw.ElapsedMilliseconds < input.duration)
                             {
@@ -253,10 +253,10 @@ namespace TRBot.Core
                 //At the end of it all, release every input
                 for (int i = 0; i < inputArray.Length; i++)
                 {
-                    ref Input[] inputs = ref inputArray[i];
+                    ref ParsedInput[] inputs = ref inputArray[i];
                     for (int j = 0; j < inputs.Length; j++)
                     {
-                        ref Input input = ref inputs[j];
+                        ref ParsedInput input = ref inputs[j];
 
                         if (curConsole.IsBlankInput(input) == true)
                         {

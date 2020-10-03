@@ -383,7 +383,7 @@ namespace TRBot.Parsing
         /// <param name="inputRegex">The input regex to use.</param>
         /// <param name="parserOptions">The <see cref="Parser"/> to use.</param>
         /// <returns>An InputSequence containing information about the parsed inputs.</returns>
-        public InputSequence ParseInputs(string message, string inputRegex, in ParserOptions parserOptions)
+        public ParsedInputSequence ParseInputs(string message, string inputRegex, in ParserOptions parserOptions)
         {
             //Full Regex:
             // (&\d)?([_-])?(left|right|a)(\d+%)?((\d+ms)|(\d+s))?(\+)?
@@ -411,11 +411,11 @@ namespace TRBot.Parsing
             {
                 //Console.WriteLine("NO MATCHES");
 
-                return new InputSequence(InputValidationTypes.NormalMsg, null, 0, "ERR_NORMAL_MSG");
+                return new ParsedInputSequence(InputValidationTypes.NormalMsg, null, 0, "ERR_NORMAL_MSG");
             }
 
             //Set up the input sequence
-            InputSequence inputSequence = new InputSequence(InputValidationTypes.Valid, new List<List<Input>>(matches.Count), 0, string.Empty);
+            ParsedInputSequence inputSequence = new ParsedInputSequence(InputValidationTypes.Valid, new List<List<ParsedInput>>(matches.Count), 0, string.Empty);
 
             //Store the previous index - if there's anything in between that's not picked up by the regex, it's an invalid input
             int prevIndex = 0;
@@ -423,7 +423,7 @@ namespace TRBot.Parsing
             int maxSubDuration = 0;
             int totalDuration = 0;
 
-            List<Input> simultaneousInputs = new List<Input>(4);
+            List<ParsedInput> simultaneousInputs = new List<ParsedInput>(4);
 
             for (int i = 0; i < matches.Count; i++)
             {
@@ -440,7 +440,7 @@ namespace TRBot.Parsing
                 }
 
                 //Get the input using the match information
-                Input input = GetInputFast(m, parserOptions.DefaultControllerPort, parserOptions.DefaultInputDur, ref prevIndex, ref hasPlus);
+                ParsedInput input = GetInputFast(m, parserOptions.DefaultControllerPort, parserOptions.DefaultInputDur, ref prevIndex, ref hasPlus);
 
                 //Console.WriteLine($"REGEX MATCH INDEX: {m.Index} | LENGTH: {m.Length} | MATCH: {m.Value}");
 
@@ -475,7 +475,7 @@ namespace TRBot.Parsing
                 if (hasPlus == false)
                 {
                     inputSequence.Inputs.Add(simultaneousInputs);
-                    simultaneousInputs = new List<Input>(4);
+                    simultaneousInputs = new List<ParsedInput>(4);
 
                     totalDuration += maxSubDuration;
                     maxSubDuration = 0;
@@ -507,7 +507,7 @@ namespace TRBot.Parsing
             return inputSequence;
         }
 
-        private Input GetInputFast(Match regexMatch, in int defControllerPort, in int defaultInputDur, ref int prevIndex, ref bool hasPlus)
+        private ParsedInput GetInputFast(Match regexMatch, in int defControllerPort, in int defaultInputDur, ref int prevIndex, ref bool hasPlus)
         {
             //Full Regex:
             // (&\d)?([_-])?(left|right|a)(\d+%)?((\d+ms)|(\d+s))?(\+)?
@@ -527,7 +527,7 @@ namespace TRBot.Parsing
             const int secIndex = 7;
             const int plusIndex = 8;
 
-            Input input = Input.Default(defaultInputDur);
+            ParsedInput input = ParsedInput.Default(defaultInputDur);
             input.controllerPort = defControllerPort;
 
             //Check the top level success - if no matches at all or there's a gap, this isn't a valid input
@@ -695,9 +695,9 @@ namespace TRBot.Parsing
     }
 
     /// <summary>
-    /// Contains input data.
+    /// Represents a parsed input.
     /// </summary>
-    public struct Input
+    public struct ParsedInput
     {
         public string name;
         public bool hold;
@@ -711,9 +711,9 @@ namespace TRBot.Parsing
         /// <summary>
         /// Returns a default Input.
         /// </summary>
-        public static Input Default(in int defaultInputDur) => new Input(string.Empty, false, false, Parser.PARSER_DEFAULT_PERCENT, defaultInputDur, Parser.PARSER_DEFAULT_DUR_TYPE, 0, string.Empty);
+        public static ParsedInput Default(in int defaultInputDur) => new ParsedInput(string.Empty, false, false, Parser.PARSER_DEFAULT_PERCENT, defaultInputDur, Parser.PARSER_DEFAULT_DUR_TYPE, 0, string.Empty);
         
-        public Input(string nme, in bool hld, in bool relse, in int percnt, in int dur, string durType, in int contPort, in string err)
+        public ParsedInput(string nme, in bool hld, in bool relse, in int percnt, in int dur, string durType, in int contPort, in string err)
         {
             this.name = nme;
             this.hold = hld;
@@ -727,7 +727,7 @@ namespace TRBot.Parsing
 
         public override bool Equals(object obj)
         {
-            if (obj is Input inp)
+            if (obj is ParsedInput inp)
             {
                 return (this == inp);
             }
@@ -752,14 +752,14 @@ namespace TRBot.Parsing
             }
         }
 
-        public static bool operator ==(Input a, Input b)
+        public static bool operator ==(ParsedInput a, ParsedInput b)
         {
             return (a.hold == b.hold && a.release == b.release && a.percent == b.percent
                     && a.duration_type == b.duration_type && a.duration_type == b.duration_type
                     && a.name == b.name && a.controllerPort == b.controllerPort && a.error == b.error);
         }
 
-        public static bool operator !=(Input a, Input b)
+        public static bool operator !=(ParsedInput a, ParsedInput b)
         {
             return !(a == b);
         }
@@ -773,14 +773,14 @@ namespace TRBot.Parsing
     /// <summary>
     /// Represents a fully parsed input sequence.
     /// </summary>
-    public struct InputSequence
+    public struct ParsedInputSequence
     {
         public InputValidationTypes InputValidationType;
-        public List<List<Input>> Inputs;
+        public List<List<ParsedInput>> Inputs;
         public int TotalDuration;
         public string Error;
 
-        public InputSequence(in InputValidationTypes inputValidationType, List<List<Input>> inputs, in int totalDuration, string error)
+        public ParsedInputSequence(in InputValidationTypes inputValidationType, List<List<ParsedInput>> inputs, in int totalDuration, string error)
         {
             InputValidationType = inputValidationType;
             Inputs = inputs;
@@ -790,7 +790,7 @@ namespace TRBot.Parsing
 
         public override bool Equals(object obj)
         {
-            if (obj is InputSequence inpSeq)
+            if (obj is ParsedInputSequence inpSeq)
             {
                 return (this == inpSeq);
             }
@@ -810,13 +810,13 @@ namespace TRBot.Parsing
             }
         }
 
-        public static bool operator ==(InputSequence a, InputSequence b)
+        public static bool operator ==(ParsedInputSequence a, ParsedInputSequence b)
         {
             return (a.InputValidationType == b.InputValidationType
                     && a.Inputs == b.Inputs && a.TotalDuration == b.TotalDuration && a.Error == b.Error);
         }
 
-        public static bool operator !=(InputSequence a, InputSequence b)
+        public static bool operator !=(ParsedInputSequence a, ParsedInputSequence b)
         {
             return !(a == b);
         }

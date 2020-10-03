@@ -376,14 +376,14 @@ namespace TRBot.Core
             }
 
             //If there are no valid inputs, don't attempt to parse
-            if (CurConsole.ValidInputs == null || CurConsole.ValidInputs.Count == 0)
+            if (CurConsole.ConsoleInputs == null || CurConsole.ConsoleInputs.Count == 0)//if (CurConsole.ValidInputs == null || CurConsole.ValidInputs.Count == 0)
             {
                 return;
             }
 
             //Parser.InputSequence inputSequence = default;
             //(bool, List<List<Parser.Input>>, bool, int) parsedVal = default;
-            InputSequence inputSequence = default;
+            ParsedInputSequence inputSequence = default;
 
             try
             {

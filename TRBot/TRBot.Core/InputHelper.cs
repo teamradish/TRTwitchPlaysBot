@@ -9,7 +9,7 @@ namespace TRBot.Core
 {
     public static class InputHelper
     {
-        public static void PressInput(in Input input, GameConsole curConsole, IVirtualController vController)
+        public static void PressInput(in ParsedInput input, GameConsole curConsole, IVirtualController vController)
         {
             if (curConsole.IsBlankInput(input) == true)
             {
@@ -26,9 +26,9 @@ namespace TRBot.Core
                     vController.ReleaseButton(btnVal.ButtonVal);
                 }
             }
-            else if (curConsole.IsButton(input) == true)
+            else if (curConsole.GetButtonValue(input.name, out InputButton btnVal) == true)
             {
-                vController.PressButton(curConsole.InputButtonMap[input.name].ButtonVal);
+                vController.PressButton(btnVal.ButtonVal);
 
                 //Release an axis with the same name (Ex. L/R buttons on GCN)
                 if (curConsole.GetAxisValue(input.name, out InputAxis value) == true)
@@ -40,7 +40,7 @@ namespace TRBot.Core
             vController.SetInputNamePressed(input.name);
         }
 
-        public static void ReleaseInput(in Input input, GameConsole curConsole, IVirtualController vController)
+        public static void ReleaseInput(in ParsedInput input, GameConsole curConsole, IVirtualController vController)
         {
             if (curConsole.IsBlankInput(input) == true)
             {
@@ -57,9 +57,9 @@ namespace TRBot.Core
                     vController.ReleaseButton(btnVal.ButtonVal);
                 }
             }
-            else if (curConsole.IsButton(input) == true)
+            else if (curConsole.GetButtonValue(input.name, out InputButton btnVal) == true)
             {
-                vController.ReleaseButton(curConsole.InputButtonMap[input.name].ButtonVal);
+                vController.ReleaseButton(btnVal.ButtonVal);
 
                 //Release an axis with the same name (Ex. L/R buttons on GCN)
                 if (curConsole.GetAxisValue(input.name, out InputAxis value) == true)

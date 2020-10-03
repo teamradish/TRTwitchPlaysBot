@@ -164,7 +164,7 @@ namespace TRBot.Connection
     {
         //public User UserData = null;
         public EvtUserMsgData UsrMessage = null;
-        public InputSequence ValidInputSeq = default;
+        public ParsedInputSequence ValidInputSeq = default;
     }
 
     public class EvtWhisperMessageArgs : EventArgs
