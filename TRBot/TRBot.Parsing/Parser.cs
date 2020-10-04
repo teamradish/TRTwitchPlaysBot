@@ -64,7 +64,7 @@ namespace TRBot.Parsing
         /// </summary>
         public const string DEFAULT_PARSE_REGEX_END = @")(\d+" + DEFAULT_PARSE_REGEX_PERCENT_INPUT + @")?((\d+" + DEFAULT_PARSE_REGEX_MILLISECONDS_INPUT + @")|(\d+" + DEFAULT_PARSE_REGEX_SECONDS_INPUT + @"))?(" + DEFAULT_PARSE_REGEX_PLUS_INPUT + ")?";
 
-        private static Comparison<(string, (int, int), List<string>)> SubCompare = SubComparison;
+        private static Comparison<DynamicMacroSub> SubCompare = SubComparison;
 
         private string ParseRegexStart = DEFAULT_PARSE_REGEX_START;
         private string ParseRegexEnd = DEFAULT_PARSE_REGEX_END;
@@ -226,7 +226,7 @@ namespace TRBot.Parsing
 
                 //Console.WriteLine($"Possible macros: {possible_macros} | {possible_macros.Count}");
 
-                List<(string, (int, int), List<string>)> subs = null;
+                List<DynamicMacroSub> subs = null;
                 foreach (Match p in possible_macros)
                 {
                     string macro_name = Regex.Replace(message.Substring(p.Index, p.Length), @"\(.*\)", string.Empty, regexOptions);
@@ -318,15 +318,15 @@ namespace TRBot.Parsing
                         //Console.WriteLine($"Longest match found is \"{longest}\"");
 
                         if (subs == null)
-                            subs = new List<(string, (int, int), List<string>)>(4);
+                            subs = new List<DynamicMacroSub>(4);
 
                         if (macro_argsarr.Count > 0)
                         {
-                            subs.Add((longest, (p.Index, p.Index + p.Length + 1), macro_argsarr));
+                            subs.Add(new DynamicMacroSub(longest, p.Index, p.Index + p.Length + 1, macro_argsarr));
                         }
                         else
                         {
-                            subs.Add((longest, (p.Index, end), macro_argsarr));
+                            subs.Add(new DynamicMacroSub(longest, p.Index, end, macro_argsarr));
                         }
                     }
                 }
@@ -338,32 +338,32 @@ namespace TRBot.Parsing
                     subs.Sort(SubCompare);
 
                     found_macro = true;
-                    str = message.Substring(0, subs[0].Item2.Item1);
-                    (string, (int, int), List<string>) def = default;
-                    (string, (int, int), List<string>) prev = default;
+                    str = message.Substring(0, subs[0].StartIndex);
+                    DynamicMacroSub def = default;
+                    DynamicMacroSub prev = default;
                     foreach (var current in subs)
                     {
-                        InputMacro inpMacro = macroData.FirstOrDefault((mac) => mac.MacroName == current.Item1);
+                        InputMacro inpMacro = macroData.FirstOrDefault((mac) => mac.MacroName == current.MacroName);
 
                         //The collection must have been modified at some point in between parsing and now if this macro is null
                         //There's nothing we can do here since there are no valid inputs mapped to the macro, so return
                         if (inpMacro == null)
                         {
-                            Console.WriteLine($"Error: Macro \"{current.Item1}\" was removed while parsing - exiting macro parsing.");
+                            Console.WriteLine($"Error: Macro \"{current.MacroName}\" was removed while parsing - exiting macro parsing.");
                             return message;
                         }
 
                         if (prev != def)
                         {
-                            str += message.Substring(prev.Item2.Item2, current.Item2.Item1 - prev.Item2.Item2);
+                            str += message.Substring(prev.EndIndex, current.StartIndex - prev.EndIndex);
                         }
 
-                        string macroValue = macroData.FirstOrDefault((mac) => mac.MacroName == current.Item1).MacroValue;
+                        string macroValue = macroData.FirstOrDefault((mac) => mac.MacroName == current.MacroName).MacroValue;
 
-                        str += PopulateVariables(macroValue, current.Item3);
+                        str += PopulateVariables(macroValue, current.Variables);
                         prev = current;
                     }
-                    str += message.Substring(prev.Item2.Item2);
+                    str += message.Substring(prev.EndIndex);
                     message = str;
                 }
                 count += 1;
@@ -730,9 +730,9 @@ namespace TRBot.Parsing
             return inputRegex;
         }
 
-        private static int SubComparison((string, (int, int), List<string>) val1, (string, (int, int), List<string>) val2)
+        private static int SubComparison(DynamicMacroSub val1, DynamicMacroSub val2)
         {
-            return val1.Item2.Item1.CompareTo(val2.Item2.Item1);
+            return val1.StartIndex.CompareTo(val2.StartIndex);
         }
     }
 
@@ -920,6 +920,58 @@ namespace TRBot.Parsing
         }
         
         public static bool operator !=(ParserOptions a, ParserOptions b)
+        {
+            return !(a == b);
+        }
+    }
+
+    /// <summary>
+    /// Represents a dynamic macro substitution.
+    /// </summary>
+    public struct DynamicMacroSub
+    {
+        public string MacroName;
+        public int StartIndex;
+        public int EndIndex;
+        public List<string> Variables;
+        
+        public DynamicMacroSub(string macroName, in int startIndex, in int endIndex, List<string> variables)
+        {
+            MacroName = macroName;
+            StartIndex = startIndex;
+            EndIndex = endIndex;
+            Variables = variables;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is DynamicMacroSub dynamicMacroSub)
+            {
+                return (this == dynamicMacroSub);
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 13;
+                hash = (hash * 37) + ((MacroName == null) ? 0 : MacroName.GetHashCode());
+                hash = (hash * 37) + StartIndex.GetHashCode();
+                hash = (hash * 37) + EndIndex.GetHashCode();
+                hash = (hash * 37) + ((Variables == null) ? 0 : Variables.GetHashCode());
+                return hash;
+            }
+        }
+
+        public static bool operator ==(DynamicMacroSub a, DynamicMacroSub b)
+        {
+            return (a.MacroName == b.MacroName && a.StartIndex == b.StartIndex
+                    && a.EndIndex == b.EndIndex && a.Variables == b.Variables);
+        }
+        
+        public static bool operator !=(DynamicMacroSub a, DynamicMacroSub b)
         {
             return !(a == b);
         }
