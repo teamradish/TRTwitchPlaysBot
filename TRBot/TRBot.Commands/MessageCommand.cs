@@ -32,7 +32,6 @@ namespace TRBot.Commands
     /// </summary>
     public class MessageCommand : BaseCommand
     {
-        public string DatabaseMessageKey = string.Empty;
         protected BotMessageHandler MessageHandler = null;
 
         public MessageCommand()
@@ -42,7 +41,7 @@ namespace TRBot.Commands
 
         public MessageCommand(string databaseMsgKey)
         {
-            DatabaseMessageKey = databaseMsgKey;
+            ValueStr = databaseMsgKey;
         }
 
         public override void Initialize(CommandHandler cmdHandler, DataContainer dataContainer)
@@ -57,7 +56,7 @@ namespace TRBot.Commands
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
-            string sentMessage = DataHelper.GetSettingString(DatabaseMessageKey, DatabaseMessageKey);
+            string sentMessage = DataHelper.GetSettingString(ValueStr, ValueStr);
 
             //The message we want to send is null or empty
             if (string.IsNullOrEmpty(sentMessage) == true)

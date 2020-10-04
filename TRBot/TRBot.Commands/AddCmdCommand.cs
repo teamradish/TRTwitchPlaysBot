@@ -69,26 +69,19 @@ namespace TRBot.Commands
 
             string commandName = arguments[0].ToLowerInvariant();
             string className = arguments[1];
-            object[] constructorParams = Array.Empty<object>();
+            string valueStr = string.Empty;
             string levelStr = arguments[minArgCount];
             string enabledStr = arguments[minArgCount + 1];
             string displayInHelpStr = arguments[minArgCount + 2];
 
-            //Combine all the arguments in between as the constructor data
-            string combinedParamStr = string.Empty;
+            //Combine all the arguments in between as the value string
             for (int i = 2; i < minArgCount; i++)
             {
-                combinedParamStr += arguments[i];
+                valueStr += arguments[i];
                 if (i < (minArgCount - 1))
                 {
-                    combinedParamStr += " ";
+                    valueStr += " ";
                 }
-            }
-
-            //Add the constructor data
-            if (string.IsNullOrEmpty(combinedParamStr) == false)
-            {
-                constructorParams = new object[1] { combinedParamStr };
             }
 
             if (int.TryParse(levelStr, out int levelNum) == false)
@@ -109,7 +102,7 @@ namespace TRBot.Commands
                 return;
             }
 
-            bool added = CmdHandler.AddCommand(commandName, className, constructorParams, levelNum, cmdEnabled, displayInHelp);
+            bool added = CmdHandler.AddCommand(commandName, className, valueStr, levelNum, cmdEnabled, displayInHelp);
 
             if (added == true)
             {
@@ -126,7 +119,7 @@ namespace TRBot.Commands
 
                     //Add the new one
                     context.Commands.Add(new CommandData(commandName, className, levelNum, cmdEnabled,
-                        displayInHelp, (constructorParams.Length > 0) ? (string)constructorParams[0] : string.Empty));
+                        displayInHelp, valueStr));
                     
                     context.SaveChanges();
                 }

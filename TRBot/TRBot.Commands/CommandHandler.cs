@@ -100,13 +100,13 @@ namespace TRBot.Commands
             return command;
         }
 
-        public bool AddCommand(string commandName, string commandTypeName, object[] constructorData,
+        public bool AddCommand(string commandName, string commandTypeName, string valueStr,
             in int level, in bool commandEnabled, in bool displayInHelp)
         {
             Type commandType = Type.GetType(commandTypeName, false, true);
             if (commandType == null)
             {
-                DataContainer.MessageHandler.QueueMessage($"Cannot find command \"{commandName}\" type \"{commandTypeName}\".");
+                DataContainer.MessageHandler.QueueMessage($"Cannot find command type \"{commandTypeName}\" for command \"{commandName}\".");
                 return false;
             }
 
@@ -115,10 +115,11 @@ namespace TRBot.Commands
             //Try to create an instance
             try
             {
-                command = (BaseCommand)Activator.CreateInstance(commandType, constructorData);
+                command = (BaseCommand)Activator.CreateInstance(commandType, Array.Empty<object>());
                 command.Enabled = commandEnabled;
                 command.DisplayInHelp = displayInHelp;
                 command.Level = level;
+                command.ValueStr = valueStr;
             }
             catch (Exception e)
             {
@@ -177,8 +178,6 @@ namespace TRBot.Commands
 
         private void PopulateCommandsFromDB()
         {
-            object[] parameters = null;
-
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
                 foreach (CommandData cmdData in context.Commands)
@@ -191,29 +190,14 @@ namespace TRBot.Commands
                         continue;
                     }
 
-                    //Get arguments
-                    object[] constructorParams = Array.Empty<object>();
-                    if (string.IsNullOrEmpty(cmdData.value_str) == false)
-                    {
-                        if (parameters == null)
-                        {
-                            parameters = new object[1] { cmdData.value_str };
-                        }
-                        else
-                        {
-                            parameters[0] = cmdData.value_str;
-                        }
-
-                        constructorParams = parameters;
-                    }
-
                     //Create the type
                     try
                     {
-                        BaseCommand baseCmd = (BaseCommand)Activator.CreateInstance(commandType, constructorParams);
+                        BaseCommand baseCmd = (BaseCommand)Activator.CreateInstance(commandType, Array.Empty<object>());
                         baseCmd.Enabled = cmdData.enabled > 0;
                         baseCmd.DisplayInHelp = cmdData.display_in_list > 0;
                         baseCmd.Level = cmdData.level;
+                        baseCmd.ValueStr = cmdData.value_str;
 
                         AllCommands[cmdData.name] = baseCmd;
                     }
@@ -244,8 +228,6 @@ namespace TRBot.Commands
 
         private void UpdateCommandsFromDB()
         {
-            object[] parameters = null;
-
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
                 List<string> encounteredCommands = new List<string>(context.Commands.Count());
@@ -267,24 +249,8 @@ namespace TRBot.Commands
                     //Add this command if it doesn't exist and should
                     if (baseCmd == null)
                     {
-                        //Get the arguments to construct this command
-                        object[] constructorParams = Array.Empty<object>();
-                        if (string.IsNullOrEmpty(cmdData.value_str) == false)
-                        {
-                            if (parameters == null)
-                            {
-                                parameters = new object[1] { cmdData.value_str };
-                            }
-                            else
-                            {
-                                parameters[0] = cmdData.value_str;
-                            }
-
-                            constructorParams = parameters;
-                        }
-
                         //Add this command
-                        AddCommand(commandName, cmdData.class_name, constructorParams,
+                        AddCommand(commandName, cmdData.class_name, cmdData.value_str,
                             cmdData.level, cmdData.enabled != 0, cmdData.display_in_list != 0 );
                     }
                     else
@@ -292,6 +258,7 @@ namespace TRBot.Commands
                         baseCmd.Level = cmdData.level;
                         baseCmd.Enabled = cmdData.enabled != 0;
                         baseCmd.DisplayInHelp = cmdData.display_in_list != 0;
+                        baseCmd.ValueStr = cmdData.value_str;
                     }
 
                     encounteredCommands.Add(commandName);
