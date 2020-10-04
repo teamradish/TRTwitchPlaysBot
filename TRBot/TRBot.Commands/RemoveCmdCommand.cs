@@ -27,79 +27,70 @@ using TRBot.Data;
 namespace TRBot.Commands
 {
     /// <summary>
-    /// A command that notifies all data should be reloaded.
+    /// A command that removes a command.
     /// </summary>
-    public sealed class ReloadCommand : BaseCommand
+    public sealed class RemoveCmdCommand : BaseCommand
     {
-        private const string SOFT_RELOAD_ARG = "soft";
-        private const string HARD_RELOAD_ARG = "hard";
-
+        private CommandHandler CmdHandler = null;
         private BotMessageHandler MessageHandler = null;
-        private DataReloader DataReloader = null;
+        private string UsageMessage = $"Usage - \"command name\"";
 
-        private string UsageMessage = $"Usage - Soft reload: \"{SOFT_RELOAD_ARG}\" or no args | Hard reload: \"{HARD_RELOAD_ARG}\"";
-
-        public ReloadCommand()
+        public RemoveCmdCommand()
         {
             
         }
 
         public override void Initialize(CommandHandler cmdHandler, DataContainer dataContainer)
         {
+            CmdHandler = cmdHandler;
             MessageHandler = dataContainer.MessageHandler;
-            DataReloader = dataContainer.DataReloader;
         }
 
         public override void CleanUp()
         {
-            DataReloader = null;
+            CmdHandler = null;
+            MessageHandler = null;
         }
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
             List<string> arguments = args.Command.ArgumentsAsList;
 
-            //Soft reload with no arguments
-            if (arguments.Count == 0)
-            {
-                SoftReload();
-                return;
-            }
-
-            if (arguments.Count > 1)
+            //Ignore with incorrect number of arguments
+            if (arguments.Count != 1)
             {
                 MessageHandler.QueueMessage(UsageMessage);
                 return;
             }
 
-            string arg1 = arguments[0].ToLowerInvariant();
+            string commandName = arguments[0].ToLowerInvariant();
 
-            //Soft reloads
-            if (arg1 == SOFT_RELOAD_ARG)
+            bool removed = CmdHandler.RemoveCommand(commandName);
+
+            if (removed == true)
             {
-                SoftReload();
-            }
-            else if (arg1 == HARD_RELOAD_ARG)
-            {
-                HardReload();
+                //Remove this command from the database
+                using (BotDBContext context = DatabaseManager.OpenContext())
+                {
+                    CommandData cmdData = context.Commands.FirstOrDefault((cmd) => cmd.name == commandName);
+                    if (cmdData != null)
+                    {
+                        context.Commands.Remove(cmdData);
+
+                        context.SaveChanges();
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Error: Command \"{commandName}\" was not removed from the database because it cannot be found.");
+                    }
+                }
+
+                MessageHandler.QueueMessage($"Successfully removed command \"{commandName}\"!");
             }
             else
             {
-                MessageHandler.QueueMessage(UsageMessage);
+                MessageHandler.QueueMessage($"Failed to remove command \"{commandName}\". It likely does not exist.");
             }
-        }
-
-        private void SoftReload()
-        {
-            DataReloader.ReloadDataSoft();
-            MessageHandler.QueueMessage("Finished reloading of data!");
-        }
-
-        private void HardReload()
-        {
-            DataReloader.ReloadDataHard();
-
-            MessageHandler.QueueMessage("Finished hard reloading data!");
         }
     }
 }

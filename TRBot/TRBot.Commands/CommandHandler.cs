@@ -33,21 +33,22 @@ namespace TRBot.Commands
     public class CommandHandler
     {
         private ConcurrentDictionary<string, BaseCommand> AllCommands = new ConcurrentDictionary<string, BaseCommand>(Environment.ProcessorCount * 2, 32);
-        private BotMessageHandler MessageHandler = null;
-        private DataReloader DataReloader = null;
+        private DataContainer DataContainer = null;
 
         public CommandHandler()
         {
 
         }
 
-        public void Initialize(BotMessageHandler messageHandler, DataReloader dataReloader)
+        public void Initialize(DataContainer dataContainer)
         {
-            MessageHandler = messageHandler;
-            DataReloader = dataReloader;
+            DataContainer = dataContainer;
 
-            DataReloader.DataReloadedEvent -= OnDataReloaded;
-            DataReloader.DataReloadedEvent += OnDataReloaded;
+            DataContainer.DataReloader.SoftDataReloadedEvent -= OnDataReloadedSoft;
+            DataContainer.DataReloader.SoftDataReloadedEvent += OnDataReloadedSoft;
+
+            DataContainer.DataReloader.HardDataReloadedEvent -= OnDataReloadedHard;
+            DataContainer.DataReloader.HardDataReloadedEvent += OnDataReloadedHard;
 
             PopulateCommandsFromDB();            
             InitializeCommands();
@@ -55,10 +56,10 @@ namespace TRBot.Commands
 
         public void CleanUp()
         {
-            DataReloader.DataReloadedEvent -= OnDataReloaded;
+            DataContainer.DataReloader.SoftDataReloadedEvent -= OnDataReloadedSoft;
+            DataContainer.DataReloader.HardDataReloadedEvent -= OnDataReloadedHard;
 
-            MessageHandler = null;
-            DataReloader = null;
+            DataContainer = null;
 
             CleanUpCommands();
         }
@@ -67,7 +68,7 @@ namespace TRBot.Commands
         {
             if (args == null || args.Command == null || args.Command.ChatMessage == null)
             {
-                MessageHandler.QueueMessage($"{nameof(EvtChatCommandArgs)} or its Command or ChatMessage is null! Not parsing command");
+                DataContainer.MessageHandler.QueueMessage($"{nameof(EvtChatCommandArgs)} or its Command or ChatMessage is null! Not parsing command");
                 return;
             }
 
@@ -77,7 +78,7 @@ namespace TRBot.Commands
             {
                 if (command == null)
                 {
-                    MessageHandler.QueueMessage($"Command {commandToLower} is null! Not executing.");
+                    DataContainer.MessageHandler.QueueMessage($"Command {commandToLower} is null! Not executing.");
                     return;
                 }
 
@@ -99,12 +100,13 @@ namespace TRBot.Commands
             return command;
         }
 
-        public bool AddCommand(string commandName, string commandTypeName, object[] constructorData)
+        public bool AddCommand(string commandName, string commandTypeName, object[] constructorData,
+            in int level, in bool commandEnabled, in bool displayInHelp)
         {
             Type commandType = Type.GetType(commandTypeName, false, true);
             if (commandType == null)
             {
-                MessageHandler.QueueMessage($"Cannot find command \"{commandName}\" type \"{commandTypeName}\".");
+                DataContainer.MessageHandler.QueueMessage($"Cannot find command \"{commandName}\" type \"{commandTypeName}\".");
                 return false;
             }
 
@@ -114,10 +116,13 @@ namespace TRBot.Commands
             try
             {
                 command = (BaseCommand)Activator.CreateInstance(commandType, constructorData);
+                command.Enabled = commandEnabled;
+                command.DisplayInHelp = displayInHelp;
+                command.Level = level;
             }
             catch (Exception e)
             {
-                MessageHandler.QueueMessage($"Unable to add command \"{commandName}\": \"{e.Message}\"");
+                DataContainer.MessageHandler.QueueMessage($"Unable to add command \"{commandName}\": \"{e.Message}\"");
             }
 
             return AddCommand(commandName, command);
@@ -139,7 +144,7 @@ namespace TRBot.Commands
 
             //Set and initialize the command
             AllCommands[commandName] = command;
-            AllCommands[commandName].Initialize(MessageHandler, DataReloader);
+            AllCommands[commandName].Initialize(this, DataContainer);
 
             return true;
         }
@@ -149,7 +154,7 @@ namespace TRBot.Commands
             bool removed = AllCommands.Remove(commandName, out BaseCommand command);
             
             //Clean up the command
-            command.CleanUp();
+            command?.CleanUp();
 
             return removed;
         }
@@ -158,7 +163,7 @@ namespace TRBot.Commands
         {
             foreach (KeyValuePair<string, BaseCommand> cmd in AllCommands)
             {
-                cmd.Value.Initialize(MessageHandler, DataReloader);
+                cmd.Value.Initialize(this, DataContainer);
             }
         }
 
@@ -182,7 +187,7 @@ namespace TRBot.Commands
                     Type commandType = Type.GetType(cmdData.class_name, false, true);
                     if (commandType == null)
                     {
-                        MessageHandler.QueueMessage($"Cannot find command type \"{cmdData.class_name}\" - skipping.");
+                        DataContainer.MessageHandler.QueueMessage($"Cannot find command type \"{cmdData.class_name}\" - skipping.");
                         continue;
                     }
 
@@ -208,18 +213,24 @@ namespace TRBot.Commands
                         BaseCommand baseCmd = (BaseCommand)Activator.CreateInstance(commandType, constructorParams);
                         baseCmd.Enabled = cmdData.enabled > 0;
                         baseCmd.DisplayInHelp = cmdData.display_in_list > 0;
+                        baseCmd.Level = cmdData.level;
 
                         AllCommands[cmdData.name] = baseCmd;
                     }
                     catch (Exception e)
                     {
-                        MessageHandler.QueueMessage($"Unable to create class type \"{cmdData.class_name}\": {e.Message}");
+                        DataContainer.MessageHandler.QueueMessage($"Unable to create class type \"{cmdData.class_name}\": {e.Message}");
                     }
                 }
             }
         }
 
-        private void OnDataReloaded()
+        private void OnDataReloadedSoft()
+        {
+            UpdateCommandsFromDB();
+        }
+
+        private void OnDataReloadedHard()
         {
             //Clean up and clear all commands
             CleanUpCommands();
@@ -229,6 +240,72 @@ namespace TRBot.Commands
 
             //Re-initialize all commands
             InitializeCommands();
+        }
+
+        private void UpdateCommandsFromDB()
+        {
+            object[] parameters = null;
+
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                List<string> encounteredCommands = new List<string>(context.Commands.Count());
+
+                foreach (CommandData cmdData in context.Commands)
+                {
+                    string commandName = cmdData.name;
+                    if (AllCommands.TryGetValue(commandName, out BaseCommand baseCmd) == true)
+                    {
+                        //Remove this command if the type name is different so we can reconstruct it
+                        if (baseCmd.GetType().FullName != cmdData.class_name)
+                        {
+                            RemoveCommand(commandName);
+                        }
+
+                        baseCmd = null;
+                    }
+
+                    //Add this command if it doesn't exist and should
+                    if (baseCmd == null)
+                    {
+                        //Get the arguments to construct this command
+                        object[] constructorParams = Array.Empty<object>();
+                        if (string.IsNullOrEmpty(cmdData.value_str) == false)
+                        {
+                            if (parameters == null)
+                            {
+                                parameters = new object[1] { cmdData.value_str };
+                            }
+                            else
+                            {
+                                parameters[0] = cmdData.value_str;
+                            }
+
+                            constructorParams = parameters;
+                        }
+
+                        //Add this command
+                        AddCommand(commandName, cmdData.class_name, constructorParams,
+                            cmdData.level, cmdData.enabled != 0, cmdData.display_in_list != 0 );
+                    }
+                    else
+                    {
+                        baseCmd.Level = cmdData.level;
+                        baseCmd.Enabled = cmdData.enabled != 0;
+                        baseCmd.DisplayInHelp = cmdData.display_in_list != 0;
+                    }
+
+                    encounteredCommands.Add(commandName);
+                }
+
+                //Remove commands that are no longer in the database
+                foreach (string cmd in AllCommands.Keys)
+                {
+                    if (encounteredCommands.Contains(cmd) == false)
+                    {
+                        RemoveCommand(cmd);
+                    }
+                }
+            }
         }
     }
 }

@@ -28,12 +28,11 @@ namespace TRBot.Commands
 {
     /// <summary>
     /// A simple command that sends a message.
-    /// It can also use a message from the database.
+    /// It will first look for the given from the database, and if not found, use the message as it is.
     /// </summary>
     public class MessageCommand : BaseCommand
     {
         public string DatabaseMessageKey = string.Empty;
-        public string FallbackMessage = string.Empty;
         protected BotMessageHandler MessageHandler = null;
 
         public MessageCommand()
@@ -46,15 +45,9 @@ namespace TRBot.Commands
             DatabaseMessageKey = databaseMsgKey;
         }
 
-        public MessageCommand(string databaseMsgKey, string fallbackMessage)
+        public override void Initialize(CommandHandler cmdHandler, DataContainer dataContainer)
         {
-            DatabaseMessageKey = databaseMsgKey;
-            FallbackMessage = fallbackMessage;
-        }
-
-        public override void Initialize(BotMessageHandler messageHandler, DataReloader dataReloader)
-        {
-            MessageHandler = messageHandler;
+            MessageHandler = dataContainer.MessageHandler;
         }
 
         public override void CleanUp()
@@ -64,13 +57,7 @@ namespace TRBot.Commands
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
-            string sentMessage = FallbackMessage;
-
-            //If the database message key is defined, fetch the message from the database
-            if (string.IsNullOrEmpty(DatabaseMessageKey) == false)
-            {
-                sentMessage = DataHelper.GetSettingString(DatabaseMessageKey, FallbackMessage);
-            }
+            string sentMessage = DataHelper.GetSettingString(DatabaseMessageKey, DatabaseMessageKey);
 
             //The message we want to send is null or empty
             if (string.IsNullOrEmpty(sentMessage) == true)

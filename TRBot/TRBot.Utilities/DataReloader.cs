@@ -33,9 +33,14 @@ namespace TRBot.Utilities
         public delegate void OnDataReloaded();
         
         /// <summary>
-        /// An event invoked when data has been reloaded.
+        /// An event invoked when data has been soft reloaded.
         /// </summary>
-        public event OnDataReloaded DataReloadedEvent = null;
+        public event OnDataReloaded SoftDataReloadedEvent = null;
+
+        /// <summary>
+        /// An event invoked when data has been hard reloaded.
+        /// </summary>
+        public event OnDataReloaded HardDataReloadedEvent = null;
 
         public DataReloader()
         {
@@ -44,15 +49,24 @@ namespace TRBot.Utilities
 
         public void CleanUp()
         {
-            DataReloadedEvent = null;
+            SoftDataReloadedEvent = null;
+            HardDataReloadedEvent = null;
         }
 
         /// <summary>
-        /// Invokes a data reload.
+        /// Invokes a soft data reload.
         /// </summary>
-        public void ReloadData()
+        public void ReloadDataSoft()
         {
-            DataReloadedEvent?.Invoke();
+            SoftDataReloadedEvent?.Invoke();
+        }
+
+        /// <summary>
+        /// Invokes a hard data reload.
+        /// </summary>
+        public void ReloadDataHard()
+        {
+            HardDataReloadedEvent?.Invoke();
         }
     }
 }

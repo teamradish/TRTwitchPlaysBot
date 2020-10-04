@@ -51,14 +51,13 @@ namespace TRBot.Core
         public IClientService ClientService { get; private set; } = null;
         public IVirtualControllerManager ControllerMngr { get; private set; } = null;
         public GameConsole CurConsole { get; private set; } = null;
-        
-        public BotMessageHandler MsgHandler { get; private set; } = new BotMessageHandler();
-
-        private InputSynonymCollection SynonymData = new InputSynonymCollection();
 
         private Parser InputParser = null;
         private CommandHandler CmdHandler = null;
+        
+        public BotMessageHandler MsgHandler { get; private set; } = new BotMessageHandler();
         private DataReloader DataReloader = new DataReloader();
+        private DataContainer DataContainer = new DataContainer();
 
         //Store the function to reduce garbage, since this one is being called constantly
         private Func<Settings, bool> ThreadSleepFindFunc = null;
@@ -159,6 +158,9 @@ namespace TRBot.Core
             UnsubscribeEvents();
             SubscribeEvents();
 
+            DataContainer.SetMessageHandler(MsgHandler);
+            DataContainer.SetDataReloader(DataReloader);
+
             Console.WriteLine("Setting up virtual controller manager.");
 
             VirtualControllerTypes lastVControllerType = ValidateVirtualControllerType();
@@ -177,12 +179,8 @@ namespace TRBot.Core
 
             Console.WriteLine($"Setting up virtual controller {lastVControllerType} and acquired {acquiredCount} controllers!");
 
-            SynonymData = new InputSynonymCollection(new ConcurrentDictionary<string, InputSynonym>());
-            SynonymData.AddSynonym(new InputSynonym(".", "#"));
-            SynonymData.AddSynonym(new InputSynonym("aandup", "a+up"));
-
             CmdHandler = new CommandHandler();
-            CmdHandler.Initialize(MsgHandler, DataReloader);
+            CmdHandler.Initialize(DataContainer);
 
             Initialized = true;
         }

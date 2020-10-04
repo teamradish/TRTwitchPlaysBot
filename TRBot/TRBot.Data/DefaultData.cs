@@ -105,7 +105,9 @@ namespace TRBot.Data
             {
                 new CommandData("sourcecode", "TRBot.Commands.MessageCommand", 0, true, true, SettingsConstants.SOURCE_CODE_MESSAGE),
                 new CommandData("info", "TRBot.Commands.MessageCommand", 0, true, true, SettingsConstants.INFO_MESSAGE),
-                new CommandData("reload", "TRBot.Commands.ReloadCommand", 3, true, true)
+                new CommandData("reload", "TRBot.Commands.ReloadCommand", 3, true, true),
+                new CommandData("addcmd", "TRBot.Commands.AddCmdCommand", 4, true, true),
+                new CommandData("removecmd", "TRBot.Commands.RemoveCmdCommand", 4, true, true),
             };
 
             return defaultCommands;

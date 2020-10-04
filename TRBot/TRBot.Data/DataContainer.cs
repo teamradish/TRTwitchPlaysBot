@@ -16,40 +16,35 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using TRBot.Connection;
+using System.IO;
+using System.Linq;
 using TRBot.Common;
 using TRBot.Utilities;
-using TRBot.Data;
 
-namespace TRBot.Commands
+namespace TRBot.Data
 {
     /// <summary>
-    /// Base class for a command.
+    /// A container for common data.
     /// </summary>
-    public abstract class BaseCommand
+    public class DataContainer
     {
-        public bool Enabled = true;
-        public bool DisplayInHelp = true;
-        public int Level = 0;
+        public BotMessageHandler MessageHandler { get; private set; } = null;
+        public DataReloader DataReloader { get; private set; } = null;
 
-        public BaseCommand()
-        {
-            
-        }
-
-        public virtual void Initialize(CommandHandler cmdHandler, DataContainer dataContainer)
+        public DataContainer()
         {
 
         }
 
-        public virtual void CleanUp()
+        public void SetMessageHandler(BotMessageHandler msgHandler)
         {
-            
+            MessageHandler = msgHandler;
         }
 
-        public abstract void ExecuteCommand(EvtChatCommandArgs args);
+        public void SetDataReloader(DataReloader dataReloader)
+        {
+            DataReloader = dataReloader;
+        }
     }
 }
