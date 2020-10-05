@@ -277,7 +277,7 @@ namespace TRBot.Consoles
         public bool GetAxisValue(string axisName, out InputAxis inputAxis)
         {
             if (ConsoleInputs.TryGetValue(axisName, out InputData inputData) == false
-                || EnumUtility.HasEnumVal(inputData.InputType, (long)InputTypes.Axis) == false)
+                || EnumUtility.HasEnumVal((long)inputData.InputType, (long)InputTypes.Axis) == false)
             {
                 inputAxis = default;
                 return false;
@@ -297,7 +297,7 @@ namespace TRBot.Consoles
         public bool GetButtonValue(string buttonName, out InputButton inputButton)
         {
             if (ConsoleInputs.TryGetValue(buttonName, out InputData inputData) == false
-                || EnumUtility.HasEnumVal(inputData.InputType, (long)InputTypes.Button) == false)
+                || EnumUtility.HasEnumVal((long)inputData.InputType, (long)InputTypes.Button) == false)
             {
                 inputButton = default;
                 return false;
@@ -331,7 +331,7 @@ namespace TRBot.Consoles
         {
             ConsoleInputs.TryGetValue(input.name, out InputData inputData);
 
-            if (inputData == null || EnumUtility.HasEnumVal(inputData.InputType, (long)InputTypes.Axis) == false)
+            if (inputData == null || EnumUtility.HasEnumVal((long)inputData.InputType, (long)InputTypes.Axis) == false)
             {
                 axis = default;
                 return false;
@@ -385,7 +385,7 @@ namespace TRBot.Consoles
                 return false;
             }
 
-            return (EnumUtility.HasEnumVal(inputData.InputType, (long)InputTypes.Button) == true && IsAxis(input) == false);
+            return (EnumUtility.HasEnumVal((long)inputData.InputType, (long)InputTypes.Button) == true && IsAxis(input) == false);
 
             //return InputButtonMap.ContainsKey(input.name) == true && IsAxis(input) == false;
         }

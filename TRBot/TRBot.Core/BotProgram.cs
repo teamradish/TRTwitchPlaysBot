@@ -626,6 +626,24 @@ namespace TRBot.Core
                     }
                 }
 
+                Settings firstLaunchSetting = dbContext.SettingCollection.FirstOrDefault((set) => set.key == SettingsConstants.FIRST_LAUNCH);
+                if (firstLaunchSetting == null)
+                {
+                    firstLaunchSetting = new Settings(SettingsConstants.FIRST_LAUNCH, string.Empty, 1L);
+                    dbContext.SettingCollection.Add(firstLaunchSetting);
+
+                    entriesAdded++;
+                }
+
+                //Do something upon first launching the bot
+                if (firstLaunchSetting.value_int > 0)
+                {
+                    
+                    
+                    //Set first launch to 0
+                    firstLaunchSetting.value_int = 0;
+                }
+
                 dbContext.SaveChanges();
             }
         }

@@ -21,8 +21,10 @@ using System.Data;
 using System.Data.SQLite;
 using System.IO;
 using TRBot.ParserData;
+using TRBot.Consoles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace TRBot.Data
 {
@@ -55,6 +57,7 @@ namespace TRBot.Data
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             options.UseSqlite($"Filename={Datasource}", ContextBuilder);
+            options.UseLazyLoadingProxies();
             base.OnConfiguring(options);
         }
 
@@ -117,6 +120,20 @@ namespace TRBot.Data
                 entity.Property(e => e.SynonymValue).HasDefaultValue(string.Empty);
                 entity.HasIndex(e => e.SynonymName).IsUnique();
             });
+
+            /*modelBuilder.Entity<InputData>().ToTable("Inputs", "inputs");
+            modelBuilder.Entity<InputData>(entity =>
+            {
+                entity.HasKey(e => e.id);
+                entity.Property(e => e.Name).HasDefaultValue(string.Empty);
+                entity.Property(e => e.ButtonValue).HasDefaultValue(0);
+                entity.Property(e => e.AxisValue).HasDefaultValue(0);
+                entity.Property(e => e.InputType).HasDefaultValue(InputTypes.None).HasConversion(new EnumToNumberConverter<InputTypes, int>());
+                entity.Property(e => e.MinAxisVal).HasDefaultValue(0);
+                entity.Property(e => e.MaxAxisVal).HasDefaultValue(1);
+                entity.Property(e => e.MaxAxisPercent).HasDefaultValue(100);
+                entity.HasIndex(e => e.Name).IsUnique();
+            });*/
 
            base.OnModelCreating(modelBuilder);
         }

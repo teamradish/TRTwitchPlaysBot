@@ -23,7 +23,7 @@ namespace TRBot.Data
     /// <summary>
     /// A savestate log.
     /// </summary>
-    public sealed class SavestateLog
+    public class SavestateLog
     {
         /// <summary>
         /// The savestate log's ID.

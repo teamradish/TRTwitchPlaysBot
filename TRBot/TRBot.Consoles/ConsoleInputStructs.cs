@@ -37,12 +37,47 @@ namespace TRBot.Consoles
     /// </summary>
     public class InputData
     {
+        /// <summary>
+        /// The ID of the input.
+        /// </summary>
+        public int id { get; set; } = 0;
+
+        /// <summary>
+        /// The name of the input.
+        /// </summary>
         public string Name { get; set; } = string.Empty;
+        
+        /// <summary>
+        /// The button value for the input.
+        /// </summary>
         public int ButtonValue { get; set; } = 0;
+
+        /// <summary>
+        /// The axis value for the input.
+        /// </summary>
         public int AxisValue { get; set; } = 0;
-        public int InputType { get; set; } = 0;
+
+        /// <summary>
+        /// The type of input this input is. An input can be more than one type.
+        /// </summary>
+        public InputTypes InputType { get; set; } = InputTypes.None;
+
+        /// <summary>
+        /// The minimum value of the axis, normalized from -1 to 1.
+        /// </summary>
         public int MinAxisVal { get; set; } = 0;
+
+        /// <summary>
+        /// The maximum value of the axis, normalized from -1 to 1.
+        /// </summary>
         public int MaxAxisVal { get; set; } = 1;
+
+        /// <summary>
+        /// The maximum percent the axis for this input can be pressed.
+        /// If pressed above this amount, it's considered a button press.
+        /// <para>This is useful only for axes and buttons with shared names. 
+        /// For example, the GameCube's "L" and "R" inputs function both as axes and buttons.</para>
+        /// </summary>
         public int MaxAxisPercent { get; set; } = 100;
 
         public InputData()
@@ -50,23 +85,23 @@ namespace TRBot.Consoles
 
         }
 
-        public InputData(string name, in int buttonValue, in int axisValue, in int inputType,
+        public InputData(string name, in int buttonValue, in int axisValue, in InputTypes inputType,
             in int minAxisVal, in int maxAxisVal, in int maxAxisPercent)
         {
             Name = name;
             ButtonValue = buttonValue;
             AxisValue = axisValue;
             InputType = inputType;
-            MinAxisVal = minAxisVal;
-            MaxAxisVal = maxAxisVal;
-            MaxAxisPercent = maxAxisPercent;
+            MinAxisVal = Math.Clamp(minAxisVal, -1, 1);
+            MaxAxisVal = Math.Clamp(maxAxisVal, -1, 1);
+            MaxAxisPercent = Math.Clamp(maxAxisPercent, 0, 100);
         }
 
         public static InputData CreateBlank(string name)
         {
             InputData blankInput = new InputData();
             blankInput.Name = name;
-            blankInput.InputType = (int)InputTypes.None;
+            blankInput.InputType = InputTypes.None;
 
             return blankInput;
         }
@@ -76,7 +111,7 @@ namespace TRBot.Consoles
             InputData btnData = new InputData();
             btnData.Name = name;
             btnData.ButtonValue = buttonValue;
-            btnData.InputType = (int)InputTypes.Button;
+            btnData.InputType = InputTypes.Button;
 
             return btnData;
         }
@@ -86,9 +121,9 @@ namespace TRBot.Consoles
             InputData btnData = new InputData();
             btnData.Name = name;
             btnData.AxisValue = axisValue;
-            btnData.InputType = (int)InputTypes.Axis;
-            btnData.MinAxisVal = minAxisVal;
-            btnData.MaxAxisVal = maxAxisVal;
+            btnData.InputType = InputTypes.Axis;
+            btnData.MinAxisVal = Math.Clamp(minAxisVal, -1, 1);
+            btnData.MaxAxisVal = Math.Clamp(maxAxisVal, -1, 1);
             btnData.MaxAxisPercent = 100;
 
             return btnData;
@@ -99,10 +134,10 @@ namespace TRBot.Consoles
             InputData btnData = new InputData();
             btnData.Name = name;
             btnData.AxisValue = axisValue;
-            btnData.InputType = (int)InputTypes.Axis;
-            btnData.MinAxisVal = minAxisVal;
-            btnData.MaxAxisVal = maxAxisVal;
-            btnData.MaxAxisPercent = maxAxisPercent;
+            btnData.InputType = InputTypes.Axis;
+            btnData.MinAxisVal = Math.Clamp(minAxisVal, -1, 1);
+            btnData.MaxAxisVal = Math.Clamp(maxAxisVal, -1, 1);
+            btnData.MaxAxisPercent = Math.Clamp(maxAxisPercent, 0, 100);
 
             return btnData;
         }

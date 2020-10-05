@@ -23,7 +23,7 @@ namespace TRBot.Data
     /// <summary>
     /// A game log.
     /// </summary>
-    public sealed class GameLog
+    public class GameLog
     {
         /// <summary>
         /// The game log's ID.

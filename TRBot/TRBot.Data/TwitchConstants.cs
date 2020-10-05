@@ -25,7 +25,14 @@ namespace TRBot.Data
     /// </summary>
     public static class TwitchConstants
     {
+        /// <summary>
+        /// The character limit for Twitch messages. 
+        /// </summary>
         public const int MESSAGE_CHAR_LIMIT = 500;
+
+        /// <summary>
+        /// The file storing Twitch login settings.
+        /// </summary>
         public const string LOGIN_SETTINGS_FILENAME = "LoginSettings.txt";
     }
 }

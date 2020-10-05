@@ -8,6 +8,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.1.8" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,7 +18,9 @@
   <ItemGroup>
     <ProjectReference Include="..\TRBot.Utilities\TRBot.Utilities.csproj" />
     <ProjectReference Include="..\TRBot.ParserData\TRBot.ParserData.csproj" />
+    <ProjectReference Include="..\TRBot.Consoles\TRBot.Consoles.csproj" />
     <ProjectReference Include="..\TRBot.Common\TRBot.Common.csproj" />
+    <ProjectReference Include="..\TRBot.VirtualControllers\TRBot.VirtualControllers.csproj" />
   </ItemGroup>
 
   <ItemGroup>

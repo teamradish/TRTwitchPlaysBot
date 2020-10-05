@@ -49,8 +49,8 @@ namespace TRBot.Consoles
                 { "cup", InputData.CreateAxis("cup", (int)GlobalAxisVals.AXIS_RY, 0, -1) },
                 { "cdown", InputData.CreateAxis("cdown", (int)GlobalAxisVals.AXIS_RY, 0, 1) },
                 
-                { "l", new InputData("l", (int)GlobalButtonVals.BTN7, (int)GlobalAxisVals.AXIS_RZ, (int)(InputTypes.Button | InputTypes.Axis), 0, 1, 99) },
-                { "r", new InputData("r", (int)GlobalButtonVals.BTN8, (int)GlobalAxisVals.AXIS_Z, (int)(InputTypes.Button | InputTypes.Axis), 0, 1, 99) },
+                { "l", new InputData("l", (int)GlobalButtonVals.BTN7, (int)GlobalAxisVals.AXIS_RZ, (InputTypes.Button | InputTypes.Axis), 0, 1, 99) },
+                { "r", new InputData("r", (int)GlobalButtonVals.BTN8, (int)GlobalAxisVals.AXIS_Z, (InputTypes.Button | InputTypes.Axis), 0, 1, 99) },
 
                 { "a", InputData.CreateButton("a", (int)GlobalButtonVals.BTN5) },
                 { "b", InputData.CreateButton("b", (int)GlobalButtonVals.BTN6) },
