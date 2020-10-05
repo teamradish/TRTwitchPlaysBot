@@ -27,34 +27,31 @@ using TRBot.Data;
 namespace TRBot.Commands
 {
     /// <summary>
-    /// Base class for a command.
+    /// A simple command that states the TRBot version number.
     /// </summary>
-    public abstract class BaseCommand
+    public class VersionCommand : MessageCommand
     {
-        public bool Enabled = true;
-        public bool DisplayInHelp = true;
-        public int Level = 0;
-        public string ValueStr = string.Empty;
-
-        protected CommandHandler CmdHandler = null;
-        protected DataContainer DataContainer = null;
-
-        public BaseCommand()
+        public VersionCommand()
         {
             
         }
 
-        public virtual void Initialize(CommandHandler cmdHandler, DataContainer dataContainer)
+        public override void Initialize(CommandHandler cmdHandler, DataContainer dataContainer)
         {
-            CmdHandler = cmdHandler;
-            DataContainer = dataContainer;
+            base.Initialize(cmdHandler, dataContainer);
         }
 
-        public virtual void CleanUp()
+        public override void CleanUp()
         {
+            base.CleanUp();
+        }
+
+        public override void ExecuteCommand(EvtChatCommandArgs args)
+        {
+            string versionString = DataHelper.GetSettingString(SettingsConstants.DATA_VERSION_NUM, "Unknown??");
+            ValueStr = $"This bot is running TRBot version {versionString}!";
             
+            base.ExecuteCommand(args);
         }
-
-        public abstract void ExecuteCommand(EvtChatCommandArgs args);
     }
 }

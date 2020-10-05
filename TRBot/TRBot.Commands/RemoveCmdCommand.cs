@@ -31,25 +31,11 @@ namespace TRBot.Commands
     /// </summary>
     public sealed class RemoveCmdCommand : BaseCommand
     {
-        private CommandHandler CmdHandler = null;
-        private BotMessageHandler MessageHandler = null;
         private string UsageMessage = $"Usage - \"command name\"";
 
         public RemoveCmdCommand()
         {
             
-        }
-
-        public override void Initialize(CommandHandler cmdHandler, DataContainer dataContainer)
-        {
-            CmdHandler = cmdHandler;
-            MessageHandler = dataContainer.MessageHandler;
-        }
-
-        public override void CleanUp()
-        {
-            CmdHandler = null;
-            MessageHandler = null;
         }
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
@@ -59,7 +45,7 @@ namespace TRBot.Commands
             //Ignore with incorrect number of arguments
             if (arguments.Count != 1)
             {
-                MessageHandler.QueueMessage(UsageMessage);
+                DataContainer.MessageHandler.QueueMessage(UsageMessage);
                 return;
             }
 
@@ -85,11 +71,11 @@ namespace TRBot.Commands
                     }
                 }
 
-                MessageHandler.QueueMessage($"Successfully removed command \"{commandName}\"!");
+                DataContainer.MessageHandler.QueueMessage($"Successfully removed command \"{commandName}\"!");
             }
             else
             {
-                MessageHandler.QueueMessage($"Failed to remove command \"{commandName}\". It likely does not exist.");
+                DataContainer.MessageHandler.QueueMessage($"Failed to remove command \"{commandName}\". It likely does not exist.");
             }
         }
     }

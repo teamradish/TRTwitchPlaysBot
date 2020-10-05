@@ -34,25 +34,11 @@ namespace TRBot.Commands
         private const string SOFT_RELOAD_ARG = "soft";
         private const string HARD_RELOAD_ARG = "hard";
 
-        private BotMessageHandler MessageHandler = null;
-        private DataReloader DataReloader = null;
-
         private string UsageMessage = $"Usage - Soft reload: \"{SOFT_RELOAD_ARG}\" or no args | Hard reload: \"{HARD_RELOAD_ARG}\"";
 
         public ReloadCommand()
         {
             
-        }
-
-        public override void Initialize(CommandHandler cmdHandler, DataContainer dataContainer)
-        {
-            MessageHandler = dataContainer.MessageHandler;
-            DataReloader = dataContainer.DataReloader;
-        }
-
-        public override void CleanUp()
-        {
-            DataReloader = null;
         }
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
@@ -68,7 +54,7 @@ namespace TRBot.Commands
 
             if (arguments.Count > 1)
             {
-                MessageHandler.QueueMessage(UsageMessage);
+                DataContainer.MessageHandler.QueueMessage(UsageMessage);
                 return;
             }
 
@@ -85,21 +71,21 @@ namespace TRBot.Commands
             }
             else
             {
-                MessageHandler.QueueMessage(UsageMessage);
+                DataContainer.MessageHandler.QueueMessage(UsageMessage);
             }
         }
 
         private void SoftReload()
         {
-            DataReloader.ReloadDataSoft();
-            MessageHandler.QueueMessage("Finished reloading of data!");
+            DataContainer.DataReloader.ReloadDataSoft();
+            DataContainer.MessageHandler.QueueMessage("Finished reloading of data!");
         }
 
         private void HardReload()
         {
-            DataReloader.ReloadDataHard();
+            DataContainer.DataReloader.ReloadDataHard();
 
-            MessageHandler.QueueMessage("Finished hard reloading data!");
+            DataContainer.MessageHandler.QueueMessage("Finished hard reloading data!");
         }
     }
 }

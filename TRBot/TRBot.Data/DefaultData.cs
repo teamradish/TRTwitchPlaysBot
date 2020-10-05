@@ -111,6 +111,7 @@ namespace TRBot.Data
                 new CommandData("reload", "TRBot.Commands.ReloadCommand", 3, true, true),
                 new CommandData("addcmd", "TRBot.Commands.AddCmdCommand", 4, true, true),
                 new CommandData("removecmd", "TRBot.Commands.RemoveCmdCommand", 4, true, true),
+                new CommandData("version", "TRBot.Commands.VersionCommand", 0, true, true),
             };
 
             return defaultCommands;

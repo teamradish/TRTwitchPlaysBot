@@ -31,25 +31,11 @@ namespace TRBot.Commands
     /// </summary>
     public sealed class AddCmdCommand : BaseCommand
     {
-        private CommandHandler CmdHandler = null;
-        private BotMessageHandler MessageHandler = null;
         private string UsageMessage = $"Usage - \"command name\", \"type w/namespace\", \"argString - optional\", \"level (int)\", \"enabled (bool)\" \"displayInHelp (bool)\"";
 
         public AddCmdCommand()
         {
             
-        }
-
-        public override void Initialize(CommandHandler cmdHandler, DataContainer dataContainer)
-        {
-            CmdHandler = cmdHandler;
-            MessageHandler = dataContainer.MessageHandler;
-        }
-
-        public override void CleanUp()
-        {
-            CmdHandler = null;
-            MessageHandler = null;
         }
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
@@ -61,7 +47,7 @@ namespace TRBot.Commands
             //Ignore with too few arguments
             if (argCount < 5)
             {
-                MessageHandler.QueueMessage(UsageMessage);
+                DataContainer.MessageHandler.QueueMessage(UsageMessage);
                 return;
             }
 
@@ -86,19 +72,19 @@ namespace TRBot.Commands
 
             if (int.TryParse(levelStr, out int levelNum) == false)
             {
-                MessageHandler.QueueMessage("Incorrect level specified.");
+                DataContainer.MessageHandler.QueueMessage("Incorrect level specified.");
                 return;
             }
 
             if (bool.TryParse(enabledStr, out bool cmdEnabled) == false)
             {
-                MessageHandler.QueueMessage("Incorrect command enabled state specified.");
+                DataContainer.MessageHandler.QueueMessage("Incorrect command enabled state specified.");
                 return;
             }
 
             if (bool.TryParse(displayInHelpStr, out bool displayInHelp) == false)
             {
-                MessageHandler.QueueMessage("Incorrect command displayInHelp state specified.");
+                DataContainer.MessageHandler.QueueMessage("Incorrect command displayInHelp state specified.");
                 return;
             }
 
@@ -124,11 +110,11 @@ namespace TRBot.Commands
                     context.SaveChanges();
                 }
 
-                MessageHandler.QueueMessage($"Successfully added command \"{commandName}\"!");
+                DataContainer.MessageHandler.QueueMessage($"Successfully added command \"{commandName}\"!");
             }
             else
             {
-                MessageHandler.QueueMessage($"Failed to add command \"{commandName}\".");
+                DataContainer.MessageHandler.QueueMessage($"Failed to add command \"{commandName}\".");
             }
         }
     }

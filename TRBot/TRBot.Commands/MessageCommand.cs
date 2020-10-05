@@ -32,8 +32,6 @@ namespace TRBot.Commands
     /// </summary>
     public class MessageCommand : BaseCommand
     {
-        protected BotMessageHandler MessageHandler = null;
-
         public MessageCommand()
         {
             
@@ -44,16 +42,6 @@ namespace TRBot.Commands
             ValueStr = databaseMsgKey;
         }
 
-        public override void Initialize(CommandHandler cmdHandler, DataContainer dataContainer)
-        {
-            MessageHandler = dataContainer.MessageHandler;
-        }
-
-        public override void CleanUp()
-        {
-            MessageHandler = null;
-        }
-
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
             string sentMessage = DataHelper.GetSettingString(ValueStr, ValueStr);
@@ -61,7 +49,7 @@ namespace TRBot.Commands
             //The message we want to send is null or empty
             if (string.IsNullOrEmpty(sentMessage) == true)
             {
-                MessageHandler.QueueMessage("This command should say something, but the sent message is empty!");
+                DataContainer.MessageHandler.QueueMessage("This command should say something, but the sent message is empty!");
                 return;
             }
 
@@ -73,14 +61,14 @@ namespace TRBot.Commands
             //If the text fits within the character limit, print it all out at once
             if (textList == null)
             {
-                MessageHandler.QueueMessage(sentMessage);
+                DataContainer.MessageHandler.QueueMessage(sentMessage);
             }
             else
             {
                 //Otherwise, queue up the text in pieces
                 for (int i = 0; i < textList.Count; i++)
                 {
-                    MessageHandler.QueueMessage(textList[i]);
+                    DataContainer.MessageHandler.QueueMessage(textList[i]);
                 }
             }
         }
