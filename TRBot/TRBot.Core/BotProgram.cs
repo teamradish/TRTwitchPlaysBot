@@ -513,7 +513,19 @@ namespace TRBot.Core
                 //BotProgram.MsgHandler.QueueMessage("New inputs cannot be processed until all other inputs have stopped.");
             }*/
 
-            InputHandler.CarryOutInput(inputSequence.Inputs, CurConsole, ControllerMngr);
+            GameConsole usedConsole = null;
+
+            int lastConsoleID = (int)DataHelper.GetSettingInt(SettingsConstants.LAST_CONSOLE, 0L);
+
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                GameConsole lastConsole = context.Consoles.FirstOrDefault(c => c.id == lastConsoleID);
+
+                //Create a new console using data from the database
+                usedConsole = new GameConsole(lastConsole.Name, lastConsole.InputList);   
+            }
+            
+            InputHandler.CarryOutInput(inputSequence.Inputs, usedConsole, ControllerMngr);
         }
 
 #endregion
@@ -635,11 +647,29 @@ namespace TRBot.Core
                     entriesAdded++;
                 }
 
-                //Do something upon first launching the bot
+                //Do these things upon first launching the bot
                 if (firstLaunchSetting.value_int > 0)
                 {
-                    
-                    
+                    //Populate default consoles - this will also populate inputs
+                    List<GameConsole> consoleData = DefaultData.GetDefaultConsoles();
+                    if (dbContext.Consoles.Count() < consoleData.Count)
+                    {
+                        for (int i = 0; i < consoleData.Count; i++)
+                        {
+                            GameConsole console = consoleData[i];
+                            
+                            //See if the console exists
+                            GameConsole foundConsole = dbContext.Consoles.FirstOrDefault((c) => c.Name == console.Name);
+                            if (foundConsole == null)
+                            {
+                                //This console isn't in the database, so add it
+                                dbContext.Consoles.Add(console);
+
+                                entriesAdded++;
+                            }
+                        }
+                    }
+
                     //Set first launch to 0
                     firstLaunchSetting.value_int = 0;
                 }

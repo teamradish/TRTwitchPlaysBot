@@ -41,6 +41,7 @@ namespace TRBot.Data
         public DbSet<Meme> Memes { get; set; } = null;
         public DbSet<InputMacro> Macros { get; set; } = null;
         public DbSet<InputSynonym> InputSynonyms { get; set; } = null;
+        public DbSet<GameConsole> Consoles { get; set; } = null;
 
         private string Datasource = string.Empty;
 
@@ -121,7 +122,18 @@ namespace TRBot.Data
                 entity.HasIndex(e => e.SynonymName).IsUnique();
             });
 
-            /*modelBuilder.Entity<InputData>().ToTable("Inputs", "inputs");
+            modelBuilder.Entity<GameConsole>().ToTable("Consoles", "consoles");
+            modelBuilder.Entity<GameConsole>(entity =>
+            {
+                entity.HasKey(e => e.id);
+                entity.Property(e => e.Name).HasDefaultValue("GameConsole");
+                entity.Ignore(e => e.InputRegex);
+                entity.Ignore(e => e.ConsoleInputs);
+                entity.HasMany(e => e.InputList).WithOne(c => c.Console).IsRequired().HasForeignKey(c => c.console_id);
+                entity.HasIndex(e => e.Name).IsUnique();
+            });
+
+            modelBuilder.Entity<InputData>().ToTable("Inputs", "inputs");
             modelBuilder.Entity<InputData>(entity =>
             {
                 entity.HasKey(e => e.id);
@@ -132,8 +144,8 @@ namespace TRBot.Data
                 entity.Property(e => e.MinAxisVal).HasDefaultValue(0);
                 entity.Property(e => e.MaxAxisVal).HasDefaultValue(1);
                 entity.Property(e => e.MaxAxisPercent).HasDefaultValue(100);
-                entity.HasIndex(e => e.Name).IsUnique();
-            });*/
+                entity.HasIndex(e => new { e.Name, e.console_id }).IsUnique();
+            });
 
            base.OnModelCreating(modelBuilder);
         }

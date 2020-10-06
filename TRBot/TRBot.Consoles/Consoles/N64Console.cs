@@ -38,7 +38,7 @@ namespace TRBot.Consoles
 
         private void Initialize()
         {
-            ConsoleInputs = new Dictionary<string, InputData>(23)
+            SetConsoleInputs(new Dictionary<string, InputData>(23)
             {
                 { "left",       InputData.CreateAxis("left", (int)GlobalAxisVals.AXIS_X, 0, -1) },
                 { "right",      InputData.CreateAxis("right", (int)GlobalAxisVals.AXIS_X, 0, 1) },
@@ -72,7 +72,7 @@ namespace TRBot.Consoles
                 { "ls5",        InputData.CreateButton("ls5", (int)GlobalButtonVals.BTN29) },
                 { "ls6",        InputData.CreateButton("ls6", (int)GlobalButtonVals.BTN30) },
                 { "#",          InputData.CreateBlank("#") }
-            };
+            });
 
             /*ValidInputs = new List<string>(23)
             {

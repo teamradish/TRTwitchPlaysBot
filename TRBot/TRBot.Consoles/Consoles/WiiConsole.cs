@@ -60,7 +60,7 @@ namespace TRBot.Consoles
 
         private void Initialize()
         {
-            ConsoleInputs = new Dictionary<string, InputData>(39) {
+            SetConsoleInputs(new Dictionary<string, InputData>(39) {
                 { "left",       InputData.CreateAxis("left", (int)GlobalAxisVals.AXIS_X, 0, -1) },
                 { "right",      InputData.CreateAxis("right", (int)GlobalAxisVals.AXIS_X, 0, 1) },
                 { "up",         InputData.CreateAxis("up", (int)GlobalAxisVals.AXIS_Y, 0, -1) },
@@ -101,8 +101,7 @@ namespace TRBot.Consoles
                 { "shake",      InputData.CreateButton("shake", (int)GlobalButtonVals.BTN31) },
                 { "point",      InputData.CreateButton("point", (int)GlobalButtonVals.BTN32) },
                 { "#",          InputData.CreateBlank("#") }
-
-            };
+            });
 
             /*ValidInputs = new List<string>(39)
             {

@@ -43,6 +43,11 @@ namespace TRBot.Consoles
         public int id { get; set; } = 0;
 
         /// <summary>
+        /// The console ID the input belongs to.
+        /// </summary>
+        public int console_id { get; set; } = 0;
+
+        /// <summary>
         /// The name of the input.
         /// </summary>
         public string Name { get; set; } = string.Empty;
@@ -80,6 +85,12 @@ namespace TRBot.Consoles
         /// </summary>
         public int MaxAxisPercent { get; set; } = 100;
 
+        /// <summary>
+        /// The GameConsole associated with this input.
+        /// This is used by the database and should not be assigned or modified manually.
+        /// </summary>
+        public virtual GameConsole Console { get; set; } = null;
+
         public InputData()
         {
 
@@ -95,6 +106,17 @@ namespace TRBot.Consoles
             MinAxisVal = Math.Clamp(minAxisVal, -1, 1);
             MaxAxisVal = Math.Clamp(maxAxisVal, -1, 1);
             MaxAxisPercent = Math.Clamp(maxAxisPercent, 0, 100);
+        }
+
+        public void UpdateData(in InputData inputData)
+        {
+            Name = inputData.Name;
+            ButtonValue = inputData.ButtonValue;
+            AxisValue = inputData.AxisValue;
+            InputType = inputData.InputType;
+            MinAxisVal = inputData.MinAxisVal;
+            MaxAxisVal = inputData.MaxAxisVal;
+            MaxAxisPercent = inputData.MaxAxisPercent;
         }
 
         public static InputData CreateBlank(string name)

@@ -34,14 +34,25 @@ namespace TRBot.Consoles
         #region Properties
 
         /// <summary>
+        /// The id of the console.
+        /// </summary>
+        public int id { get; set; } 
+
+        /// <summary>
         /// The name of the console.
         /// </summary>
-        public string Name { get; protected set; } = "GameConsole";
+        public string Name { get; set; } = "GameConsole";
 
         /// <summary>
         /// All the input data for this console.
         /// </summary>
         public Dictionary<string, InputData> ConsoleInputs { get; protected set; } = new Dictionary<string, InputData>(8);
+
+        /// <summary>
+        /// The input list for the console.
+        /// This is used by the database and should not be assigned or modified manually.
+        /// </summary>
+        public virtual List<InputData> InputList { get; set; } = null;
 
         // <summary>
         // The valid inputs for this console.
@@ -84,6 +95,15 @@ namespace TRBot.Consoles
             UpdateInputRegex();
         }
 
+        public GameConsole(string name, List<InputData> inputList)
+        {
+            Name = name;
+
+            SetInputsFromList(inputList);
+
+            UpdateInputRegex();
+        }
+
         //public GameConsole(string identifier, List<string> validInputs,
         //    Dictionary<string, InputAxis> inputAxes, Dictionary<string, InputButton> buttonInputMap)
         //{
@@ -101,6 +121,27 @@ namespace TRBot.Consoles
         public void SetConsoleInputs(Dictionary<string, InputData> consoleInputs)
         {
             ConsoleInputs = consoleInputs;
+
+            //if (InputList == null)
+            //{
+            //    InputList = new List<InputData>(ConsoleInputs.Count);
+            //}
+            //
+            //InputList.Clear();
+            //InputList.AddRange(ConsoleInputs.Values.ToList());
+
+            UpdateInputRegex();
+        }
+
+        public void SetInputsFromList(List<InputData> inputList)
+        {
+            ConsoleInputs.Clear();
+
+            for (int i = 0; i < inputList.Count; i++)
+            {
+                InputData inputData = inputList[i];
+                ConsoleInputs[inputData.Name] = inputData;
+            }
 
             UpdateInputRegex();
         }
@@ -143,7 +184,14 @@ namespace TRBot.Consoles
 
             if (existed == false)
             {
+                //InputList.Add(inputData);
                 UpdateInputRegex();
+            }
+            else
+            {
+                //int index = InputList.FindIndex((inpData) => inpData.Name == inputName);
+                //InputList.RemoveAt(index);
+                //InputList.Add(inputData);
             }
 
             return true;
@@ -161,6 +209,9 @@ namespace TRBot.Consoles
 
             if (removed == true)
             {
+                //int index = InputList.FindIndex((inpData) => inpData.Name == inputName);
+                //InputList.RemoveAt(index);
+
                 UpdateInputRegex();
             }
 

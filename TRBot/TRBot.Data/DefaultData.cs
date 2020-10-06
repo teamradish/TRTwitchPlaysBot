@@ -70,7 +70,7 @@ namespace TRBot.Data
                 SettingsHelper(INFO_MESSAGE, "Welcome to the channel! You can play games by submitting messages in chat. Type !inputs to see all available buttons."),
                 SettingsHelper(DEFAULT_INPUT_DURATION, 200L),
                 SettingsHelper(MAX_INPUT_DURATION, 60000L),
-                SettingsHelper(LAST_CONSOLE, 0L),
+                SettingsHelper(LAST_CONSOLE, 1L),
                 SettingsHelper(LAST_VCONTROLLER_TYPE, (long)VirtualControllerTypes.vJoy),
                 SettingsHelper(JOYSTICK_COUNT, 1L),
                 SettingsHelper(FIRST_LAUNCH, 1L)
@@ -117,31 +117,24 @@ namespace TRBot.Data
             return defaultCommands;
         }
 
-        /*/// <summary>
-        /// Returns a list of InputData objects containing default values.
+        /// <summary>
+        /// Returns a list of default consoles.
         /// </summary>
-        /// <returns>A list of InputData objects with their default values.</returns>
-        public static List<InputData> GetDefaultInputs()
+        /// <returns>A list of GameConsoles.</returns>
+        public static List<GameConsole> GetDefaultConsoles()
         {
-            List<CommandData> defaultInputs = new List<CommandData>()
+            List<GameConsole> defaultConsoles = new List<GameConsole>()
             {
-                InputData.CreateButton("a", (int)GlobalButtonVals.BTN5),
-                InputData.CreateButton("b", (int)GlobalButtonVals.BTN6),
-                InputData.CreateButton("x", (int)GlobalButtonVals.BTN31),
-                InputData.CreateButton("y", (int)GlobalButtonVals.BTN32),
-                InputData.CreateButton("z", (int)GlobalButtonVals.BTN9),
-                InputData.CreateButton("l", (int)GlobalButtonVals.BTN7),
-                InputData.CreateButton("r", (int)GlobalButtonVals.BTN8),
-                InputData.CreateButton("start", (int)GlobalButtonVals.BTN10),
-                InputData.CreateButton("select", (int)GlobalButtonVals.BTN9),
-                InputData.CreateButton("mode", (int)GlobalButtonVals.BTN9),
-
-                InputData.CreateButton("dup", GlobalButtonVals.BTN10),
-                InputData.CreateButton("ddown", GlobalButtonVals.BTN11),
+                new NESConsole(),
+                new SNESConsole(),
+                new GenesisConsole(),
+                new N64Console(),
+                new PS2Console(), new GCConsole(), new GBAConsole(),
+                new WiiConsole(), new PCConsole()
             };
 
-            return defaultInputs;
-        }*/
+            return defaultConsoles;
+        }
 
         #endregion
     }
