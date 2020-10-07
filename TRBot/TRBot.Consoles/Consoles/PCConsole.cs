@@ -29,7 +29,7 @@ namespace TRBot.Consoles
     {
         public PCConsole()
         {
-            Name = "PC";
+            Name = "pc";
 
             Initialize();
 

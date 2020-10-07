@@ -112,6 +112,10 @@ namespace TRBot.Data
                 new CommandData("addcmd", "TRBot.Commands.AddCmdCommand", 4, true, true),
                 new CommandData("removecmd", "TRBot.Commands.RemoveCmdCommand", 4, true, true),
                 new CommandData("version", "TRBot.Commands.VersionCommand", 0, true, true),
+                new CommandData("addconsole", "TRBot.Commands.AddConsoleCommand", 4, true, true),
+                new CommandData("removeconsole", "TRBot.Commands.RemoveConsoleCommand", 4, true, true),
+                new CommandData("console", "TRBot.Commands.GetSetConsoleCommand", 0, true, true),
+                new CommandData("inputs", "TRBot.Commands.InputInfoCommand", 0, true, true),
             };
 
             return defaultCommands;

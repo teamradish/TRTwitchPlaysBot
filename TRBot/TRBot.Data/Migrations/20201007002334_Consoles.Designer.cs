@@ -9,7 +9,7 @@ using TRBot.Data;
 namespace TRBot.Data.Migrations
 {
     [DbContext(typeof(BotDBContext))]
-    [Migration("20201006033123_Consoles")]
+    [Migration("20201007002334_Consoles")]
     partial class Consoles
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -119,6 +119,11 @@ namespace TRBot.Consoles
             MaxAxisPercent = inputData.MaxAxisPercent;
         }
 
+        public override string ToString()
+        {
+            return $"Name: \"{Name}\" | console_id: {console_id} | BtnVal: {ButtonValue} | AxisVal: {AxisValue} | InputType: {InputType} | MinAxis: {MinAxisVal} | MaxAxis: {MaxAxisVal} | MaxAxisPercent: {MaxAxisPercent}";
+        }
+
         public static InputData CreateBlank(string name)
         {
             InputData blankInput = new InputData();

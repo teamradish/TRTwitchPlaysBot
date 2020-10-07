@@ -51,7 +51,7 @@ namespace TRBot.Consoles
 
         public WiiConsole()
         {
-            Name = "Wii";
+            Name = "wii";
 
             Initialize();
 

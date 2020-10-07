@@ -29,7 +29,7 @@ namespace TRBot.Consoles
     {
         public N64Console()
         {
-            Name = "N64";
+            Name = "n64";
 
             Initialize();
 

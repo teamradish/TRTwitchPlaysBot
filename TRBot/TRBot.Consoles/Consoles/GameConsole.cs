@@ -86,13 +86,16 @@ namespace TRBot.Consoles
 
         }
 
+        public GameConsole(string name)
+        {
+            Name = name;
+        }
+
         public GameConsole(string name, Dictionary<string, InputData> consoleInputs)
         {
             Name = name;
 
             SetConsoleInputs(consoleInputs);
-
-            UpdateInputRegex();
         }
 
         public GameConsole(string name, List<InputData> inputList)
@@ -100,8 +103,6 @@ namespace TRBot.Consoles
             Name = name;
 
             SetInputsFromList(inputList);
-
-            UpdateInputRegex();
         }
 
         //public GameConsole(string identifier, List<string> validInputs,
@@ -122,13 +123,13 @@ namespace TRBot.Consoles
         {
             ConsoleInputs = consoleInputs;
 
-            //if (InputList == null)
-            //{
-            //    InputList = new List<InputData>(ConsoleInputs.Count);
-            //}
-            //
-            //InputList.Clear();
-            //InputList.AddRange(ConsoleInputs.Values.ToList());
+            if (InputList == null)
+            {
+                InputList = new List<InputData>(ConsoleInputs.Count);
+            }
+            
+            InputList.Clear();
+            InputList.AddRange(ConsoleInputs.Values.ToList());
 
             UpdateInputRegex();
         }
@@ -184,14 +185,14 @@ namespace TRBot.Consoles
 
             if (existed == false)
             {
-                //InputList.Add(inputData);
+                InputList.Add(inputData);
                 UpdateInputRegex();
             }
             else
             {
-                //int index = InputList.FindIndex((inpData) => inpData.Name == inputName);
-                //InputList.RemoveAt(index);
-                //InputList.Add(inputData);
+                int index = InputList.FindIndex((inpData) => inpData.Name == inputName);
+                InputList.RemoveAt(index);
+                InputList.Add(inputData);
             }
 
             return true;
@@ -209,8 +210,8 @@ namespace TRBot.Consoles
 
             if (removed == true)
             {
-                //int index = InputList.FindIndex((inpData) => inpData.Name == inputName);
-                //InputList.RemoveAt(index);
+                int index = InputList.FindIndex((inpData) => inpData.Name == inputName);
+                InputList.RemoveAt(index);
 
                 UpdateInputRegex();
             }

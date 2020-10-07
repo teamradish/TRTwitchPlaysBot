@@ -29,7 +29,7 @@ namespace TRBot.Consoles
     {
         public GCConsole()
         {
-            Name = "GC";
+            Name = "gc";
 
             Initialize();
 

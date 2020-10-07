@@ -29,7 +29,7 @@ namespace TRBot.Consoles
     {
         public CustomConsole()
         {
-            Name = "Custom";
+            Name = "custom";
 
             Initialize();
 

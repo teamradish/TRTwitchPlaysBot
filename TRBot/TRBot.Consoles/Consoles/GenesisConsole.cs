@@ -29,7 +29,7 @@ namespace TRBot.Consoles
     {
         public GenesisConsole()
         {
-            Name = "Genesis";
+            Name = "genesis";
 
             Initialize();
 

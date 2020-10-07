@@ -50,7 +50,6 @@ namespace TRBot.Core
 
         public IClientService ClientService { get; private set; } = null;
         public IVirtualControllerManager ControllerMngr { get; private set; } = null;
-        public GameConsole CurConsole { get; private set; } = null;
 
         private Parser InputParser = null;
         private CommandHandler CmdHandler = null;
@@ -108,8 +107,6 @@ namespace TRBot.Core
             Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
             InputParser = new Parser();
-
-            CurConsole = new GCConsole();
 
             //Initialize database
             string databasePath = Path.Combine(DataConstants.DataFolderPath, "TRBotData.db");
@@ -378,10 +375,31 @@ namespace TRBot.Core
                 return;
             }
 
-            //If there are no valid inputs, don't attempt to parse
-            if (CurConsole.ConsoleInputs == null || CurConsole.ConsoleInputs.Count == 0)//if (CurConsole.ValidInputs == null || CurConsole.ValidInputs.Count == 0)
+            GameConsole usedConsole = null;
+
+            int lastConsoleID = (int)DataHelper.GetSettingInt(SettingsConstants.LAST_CONSOLE, 1L);
+
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
+                GameConsole lastConsole = context.Consoles.FirstOrDefault(c => c.id == lastConsoleID);
+
+                if (lastConsole != null)
+                {
+                    //Create a new console using data from the database
+                    usedConsole = new GameConsole(lastConsole.Name, lastConsole.InputList);
+                }
+            }
+
+            //If there are no valid inputs, don't attempt to parse
+            if (usedConsole == null)//if (CurConsole.ValidInputs == null || CurConsole.ValidInputs.Count == 0)
+            {
+                MsgHandler.QueueMessage($"The current console does not point to valid data. Please set a different console to use, or if none are available, add one.");
                 return;
+            }
+
+            if (usedConsole.ConsoleInputs.Count == 0)
+            {
+                MsgHandler.QueueMessage($"The current console, \"{usedConsole.Name}\" does not have any available inputs.");
             }
 
             //Parser.InputSequence inputSequence = default;
@@ -393,7 +411,7 @@ namespace TRBot.Core
                 int defaultDur = (int)DataHelper.GetSettingInt(SettingsConstants.DEFAULT_INPUT_DURATION, 200L);
                 int maxDur = (int)DataHelper.GetSettingInt(SettingsConstants.MAX_INPUT_DURATION, 60000L);
 
-                string regexStr = CurConsole.InputRegex;
+                string regexStr = usedConsole.InputRegex;
 
                 string readyMessage = string.Empty;
                 using (BotDBContext context = DatabaseManager.OpenContext())
@@ -496,36 +514,15 @@ namespace TRBot.Core
 
             #endregion
 
-            /*if (true)//InputHandler.StopRunningInputs == false)
+            //Make sure inputs aren't currently stopped
+            if (InputHandler.StopRunningInputs == false)
             {
-                EvtUserInputArgs userInputArgs = new EvtUserInputArgs()
-                {
-                    //UserData = e.UserData,
-                    UsrMessage = e.UsrMessage,
-                    ValidInputSeq = inputSequence
-                };
-
-                //Invoke input event
-                UserMadeInputEvent?.Invoke(userInputArgs);
+                InputHandler.CarryOutInput(inputSequence.Inputs, usedConsole, ControllerMngr);
             }
             else
             {
-                //BotProgram.MsgHandler.QueueMessage("New inputs cannot be processed until all other inputs have stopped.");
-            }*/
-
-            GameConsole usedConsole = null;
-
-            int lastConsoleID = (int)DataHelper.GetSettingInt(SettingsConstants.LAST_CONSOLE, 0L);
-
-            using (BotDBContext context = DatabaseManager.OpenContext())
-            {
-                GameConsole lastConsole = context.Consoles.FirstOrDefault(c => c.id == lastConsoleID);
-
-                //Create a new console using data from the database
-                usedConsole = new GameConsole(lastConsole.Name, lastConsole.InputList);   
+                MsgHandler.QueueMessage("New inputs cannot be processed until all other inputs have stopped.");
             }
-            
-            InputHandler.CarryOutInput(inputSequence.Inputs, usedConsole, ControllerMngr);
         }
 
 #endregion

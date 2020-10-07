@@ -29,7 +29,7 @@ namespace TRBot.Consoles
     {
         public GBAConsole()
         {
-            Name = "GBA";
+            Name = "gba";
             
             Initialize();
 

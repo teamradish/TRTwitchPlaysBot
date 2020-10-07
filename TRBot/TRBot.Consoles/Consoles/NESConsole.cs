@@ -29,7 +29,7 @@ namespace TRBot.Consoles
     {
         public NESConsole()
         {
-            Name = "NES";
+            Name = "nes";
 
             Initialize();
 

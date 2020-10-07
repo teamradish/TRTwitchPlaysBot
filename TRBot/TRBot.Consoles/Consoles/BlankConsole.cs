@@ -28,7 +28,7 @@ namespace TRBot.Consoles
     {
         public BlankConsole()
         {
-            Name = "Blank";
+            Name = "blank";
 
             UpdateInputRegex();
         }

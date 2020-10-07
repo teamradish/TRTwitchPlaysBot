@@ -29,7 +29,7 @@ namespace TRBot.Consoles
     {
         public PS2Console()
         {
-            Name = "PS2";
+            Name = "ps2";
 
             Initialize();
 
