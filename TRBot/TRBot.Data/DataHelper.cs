@@ -31,7 +31,7 @@ namespace TRBot.Data
         /// Obtains a setting from the database.
         /// </summary>        
         /// <param name="settingName">The name of the setting to retrieve.</param>
-        /// <returns>A Settings object corresponding to <paramref name="settingName">. If the setting is not found, null.</returns>
+        /// <returns>A Settings object corresponding to settingName. If the setting is not found, null.</returns>
         public static Settings GetSetting(string settingName)
         {
             using (BotDBContext dbContext = DatabaseManager.OpenContext())
@@ -41,14 +41,39 @@ namespace TRBot.Data
         }
 
         /// <summary>
+        /// Obtains a setting from the database with an opened context.
+        /// </summary>        
+        /// <param name="settingName">The name of the setting to retrieve.</param>
+        /// <param name="context">The open database context.</param>
+        /// <returns>A Settings object corresponding to settingName. If the setting is not found, null.</returns>
+        public static Settings GetSettingNoOpen(string settingName, BotDBContext context)
+        {
+            return context.SettingCollection.FirstOrDefault((set) => set.key == settingName);
+        }
+
+        /// <summary>
         /// Obtains a setting integer value from the database.
         /// </summary>        
         /// <param name="settingName">The name of the setting to retrieve.</param>
         /// <param name="defaultVal">The default value to fallback to if not found.</param>
-        /// <returns>An integer for <paramref name="settingName">. If the setting is not found, the default value.</returns>
+        /// <returns>An integer for settingName. If the setting is not found, the default value.</returns>
         public static long GetSettingInt(string settingName, in long defaultVal)
         {
             Settings setting = GetSetting(settingName);
+
+            return setting != null ? setting.value_int : defaultVal;
+        }
+
+        /// <summary>
+        /// Obtains a setting integer value from the database with an opened context.
+        /// </summary>        
+        /// <param name="settingName">The name of the setting to retrieve.</param>
+        /// <param name="context">The open database context.</param>
+        /// <param name="defaultVal">The default value to fallback to if not found.</param>
+        /// <returns>An integer for settingName. If the setting is not found, the default value.</returns>
+        public static long GetSettingIntNoOpen(string settingName, BotDBContext context, in long defaultVal)
+        {
+            Settings setting = GetSettingNoOpen(settingName, context);
 
             return setting != null ? setting.value_int : defaultVal;
         }
@@ -58,10 +83,24 @@ namespace TRBot.Data
         /// </summary>        
         /// <param name="settingName">The name of the setting to retrieve.</param>
         /// <param name="defaultVal">The default value to fallback to if not found.</param>
-        /// <returns>A string value for <paramref name="settingName">. If the setting is not found, the default value.</returns>
+        /// <returns>A string value for settingName. If the setting is not found, the default value.</returns>
         public static string GetSettingString(string settingName, string defaultVal)
         {
             Settings setting = GetSetting(settingName);
+
+            return setting != null ? setting.value_str : defaultVal;
+        }
+
+        /// <summary>
+        /// Obtains a setting string value from the database with an opened context.
+        /// </summary>        
+        /// <param name="settingName">The name of the setting to retrieve.</param>
+        /// <param name="context">The open database context.</param>
+        /// <param name="defaultVal">The default value to fallback to if not found.</param>
+        /// <returns>A string value for settingName. If the setting is not found, the default value.</returns>
+        public static string GetSettingStringsNoOpen(string settingName, BotDBContext context, string defaultVal)
+        {
+            Settings setting = GetSettingNoOpen(settingName, context);
 
             return setting != null ? setting.value_str : defaultVal;
         }

@@ -119,7 +119,7 @@ namespace TRBot.Commands
             int maxCharCount = (int)charCount.value_int;
             strBuilder.Remove(strBuilder.Length - 2, 2);
             
-            string message = Helpers.SplitStringWithinCharCount(strBuilder.ToString(), maxCharCount, out List<string> textList);
+            string message = Helpers.SplitStringWithinCharCount(strBuilder.ToString(), maxCharCount, ", ", out List<string> textList);
             
             //If the text fits within the character limit, print it all out at once
             if (textList == null)

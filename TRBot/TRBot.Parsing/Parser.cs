@@ -50,9 +50,13 @@ namespace TRBot.Parsing
         public const string DEFAULT_PARSE_REGEX_PERCENT_INPUT = @"%";
         public const string DEFAULT_PARSE_REGEX_MILLISECONDS_INPUT = @"ms";
         public const string DEFAULT_PARSE_REGEX_SECONDS_INPUT = @"s";
+        
+        public const string DEFAULT_PARSER_REGEX_MACRO_INPUT = @"#";
 
         public const int PARSER_DEFAULT_PERCENT = 100;
         public const string PARSER_DEFAULT_DUR_TYPE = DEFAULT_PARSE_REGEX_MILLISECONDS_INPUT;
+
+        private const string DEFAULT_PARSE_MACRO_REGEX = DEFAULT_PARSER_REGEX_MACRO_INPUT + @"[a-zA-Z0-9\(\,\.\+_\-&%]*";
 
         /// <summary>
         /// The start of the input regex string.
@@ -222,7 +226,7 @@ namespace TRBot.Parsing
             while (count < MAX_RECURSION && found_macro == true)
             {
                 found_macro = false;
-                MatchCollection possible_macros = Regex.Matches(message, @"#[a-zA-Z0-9\(\,\.\+_\-&%]*", regexOptions);
+                MatchCollection possible_macros = Regex.Matches(message, DEFAULT_PARSE_MACRO_REGEX, regexOptions);
 
                 //Console.WriteLine($"Possible macros: {possible_macros} | {possible_macros.Count}");
 

@@ -399,11 +399,9 @@ namespace TRBot.Core
 
             if (usedConsole.ConsoleInputs.Count == 0)
             {
-                MsgHandler.QueueMessage($"The current console, \"{usedConsole.Name}\" does not have any available inputs.");
+                MsgHandler.QueueMessage($"The current console, \"{usedConsole.Name}\", does not have any available inputs.");
             }
 
-            //Parser.InputSequence inputSequence = default;
-            //(bool, List<List<Parser.Input>>, bool, int) parsedVal = default;
             ParsedInputSequence inputSequence = default;
 
             try
@@ -419,7 +417,6 @@ namespace TRBot.Core
                     readyMessage = InputParser.PrepParse(e.UsrMessage.Message, context.Macros, context.InputSynonyms);
                 }
 
-                //parse_message = InputParser.PopulateSynonyms(parse_message, InputGlobals.InputSynonyms);
                 inputSequence = InputParser.ParseInputs(readyMessage, regexStr, new ParserOptions(0, defaultDur, true, maxDur));
                 //Console.WriteLine(inputSequence.ToString());
                 //Console.WriteLine("\nReverse Parsed: " + ReverseParser.ReverseParse(inputSequence));
@@ -429,12 +426,9 @@ namespace TRBot.Core
             {
                 string excMsg = exception.Message;
 
-                //Kimimaru: Sanitize parsing exceptions
-                //Most of these are currently caused by differences in how C# and Python handle slicing strings (Substring() vs string[:])
-                //One example that throws this that shouldn't is "#mash(w234"
+                //Handle parsing exceptions
                 MsgHandler.QueueMessage($"ERROR: {excMsg} | {exception.StackTrace}");
                 inputSequence.InputValidationType = InputValidationTypes.Invalid;
-                //parsedVal.Item1 = false;
             }
 
             //Check for non-valid messages

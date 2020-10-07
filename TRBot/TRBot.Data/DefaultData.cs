@@ -118,6 +118,9 @@ namespace TRBot.Data
                 new CommandData("inputs", "TRBot.Commands.InputInfoCommand", 0, true, true),
                 new CommandData("addinput", "TRBot.Commands.AddInputCommand", 4, true, true),
                 new CommandData("removeinput", "TRBot.Commands.RemoveInputCommand", 4, true, true),
+                new CommandData("macros", "TRBot.Commands.ListMacrosCommand", 0, true, true),
+                new CommandData("addmacro", "TRBot.Commands.AddMacroCommand", 0, true, true),
+                new CommandData("removemacro", "TRBot.Commands.RemoveMacroCommand", 0, true, true),
             };
 
             return defaultCommands;

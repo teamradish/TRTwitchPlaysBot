@@ -56,5 +56,29 @@ namespace TRBot.Commands
         }
 
         public abstract void ExecuteCommand(EvtChatCommandArgs args);
+
+        protected void QueueMessage(string message)
+        {
+            DataContainer.MessageHandler.QueueMessage(message);
+        }
+
+        protected void QueueMessageSplit(string message, in int maxCharCount, string separator)
+        {
+            string sentMessage = Helpers.SplitStringWithinCharCount(message, maxCharCount, out List<string> textList);
+
+            //If the text fits within the character limit, print it all out at once
+            if (textList == null)
+            {
+                DataContainer.MessageHandler.QueueMessage(sentMessage);
+            }
+            else
+            {
+                //Otherwise, queue up the text in pieces
+                for (int i = 0; i < textList.Count; i++)
+                {
+                    DataContainer.MessageHandler.QueueMessage(textList[i]);
+                }
+            }
+        }
     }
 }
