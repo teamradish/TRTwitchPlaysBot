@@ -54,7 +54,7 @@ namespace TRBot.Commands
             //Ignore with not enough arguments
             if (argCount != 8)
             {
-                DataContainer.MessageHandler.QueueMessage(UsageMessage);
+                QueueMessage(UsageMessage);
                 return;
             }
 
@@ -65,7 +65,7 @@ namespace TRBot.Commands
             GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleStr);
             if (console == null)
             {
-                DataContainer.MessageHandler.QueueMessage($"No console named \"{consoleStr}\" found.");
+                QueueMessage($"No console named \"{consoleStr}\" found.");
                 return;
             }
 
@@ -74,7 +74,7 @@ namespace TRBot.Commands
             //Check for name length
             if (inputName.Length > MAX_INPUT_NAME_LENGTH)
             {
-                DataContainer.MessageHandler.QueueMessage($"Inputs may have up to a max of {MAX_INPUT_NAME_LENGTH} characters as their name.");
+                QueueMessage($"Inputs may have up to a max of {MAX_INPUT_NAME_LENGTH} characters as their name.");
                 return;
             }
 
@@ -87,37 +87,37 @@ namespace TRBot.Commands
 
             if (GetInt(buttonStr, out int buttonVal) == false)
             {
-                DataContainer.MessageHandler.QueueMessage("Invalid button value.");
+                QueueMessage("Invalid button value.");
                 return;
             }
 
             if (GetInt(axisStr, out int axisVal) == false)
             {
-                DataContainer.MessageHandler.QueueMessage("Invalid axis value.");
+                QueueMessage("Invalid axis value.");
                 return;
             }
 
             if (GetInt(inputTypeStr, out int inputType) == false)
             {
-                DataContainer.MessageHandler.QueueMessage("Invalid input type.");
+                QueueMessage("Invalid input type.");
                 return;
             }
 
             if (GetInt(minAxisStr, out int minAxisVal) == false || minAxisVal < -1 || minAxisVal > 1)
             {
-                DataContainer.MessageHandler.QueueMessage("Invalid minimum axis value.");
+                QueueMessage("Invalid minimum axis value.");
                 return;
             }
 
             if (GetInt(maxAxisStr, out int maxAxisVal) == false || maxAxisVal < -1 || maxAxisVal > 1)
             {
-                DataContainer.MessageHandler.QueueMessage("Invalid maximum axis value.");
+                QueueMessage("Invalid maximum axis value.");
                 return;
             }
 
             if (GetInt(maxAxisPercentStr, out int maxAxisPercent) == false || maxAxisPercent < 0 || maxAxisPercent > 100)
             {
-                DataContainer.MessageHandler.QueueMessage("Invalid maximum axis percent.");
+                QueueMessage("Invalid maximum axis percent.");
                 return;
             }
 
@@ -153,7 +153,7 @@ namespace TRBot.Commands
                 message = $"Updated input \"{inputName}\" on console \"{consoleStr}\"!";
             }
 
-            DataContainer.MessageHandler.QueueMessage(message);
+            QueueMessage(message);
         }
 
         private bool GetInt(string value, out int num)

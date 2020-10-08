@@ -22,40 +22,47 @@ using System.Threading.Tasks;
 using TRBot.Connection;
 using TRBot.Common;
 using TRBot.Utilities;
+using TRBot.Consoles;
+using TRBot.ParserData;
+using TRBot.Parsing;
 using TRBot.Data;
 
 namespace TRBot.Commands
 {
     /// <summary>
-    /// A simple command that sends a message.
-    /// It will first look for the given from the database, and if not found, use the message as it is.
+    /// Removes a meme.
     /// </summary>
-    public class MessageCommand : BaseCommand
+    public sealed class RemoveMemeCommand : BaseCommand
     {
-        public MessageCommand()
+        private string UsageMessage = "Usage: \"memename\"";
+
+        public RemoveMemeCommand()
         {
             
-        }
-
-        public MessageCommand(string databaseMsgKey)
-        {
-            ValueStr = databaseMsgKey;
         }
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
-            string sentMessage = DataHelper.GetSettingString(ValueStr, ValueStr);
+            List<string> arguments = args.Command.ArgumentsAsList;
 
-            //The message we want to send is null or empty
-            if (string.IsNullOrEmpty(sentMessage) == true)
+            using BotDBContext context = DatabaseManager.OpenContext();
+
+            if (arguments.Count != 1)
             {
-                QueueMessage("This command should say something, but the sent message is empty!");
+                QueueMessage(UsageMessage);
                 return;
             }
 
-            int charLimit = (int)DataHelper.GetSettingInt(SettingsConstants.BOT_MSG_CHAR_LIMIT, 500L);
+            string memeName = arguments[0].ToLowerInvariant();
             
-            QueueMessageSplit(sentMessage, charLimit, string.Empty);
+            Meme meme = context.Memes.FirstOrDefault(m => m.MemeName == memeName);
+            
+            //Remove the meme if found
+            if (meme != null)
+            {
+                context.Memes.Remove(meme);
+                context.SaveChanges();
+            }
         }
     }
 }

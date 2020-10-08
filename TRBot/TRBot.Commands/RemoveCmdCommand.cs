@@ -45,7 +45,7 @@ namespace TRBot.Commands
             //Ignore with incorrect number of arguments
             if (arguments.Count != 1)
             {
-                DataContainer.MessageHandler.QueueMessage(UsageMessage);
+                QueueMessage(UsageMessage);
                 return;
             }
 
@@ -67,15 +67,16 @@ namespace TRBot.Commands
                     }
                     else
                     {
-                        Console.WriteLine($"Error: Command \"{commandName}\" was not removed from the database because it cannot be found.");
+                        QueueMessage($"Error: Command \"{commandName}\" was not removed from the database because it cannot be found.");
+                        return;
                     }
                 }
 
-                DataContainer.MessageHandler.QueueMessage($"Successfully removed command \"{commandName}\"!");
+                QueueMessage($"Successfully removed command \"{commandName}\"!");
             }
             else
             {
-                DataContainer.MessageHandler.QueueMessage($"Failed to remove command \"{commandName}\". It likely does not exist.");
+                QueueMessage($"Failed to remove command \"{commandName}\". It likely does not exist.");
             }
         }
     }

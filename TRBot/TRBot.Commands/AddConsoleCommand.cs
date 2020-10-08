@@ -52,7 +52,7 @@ namespace TRBot.Commands
             //Ignore with incorrect number of arguments
             if (arguments.Count != 1)
             {
-                DataContainer.MessageHandler.QueueMessage(UsageMessage);
+                QueueMessage(UsageMessage);
                 return;
             }
 
@@ -61,7 +61,7 @@ namespace TRBot.Commands
             //Ensure the console name isn't too long
             if (consoleName.Length > MAX_NAME_LENGTH)
             {
-                DataContainer.MessageHandler.QueueMessage($"Consoles may have up to a max of {MAX_NAME_LENGTH} characters in their name.");
+                QueueMessage($"Consoles may have up to a max of {MAX_NAME_LENGTH} characters in their name.");
                 return;
             }
 
@@ -70,7 +70,7 @@ namespace TRBot.Commands
 
             if (matched == false)
             {
-                DataContainer.MessageHandler.QueueMessage($"Consoles may contain only alphanumeric characters.");
+                QueueMessage($"Consoles may contain only alphanumeric characters.");
                 return;
             }
 
@@ -84,7 +84,7 @@ namespace TRBot.Commands
 
                 if (console != null)
                 {
-                    DataContainer.MessageHandler.QueueMessage($"There already exists a console named \"{consoleName}\"!");
+                    QueueMessage($"There already exists a console named \"{consoleName}\"!");
                     return;
                 }
 
@@ -93,7 +93,7 @@ namespace TRBot.Commands
                 context.SaveChanges();
             }
 
-            DataContainer.MessageHandler.QueueMessage($"Added console \"{consoleName}\"!");
+            QueueMessage($"Added console \"{consoleName}\"!");
         }
     }
 }

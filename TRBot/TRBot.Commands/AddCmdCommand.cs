@@ -47,7 +47,7 @@ namespace TRBot.Commands
             //Ignore with too few arguments
             if (argCount < 5)
             {
-                DataContainer.MessageHandler.QueueMessage(UsageMessage);
+                QueueMessage(UsageMessage);
                 return;
             }
 
@@ -72,19 +72,19 @@ namespace TRBot.Commands
 
             if (int.TryParse(levelStr, out int levelNum) == false)
             {
-                DataContainer.MessageHandler.QueueMessage("Incorrect level specified.");
+                QueueMessage("Incorrect level specified.");
                 return;
             }
 
             if (bool.TryParse(enabledStr, out bool cmdEnabled) == false)
             {
-                DataContainer.MessageHandler.QueueMessage("Incorrect command enabled state specified.");
+                QueueMessage("Incorrect command enabled state specified.");
                 return;
             }
 
             if (bool.TryParse(displayInHelpStr, out bool displayInHelp) == false)
             {
-                DataContainer.MessageHandler.QueueMessage("Incorrect command displayInHelp state specified.");
+                QueueMessage("Incorrect command displayInHelp state specified.");
                 return;
             }
 
@@ -110,11 +110,11 @@ namespace TRBot.Commands
                     context.SaveChanges();
                 }
 
-                DataContainer.MessageHandler.QueueMessage($"Successfully added command \"{commandName}\"!");
+                QueueMessage($"Successfully added command \"{commandName}\"!");
             }
             else
             {
-                DataContainer.MessageHandler.QueueMessage($"Failed to add command \"{commandName}\".");
+                QueueMessage($"Failed to add command \"{commandName}\".");
             }
         }
     }

@@ -49,7 +49,7 @@ namespace TRBot.Commands
             //Ignore with not enough arguments
             if (argCount != 2)
             {
-                DataContainer.MessageHandler.QueueMessage(UsageMessage);
+                QueueMessage(UsageMessage);
                 return;
             }
 
@@ -60,7 +60,7 @@ namespace TRBot.Commands
             GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleStr);
             if (console == null)
             {
-                DataContainer.MessageHandler.QueueMessage($"No console named \"{consoleStr}\" found.");
+                QueueMessage($"No console named \"{consoleStr}\" found.");
                 return;
             }
 
@@ -76,11 +76,11 @@ namespace TRBot.Commands
                 //Save changes since it's removed
                 context.SaveChanges();
 
-                DataContainer.MessageHandler.QueueMessage($"Removed input \"{inputName}\" from console \"{consoleStr}\"!");
+                QueueMessage($"Removed input \"{inputName}\" from console \"{consoleStr}\"!");
             }
             else
             {
-                DataContainer.MessageHandler.QueueMessage($"Input \"{inputName}\" does not exist in console \"{consoleStr}\".");
+                QueueMessage($"Input \"{inputName}\" does not exist in console \"{consoleStr}\".");
             }
         }
 

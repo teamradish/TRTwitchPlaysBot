@@ -78,21 +78,7 @@ namespace TRBot.Commands
 
                 strBuilder.Remove(strBuilder.Length - 2, 2);
 
-                string message = Helpers.SplitStringWithinCharCount(strBuilder.ToString(), maxCharCount, ", ", out List<string> textList);
-
-                //If the text fits within the character limit, print it all out at once
-                if (textList == null)
-                {
-                    DataContainer.MessageHandler.QueueMessage(message);
-                }
-                else
-                {
-                    //Otherwise, queue up the text in pieces
-                    for (int i = 0; i < textList.Count; i++)
-                    {
-                        DataContainer.MessageHandler.QueueMessage(textList[i]);
-                    }
-                }
+                QueueMessageSplit(strBuilder.ToString(), maxCharCount, ", ");
 
                 return;
             }
@@ -100,7 +86,7 @@ namespace TRBot.Commands
             //Ignore with greater than 1 argument
             if (arguments.Count > 1)
             {
-                DataContainer.MessageHandler.QueueMessage(UsageMessage);
+                QueueMessage(UsageMessage);
                 return;
             }
 
@@ -117,13 +103,13 @@ namespace TRBot.Commands
 
                     context.SaveChanges();
 
-                    DataContainer.MessageHandler.QueueMessage($"Set the current console to \"{consoleName}\"!");
+                    QueueMessage($"Set the current console to \"{consoleName}\"!");
 
                     return;
                 }
             }
 
-            DataContainer.MessageHandler.QueueMessage($"No console named \"{consoleName}\" exists.");
+            QueueMessage($"No console named \"{consoleName}\" exists.");
         }
     }
 }

@@ -49,7 +49,7 @@ namespace TRBot.Commands
 
             if (macroCount == 0)
             {
-                DataContainer.MessageHandler.QueueMessage("There are no macros!");
+                QueueMessage("There are no macros!");
                 return;
             }
 
@@ -66,21 +66,7 @@ namespace TRBot.Commands
 
             strBuilder.Remove(strBuilder.Length - 2, 2);
 
-            string message = Helpers.SplitStringWithinCharCount(strBuilder.ToString(), maxCharCount, ", ", out List<string> textList);
-            
-            //If the text fits within the character limit, print it all out at once
-            if (textList == null)
-            {
-                DataContainer.MessageHandler.QueueMessage(message);
-            }
-            else
-            {
-                //Otherwise, queue up the text in pieces
-                for (int i = 0; i < textList.Count; i++)
-                {
-                    DataContainer.MessageHandler.QueueMessage(textList[i]);
-                }
-            }
+            QueueMessageSplit(strBuilder.ToString(), maxCharCount, ", ");
         }
     }
 }

@@ -46,7 +46,7 @@ namespace TRBot.Commands
             //Ignore with incorrect number of arguments
             if (arguments.Count != 1)
             {
-                DataContainer.MessageHandler.QueueMessage(UsageMessage);
+                QueueMessage(UsageMessage);
                 return;
             }
 
@@ -60,7 +60,7 @@ namespace TRBot.Commands
                 {
                     context.Consoles.Remove(console);
 
-                    DataContainer.MessageHandler.QueueMessage($"Successfully removed console \"{consoleName}\"!");
+                    QueueMessage($"Successfully removed console \"{consoleName}\"!");
 
                     Settings lastConsoleSetting = context.SettingCollection.FirstOrDefault(set => set.key == SettingsConstants.LAST_CONSOLE);
                     
@@ -71,11 +71,11 @@ namespace TRBot.Commands
                         if (firstConsole != null)
                         {
                             lastConsoleSetting.value_int = firstConsole.id;
-                            DataContainer.MessageHandler.QueueMessage($"\"{consoleName}\" used to be the current console, so the current console has been set to \"{firstConsole.Name}\"!");
+                            QueueMessage($"\"{consoleName}\" used to be the current console, so the current console has been set to \"{firstConsole.Name}\"!");
                         }
                         else
                         {
-                            DataContainer.MessageHandler.QueueMessage($"\"{consoleName}\" used to be the current console, but there are no other consoles available. Please add a new console in order to play.");
+                            QueueMessage($"\"{consoleName}\" used to be the current console, but there are no other consoles available. Please add a new console in order to play.");
                         }
                     }
 
@@ -85,7 +85,7 @@ namespace TRBot.Commands
                 }
             }
 
-            DataContainer.MessageHandler.QueueMessage($"No console named \"{consoleName}\" exists.");
+            QueueMessage($"No console named \"{consoleName}\" exists.");
         }
     }
 }

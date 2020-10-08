@@ -39,6 +39,9 @@ namespace TRBot.Commands
         /// </summary>
         public const int MAX_MACRO_NAME_LENGTH = 50;
 
+        /// <summary>
+        /// The min name length for macros.
+        /// </summary>
         public const int MIN_MACRO_NAME_LENGTH = 2;
 
         private string UsageMessage = "Usage: \"#macroname\" \"input sequence\"";
@@ -83,7 +86,7 @@ namespace TRBot.Commands
             //Check for max macro name
             if (macroName.Length > MAX_MACRO_NAME_LENGTH)
             {
-                QueueMessage($"The max macro length is {MAX_MACRO_NAME_LENGTH} characters.");
+                QueueMessage($"Macros may have up to a max of {MAX_MACRO_NAME_LENGTH} characters in their name.");
                 return;
             }
 

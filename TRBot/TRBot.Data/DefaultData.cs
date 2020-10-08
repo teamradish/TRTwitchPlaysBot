@@ -121,6 +121,9 @@ namespace TRBot.Data
                 new CommandData("macros", "TRBot.Commands.ListMacrosCommand", 0, true, true),
                 new CommandData("addmacro", "TRBot.Commands.AddMacroCommand", 0, true, true),
                 new CommandData("removemacro", "TRBot.Commands.RemoveMacroCommand", 0, true, true),
+                new CommandData("memes", "TRBot.Commands.ListMemesCommand", 0, true, true),
+                new CommandData("addmeme", "TRBot.Commands.AddMemeCommand", 0, true, true),
+                new CommandData("removememe", "TRBot.Commands.RemoveMemeCommand", 0, true, true),
             };
 
             return defaultCommands;

@@ -70,14 +70,14 @@ namespace TRBot.Commands
                 case 2:
                     goto case 1;
                 default:
-                    DataContainer.MessageHandler.QueueMessage(UsageMessage);
+                    QueueMessage(UsageMessage);
                     return;
             }
             
             //Invalid console
             if (console == null)
             {
-                DataContainer.MessageHandler.QueueMessage("The current console is invalid!? No inputs or input data are available.");
+                QueueMessage("The current console is invalid!? No inputs or input data are available.");
                 return;
             }
 
@@ -89,7 +89,7 @@ namespace TRBot.Commands
 
                 if (inpData != null)
                 {
-                    DataContainer.MessageHandler.QueueMessage(inpData.ToString());
+                    QueueMessage(inpData.ToString());
                     return;
                 }
                 else
@@ -99,7 +99,7 @@ namespace TRBot.Commands
                     //If we didn't find the console in the first argument, that means it's an input and it wasn't found
                     if (arguments.Count == 2 || arg1FoundConsole == false)
                     {
-                        DataContainer.MessageHandler.QueueMessage($"No input named \"{inputName}\" exists for the {console.Name} console.");
+                        QueueMessage($"No input named \"{inputName}\" exists for the {console.Name} console.");
                         return;
                     }
                 }
@@ -119,21 +119,7 @@ namespace TRBot.Commands
             int maxCharCount = (int)charCount.value_int;
             strBuilder.Remove(strBuilder.Length - 2, 2);
             
-            string message = Helpers.SplitStringWithinCharCount(strBuilder.ToString(), maxCharCount, ", ", out List<string> textList);
-            
-            //If the text fits within the character limit, print it all out at once
-            if (textList == null)
-            {
-                DataContainer.MessageHandler.QueueMessage(message);
-            }
-            else
-            {
-                //Otherwise, queue up the text in pieces
-                for (int i = 0; i < textList.Count; i++)
-                {
-                    DataContainer.MessageHandler.QueueMessage(textList[i]);
-                }
-            }
+            QueueMessageSplit(strBuilder.ToString(), maxCharCount, ", ");
         }
     }
 }

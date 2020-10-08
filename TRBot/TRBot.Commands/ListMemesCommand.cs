@@ -22,40 +22,47 @@ using System.Threading.Tasks;
 using TRBot.Connection;
 using TRBot.Common;
 using TRBot.Utilities;
+using TRBot.Consoles;
+using TRBot.ParserData;
 using TRBot.Data;
 
 namespace TRBot.Commands
 {
     /// <summary>
-    /// A simple command that sends a message.
-    /// It will first look for the given from the database, and if not found, use the message as it is.
+    /// Lists all available memes.
     /// </summary>
-    public class MessageCommand : BaseCommand
+    public sealed class ListMemesCommand : BaseCommand
     {
-        public MessageCommand()
+        public ListMemesCommand()
         {
             
-        }
-
-        public MessageCommand(string databaseMsgKey)
-        {
-            ValueStr = databaseMsgKey;
         }
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
-            string sentMessage = DataHelper.GetSettingString(ValueStr, ValueStr);
+            using BotDBContext context = DatabaseManager.OpenContext();
 
-            //The message we want to send is null or empty
-            if (string.IsNullOrEmpty(sentMessage) == true)
+            int memeCount = context.Memes.Count();
+
+            if (memeCount == 0)
             {
-                QueueMessage("This command should say something, but the sent message is empty!");
+                QueueMessage("There are no memes!");
                 return;
             }
 
-            int charLimit = (int)DataHelper.GetSettingInt(SettingsConstants.BOT_MSG_CHAR_LIMIT, 500L);
+            //The capacity is the estimated average number of characters for each meme multiplied by the number of memes
+            StringBuilder strBuilder = new StringBuilder(memeCount * 20);
+
+            foreach (Meme meme in context.Memes)
+            {
+                strBuilder.Append(meme.MemeName).Append(',').Append(' ');
+            }
+
+            strBuilder.Remove(strBuilder.Length - 2, 2);
+
+            int maxCharCount = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.BOT_MSG_CHAR_LIMIT, context, 500L);
             
-            QueueMessageSplit(sentMessage, charLimit, string.Empty);
+            QueueMessageSplit(strBuilder.ToString(), maxCharCount, ", ");
         }
     }
 }

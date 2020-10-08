@@ -54,7 +54,7 @@ namespace TRBot.Commands
 
             if (arguments.Count > 1)
             {
-                DataContainer.MessageHandler.QueueMessage(UsageMessage);
+                QueueMessage(UsageMessage);
                 return;
             }
 
@@ -71,21 +71,21 @@ namespace TRBot.Commands
             }
             else
             {
-                DataContainer.MessageHandler.QueueMessage(UsageMessage);
+                QueueMessage(UsageMessage);
             }
         }
 
         private void SoftReload()
         {
             DataContainer.DataReloader.ReloadDataSoft();
-            DataContainer.MessageHandler.QueueMessage("Finished reloading of data!");
+            QueueMessage("Finished reloading of data!");
         }
 
         private void HardReload()
         {
             DataContainer.DataReloader.ReloadDataHard();
 
-            DataContainer.MessageHandler.QueueMessage("Finished hard reloading data!");
+            QueueMessage("Finished hard reloading data!");
         }
     }
 }
