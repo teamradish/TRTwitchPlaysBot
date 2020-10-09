@@ -119,7 +119,8 @@ namespace TRBot.Data
                 entity.HasKey(e => e.id);
                 entity.Property(e => e.SynonymName).HasDefaultValue(string.Empty);
                 entity.Property(e => e.SynonymValue).HasDefaultValue(string.Empty);
-                entity.HasIndex(e => e.SynonymName).IsUnique();
+                entity.Property(e => e.console_id).HasDefaultValue(1);
+                entity.HasIndex(e => new { e.SynonymName, e.console_id }).IsUnique();
             });
 
             modelBuilder.Entity<GameConsole>().ToTable("Consoles", "consoles");

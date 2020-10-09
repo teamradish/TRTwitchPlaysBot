@@ -259,9 +259,14 @@ namespace TRBot.Data.Migrations
                         .HasColumnType("TEXT")
                         .HasDefaultValue("");
 
+                    b.Property<int>("console_id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(1);
+
                     b.HasKey("id");
 
-                    b.HasIndex("SynonymName")
+                    b.HasIndex("SynonymName", "console_id")
                         .IsUnique();
 
                     b.ToTable("InputSynonyms","inputsynonyms");

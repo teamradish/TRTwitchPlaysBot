@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Text;
 using TRBot.Consoles;
 using TRBot.VirtualControllers;
+using TRBot.ParserData;
 using static TRBot.Data.SettingsConstants;
 
 namespace TRBot.Data
@@ -124,6 +125,9 @@ namespace TRBot.Data
                 new CommandData("memes", "TRBot.Commands.ListMemesCommand", 0, true, true),
                 new CommandData("addmeme", "TRBot.Commands.AddMemeCommand", 0, true, true),
                 new CommandData("removememe", "TRBot.Commands.RemoveMemeCommand", 0, true, true),
+                new CommandData("listsyn", "TRBot.Commands.ListInputSynonymsCommand", 3, true, true),
+                new CommandData("addsyn", "TRBot.Commands.AddInputSynonymCommand", 3, true, true),
+                new CommandData("removesyn", "TRBot.Commands.RemoveInputSynonymCommand", 3, true, true),
             };
 
             return defaultCommands;

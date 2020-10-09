@@ -414,7 +414,9 @@ namespace TRBot.Core
                 string readyMessage = string.Empty;
                 using (BotDBContext context = DatabaseManager.OpenContext())
                 {
-                    readyMessage = InputParser.PrepParse(e.UsrMessage.Message, context.Macros, context.InputSynonyms);
+                    IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.console_id == lastConsoleID);
+
+                    readyMessage = InputParser.PrepParse(e.UsrMessage.Message, context.Macros, synonyms);
                 }
 
                 inputSequence = InputParser.ParseInputs(readyMessage, regexStr, new ParserOptions(0, defaultDur, true, maxDur));

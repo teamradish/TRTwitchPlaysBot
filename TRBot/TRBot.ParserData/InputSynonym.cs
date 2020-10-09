@@ -32,6 +32,11 @@ namespace TRBot.ParserData
         public int id { get; set; } = 0;
 
         /// <summary>
+        /// The console ID of the synonym.
+        /// </summary>
+        public int console_id { get; set; } = 0;
+
+        /// <summary>
         /// The name of the synonym.
         /// </summary>
         public string SynonymName { get; set; } = string.Empty;
@@ -52,6 +57,12 @@ namespace TRBot.ParserData
             SynonymValue = synonymValue;
         }
 
+        public InputSynonym(in int consoleID, string synonymName, string synonymValue)
+            : this(synonymName, synonymValue)
+        {
+            console_id = consoleID;
+        }
+
         public override int GetHashCode()
         {
             unchecked
@@ -59,6 +70,7 @@ namespace TRBot.ParserData
                 int hash = 29;
                 hash = (hash * 37) + SynonymName.GetHashCode();
                 hash = (hash * 37) + SynonymValue.GetHashCode();
+                hash = (hash * 37) + console_id.GetHashCode();
                 return hash;
             }
         }
@@ -68,61 +80,4 @@ namespace TRBot.ParserData
             return $"\"{SynonymName}\":\"{SynonymValue}\"";
         }
     }
-
-    /*/// <summary>
-    /// Represents an input synonym.
-    /// </summary>
-    public struct InputSynonym
-    {
-        /// <summary>
-        /// The name of the synonym.
-        /// </summary>
-        public string SynonymName;
-        
-        /// <summary>
-        /// The value of the synonym.
-        /// </summary>
-        public string SynonymValue;
-
-        public InputSynonym(string synonymName, string synonymValue)
-        {
-            SynonymName = synonymName;
-            SynonymValue = synonymValue;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is InputSynonym inputSynonym)
-            {
-                return (this == inputSynonym);
-            }
-            return false;
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hash = 29;
-                hash = (hash * 37) + SynonymName.GetHashCode();
-                hash = (hash * 37) + SynonymValue.GetHashCode();
-                return hash;
-            }
-        }
-
-        public static bool operator ==(InputSynonym a, InputSynonym b)
-        {
-            return (a.SynonymName == b.SynonymName && a.SynonymValue == b.SynonymValue);
-        }
-        
-        public static bool operator !=(InputSynonym a, InputSynonym b)
-        {
-            return !(a == b);
-        }
-
-        public override string ToString()
-        {
-            return $"\"{SynonymName}\":\"{SynonymValue}\"";
-        }
-    }*/
 }

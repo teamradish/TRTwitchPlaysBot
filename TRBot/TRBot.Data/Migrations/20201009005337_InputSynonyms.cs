@@ -2,7 +2,7 @@
 
 namespace TRBot.Data.Migrations
 {
-    public partial class Consoles : Migration
+    public partial class InputSynonyms : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -11,6 +11,9 @@ namespace TRBot.Data.Migrations
 
             migrationBuilder.EnsureSchema(
                 name: "inputs");
+
+            migrationBuilder.EnsureSchema(
+                name: "inputsynonyms");
 
             migrationBuilder.CreateTable(
                 name: "Consoles",
@@ -24,6 +27,23 @@ namespace TRBot.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Consoles", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "InputSynonyms",
+                schema: "inputsynonyms",
+                columns: table => new
+                {
+                    id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    console_id = table.Column<int>(nullable: false, defaultValue: 1)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    SynonymName = table.Column<string>(nullable: true, defaultValue: ""),
+                    SynonymValue = table.Column<string>(nullable: true, defaultValue: "")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InputSynonyms", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -78,6 +98,13 @@ namespace TRBot.Data.Migrations
                 table: "Inputs",
                 columns: new[] { "Name", "console_id" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InputSynonyms_SynonymName_console_id",
+                schema: "inputsynonyms",
+                table: "InputSynonyms",
+                columns: new[] { "SynonymName", "console_id" },
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -85,6 +112,10 @@ namespace TRBot.Data.Migrations
             migrationBuilder.DropTable(
                 name: "Inputs",
                 schema: "inputs");
+
+            migrationBuilder.DropTable(
+                name: "InputSynonyms",
+                schema: "inputsynonyms");
 
             migrationBuilder.DropTable(
                 name: "Consoles",

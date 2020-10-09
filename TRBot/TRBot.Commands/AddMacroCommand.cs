@@ -128,7 +128,9 @@ namespace TRBot.Commands
                 {
                     string regexStr = consoleInstance.InputRegex;
 
-                    string readyMessage = readyMessage = parser.PrepParse(macroVal, context.Macros, context.InputSynonyms);
+                    IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.console_id == curConsole.id);
+
+                    string readyMessage = readyMessage = parser.PrepParse(macroVal, context.Macros, synonyms);
 
                     inputSequence = parser.ParseInputs(readyMessage, regexStr, new ParserOptions(0, defaultInputDur, true, maxInputDur));
                     //Console.WriteLine(inputSequence.ToString());
