@@ -22,43 +22,51 @@ using System.Threading.Tasks;
 using TRBot.Connection;
 using TRBot.Common;
 using TRBot.Utilities;
+using TRBot.Consoles;
+using TRBot.ParserData;
+using TRBot.Parsing;
 using TRBot.Data;
 
 namespace TRBot.Commands
 {
     /// <summary>
-    /// A simple command that sends a message.
-    /// It will first look for the given from the database, and if not found, use the message as it is.
+    /// Adds a game log.
     /// </summary>
-    public class MessageCommand : BaseCommand
+    public sealed class AddGameLogCommand : BaseCommand
     {
-        public MessageCommand()
+        private string UsageMessage = "Usage: \"log message (string)\"";
+
+        public AddGameLogCommand()
         {
             
-        }
-
-        public MessageCommand(string databaseMsgKey)
-        {
-            ValueStr = databaseMsgKey;
         }
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
-            string sentMessage = DataHelper.GetSettingString(ValueStr, ValueStr);
+            string logMessage = args.Command.ArgumentsAsString;
 
-            //The message we want to send is null or empty
-            if (string.IsNullOrEmpty(sentMessage) == true)
+            if (string.IsNullOrEmpty(logMessage) == true)
             {
-                QueueMessage("This command should say something, but the sent message is empty!");
+                QueueMessage(UsageMessage);
                 return;
             }
 
-            //Replace any first parameters with the user's name
-            sentMessage = sentMessage.Replace("{0}", args.Command.ChatMessage.Username);
+            string username = args.Command.ChatMessage.Username.ToLowerInvariant();
 
-            int charLimit = (int)DataHelper.GetSettingInt(SettingsConstants.BOT_MSG_CHAR_LIMIT, 500L);
+            //Add a new log
+            GameLog newLog = new GameLog();
+            newLog.LogMessage = logMessage;
+            newLog.User = username;
+            newLog.LogDateTime = DateTime.UtcNow;
+
+            //Add the game log to the database
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                context.GameLogs.Add(newLog);
+                context.SaveChanges();
+            }
             
-            QueueMessageSplit(sentMessage, charLimit, string.Empty);
+            QueueMessage("Successfully logged message!");
         }
     }
 }

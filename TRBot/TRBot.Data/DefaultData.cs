@@ -67,8 +67,9 @@ namespace TRBot.Data
                 SettingsHelper(NEW_SUBSCRIBER_MESSAGE, "Thank you for subscribing, {0} :D !!"),
                 SettingsHelper(RESUBSCRIBER_MESSAGE, "Thank you for subscribing for {1} months, {0} :D !!"),
                 SettingsHelper(SOURCE_CODE_MESSAGE, "This bot is free software licensed under the AGPL v3.0. The code repository and full license terms are at https://github.com/teamradish/TRTwitchPlaysBot - You have the right to obtain source code for the streamer's deployed version of the software."),
-                SettingsHelper(GAME_MESSAGE, "Message"),
+                SettingsHelper(GAME_MESSAGE, "This is a game message."),
                 SettingsHelper(INFO_MESSAGE, "Welcome to the channel! You can play games by submitting messages in chat. Type !inputs to see all available buttons."),
+                SettingsHelper(TUTORIAL_MESSAGE, "Hi {0}, here's how to play: https://github.com/teamradish/TRTwitchPlaysBot/wiki/Syntax-Tutorial"),
                 SettingsHelper(DEFAULT_INPUT_DURATION, 200L),
                 SettingsHelper(MAX_INPUT_DURATION, 60000L),
                 SettingsHelper(LAST_CONSOLE, 1L),
@@ -109,6 +110,7 @@ namespace TRBot.Data
             {
                 new CommandData("sourcecode", "TRBot.Commands.MessageCommand", 0, true, true, SettingsConstants.SOURCE_CODE_MESSAGE),
                 new CommandData("info", "TRBot.Commands.MessageCommand", 0, true, true, SettingsConstants.INFO_MESSAGE),
+                new CommandData("tutorial", "TRBot.Commands.MessageCommand", 0, true, true, SettingsConstants.TUTORIAL_MESSAGE),
                 new CommandData("reload", "TRBot.Commands.ReloadCommand", 3, true, true),
                 new CommandData("addcmd", "TRBot.Commands.AddCmdCommand", 4, true, true),
                 new CommandData("removecmd", "TRBot.Commands.RemoveCmdCommand", 4, true, true),
@@ -128,6 +130,10 @@ namespace TRBot.Data
                 new CommandData("listsyn", "TRBot.Commands.ListInputSynonymsCommand", 3, true, true),
                 new CommandData("addsyn", "TRBot.Commands.AddInputSynonymCommand", 3, true, true),
                 new CommandData("removesyn", "TRBot.Commands.RemoveInputSynonymCommand", 3, true, true),
+                new CommandData("defaultinputdur", "TRBot.Commands.DefaultInputDurCommand", 3, true, true),
+                new CommandData("maxinputdur", "TRBot.Commands.MaxInputDurCommand", 3, true, true),
+                new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", 1, true, true),
+                new CommandData("viewlog", "TRBot.Commands.ViewGameLogCommand", 0, true, true),
             };
 
             return defaultCommands;

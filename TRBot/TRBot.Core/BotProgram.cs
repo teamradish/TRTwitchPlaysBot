@@ -593,40 +593,34 @@ namespace TRBot.Core
 
                     //Check all settings with the defaults
                     List<Settings> settings = DefaultData.GetDefaultSettings();
-                    if (dbContext.SettingCollection.Count() < settings.Count)
+                    for (int i = 0; i < settings.Count; i++)
                     {
-                        for (int i = 0; i < settings.Count; i++)
+                        Settings setting = settings[i];
+                        
+                        //See if the setting exists
+                        Settings foundSetting = dbContext.SettingCollection.FirstOrDefault((set) => set.key == setting.key);
+                        
+                        if (foundSetting == null)
                         {
-                            Settings setting = settings[i];
-
-                            //See if the setting exists
-                            Settings foundSetting = dbContext.SettingCollection.FirstOrDefault((set) => set.key == setting.key);
-                            if (foundSetting == null)
-                            {
-                                //Default setting does not exist, so add it
-                                dbContext.SettingCollection.Add(setting);
-
-                                entriesAdded++;
-                            }
+                            //Default setting does not exist, so add it
+                            dbContext.SettingCollection.Add(setting);
+                            entriesAdded++;
                         }
                     }
 
                     List<CommandData> cmdData = DefaultData.GetDefaultCommands();
-                    if (dbContext.Commands.Count() < cmdData.Count)
+                    for (int i = 0; i < cmdData.Count; i++)
                     {
-                        for (int i = 0; i < cmdData.Count; i++)
+                        CommandData commandData = cmdData[i];
+                        
+                        //See if the command data exists
+                        CommandData foundCommand = dbContext.Commands.FirstOrDefault((cmd) => cmd.name == commandData.name);
+                        
+                        if (foundCommand == null)
                         {
-                            CommandData commandData = cmdData[i];
-
-                            //See if the command data exists
-                            CommandData foundCommand = dbContext.Commands.FirstOrDefault((cmd) => cmd.name == commandData.name);
-                            if (foundCommand == null)
-                            {
-                                //Default command does not exist, so add it
-                                dbContext.Commands.Add(commandData);
-
-                                entriesAdded++;
-                            }
+                            //Default command does not exist, so add it
+                            dbContext.Commands.Add(commandData);
+                            entriesAdded++;
                         }
                     }
                 }

@@ -63,6 +63,7 @@ namespace TRBot.Data
         public const string GAME_MESSAGE_PATH = "game_message_path";
         public const string GAME_MESSAGE_PATH_IS_RELATIVE = "game_message_path_is_relative";
         public const string INFO_MESSAGE = "info_message";
+        public const string TUTORIAL_MESSAGE = "tutorial_message";
 
         public const string DEFAULT_INPUT_DURATION = "default_input_duration";
         public const string MAX_INPUT_DURATION = "max_input_duration";
