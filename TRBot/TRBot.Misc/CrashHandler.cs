@@ -21,7 +21,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TRBot.Common
+namespace TRBot.Misc
 {
     /// <summary>
     /// Handles crashes through unhandled exceptions.

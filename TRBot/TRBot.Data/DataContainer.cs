@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Linq;
-using TRBot.Common;
+using TRBot.Misc;
 using TRBot.Utilities;
 
 namespace TRBot.Data

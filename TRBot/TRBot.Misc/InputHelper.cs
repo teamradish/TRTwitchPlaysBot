@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using TRBot.Parsing;
-using TRBot.Connection;
 using TRBot.Consoles;
 using TRBot.VirtualControllers;
 
-namespace TRBot.Core
+namespace TRBot.Misc
 {
     public static class InputHelper
     {

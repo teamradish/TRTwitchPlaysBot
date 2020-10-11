@@ -21,7 +21,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TRBot.Connection;
-using TRBot.Common;
+using TRBot.Misc;
 using TRBot.Utilities;
 using TRBot.Consoles;
 using TRBot.Data;

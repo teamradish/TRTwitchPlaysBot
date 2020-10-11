@@ -22,47 +22,31 @@ using System.Threading.Tasks;
 using TRBot.Connection;
 using TRBot.Misc;
 using TRBot.Utilities;
-using TRBot.Consoles;
-using TRBot.ParserData;
-using TRBot.Parsing;
 using TRBot.Data;
+using TRBot.Commands;
 
 namespace TRBot.Commands
 {
     /// <summary>
-    /// Removes a meme.
+    /// A command that stops all ongoing inputs.
     /// </summary>
-    public sealed class RemoveMemeCommand : BaseCommand
+    public sealed class StopAllInputsCommand : BaseCommand
     {
-        private string UsageMessage = "Usage: \"memename\"";
-
-        public RemoveMemeCommand()
+        public StopAllInputsCommand()
         {
             
         }
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
-            List<string> arguments = args.Command.ArgumentsAsList;
+            InputHandler.StopAllInputs();
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            if (arguments.Count != 1)
+            while (InputHandler.CurrentRunningInputs != 0)
             {
-                QueueMessage(UsageMessage);
-                return;
+
             }
 
-            string memeName = arguments[0].ToLowerInvariant();
-            
-            Meme meme = context.Memes.FirstOrDefault(m => m.MemeName == memeName);
-            
-            //Remove the meme if found
-            if (meme != null)
-            {
-                context.Memes.Remove(meme);
-                context.SaveChanges();
-            }
+            QueueMessage("Stopped all running inputs!");
         }
     }
 }

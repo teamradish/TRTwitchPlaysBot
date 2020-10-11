@@ -21,7 +21,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TwitchLib.Client.Events;
 using TRBot.Connection;
-using TRBot.Common;
+using TRBot.Misc;
 using TRBot.Utilities;
 using TRBot.Consoles;
 using TRBot.ParserData;

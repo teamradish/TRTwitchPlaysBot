@@ -22,7 +22,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TRBot.Connection;
 using TRBot.Data;
-using TRBot.Common;
+using TRBot.Misc;
 using TRBot.Utilities;
 
 namespace TRBot.Commands

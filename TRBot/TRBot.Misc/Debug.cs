@@ -21,7 +21,7 @@ using System.Text;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace TRBot.Common
+namespace TRBot.Misc
 {
     /// <summary>
     /// Debugging.

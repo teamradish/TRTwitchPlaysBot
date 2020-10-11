@@ -11,7 +11,7 @@ using TwitchLib.Client;
 using TwitchLib.Client.Models;
 using Newtonsoft.Json;
 
-namespace TRBot.Core
+namespace TRBot.Main
 {
     /// <summary>
     /// Contains helper methods regarding connections.

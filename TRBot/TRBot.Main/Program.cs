@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TRBot.Core
+namespace TRBot.Main
 {
     class Program
     {

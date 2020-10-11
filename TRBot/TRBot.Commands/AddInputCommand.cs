@@ -21,7 +21,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Globalization;
 using TRBot.Connection;
-using TRBot.Common;
+using TRBot.Misc;
 using TRBot.Utilities;
 using TRBot.Consoles;
 using TRBot.Data;

@@ -28,7 +28,7 @@ using TRBot.ParserData;
 using TRBot.Connection;
 using TRBot.Consoles;
 using TRBot.VirtualControllers;
-using TRBot.Common;
+using TRBot.Misc;
 using TRBot.Utilities;
 using TRBot.Data;
 using TRBot.Commands;
@@ -40,7 +40,7 @@ using TwitchLib.Client.Events;
 using TwitchLib.Communication.Events;
 using TwitchLib.Communication.Interfaces;
 
-namespace TRBot.Core
+namespace TRBot.Main
 {
     public sealed class BotProgram : IDisposable
     {
@@ -117,7 +117,7 @@ namespace TRBot.Core
                 Console.WriteLine($"Cannot create database path at {databasePath}. Check if you have permission to write to this directory. Aborting.");
                 return;
             }
-            
+
             Console.WriteLine("Database path validated! Initializing database and importing migrations.");
 
             DatabaseManager.SetDatabasePath(databasePath);

@@ -2,6 +2,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TRBot.Connection\TRBot.Connection.csproj" />
+    <ProjectReference Include="..\TRBot.Consoles\TRBot.Consoles.csproj" />
+    <ProjectReference Include="..\TRBot.VirtualControllers\TRBot.VirtualControllers.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

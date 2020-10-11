@@ -20,7 +20,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TRBot.Connection;
-using TRBot.Common;
+using TRBot.Misc;
 using TRBot.Utilities;
 using TRBot.Data;
 

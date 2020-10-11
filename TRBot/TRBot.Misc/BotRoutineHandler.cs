@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace TRBot.Common
+namespace TRBot.Misc
 {
     /// <summary>
     /// Handles bot routines.

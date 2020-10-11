@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Diagnostics;
 using TRBot.Parsing;
 using TRBot.Connection;
@@ -67,7 +68,7 @@ namespace TRBot.Core
         /// Cancels all currently running inputs.
         /// After calling this, all inputs are officially cancelled when <see cref="CurrentRunningInputs"/> is 0.
         /// </summary>
-        public static void CancelRunningInputs()
+        private static void CancelRunningInputs()
         {
             StopRunningInputs = true;
         }
@@ -75,9 +76,31 @@ namespace TRBot.Core
         /// <summary>
         /// Allows new inputs to be processed.
         /// </summary>
-        public static void ResumeRunningInputs()
+        private static void ResumeRunningInputs()
         {
             StopRunningInputs = false;
+        }
+
+        public static async void StopAllInputs()
+        {
+            Console.WriteLine("All inputs stopping");
+            
+            CancelRunningInputs();
+
+            await AllInputsStopped();
+
+            ResumeRunningInputs();
+
+            Console.WriteLine("All inputs resumed");
+        }
+
+        private static async Task AllInputsStopped()
+        {
+            while (CurrentRunningInputs != 0)
+            {
+                await Task.Delay(1);
+                Console.WriteLine("Delaying");
+            }
         }
 
         /// <summary>

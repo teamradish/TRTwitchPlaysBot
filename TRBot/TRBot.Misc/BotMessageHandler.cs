@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Text;
 using TRBot.Connection;
 
-namespace TRBot.Common
+namespace TRBot.Misc
 {
     /// <summary>
     /// Handles messages with rate limiting.
