@@ -104,8 +104,8 @@ namespace TRBot.Commands
                     }
 
                     //Add the new one
-                    context.Commands.Add(new CommandData(commandName, className, levelNum, cmdEnabled,
-                        displayInHelp, valueStr));
+                    context.Commands.Add(new CommandData(commandName, className, levelNum,
+                    cmdEnabled, displayInHelp, valueStr));
                     
                     context.SaveChanges();
                 }

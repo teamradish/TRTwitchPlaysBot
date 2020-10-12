@@ -196,7 +196,7 @@ namespace TRBot.Commands
                         BaseCommand baseCmd = (BaseCommand)Activator.CreateInstance(commandType, Array.Empty<object>());
                         baseCmd.Enabled = cmdData.enabled > 0;
                         baseCmd.DisplayInHelp = cmdData.display_in_list > 0;
-                        baseCmd.Level = cmdData.level;
+                        baseCmd.Level = (int)cmdData.level;
                         baseCmd.ValueStr = cmdData.value_str;
 
                         AllCommands[cmdData.name] = baseCmd;
@@ -251,11 +251,11 @@ namespace TRBot.Commands
                     {
                         //Add this command
                         AddCommand(commandName, cmdData.class_name, cmdData.value_str,
-                            cmdData.level, cmdData.enabled != 0, cmdData.display_in_list != 0 );
+                            (int)cmdData.level, cmdData.enabled != 0, cmdData.display_in_list != 0 );
                     }
                     else
                     {
-                        baseCmd.Level = cmdData.level;
+                        baseCmd.Level = (int)cmdData.level;
                         baseCmd.Enabled = cmdData.enabled != 0;
                         baseCmd.DisplayInHelp = cmdData.display_in_list != 0;
                         baseCmd.ValueStr = cmdData.value_str;

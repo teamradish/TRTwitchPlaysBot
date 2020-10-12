@@ -19,10 +19,10 @@ namespace TRBot.Data.Migrations
                     name = table.Column<string>(nullable: true),
                     class_name = table.Column<string>(nullable: true),
                     level = table.Column<int>(nullable: false, defaultValue: 0)
+                        .Annotation("Sqlite:Autoincrement", false),
+                    enabled = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    enabled = table.Column<int>(nullable: false, defaultValue: 1)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    display_in_list = table.Column<int>(nullable: false, defaultValue: 1)
+                    display_in_list = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     value_str = table.Column<string>(nullable: true)
                 },

@@ -134,7 +134,8 @@ namespace TRBot.Data
                 new CommandData("maxinputdur", "TRBot.Commands.MaxInputDurCommand", 3, true, true),
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", 1, true, true),
                 new CommandData("viewlog", "TRBot.Commands.ViewGameLogCommand", 0, true, true),
-                new CommandData("stopall", "TRBot.Commands.StopAllInputsCommand", 0, true, true)
+                new CommandData("stopall", "TRBot.Commands.StopAllInputsCommand", 0, true, true),
+                new CommandData("exec", "TRBot.Commands.ExecCommand", 5, false, false)
             };
 
             return defaultCommands;

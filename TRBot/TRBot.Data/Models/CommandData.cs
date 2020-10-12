@@ -43,17 +43,17 @@ namespace TRBot.Data
         /// <summary>
         /// The access level of the command.
         /// </summary>
-        public int level { get; set; } = 0;
+        public long level { get; set; } = 0;
 
         /// <summary>
         /// Whether the command is enabled or not.
         /// </summary>
-        public int enabled { get; set; } = 1;
+        public long enabled { get; set; } = 1;
 
         /// <summary>
         /// Whether to display the command in the command list.
         /// </summary>
-        public int display_in_list { get; set; } = 1;
+        public long display_in_list { get; set; } = 1;
 
         /// <summary>
         /// An additional value for the command.
@@ -65,13 +65,13 @@ namespace TRBot.Data
 
         }
 
-        public CommandData(string cmdName, string className, in int lvl, in bool cmdEnabled, in bool displayInList)
+        public CommandData(string cmdName, string className, in long lvl, in bool cmdEnabled, in bool displayInList)
         {
             name = cmdName;
             class_name = className;
             level = lvl;
-            enabled = cmdEnabled == true ? 1 : 0;
-            display_in_list = displayInList == true ? 1 : 0;
+            enabled = cmdEnabled == true ? 1L : 0L;
+            display_in_list = displayInList == true ? 1L : 0L;
         }
 
         public CommandData(string cmdName, string className, in int lvl, in bool cmdEnabled, in bool displayInList,
