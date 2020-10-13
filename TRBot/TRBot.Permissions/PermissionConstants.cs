@@ -19,10 +19,9 @@ using System.Collections.Concurrent;
 
 namespace TRBot.Permissions
 {
-    public class PermAbility
+    public static class PermissionConstants
     {
-
+        public const string SET_CONSOLE_ABILITY = "setconsole";
+        public const string SILENCED_ABILITY = "silenced";
     }
-
-
 }

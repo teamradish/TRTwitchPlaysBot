@@ -82,7 +82,7 @@ namespace TRBot.Misc
         }
 
         /// <summary>
-        /// Stops all ongoing inputs.
+        /// Stops all ongoing inputs, waiting until all inputs are completely stopped.
         /// </summary>
         public static async void StopAllInputs()
         {
@@ -103,7 +103,7 @@ namespace TRBot.Misc
 
             while (CurrentRunningInputs != 0)
             {
-                Console.WriteLine($"Delaying {delay}ms");
+                //Console.WriteLine($"Delaying {delay}ms");
                 await Task.Delay(delay);
             }
         }

@@ -70,11 +70,11 @@ namespace TRBot.Data
             name = cmdName;
             class_name = className;
             level = lvl;
-            enabled = cmdEnabled == true ? 1L : 0L;
-            display_in_list = displayInList == true ? 1L : 0L;
+            enabled = cmdEnabled == true ? 1 : 0;
+            display_in_list = displayInList == true ? 1 : 0;
         }
 
-        public CommandData(string cmdName, string className, in int lvl, in bool cmdEnabled, in bool displayInList,
+        public CommandData(string cmdName, string className, in long lvl, in bool cmdEnabled, in bool displayInList,
             string valueStr)
             : this(cmdName, className, lvl, cmdEnabled, displayInList)
         {

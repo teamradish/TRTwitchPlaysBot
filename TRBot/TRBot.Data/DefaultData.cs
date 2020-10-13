@@ -22,7 +22,9 @@ using System.Text;
 using TRBot.Consoles;
 using TRBot.VirtualControllers;
 using TRBot.ParserData;
+using TRBot.Permissions;
 using static TRBot.Data.SettingsConstants;
+using static TRBot.Permissions.PermissionConstants;
 
 namespace TRBot.Data
 {
@@ -75,7 +77,6 @@ namespace TRBot.Data
                 SettingsHelper(LAST_CONSOLE, 1L),
                 SettingsHelper(LAST_VCONTROLLER_TYPE, (long)VirtualControllerTypes.vJoy),
                 SettingsHelper(JOYSTICK_COUNT, 1L),
-                SettingsHelper(FIRST_LAUNCH, 1L)
             };
 
             return defaultSettings;
@@ -158,6 +159,21 @@ namespace TRBot.Data
             };
 
             return defaultConsoles;
+        }
+
+        /// <summary>
+        /// Returns a list of default permission abilities.
+        /// </summary>
+        /// <returns>A list of PermissionAbilities.</returns>
+        public static List<PermissionAbility> GetDefaultPermAbilities()
+        {
+            List<PermissionAbility> defaultPermissions = new List<PermissionAbility>()
+            {
+                new PermissionAbility(SILENCED_ABILITY),
+                new PermissionAbility(SET_CONSOLE_ABILITY)
+            };
+
+            return defaultPermissions;
         }
 
         #endregion

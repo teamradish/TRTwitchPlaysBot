@@ -16,32 +16,35 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using TRBot.Connection;
-using TRBot.Misc;
-using TRBot.Utilities;
-using TRBot.Data;
-using TRBot.Commands;
+using Newtonsoft.Json;
 
-namespace TRBot.Commands
+namespace TRBot.Data
 {
     /// <summary>
-    /// A command that stops all ongoing inputs.
+    /// Represents user stats.
     /// </summary>
-    public sealed class StopAllInputsCommand : BaseCommand
+    public class UserStats
     {
-        public StopAllInputsCommand()
-        {
-            
-        }
+        public int id { get; set; } = 0;
+        public int user_id { get; set; } = 0;
+        public long Credits { get; set; } = 0;
+        public long TotalMessageCount { get; set; } = 0;
+        public long ValidInputCount { get; set; } = 0;
+        public long IsSubscriber { get; set; } = 0;
+        public long BetCounter { get; set; } = 0;
+        public long AutoPromoted { get; set; } = 0;
+        public long OptedOut { get; set; } = 0;
 
-        public override void ExecuteCommand(EvtChatCommandArgs args)
-        {
-            InputHandler.StopAllInputs();
+        /// <summary>
+        /// The User associated with the user stats.
+        /// This is used by the database and should not be assigned or modified manually. 
+        /// </summary>
+        public virtual User user { get; set; } = null;
 
-            QueueMessage("Stopped all running inputs!");
+        public UserStats()
+        {
+
         }
     }
 }

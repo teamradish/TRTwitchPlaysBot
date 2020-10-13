@@ -22,6 +22,7 @@ using System.Data.SQLite;
 using System.IO;
 using TRBot.ParserData;
 using TRBot.Consoles;
+using TRBot.Permissions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -42,6 +43,8 @@ namespace TRBot.Data
         public DbSet<InputMacro> Macros { get; set; } = null;
         public DbSet<InputSynonym> InputSynonyms { get; set; } = null;
         public DbSet<GameConsole> Consoles { get; set; } = null;
+        public DbSet<User> Users { get; set; } = null;
+        public DbSet<PermissionAbility> PermAbilities { get; set; } = null;
 
         private string Datasource = string.Empty;
 
@@ -146,6 +149,28 @@ namespace TRBot.Data
                 entity.Property(e => e.MaxAxisVal).HasDefaultValue(1);
                 entity.Property(e => e.MaxAxisPercent).HasDefaultValue(100);
                 entity.HasIndex(e => new { e.Name, e.console_id }).IsUnique();
+            });
+
+            modelBuilder.Entity<User>().ToTable("Users", "users");
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.HasKey(e => e.id);
+                entity.Property(e => e.Name).HasDefaultValue(string.Empty);
+                entity.HasOne(e => e.Stats).WithOne(u => u.user).IsRequired().HasForeignKey<UserStats>(u => u.user_id);
+                entity.HasMany(e => e.PermAbilities).WithOne();
+                entity.HasIndex(e => e.Name);
+            });
+
+            modelBuilder.Entity<UserStats>().ToTable("UserStats", "userstats");
+            modelBuilder.Entity<UserStats>(entity =>
+            {
+                entity.HasKey(e => e.id);
+            });
+
+            modelBuilder.Entity<PermissionAbility>().ToTable("UserPermissions", "userpermissions");
+            modelBuilder.Entity<PermissionAbility>(entity =>
+            {
+                entity.HasKey(e => e.id);
             });
 
            base.OnModelCreating(modelBuilder);

@@ -83,7 +83,10 @@ namespace TRBot.Commands
 
             GameLog gameLog = gameLogs[logNum];
 
-            if (string.IsNullOrEmpty(gameLog.User) == false)
+            User user = context.Users.FirstOrDefault(u => u.Name == gameLog.User);
+
+            //Don't display username if they opted out
+            if (user != null && user.Stats.OptedOut == 0)
             {
                 QueueMessage($"{gameLog.LogDateTime} (UTC) --> {gameLog.User} : {gameLog.LogMessage}");
             }

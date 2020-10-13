@@ -19,11 +19,19 @@ using System.Collections.Concurrent;
 
 namespace TRBot.Permissions
 {
-    public class PermissionManager
+    public class PermissionAbility
     {
-        private ConcurrentDictionary<string, PermAbility> Definitions = new ConcurrentDictionary<string, PermAbility>()
+        public int id { get; set; } = 0;
+        public string Name { get; set; } = string.Empty;
+
+        public PermissionAbility()
         {
-            
-        };
+
+        }
+
+        public PermissionAbility(string name)
+        {
+            Name = name;
+        }
     }
 }

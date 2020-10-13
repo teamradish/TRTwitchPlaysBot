@@ -32,6 +32,7 @@ using TRBot.Misc;
 using TRBot.Utilities;
 using TRBot.Data;
 using TRBot.Commands;
+using TRBot.Permissions;
 using Newtonsoft.Json;
 using TwitchLib;
 using TwitchLib.Client;
@@ -82,7 +83,6 @@ namespace TRBot.Main
 
             //RoutineHandler?.CleanUp();
 
-            //CommandHandler.CleanUp();
             ClientService?.CleanUp();
 
             MsgHandler?.CleanUp();
@@ -94,8 +94,6 @@ namespace TRBot.Main
 
             //Clean up and relinquish the virtual controllers when we're done
             ControllerMngr?.CleanUp();
-
-            //instance = null;
         }
 
         public void Initialize()
@@ -171,13 +169,27 @@ namespace TRBot.Main
                 return;
             }
 
+            int controllerCount = (int)DataHelper.GetSettingInt(SettingsConstants.JOYSTICK_COUNT, 1L);            
+
+            if (controllerCount <= 0)
+            {
+                controllerCount = 1;
+                Console.WriteLine("Controller count less than or equal to 0. This is invalid, so the value has been clamped to 1.");
+            }
+
             ControllerMngr.Initialize();
-            int acquiredCount = ControllerMngr.InitControllers(1);
+            int acquiredCount = ControllerMngr.InitControllers(controllerCount);
 
             Console.WriteLine($"Setting up virtual controller {lastVControllerType} and acquired {acquiredCount} controllers!");
 
             CmdHandler = new CommandHandler();
             CmdHandler.Initialize(DataContainer);
+
+            DataReloader.SoftDataReloadedEvent -= OnSoftReload;
+            DataReloader.SoftDataReloadedEvent += OnSoftReload;
+
+            DataReloader.HardDataReloadedEvent -= OnHardReload;
+            DataReloader.HardDataReloadedEvent += OnHardReload;
 
             Initialized = true;
         }
@@ -623,6 +635,21 @@ namespace TRBot.Main
                             entriesAdded++;
                         }
                     }
+
+                    List<PermissionAbility> permAbilities = DefaultData.GetDefaultPermAbilities();
+                    for (int i = 0; i < permAbilities.Count; i++)
+                    {
+                        PermissionAbility pAbility = permAbilities[i];
+
+                        PermissionAbility perm = dbContext.PermAbilities.FirstOrDefault(p => p.Name == pAbility.Name);
+
+                        if (perm == null)
+                        {
+                            //Add this permission ability since it doesn't exist
+                            dbContext.PermAbilities.Add(pAbility);
+                            entriesAdded++;
+                        }
+                    }
                 }
 
                 Settings firstLaunchSetting = dbContext.SettingCollection.FirstOrDefault((set) => set.key == SettingsConstants.FIRST_LAUNCH);
@@ -668,30 +695,29 @@ namespace TRBot.Main
         private VirtualControllerTypes ValidateVirtualControllerType()
         {
             VirtualControllerTypes lastVControllerType = VirtualControllerTypes.Invalid;
-            using (BotDBContext dbContext = DatabaseManager.OpenContext())
+            using BotDBContext dbContext = DatabaseManager.OpenContext();
+            
+            //Validate the last virtual controller type
+            Settings vControllerSetting = dbContext.SettingCollection.FirstOrDefault((set) => set.key == SettingsConstants.LAST_VCONTROLLER_TYPE);
+            if (vControllerSetting != null)
             {
-                //Validate the last virtual controller type
-                Settings vControllerSetting = dbContext.SettingCollection.FirstOrDefault((set) => set.key == SettingsConstants.LAST_VCONTROLLER_TYPE);
+                lastVControllerType = (VirtualControllerTypes)vControllerSetting.value_int;
+            }
+
+            //Check if the virtual controller type is supported on this platform
+            if (VControllerHelper.IsVControllerSupported(lastVControllerType, TRBotOSPlatform.CurrentOS) == false)
+            {
+                //It's not supported, so switch it to prevent issues on this platform
+                VirtualControllerTypes defaultVContType = VControllerHelper.GetDefaultVControllerTypeForPlatform(TRBotOSPlatform.CurrentOS);
                 if (vControllerSetting != null)
                 {
-                    lastVControllerType = (VirtualControllerTypes)vControllerSetting.value_int;
+                    vControllerSetting.value_int = (long)defaultVContType;
                 }
 
-                //Check if the virtual controller type is supported on this platform
-                if (VControllerHelper.IsVControllerSupported(lastVControllerType, TRBotOSPlatform.CurrentOS) == false)
-                {
-                    //It's not supported, so switch it to prevent issues on this platform
-                    VirtualControllerTypes defaultVContType = VControllerHelper.GetDefaultVControllerTypeForPlatform(TRBotOSPlatform.CurrentOS);
-                    if (vControllerSetting != null)
-                    {
-                        vControllerSetting.value_int = (long)defaultVContType;
-                    }
-
-                    Console.WriteLine($"Current virtual controller {lastVControllerType} is not supported by the {TRBotOSPlatform.CurrentOS} platform. Switched it to the default of {defaultVContType} for this platform.");
-                    lastVControllerType = defaultVContType;
-
-                    dbContext.SaveChanges();
-                }
+                MsgHandler.QueueMessage($"Current virtual controller {lastVControllerType} is not supported by the {TRBotOSPlatform.CurrentOS} platform. Switched it to the default of {defaultVContType} for this platform.");
+                lastVControllerType = defaultVContType;
+                
+                dbContext.SaveChanges();
             }
 
             return lastVControllerType;
@@ -747,5 +773,44 @@ namespace TRBot.Main
         {
             return (setting.key == SettingsConstants.MAIN_THREAD_SLEEP);
         }
+
+        private void OnSoftReload()
+        {
+            ReinitVControllerCount();
+        }
+
+        private void OnHardReload()
+        {
+            ReinitVControllerCount();
+        }
+
+        private void ReinitVControllerCount()
+        {
+            int curVControllerCount = ControllerMngr.ControllerCount;
+            int newJoystickCount = (int)DataHelper.GetSettingInt(SettingsConstants.JOYSTICK_COUNT, 1L);
+
+            if (newJoystickCount < 1)
+            {
+                MsgHandler.QueueMessage($"New controller count of {newJoystickCount} in database is invalid. Falling back to 1.");
+                newJoystickCount = 1;
+            }
+
+            //Same count, so ignore
+            if (curVControllerCount == newJoystickCount)
+            {
+                return;
+            }
+
+            MsgHandler.QueueMessage("Found controller count change in database. Stopping all inputs and reinitializing virtual controllers.");
+
+            //First, stop all inputs
+            InputHandler.StopAllInputs();
+
+            //Re-initialize the new number of virtual controllers
+            ControllerMngr.CleanUp();
+            int acquiredCount = ControllerMngr.InitControllers(newJoystickCount);
+
+            MsgHandler.QueueMessage($"Set up and acquired {acquiredCount} controllers!");
+        }   
     }
 }

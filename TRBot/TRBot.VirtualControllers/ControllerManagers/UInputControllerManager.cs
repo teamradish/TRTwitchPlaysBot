@@ -42,9 +42,6 @@ namespace TRBot.VirtualControllers
             MaxControllers = NativeWrapperUInput.GetMaxControllerCount();
 
             Initialized = true;
-
-            //int acquiredCount = InitControllers(BotProgram.BotData.JoystickCount);
-            //Console.WriteLine($"Acquired {acquiredCount} controllers!");
         }
 
         public void CleanUp()
@@ -101,7 +98,7 @@ namespace TRBot.VirtualControllers
                 joystick.Acquire();
                 if (joystick.IsAcquired == false)
                 {
-                    Console.WriteLine($"Unable to acquire uinput device at index {joystick.ControllerIndex}");
+                    Console.WriteLine($"Unable to acquire uinput device at index {joystick.ControllerIndex}. Make sure you have permissions set with \"sudo chmod a+rw /dev/uinput\"");
                     continue;
                 }
 

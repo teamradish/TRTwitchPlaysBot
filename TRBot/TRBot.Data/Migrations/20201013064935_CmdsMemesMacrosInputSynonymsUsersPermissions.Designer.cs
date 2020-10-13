@@ -9,8 +9,8 @@ using TRBot.Data;
 namespace TRBot.Data.Migrations
 {
     [DbContext(typeof(BotDBContext))]
-    [Migration("20201009005337_InputSynonyms")]
-    partial class InputSynonyms
+    [Migration("20201013064935_CmdsMemesMacrosInputSynonymsUsersPermissions")]
+    partial class CmdsMemesMacrosInputSynonymsUsersPermissions
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -100,20 +100,16 @@ namespace TRBot.Data.Migrations
                     b.Property<string>("class_name")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("display_in_list")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(1);
+                    b.Property<long>("display_in_list")
+                        .HasColumnType("INTEGER");
 
-                    b.Property<int>("enabled")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(1);
+                    b.Property<long>("enabled")
+                        .HasColumnType("INTEGER");
 
-                    b.Property<int>("level")
+                    b.Property<long>("level")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
-                        .HasDefaultValue(0);
+                        .HasDefaultValue(0L);
 
                     b.Property<string>("name")
                         .HasColumnType("TEXT");
@@ -221,6 +217,68 @@ namespace TRBot.Data.Migrations
                     b.ToTable("Settings","settings");
                 });
 
+            modelBuilder.Entity("TRBot.Data.User", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("ControllerPort")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("Level")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("Name");
+
+                    b.ToTable("Users","users");
+                });
+
+            modelBuilder.Entity("TRBot.Data.UserStats", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("AutoPromoted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("BetCounter")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("Credits")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("IsSubscriber")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("OptedOut")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("TotalMessageCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("ValidInputCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("user_id")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("user_id")
+                        .IsUnique();
+
+                    b.ToTable("UserStats","userstats");
+                });
+
             modelBuilder.Entity("TRBot.ParserData.InputMacro", b =>
                 {
                     b.Property<int>("id")
@@ -274,6 +332,25 @@ namespace TRBot.Data.Migrations
                     b.ToTable("InputSynonyms","inputsynonyms");
                 });
 
+            modelBuilder.Entity("TRBot.Permissions.PermissionAbility", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("Userid")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("Userid");
+
+                    b.ToTable("UserPermissions","userpermissions");
+                });
+
             modelBuilder.Entity("TRBot.Consoles.InputData", b =>
                 {
                     b.HasOne("TRBot.Consoles.GameConsole", "Console")
@@ -281,6 +358,22 @@ namespace TRBot.Data.Migrations
                         .HasForeignKey("console_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("TRBot.Data.UserStats", b =>
+                {
+                    b.HasOne("TRBot.Data.User", "user")
+                        .WithOne("Stats")
+                        .HasForeignKey("TRBot.Data.UserStats", "user_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TRBot.Permissions.PermissionAbility", b =>
+                {
+                    b.HasOne("TRBot.Data.User", null)
+                        .WithMany("PermAbilities")
+                        .HasForeignKey("Userid");
                 });
 #pragma warning restore 612, 618
         }

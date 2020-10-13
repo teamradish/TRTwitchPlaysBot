@@ -79,7 +79,7 @@ namespace TRBot.Commands
 
         public ExecCommand()
         {
-            Console.WriteLine(nameof(TRBot.Parsing));
+
         }
 
         public override void Initialize(CommandHandler cmdHandler, DataContainer dataContainer)
