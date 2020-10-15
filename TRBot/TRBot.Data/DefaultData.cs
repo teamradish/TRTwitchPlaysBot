@@ -170,7 +170,9 @@ namespace TRBot.Data
             List<PermissionAbility> defaultPermissions = new List<PermissionAbility>()
             {
                 new PermissionAbility(SILENCED_ABILITY),
-                new PermissionAbility(SET_CONSOLE_ABILITY)
+                new PermissionAbility(SET_CONSOLE_ABILITY, PermissionLevels.Moderator),
+                new PermissionAbility(SET_DEFAULT_INPUT_DUR, PermissionLevels.Moderator),
+                new PermissionAbility(SET_MAX_INPUT_DUR, PermissionLevels.Moderator)
             };
 
             return defaultPermissions;

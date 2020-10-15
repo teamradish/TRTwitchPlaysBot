@@ -43,24 +43,24 @@ namespace TRBot.Data
         /// The permissions available to the user.
         /// This is used by the database and should not be assigned manually.
         /// </summary>
-        public virtual List<PermissionAbility> PermAbilities { get; set; } = null;
+        public virtual List<UserAbility> UserAbilities { get; set; } = null;
+
+        public bool IsOptedOut => (Stats.OptedOut != 0);
 
         public User()
         {
-            if (Stats == null)
-            {
-                Stats = new UserStats();
-            }
+            
+        }
 
-            if (PermAbilities == null)
-            {
-                PermAbilities = new List<PermissionAbility>();
-            }
+        public User(string userName)
+            : this()
+        {
+            Name = userName;
         }
 
         public bool HasPermission(string permName)
         {
-            PermissionAbility ability = PermAbilities.FirstOrDefault(p => p.Name == permName);
+            UserAbility ability = UserAbilities.FirstOrDefault(p => p.PermAbility.Name == permName);
 
             return (ability != null);
         }

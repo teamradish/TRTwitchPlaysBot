@@ -15,7 +15,7 @@
 */
 
 using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace TRBot.Permissions
 {
@@ -23,5 +23,7 @@ namespace TRBot.Permissions
     {
         public const string SET_CONSOLE_ABILITY = "setconsole";
         public const string SILENCED_ABILITY = "silenced";
+        public const string SET_DEFAULT_INPUT_DUR = "setdefaultinputdur";
+        public const string SET_MAX_INPUT_DUR = "setmaxinputdur";
     }
 }

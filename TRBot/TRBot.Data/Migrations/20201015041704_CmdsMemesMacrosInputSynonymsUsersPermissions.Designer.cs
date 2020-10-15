@@ -9,7 +9,7 @@ using TRBot.Data;
 namespace TRBot.Data.Migrations
 {
     [DbContext(typeof(BotDBContext))]
-    [Migration("20201013064935_CmdsMemesMacrosInputSynonymsUsersPermissions")]
+    [Migration("20201015041704_CmdsMemesMacrosInputSynonymsUsersPermissions")]
     partial class CmdsMemesMacrosInputSynonymsUsersPermissions
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -338,17 +338,42 @@ namespace TRBot.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("AutoGrantOnLevel")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(-1);
+
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("Userid")
+                    b.HasKey("id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("PermissionAbilities","permissionabilities");
+                });
+
+            modelBuilder.Entity("TRBot.Permissions.UserAbility", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("permability_id")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("user_id")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("id");
 
-                    b.HasIndex("Userid");
+                    b.HasIndex("permability_id")
+                        .IsUnique();
 
-                    b.ToTable("UserPermissions","userpermissions");
+                    b.HasIndex("user_id");
+
+                    b.ToTable("UserAbilities","userabilities");
                 });
 
             modelBuilder.Entity("TRBot.Consoles.InputData", b =>
@@ -369,11 +394,19 @@ namespace TRBot.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TRBot.Permissions.PermissionAbility", b =>
+            modelBuilder.Entity("TRBot.Permissions.UserAbility", b =>
                 {
+                    b.HasOne("TRBot.Permissions.PermissionAbility", "PermAbility")
+                        .WithOne()
+                        .HasForeignKey("TRBot.Permissions.UserAbility", "permability_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("TRBot.Data.User", null)
-                        .WithMany("PermAbilities")
-                        .HasForeignKey("Userid");
+                        .WithMany("UserAbilities")
+                        .HasForeignKey("user_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

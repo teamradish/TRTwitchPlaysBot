@@ -247,7 +247,7 @@ namespace TRBot.Connection
         {
             EvtConnectedArgs conArgs = new EvtConnectedArgs
             {
-                BotUsername = "kimimarubot",//BotProgram.BotName,
+                BotUsername = "terminalBot",
                 AutoJoinChannel = string.Empty
             };
 
@@ -255,7 +255,7 @@ namespace TRBot.Connection
 
             EvtJoinedChannelArgs joinedChannelArgs = new EvtJoinedChannelArgs
             {
-                BotUsername = "kimimarubot",//BotProgram.BotName,
+                BotUsername = "terminalBot",
                 Channel = string.Empty
             };
 
@@ -281,9 +281,8 @@ namespace TRBot.Connection
                 //Send message event
                 EvtUserMessageArgs umArgs = new EvtUserMessageArgs()
                 {
-                    //UserData = user,
-                    UsrMessage = new EvtUserMsgData("kimimaru", "kimimaru",/*user.Name, user.Name,*/
-                        /*user.Name*/"kimimaru", string.Empty, line)
+                    UsrMessage = new EvtUserMsgData("terminalUser", "terminalUser", "terminalUser",
+                        string.Empty, line)
                 };
 
                 UserSentMessageEvent?.Invoke(umArgs);
@@ -307,13 +306,12 @@ namespace TRBot.Connection
                     //Now remove the first entry from the list, which is the command, retaining only the arguments
                     argsList.RemoveAt(0);
 
-                    string userName = "kimimaru";//user.Name;
+                    string userName = "terminalUser";
 
                     EvtChatCommandArgs chatcmdArgs = new EvtChatCommandArgs();
                     EvtUserMsgData msgData = new EvtUserMsgData(userName, userName, userName, string.Empty, line);
 
                     chatcmdArgs.Command = new EvtChatCommandData(argsList, argsAsStr, msgData, CommandIdentifier, cmdText);
-                    //chatcmdArgs.UserData = UserData;
 
                     ChatCommandReceivedEvent?.Invoke(chatcmdArgs);
                 }

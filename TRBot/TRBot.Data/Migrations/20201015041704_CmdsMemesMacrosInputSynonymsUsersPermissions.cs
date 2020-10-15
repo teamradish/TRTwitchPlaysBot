@@ -31,7 +31,10 @@ namespace TRBot.Data.Migrations
                 name: "inputsynonyms");
 
             migrationBuilder.EnsureSchema(
-                name: "userpermissions");
+                name: "permissionabilities");
+
+            migrationBuilder.EnsureSchema(
+                name: "userabilities");
 
             migrationBuilder.CreateTable(
                 name: "CommandData",
@@ -115,6 +118,21 @@ namespace TRBot.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PermissionAbilities",
+                schema: "permissionabilities",
+                columns: table => new
+                {
+                    id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    AutoGrantOnLevel = table.Column<int>(nullable: false, defaultValue: -1),
+                    Name = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PermissionAbilities", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 schema: "users",
                 columns: table => new
@@ -164,25 +182,32 @@ namespace TRBot.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserPermissions",
-                schema: "userpermissions",
+                name: "UserAbilities",
+                schema: "userabilities",
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(nullable: true),
-                    Userid = table.Column<int>(nullable: true)
+                    user_id = table.Column<int>(nullable: false),
+                    permability_id = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserPermissions", x => x.id);
+                    table.PrimaryKey("PK_UserAbilities", x => x.id);
                     table.ForeignKey(
-                        name: "FK_UserPermissions_Users_Userid",
-                        column: x => x.Userid,
+                        name: "FK_UserAbilities_PermissionAbilities_permability_id",
+                        column: x => x.permability_id,
+                        principalSchema: "permissionabilities",
+                        principalTable: "PermissionAbilities",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserAbilities_Users_user_id",
+                        column: x => x.user_id,
                         principalSchema: "users",
                         principalTable: "Users",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -262,10 +287,24 @@ namespace TRBot.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserPermissions_Userid",
-                schema: "userpermissions",
-                table: "UserPermissions",
-                column: "Userid");
+                name: "IX_PermissionAbilities_Name",
+                schema: "permissionabilities",
+                table: "PermissionAbilities",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAbilities_permability_id",
+                schema: "userabilities",
+                table: "UserAbilities",
+                column: "permability_id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAbilities_user_id",
+                schema: "userabilities",
+                table: "UserAbilities",
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Name",
@@ -304,8 +343,8 @@ namespace TRBot.Data.Migrations
                 schema: "memes");
 
             migrationBuilder.DropTable(
-                name: "UserPermissions",
-                schema: "userpermissions");
+                name: "UserAbilities",
+                schema: "userabilities");
 
             migrationBuilder.DropTable(
                 name: "UserStats",
@@ -314,6 +353,10 @@ namespace TRBot.Data.Migrations
             migrationBuilder.DropTable(
                 name: "Consoles",
                 schema: "consoles");
+
+            migrationBuilder.DropTable(
+                name: "PermissionAbilities",
+                schema: "permissionabilities");
 
             migrationBuilder.DropTable(
                 name: "Users",

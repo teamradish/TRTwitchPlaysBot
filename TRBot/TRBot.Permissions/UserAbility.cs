@@ -20,34 +20,20 @@ using System.Collections.Concurrent;
 namespace TRBot.Permissions
 {
     /// <summary>
-    /// Describes an available permission ability.
+    /// Describes an ability the user has.
+    /// It's linked to a user and permission ability.
     /// </summary>
-    public class PermissionAbility
+    public class UserAbility
     {
         public int id { get; set; } = 0;
+        public int user_id { get; set; } = 0;
+        public int permability_id { get; set; } = 0;
 
-        /// <summary>
-        /// Which permission level to automatically grant the permission on.
-        /// A value less than 0 means the permission is not granted automatically.
-        /// </summary>
-        public PermissionLevels AutoGrantOnLevel { get; set; } = (PermissionLevels)(-1);
+        public virtual PermissionAbility PermAbility { get; set; } = null;
 
-        public string Name { get; set; } = string.Empty;
-
-        public PermissionAbility()
+        public UserAbility()
         {
 
-        }
-
-        public PermissionAbility(string name)
-        {
-            Name = name;
-        }
-
-        public PermissionAbility(string name, in PermissionLevels autoGrantOnLevel)
-        {
-            Name = name;
-            AutoGrantOnLevel = autoGrantOnLevel;
         }
     }
 }

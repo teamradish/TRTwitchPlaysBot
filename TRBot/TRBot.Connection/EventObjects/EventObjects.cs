@@ -156,13 +156,11 @@ namespace TRBot.Connection
 
     public class EvtUserMessageArgs : EventArgs
     {
-        //public User UserData = null;
         public EvtUserMsgData UsrMessage = null;
     }
 
     public class EvtUserInputArgs : EventArgs
     {
-        //public User UserData = null;
         public EvtUserMsgData UsrMessage = null;
         public ParsedInputSequence ValidInputSeq = default;
     }
@@ -179,19 +177,16 @@ namespace TRBot.Connection
 
     public class EvtOnSubscriptionArgs : EventArgs
     {
-        //public User UserData = null;
         public EvtSubscriptionData SubscriptionData = null;
     }
 
     public class EvtOnReSubscriptionArgs : EventArgs
     {
-        //public User UserData = null;
         public EvtReSubscriptionData ReSubscriptionData = null;
     }
 
     public class EvtChatCommandArgs : EventArgs
     {
-        //public User UserData = null;
         public EvtChatCommandData Command = null;
     }
 

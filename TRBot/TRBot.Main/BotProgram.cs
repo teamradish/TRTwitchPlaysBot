@@ -306,7 +306,31 @@ namespace TRBot.Main
                 if (meme != null)
                 {
                     MsgHandler.QueueMessage(meme.MemeValue);
-                } 
+                }
+
+                //Look for a user with this name
+                string username = e.UsrMessage.Username;
+                if (string.IsNullOrEmpty(username) == false)
+                {
+                    User user = DataHelper.GetOrAddUserNoOpen(username, context, out bool added);
+                    
+                    if (added == true)
+                    {
+                        //Get the new user message and replace the variable with their name
+                        string newUserMessage = DataHelper.GetSettingStringsNoOpen(SettingsConstants.NEW_USER_MESSAGE, context, $"Welcome to the stream, {username}!");
+                        newUserMessage = newUserMessage.Replace("{0}", username);
+                        
+                        MsgHandler.QueueMessage(newUserMessage);
+                    }
+
+                    //Increment message count
+                    if (user.IsOptedOut == false)
+                    {
+                        user.Stats.TotalMessageCount++;
+
+                        context.SaveChanges();
+                    }
+                }
             }
 
             ProcessMsgAsInput(e);
@@ -525,6 +549,19 @@ namespace TRBot.Main
             //Make sure inputs aren't currently stopped
             if (InputHandler.StopRunningInputs == false)
             {
+                //It's a valid input - save it in the user's stats
+                using (BotDBContext context = DatabaseManager.OpenContext())
+                {
+                    User user = DataHelper.GetOrAddUserNoOpen(e.UsrMessage.Username, context, out bool added);
+
+                    if (user.IsOptedOut == false)
+                    {
+                        user.Stats.ValidInputCount++;
+
+                        context.SaveChanges();
+                    }
+                }
+
                 InputHandler.CarryOutInput(inputSequence.Inputs, usedConsole, ControllerMngr);
             }
             else
@@ -639,14 +676,15 @@ namespace TRBot.Main
                     List<PermissionAbility> permAbilities = DefaultData.GetDefaultPermAbilities();
                     for (int i = 0; i < permAbilities.Count; i++)
                     {
-                        PermissionAbility pAbility = permAbilities[i];
-
-                        PermissionAbility perm = dbContext.PermAbilities.FirstOrDefault(p => p.Name == pAbility.Name);
-
-                        if (perm == null)
+                        PermissionAbility permAbility = permAbilities[i];
+                        
+                        //See if the command data exists
+                        PermissionAbility foundPerm = dbContext.PermAbilities.FirstOrDefault((pAb) => pAb.Name == permAbility.Name);
+                        
+                        if (foundPerm == null)
                         {
-                            //Add this permission ability since it doesn't exist
-                            dbContext.PermAbilities.Add(pAbility);
+                            //Default permission ability does not exist, so add it
+                            dbContext.PermAbilities.Add(permAbility);
                             entriesAdded++;
                         }
                     }

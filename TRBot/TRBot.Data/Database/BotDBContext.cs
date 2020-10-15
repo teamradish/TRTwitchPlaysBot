@@ -157,7 +157,7 @@ namespace TRBot.Data
                 entity.HasKey(e => e.id);
                 entity.Property(e => e.Name).HasDefaultValue(string.Empty);
                 entity.HasOne(e => e.Stats).WithOne(u => u.user).IsRequired().HasForeignKey<UserStats>(u => u.user_id);
-                entity.HasMany(e => e.PermAbilities).WithOne();
+                entity.HasMany(e => e.UserAbilities).WithOne().HasForeignKey(u => u.user_id);
                 entity.HasIndex(e => e.Name);
             });
 
@@ -167,13 +167,22 @@ namespace TRBot.Data
                 entity.HasKey(e => e.id);
             });
 
-            modelBuilder.Entity<PermissionAbility>().ToTable("UserPermissions", "userpermissions");
+            modelBuilder.Entity<PermissionAbility>().ToTable("PermissionAbilities", "permissionabilities");
             modelBuilder.Entity<PermissionAbility>(entity =>
             {
                 entity.HasKey(e => e.id);
+                entity.Property(e => e.AutoGrantOnLevel).HasDefaultValue((PermissionLevels)(-1)).HasConversion(new EnumToNumberConverter<PermissionLevels, int>());
+                entity.HasIndex(e => e.Name).IsUnique();
             });
 
-           base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<UserAbility>().ToTable("UserAbilities", "userabilities");
+            modelBuilder.Entity<UserAbility>(entity =>
+            {
+                entity.HasKey(e => e.id);
+                entity.HasOne(e => e.PermAbility).WithOne().HasForeignKey<UserAbility>(u => u.permability_id);
+            });
+
+            base.OnModelCreating(modelBuilder);
         }
 
         private void ContextBuilder(SqliteDbContextOptionsBuilder optionsBuilder)

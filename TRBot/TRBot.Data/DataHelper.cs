@@ -104,5 +104,70 @@ namespace TRBot.Data
 
             return setting != null ? setting.value_str : defaultVal;
         }
+
+        /// <summary>
+        /// Obtains a user object from the database.
+        /// </summary>        
+        /// <param name="userName">The name of the user.</param>
+        /// <returns>A user object with the given userName. null if not found.</returns>
+        public static User GetUser(string userName)
+        {
+            using BotDBContext dBContext = DatabaseManager.OpenContext();
+
+            return GetUserNoOpen(userName, dBContext);
+        }
+
+        /// <summary>
+        /// Obtains a user object from the database with an opened context.
+        /// </summary>        
+        /// <param name="userName">The name of the user.</param>
+        /// <param name="context">The open database context.</param>
+        /// <returns>A user object with the given userName. null if not found.</returns>
+        public static User GetUserNoOpen(string userName, BotDBContext context)
+        {
+            return context.Users.FirstOrDefault(u => u.Name == userName);
+        }
+
+        /// <summary>
+        /// Obtains a user object from the database.
+        //  If it doesn't exist, a new one will be added to the database.
+        /// </summary>        
+        /// <param name="userName">The name of the user.</param>
+        /// <param name="added">Whether a new user was added to the database.</param>
+        /// <returns>A user object with the given userName.</returns>
+        public static User GetOrAddUser(string userName, out bool added)
+        {
+            using BotDBContext dbContext = DatabaseManager.OpenContext();
+
+            return GetOrAddUserNoOpen(userName, dbContext, out added);
+        }
+
+        /// <summary>
+        /// Obtains a user object from the database with an opened context.
+        //  If it doesn't exist, a new one will be added to the database.
+        /// </summary>        
+        /// <param name="userName">The name of the user.</param>
+        /// <param name="context">The open database context.</param>
+        /// <param name="added">Whether a new user was added to the database.</param>
+        /// <returns>A user object with the given userName.</returns>
+        public static User GetOrAddUserNoOpen(string userName, BotDBContext context, out bool added)
+        {
+            User user = context.Users.FirstOrDefault(u => u.Name == userName);
+            
+            added = false;
+
+            //If the user doesn't exist, add it
+            if (user == null)
+            {
+                user = new User(userName);
+                context.Users.Add(user);
+
+                context.SaveChanges();
+
+                added = true;
+            }
+
+            return user;
+        }
     }
 }
