@@ -155,7 +155,9 @@ namespace TRBot.Data
                 new GenesisConsole(),
                 new N64Console(),
                 new PS2Console(), new GCConsole(), new GBAConsole(),
-                new WiiConsole(), new PCConsole()
+                new WiiConsole(),
+                new SwitchConsole(),
+                new PCConsole(),
             };
 
             return defaultConsoles;
