@@ -45,6 +45,12 @@ namespace TRBot.Data
         /// </summary>
         public virtual List<UserAbility> UserAbilities { get; set; } = null;
 
+        /// <summary>
+        /// The inputs the user is restricted from performing.
+        /// This is used by the database and should not be assigned manually.
+        /// </summary>
+        public virtual List<RestrictedInput> RestrictedInputs { get; set; } = null;
+
         public bool IsOptedOut => (Stats.OptedOut != 0);
 
         public User()
@@ -56,13 +62,17 @@ namespace TRBot.Data
             : this()
         {
             Name = userName;
+
+            Stats = new UserStats();
+            UserAbilities = new List<UserAbility>();
+            RestrictedInputs = new List<RestrictedInput>();
         }
-
-        public bool HasPermission(string permName)
+        
+        public bool TryGetAbility(string abilityName, out UserAbility userAbility)
         {
-            UserAbility ability = UserAbilities.FirstOrDefault(p => p.PermAbility.Name == permName);
+            userAbility = UserAbilities.FirstOrDefault(p => p.PermAbility.Name == abilityName);
 
-            return (ability != null);
+            return (userAbility != null);
         }
     }
 }

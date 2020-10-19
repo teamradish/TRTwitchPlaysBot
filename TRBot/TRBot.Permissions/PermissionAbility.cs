@@ -34,6 +34,10 @@ namespace TRBot.Permissions
 
         public string Name { get; set; } = string.Empty;
 
+        public string value_str { get; set; } = string.Empty;
+
+        public int value_int { get; set; } = 0;
+
         public PermissionAbility()
         {
 
@@ -45,8 +49,22 @@ namespace TRBot.Permissions
         }
 
         public PermissionAbility(string name, in PermissionLevels autoGrantOnLevel)
+            : this(name)
+        {
+            AutoGrantOnLevel = autoGrantOnLevel;
+        }
+
+        public PermissionAbility(string name, string valueStr, in int valueInt)
+            : this(name)
         {
             Name = name;
+            value_str = valueStr;
+            value_int = valueInt;
+        }
+
+        public PermissionAbility(string name, in PermissionLevels autoGrantOnLevel, string valueStr, in int valueInt)
+            : this(name, valueStr, valueInt)
+        {
             AutoGrantOnLevel = autoGrantOnLevel;
         }
     }

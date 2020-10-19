@@ -83,7 +83,7 @@ namespace TRBot.Commands
 
             GameLog gameLog = gameLogs[logNum];
 
-            User user = context.Users.FirstOrDefault(u => u.Name == gameLog.User);
+            User user = DataHelper.GetUserNoOpen(gameLog.User, context);
 
             //Don't display username if they opted out
             if (user != null && user.Stats.OptedOut == 0)

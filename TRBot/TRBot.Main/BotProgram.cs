@@ -300,19 +300,12 @@ namespace TRBot.Main
         {
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                //Check for memes
-                string possibleMeme = e.UsrMessage.Message.ToLower();
-                Meme meme = context.Memes.FirstOrDefault((m) => m.MemeName == possibleMeme);
-                if (meme != null)
-                {
-                    MsgHandler.QueueMessage(meme.MemeValue);
-                }
-
                 //Look for a user with this name
+                User user = null;
                 string username = e.UsrMessage.Username;
                 if (string.IsNullOrEmpty(username) == false)
                 {
-                    User user = DataHelper.GetOrAddUserNoOpen(username, context, out bool added);
+                    user = DataHelper.GetOrAddUserNoOpen(username, context, out bool added);
                     
                     if (added == true)
                     {
@@ -329,6 +322,17 @@ namespace TRBot.Main
                         user.Stats.TotalMessageCount++;
 
                         context.SaveChanges();
+                    }
+                }
+
+                //Check for memes if the user isn't ignoring them
+                if (user.Stats.IgnoreMemes == 0)
+                {
+                    string possibleMeme = e.UsrMessage.Message.ToLower();
+                    Meme meme = context.Memes.FirstOrDefault((m) => m.MemeName == possibleMeme);
+                    if (meme != null)
+                    {
+                        MsgHandler.QueueMessage(meme.MemeValue);
                     }
                 }
             }
@@ -403,8 +407,6 @@ namespace TRBot.Main
 
         private void ProcessMsgAsInput(EvtUserMessageArgs e)
         {
-            //User userData = e.UserData;
-
             //Ignore commands as inputs
             if (e.UsrMessage.Message.StartsWith(DataConstants.COMMAND_IDENTIFIER) == true)
             {
@@ -413,10 +415,11 @@ namespace TRBot.Main
 
             GameConsole usedConsole = null;
 
-            int lastConsoleID = (int)DataHelper.GetSettingInt(SettingsConstants.LAST_CONSOLE, 1L);
+            int lastConsoleID = 1;
 
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
+                lastConsoleID = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.LAST_CONSOLE, context, 1L);
                 GameConsole lastConsole = context.Consoles.FirstOrDefault(c => c.id == lastConsoleID);
 
                 if (lastConsole != null)
@@ -442,19 +445,50 @@ namespace TRBot.Main
 
             try
             {
-                int defaultDur = (int)DataHelper.GetSettingInt(SettingsConstants.DEFAULT_INPUT_DURATION, 200L);
-                int maxDur = (int)DataHelper.GetSettingInt(SettingsConstants.MAX_INPUT_DURATION, 60000L);
+                int defaultDur = 200;
+                int maxDur = 60000;
 
                 string regexStr = usedConsole.InputRegex;
 
                 string readyMessage = string.Empty;
                 using (BotDBContext context = DatabaseManager.OpenContext())
                 {
+                    //Get default and max input durations
+                    //User user overrides if they exist, otherwise use the global values
+
+                    User user = DataHelper.GetUserNoOpen(e.UsrMessage.Username, context);
+
+                    //Check for a user-overridden max input duration
+                    if (user != null && user.TryGetAbility(PermissionConstants.USER_MAX_INPUT_DIR, out UserAbility maxDurAbility) == true)
+                    {
+                        maxDur = maxDurAbility.value_int;
+                    }
+                    //Use global max input duration
+                    else
+                    {
+                        maxDur = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.MAX_INPUT_DURATION, context, 60000L);
+                    }
+
+                    if (user != null && user.TryGetAbility(PermissionConstants.USER_DEFAULT_INPUT_DIR, out UserAbility defaultDurAbility) == true)
+                    {
+                        defaultDur = defaultDurAbility.value_int;
+                    }
+                    else
+                    {
+                        //Get default input duration
+                        defaultDur = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.DEFAULT_INPUT_DURATION, context, 200L);
+                    }
+
+                    //Console.WriteLine($"Default dur: {defaultDur} | Max dur: {maxDur}");
+
+                    //Get input synonyms for this console
                     IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.console_id == lastConsoleID);
 
+                    //Prepare the message for parsing
                     readyMessage = InputParser.PrepParse(e.UsrMessage.Message, context.Macros, synonyms);
                 }
 
+                //Parse inputs to get our parsed input sequence
                 inputSequence = InputParser.ParseInputs(readyMessage, regexStr, new ParserOptions(0, defaultDur, true, maxDur));
                 //Console.WriteLine(inputSequence.ToString());
                 //Console.WriteLine("\nReverse Parsed: " + ReverseParser.ReverseParse(inputSequence));

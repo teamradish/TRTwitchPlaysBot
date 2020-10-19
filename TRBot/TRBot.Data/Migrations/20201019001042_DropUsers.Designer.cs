@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TRBot.Data;
 
 namespace TRBot.Data.Migrations
 {
     [DbContext(typeof(BotDBContext))]
-    partial class BotDBContextModelSnapshot : ModelSnapshot
+    [Migration("20201019001042_DropUsers")]
+    partial class DropUsers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -215,71 +217,6 @@ namespace TRBot.Data.Migrations
                     b.ToTable("Settings","settings");
                 });
 
-            modelBuilder.Entity("TRBot.Data.User", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<long>("ControllerPort")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<long>("Level")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
-                        .HasDefaultValue("");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("Name");
-
-                    b.ToTable("Users","users");
-                });
-
-            modelBuilder.Entity("TRBot.Data.UserStats", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<long>("AutoPromoted")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<long>("BetCounter")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<long>("Credits")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<long>("IgnoreMemes")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<long>("IsSubscriber")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<long>("OptedOut")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<long>("TotalMessageCount")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<long>("ValidInputCount")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("user_id")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("user_id")
-                        .IsUnique();
-
-                    b.ToTable("UserStats","userstats");
-                });
-
             modelBuilder.Entity("TRBot.ParserData.InputMacro", b =>
                 {
                     b.Property<int>("id")
@@ -333,125 +270,11 @@ namespace TRBot.Data.Migrations
                     b.ToTable("InputSynonyms","inputsynonyms");
                 });
 
-            modelBuilder.Entity("TRBot.Permissions.PermissionAbility", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("AutoGrantOnLevel")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(-1);
-
-                    b.Property<string>("Name")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("value_int")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("value_str")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("PermissionAbilities","permissionabilities");
-                });
-
-            modelBuilder.Entity("TRBot.Permissions.RestrictedInput", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime?>("expiration")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("input_name")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("user_id")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("user_id");
-
-                    b.ToTable("RestrictedInput");
-                });
-
-            modelBuilder.Entity("TRBot.Permissions.UserAbility", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime?>("expiration")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("permability_id")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("user_id")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("value_int")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("value_str")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("permability_id")
-                        .IsUnique();
-
-                    b.HasIndex("user_id");
-
-                    b.ToTable("UserAbilities","userabilities");
-                });
-
             modelBuilder.Entity("TRBot.Consoles.InputData", b =>
                 {
                     b.HasOne("TRBot.Consoles.GameConsole", "Console")
                         .WithMany("InputList")
                         .HasForeignKey("console_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("TRBot.Data.UserStats", b =>
-                {
-                    b.HasOne("TRBot.Data.User", "user")
-                        .WithOne("Stats")
-                        .HasForeignKey("TRBot.Data.UserStats", "user_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("TRBot.Permissions.RestrictedInput", b =>
-                {
-                    b.HasOne("TRBot.Data.User", null)
-                        .WithMany("RestrictedInputs")
-                        .HasForeignKey("user_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("TRBot.Permissions.UserAbility", b =>
-                {
-                    b.HasOne("TRBot.Permissions.PermissionAbility", "PermAbility")
-                        .WithOne()
-                        .HasForeignKey("TRBot.Permissions.UserAbility", "permability_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TRBot.Data.User", null)
-                        .WithMany("UserAbilities")
-                        .HasForeignKey("user_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

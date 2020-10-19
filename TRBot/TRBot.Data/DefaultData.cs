@@ -174,7 +174,10 @@ namespace TRBot.Data
                 new PermissionAbility(SILENCED_ABILITY),
                 new PermissionAbility(SET_CONSOLE_ABILITY, PermissionLevels.Moderator),
                 new PermissionAbility(SET_DEFAULT_INPUT_DUR, PermissionLevels.Moderator),
-                new PermissionAbility(SET_MAX_INPUT_DUR, PermissionLevels.Moderator)
+                new PermissionAbility(SET_MAX_INPUT_DUR, PermissionLevels.Moderator),
+                new PermissionAbility(USER_DEFAULT_INPUT_DIR),
+                new PermissionAbility(USER_MAX_INPUT_DIR),
+                
             };
 
             return defaultPermissions;

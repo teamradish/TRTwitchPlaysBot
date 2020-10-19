@@ -21,9 +21,34 @@ namespace TRBot.Permissions
 {
     public static class PermissionConstants
     {
+        /// <summary>
+        /// The ability to set the input console.
+        /// </summary>
         public const string SET_CONSOLE_ABILITY = "setconsole";
+        
+        /// <summary>
+        /// User-specific silence state - inputs are ignored.
+        /// </summary>
         public const string SILENCED_ABILITY = "silenced";
+        
+        /// <summary>
+        /// The ability to set the global default input duration.
+        /// </summary>
         public const string SET_DEFAULT_INPUT_DUR = "setdefaultinputdur";
+        
+        /// <summary>
+        /// The ability to set the global max input duration.
+        /// </summary>
         public const string SET_MAX_INPUT_DUR = "setmaxinputdur";
+
+        /// <summary>
+        /// User-specific default input duration.
+        /// </summary>
+        public const string USER_DEFAULT_INPUT_DIR = "userdefaultinputdur";
+
+        /// <summary>
+        /// User-specific max input duration.
+        /// </summary>
+        public const string USER_MAX_INPUT_DIR = "usermaxinputdur";
     }
 }

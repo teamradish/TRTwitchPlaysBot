@@ -40,10 +40,10 @@ namespace TRBot.Consoles
         {
             SetConsoleInputs(new Dictionary<string, InputData>(18)
             {
-                { "left",       InputData.CreateAxis("left", (int)GlobalAxisVals.AXIS_X, 0, -1) },
-                { "right",      InputData.CreateAxis("right", (int)GlobalAxisVals.AXIS_X, 0, 1) },
-                { "up",         InputData.CreateAxis("up", (int)GlobalAxisVals.AXIS_Y, 0, -1) },
-                { "down",       InputData.CreateAxis("down", (int)GlobalAxisVals.AXIS_Y, 0, 1) },
+                { "mleft",       InputData.CreateAxis("mleft", (int)GlobalAxisVals.AXIS_X, 0, -1) },
+                { "mright",      InputData.CreateAxis("mright", (int)GlobalAxisVals.AXIS_X, 0, 1) },
+                { "mup",         InputData.CreateAxis("mup", (int)GlobalAxisVals.AXIS_Y, 0, -1) },
+                { "mdown",       InputData.CreateAxis("mdown", (int)GlobalAxisVals.AXIS_Y, 0, 1) },
 
                 { "lclick",     InputData.CreateButton("lclick", (int)GlobalButtonVals.BTN5) },
                 { "mclick",     InputData.CreateButton("mclick", (int)GlobalButtonVals.BTN6) },
@@ -60,44 +60,6 @@ namespace TRBot.Consoles
                 { "p",          InputData.CreateButton("p", (int)GlobalButtonVals.BTN17) },
                 { "#",          InputData.CreateBlank("#") }
             });
-
-            /*ValidInputs = new List<string>(18)
-            {
-                "left", "right", "up", "down",
-                "lclick", "mclick", "rclick",
-                "return", "space",
-                "q", "w", "e", "r", "a", "s", "d", "p",
-                "#"
-            };
-
-            InputAxesMap = new Dictionary<string, InputAxis>(4)
-            {
-                { "left", new InputAxis((int)GlobalAxisVals.AXIS_X, 0, -1) },
-                { "right", new InputAxis((int)GlobalAxisVals.AXIS_X, 0, 1) },
-                { "up", new InputAxis((int)GlobalAxisVals.AXIS_Y, 0, -1) },
-                { "down", new InputAxis((int)GlobalAxisVals.AXIS_Y, 0, 1) }
-            };
-
-            InputButtonMap = new Dictionary<string, InputButton>(17)
-            {
-                { "left", new InputButton((int)GlobalButtonVals.BTN1) },
-                { "right", new InputButton((int)GlobalButtonVals.BTN2) },
-                { "up", new InputButton((int)GlobalButtonVals.BTN3) },
-                { "down", new InputButton((int)GlobalButtonVals.BTN4) },
-                { "lclick", new InputButton((int)GlobalButtonVals.BTN5) },
-                { "mclick", new InputButton((int)GlobalButtonVals.BTN6) },
-                { "rclick", new InputButton((int)GlobalButtonVals.BTN7) },
-                { "return", new InputButton((int)GlobalButtonVals.BTN8) },
-                { "space", new InputButton((int)GlobalButtonVals.BTN9) },
-                { "q", new InputButton((int)GlobalButtonVals.BTN10) },
-                { "w", new InputButton((int)GlobalButtonVals.BTN11) },
-                { "e", new InputButton((int)GlobalButtonVals.BTN12) },
-                { "r", new InputButton((int)GlobalButtonVals.BTN13) },
-                { "a", new InputButton((int)GlobalButtonVals.BTN14) },
-                { "s", new InputButton((int)GlobalButtonVals.BTN15) },
-                { "d", new InputButton((int)GlobalButtonVals.BTN16) },
-                { "p", new InputButton((int)GlobalButtonVals.BTN17) }
-            };*/
         }
     }
 }

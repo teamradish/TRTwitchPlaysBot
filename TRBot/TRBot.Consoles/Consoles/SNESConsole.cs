@@ -66,44 +66,6 @@ namespace TRBot.Consoles
                 { "y",          InputData.CreateButton("y", (int)GlobalButtonVals.BTN32) },
                 { "#",          InputData.CreateBlank("#") }
             });
-            
-            /*InputAxesMap = new Dictionary<string, InputAxis>();
-
-            InputButtonMap = new Dictionary<string, InputButton>(24)
-            {
-                { "left", new InputButton((int)GlobalButtonVals.BTN1) },
-                { "right", new InputButton((int)GlobalButtonVals.BTN2) },
-                { "up", new InputButton((int)GlobalButtonVals.BTN3) },
-                { "down", new InputButton((int)GlobalButtonVals.BTN4) },
-                { "a", new InputButton((int)GlobalButtonVals.BTN5) },
-                { "b", new InputButton((int)GlobalButtonVals.BTN6) },
-                { "l", new InputButton((int)GlobalButtonVals.BTN7) },
-                { "r", new InputButton((int)GlobalButtonVals.BTN8) },
-                { "select", new InputButton((int)GlobalButtonVals.BTN9) },
-                { "start", new InputButton((int)GlobalButtonVals.BTN10) },
-                { "ss1", new InputButton((int)GlobalButtonVals.BTN19) },
-                { "ss2", new InputButton((int)GlobalButtonVals.BTN20) },
-                { "ss3", new InputButton((int)GlobalButtonVals.BTN21) },
-                { "ss4", new InputButton((int)GlobalButtonVals.BTN22) },
-                { "ss5", new InputButton((int)GlobalButtonVals.BTN23) },
-                { "ss6", new InputButton((int)GlobalButtonVals.BTN24) },
-                { "ls1", new InputButton((int)GlobalButtonVals.BTN25) },
-                { "ls2", new InputButton((int)GlobalButtonVals.BTN26) },
-                { "ls3", new InputButton((int)GlobalButtonVals.BTN27) },
-                { "ls4", new InputButton((int)GlobalButtonVals.BTN28) },
-                { "ls5", new InputButton((int)GlobalButtonVals.BTN29) },
-                { "ls6", new InputButton((int)GlobalButtonVals.BTN30) },
-                { "x", new InputButton((int)GlobalButtonVals.BTN31) },
-                { "y", new InputButton((int)GlobalButtonVals.BTN32) }
-            };
-
-            ValidInputs = new List<string>(25)
-            {
-                "up", "down", "left", "right", "a", "b", "x", "y", "l", "r", "select", "start",
-                "ss1", "ss2", "ss3", "ss4", "ss5", "ss6",
-                "ls1", "ls2", "ls3", "ls4", "ls5", "ls6",
-                "#"
-            };*/
         }
     }
 }

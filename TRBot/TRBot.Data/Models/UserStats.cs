@@ -28,6 +28,7 @@ namespace TRBot.Data
     {
         public int id { get; set; } = 0;
         public int user_id { get; set; } = 0;
+        
         public long Credits { get; set; } = 0;
         public long TotalMessageCount { get; set; } = 0;
         public long ValidInputCount { get; set; } = 0;
@@ -35,6 +36,7 @@ namespace TRBot.Data
         public long BetCounter { get; set; } = 0;
         public long AutoPromoted { get; set; } = 0;
         public long OptedOut { get; set; } = 0;
+        public long IgnoreMemes { get; set; } = 0;
 
         /// <summary>
         /// The User associated with the user stats.

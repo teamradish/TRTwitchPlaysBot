@@ -20,38 +20,32 @@ using System.Collections.Concurrent;
 namespace TRBot.Permissions
 {
     /// <summary>
-    /// Describes an ability the user has.
-    /// It's linked to a user and permission ability.
+    /// Describes a restricted input for a user.
     /// </summary>
-    public class UserAbility
+    public class RestrictedInput
     {
         public int id { get; set; } = 0;
         public int user_id { get; set; } = 0;
-        public int permability_id { get; set; } = 0;
-
-        public string value_str { get; set; } = string.Empty;
-        public int value_int { get; set; } = 0;
 
         /// <summary>
-        /// When the ability expires.
-        /// A value of null indicates the ability never expires.
+        /// The name of the input the user is restricted from inputting.
+        /// </summary>
+        public string input_name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// When the restriction expires.
+        /// A value of null indicates the restriction never expires.
         /// </summary>
         public DateTime? expiration { get; set; } = null;
 
-        /// <summary>
-        /// The PermissionAbility this references.
-        /// </summary>
-        public virtual PermissionAbility PermAbility { get; set; } = null;
-
-        public UserAbility()
+        public RestrictedInput()
         {
 
         }
 
-        public UserAbility(string valueStr, in int valueInt, in DateTime? expirationDate)
+        public RestrictedInput(string inputName, DateTime? expirationDate)
         {
-            value_str = valueStr;
-            value_int = valueInt;
+            input_name = inputName;
             expiration = expirationDate;
         }
     }

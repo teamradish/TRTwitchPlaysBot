@@ -158,6 +158,7 @@ namespace TRBot.Data
                 entity.Property(e => e.Name).HasDefaultValue(string.Empty);
                 entity.HasOne(e => e.Stats).WithOne(u => u.user).IsRequired().HasForeignKey<UserStats>(u => u.user_id);
                 entity.HasMany(e => e.UserAbilities).WithOne().HasForeignKey(u => u.user_id);
+                entity.HasMany(e => e.RestrictedInputs).WithOne().HasForeignKey(e => e.user_id);
                 entity.HasIndex(e => e.Name);
             });
 
