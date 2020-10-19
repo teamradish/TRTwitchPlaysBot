@@ -22,10 +22,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using TRBot.Parsing;
 using TRBot.ParserData;
 using TRBot.Consoles;
 
-namespace TRBot.Parsing
+namespace TRBot.Misc
 {
     /// <summary>
     /// A reverse parser that attempts to generate a string given a set of inputs.
