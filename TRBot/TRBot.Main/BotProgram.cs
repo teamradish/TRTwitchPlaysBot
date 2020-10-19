@@ -59,11 +59,15 @@ namespace TRBot.Main
         private DataReloader DataReloader = new DataReloader();
         private DataContainer DataContainer = new DataContainer();
 
+        private CrashHandler crashHandler = null;
+
         //Store the function to reduce garbage, since this one is being called constantly
         private Func<Settings, bool> ThreadSleepFindFunc = null;
 
         public BotProgram()
         {
+            crashHandler = new CrashHandler();
+
             //Below normal priority
             //NOTE: Have a setting to set the priority
             Process thisProcess = Process.GetCurrentProcess();
