@@ -69,18 +69,18 @@ namespace TRBot.Consoles
                 { "#", InputData.CreateBlank("#") },
 
                 //Spare buttons
-                { "sb1", InputData.CreateButton("rs", (int)GlobalButtonVals.BTN17) },
-                { "sb2", InputData.CreateButton("rs", (int)GlobalButtonVals.BTN18) },
-                { "sb3", InputData.CreateButton("rs", (int)GlobalButtonVals.BTN19) },
-                { "sb4", InputData.CreateButton("rs", (int)GlobalButtonVals.BTN20) },
-                { "sb5", InputData.CreateButton("rs", (int)GlobalButtonVals.BTN21) },
-                { "sb6", InputData.CreateButton("rs", (int)GlobalButtonVals.BTN22) },
-                { "sb7", InputData.CreateButton("rs", (int)GlobalButtonVals.BTN23) },
-                { "sb8", InputData.CreateButton("rs", (int)GlobalButtonVals.BTN24) },
-                { "sb9", InputData.CreateButton("rs", (int)GlobalButtonVals.BTN25) },
-                { "sb10", InputData.CreateButton("rs", (int)GlobalButtonVals.BTN26) },
-                { "sb11", InputData.CreateButton("rs", (int)GlobalButtonVals.BTN27) },
-                { "sb12", InputData.CreateButton("rs", (int)GlobalButtonVals.BTN28) },
+                { "sb1", InputData.CreateButton("sb1", (int)GlobalButtonVals.BTN17) },
+                { "sb2", InputData.CreateButton("sb2", (int)GlobalButtonVals.BTN18) },
+                { "sb3", InputData.CreateButton("sb3", (int)GlobalButtonVals.BTN19) },
+                { "sb4", InputData.CreateButton("sb4", (int)GlobalButtonVals.BTN20) },
+                { "sb5", InputData.CreateButton("sb5", (int)GlobalButtonVals.BTN21) },
+                { "sb6", InputData.CreateButton("sb6", (int)GlobalButtonVals.BTN22) },
+                { "sb7", InputData.CreateButton("sb7", (int)GlobalButtonVals.BTN23) },
+                { "sb8", InputData.CreateButton("sb8", (int)GlobalButtonVals.BTN24) },
+                { "sb9", InputData.CreateButton("sb9", (int)GlobalButtonVals.BTN25) },
+                { "sb10", InputData.CreateButton("sb10", (int)GlobalButtonVals.BTN26) },
+                { "sb11", InputData.CreateButton("sb11", (int)GlobalButtonVals.BTN27) },
+                { "sb12", InputData.CreateButton("sb12", (int)GlobalButtonVals.BTN28) },
             });
         }
     }

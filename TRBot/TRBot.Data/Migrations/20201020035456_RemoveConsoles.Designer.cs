@@ -2,95 +2,21 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TRBot.Data;
 
 namespace TRBot.Data.Migrations
 {
     [DbContext(typeof(BotDBContext))]
-    partial class BotDBContextModelSnapshot : ModelSnapshot
+    [Migration("20201020035456_RemoveConsoles")]
+    partial class RemoveConsoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.8");
-
-            modelBuilder.Entity("TRBot.Consoles.GameConsole", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
-                        .HasDefaultValue("GameConsole");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("Consoles","consoles");
-                });
-
-            modelBuilder.Entity("TRBot.Consoles.InputData", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("AxisValue")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(0);
-
-                    b.Property<int>("ButtonValue")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(0);
-
-                    b.Property<int>("InputType")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(0);
-
-                    b.Property<int>("MaxAxisPercent")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(100);
-
-                    b.Property<int>("MaxAxisVal")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(1);
-
-                    b.Property<int>("MinAxisVal")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(0);
-
-                    b.Property<string>("Name")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
-                        .HasDefaultValue("");
-
-                    b.Property<int>("console_id")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("level")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("console_id");
-
-                    b.HasIndex("Name", "console_id")
-                        .IsUnique();
-
-                    b.ToTable("Inputs","inputs");
-                });
 
             modelBuilder.Entity("TRBot.Data.CommandData", b =>
                 {
@@ -415,15 +341,6 @@ namespace TRBot.Data.Migrations
                     b.HasIndex("user_id");
 
                     b.ToTable("UserAbilities","userabilities");
-                });
-
-            modelBuilder.Entity("TRBot.Consoles.InputData", b =>
-                {
-                    b.HasOne("TRBot.Consoles.GameConsole", "Console")
-                        .WithMany("InputList")
-                        .HasForeignKey("console_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("TRBot.Data.UserStats", b =>

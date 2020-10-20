@@ -48,6 +48,11 @@ namespace TRBot.Consoles
         public int console_id { get; set; } = 0;
 
         /// <summary>
+        /// The access level of the input.
+        /// </summary>
+        public int level { get; set; } = 0;
+
+        /// <summary>
         /// The name of the input.
         /// </summary>
         public string Name { get; set; } = string.Empty;
