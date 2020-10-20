@@ -244,5 +244,51 @@ namespace TRBot.Misc
 
             return new InputValidation(InputValidationTypes.Valid, string.Empty);
         }
+
+        /// <summary>
+        /// Validates the controller ports used and whether the user has permission to perform an input sequence.
+        /// </summary>
+        /// <param name="userLevel">The level of the user.</param>
+        /// <param name="inputs">The inputs to check.</param>
+        /// <param name="inputPermissionLevels">The dictionary of permission levels for inputs.</param>
+        /// <returns>An InputValidation object specifying the InputValidationType and a message, if any.</returns>
+        public static InputValidation ValidateInputLvlPermsAndPorts(in int userLevel, in ParsedInputSequence inputSequence,
+            IVirtualControllerManager vControllerMngr, Dictionary<string, int> inputPermissionLevels)
+        {
+            List<List<ParsedInput>> inputs = inputSequence.Inputs;
+
+            for (int i = 0; i < inputs.Count; i++)
+            {
+                for (int j = 0; j < inputs[i].Count; j++)
+                {
+                    ParsedInput input = inputs[i][j];
+
+                    //Check for a valid port
+                    if (input.controllerPort >= 0 && input.controllerPort < vControllerMngr.ControllerCount)
+                    {
+                        //Check if the controller is acquired
+                        IVirtualController controller = vControllerMngr.GetController(input.controllerPort);
+                        if (controller.IsAcquired == false)
+                        {
+                            return new InputValidation(InputValidationTypes.InvalidPort, $"ERROR: Joystick number {input.controllerPort + 1} with controller ID of {controller.ControllerID} has not been acquired! Ensure you (the streamer) have a virtual device set up at this ID.");
+                        }
+                    }
+                    //Invalid port
+                    else
+                    {
+                        return new InputValidation(InputValidationTypes.InvalidPort, $"ERROR: Invalid joystick number {input.controllerPort + 1}. # of joysticks: {vControllerMngr.ControllerCount}. Please change yours or your input's controller port to a valid number to perform inputs.");
+                    }
+
+                    //Check if the user has permission to enter this input
+                    if (inputPermissionLevels.TryGetValue(input.name, out int inputLvl) == true && userLevel < inputLvl)
+                    {
+                        return new InputValidation(InputValidationTypes.InsufficientAccess,
+                            $"No permission to use input \"{input.name}\", which requires at least level {inputLvl}.");
+                    }
+                }
+            }
+
+            return new InputValidation(InputValidationTypes.Valid, string.Empty);
+        }
     }
 }
