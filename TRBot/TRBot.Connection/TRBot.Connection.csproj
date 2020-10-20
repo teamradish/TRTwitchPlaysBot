@@ -11,7 +11,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TRBot.Utilities\TRBot.Utilities.csproj" />
-    <ProjectReference Include="..\TRBot.Parsing\TRBot.Parsing.csproj" />
   </ItemGroup>
 
 </Project>

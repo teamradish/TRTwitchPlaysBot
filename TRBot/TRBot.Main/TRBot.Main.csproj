@@ -6,7 +6,6 @@
     <ProjectReference Include="..\TRBot.Parsing\TRBot.Parsing.csproj" />
     <ProjectReference Include="..\TRBot.Utilities\TRBot.Utilities.csproj" />
     <ProjectReference Include="..\TRBot.VirtualControllers\TRBot.VirtualControllers.csproj" />
-    <ProjectReference Include="..\TRBot.ParserData\TRBot.ParserData.csproj" />
     <ProjectReference Include="..\TRBot.Misc\TRBot.Misc.csproj" />
     <ProjectReference Include="..\TRBot.Data\TRBot.Data.csproj" />
     <ProjectReference Include="..\TRBot.Commands\TRBot.Commands.csproj" />

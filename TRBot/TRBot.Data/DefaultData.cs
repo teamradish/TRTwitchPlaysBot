@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Text;
 using TRBot.Consoles;
 using TRBot.VirtualControllers;
-using TRBot.ParserData;
+using TRBot.Parsing;
 using TRBot.Permissions;
 using static TRBot.Data.SettingsConstants;
 using static TRBot.Permissions.PermissionConstants;

@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TRBot.Utilities\TRBot.Utilities.csproj" />
-    <ProjectReference Include="..\TRBot.ParserData\TRBot.ParserData.csproj" />
+    <ProjectReference Include="..\TRBot.Parsing\TRBot.Parsing.csproj" />
     <ProjectReference Include="..\TRBot.Consoles\TRBot.Consoles.csproj" />
     <ProjectReference Include="..\TRBot.Misc\TRBot.Misc.csproj" />
     <ProjectReference Include="..\TRBot.VirtualControllers\TRBot.VirtualControllers.csproj" />

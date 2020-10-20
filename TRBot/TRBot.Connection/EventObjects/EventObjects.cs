@@ -17,7 +17,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using TRBot.Parsing;
 
 namespace TRBot.Connection
 {
@@ -159,11 +158,11 @@ namespace TRBot.Connection
         public EvtUserMsgData UsrMessage = null;
     }
 
-    public class EvtUserInputArgs : EventArgs
-    {
-        public EvtUserMsgData UsrMessage = null;
-        public ParsedInputSequence ValidInputSeq = default;
-    }
+    //public class EvtUserInputArgs : EventArgs
+    //{
+    //    public EvtUserMsgData UsrMessage = null;
+    //    public ParsedInputSequence ValidInputSeq = default;
+    //}
 
     public class EvtWhisperMessageArgs : EventArgs
     {

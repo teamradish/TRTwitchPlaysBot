@@ -23,7 +23,6 @@ using TRBot.Connection;
 using TRBot.Misc;
 using TRBot.Utilities;
 using TRBot.Consoles;
-using TRBot.ParserData;
 using TRBot.Parsing;
 using TRBot.Data;
 

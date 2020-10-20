@@ -18,7 +18,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
-using TRBot.Parsing;
 using static TRBot.Connection.EventDelegates;
 
 namespace TRBot.Connection
@@ -28,6 +27,8 @@ namespace TRBot.Connection
     /// </summary>
     public class TerminalEventHandler : IEventHandler
     {
+        public const string TERMINAL_USER_NAME = "terminalUser";
+
         public event UserSentMessage UserSentMessageEvent = null;
 
         //public event UserMadeInput UserMadeInputEvent = null;
@@ -83,158 +84,8 @@ namespace TRBot.Connection
             OnDisconnectedEvent = null;
         }
 
-        //NOTE: This would result in lots of code duplication if other streaming services were integrated
-        //Is there a better way to do this?
-
-        /*private void ProcessMsgAsInput(EvtUserMessageArgs e)
+        private void WaitForMainInitialization()
         {
-            //User userData = e.UserData;
-
-            //Ignore commands as inputs
-            //if (e.UsrMessage.Message.StartsWith(Globals.CommandIdentifier) == true)
-            //{
-            //    return;
-            //}
-
-            //If there are no valid inputs, don't attempt to parse
-            //if (InputGlobals.CurrentConsole.ValidInputs == null || InputGlobals.CurrentConsole.ValidInputs.Length == 0)
-            //{
-            //    return;
-            //}
-
-            //Parser.InputSequence inputSequence = default;
-            //(bool, List<List<Parser.Input>>, bool, int) parsedVal = default;
-            InputSequence inputSequence = default;
-
-            try
-            {
-                TRBot.Parsing.Parser parser = new TRBot.Parsing.Parser();
-                
-                string regexStr = parser.BuildInputRegex(new string[] { "a", "b", "up", "down", "left", "right", "select", "start", "x", "y", "l", "r", "#" } );
-
-                string parse_message = parser.Expandify(e.UsrMessage.Message);//parser.PopulateMacros(e.UsrMessage.Message, null, null));
-                //parse_message = parser.PopulateSynonyms(parse_message, InputGlobals.InputSynonyms);
-                inputSequence = parser.ParseInputs(parse_message, regexStr, new ParserOptions(0, 200, true, 60000));
-                //parsedVal = Parser.Parse(parse_message);
-                //Console.WriteLine(inputSequence.ToString());
-                //Console.WriteLine("\nReverse Parsed: " + ReverseParser.ReverseParse(inputSequence));
-                //Console.WriteLine("\nReverse Parsed Natural:\n" + ReverseParser.ReverseParseNatural(inputSequence));
-            }
-            catch (Exception exception)
-            {
-                string excMsg = exception.Message;
-
-                //Kimimaru: Sanitize parsing exceptions
-                //Most of these are currently caused by differences in how C# and Python handle slicing strings (Substring() vs string[:])
-                //One example that throws this that shouldn't is "#mash(w234"
-                //BotProgram.MsgHandler.QueueMessage($"ERROR: {excMsg}");
-                inputSequence.InputValidationType = InputValidationTypes.Invalid;
-                //parsedVal.Item1 = false;
-            }
-
-            //Check for non-valid messages
-            if (inputSequence.InputValidationType != InputValidationTypes.Valid)
-            {
-                //Display error message for invalid inputs
-                if (inputSequence.InputValidationType == InputValidationTypes.Invalid)
-                {
-                    Console.WriteLine(inputSequence.Error);
-                    //BotProgram.MsgHandler.QueueMessage(inputSequence.Error);
-                }
-
-                return;
-            }
-
-            //It's a valid message, so process it
-                
-            //Ignore if user is silenced
-            //if (userData.Silenced == true)
-            //{
-            //    return;
-            //}
-
-            //Ignore based on user level and permissions
-            //if (userData.Level < -1)//BotProgram.BotData.InputPermissions)
-            //{
-            //    BotProgram.MsgHandler.QueueMessage($"Inputs are restricted to levels {(AccessLevels.Levels)BotProgram.BotData.InputPermissions} and above");
-            //    return;
-            //}
-
-            #region Parser Post-Process Validation
-            
-            // All this validation is very slow
-            // Find a way to speed it up, ideally without integrating it directly into the parser
-            
-            //Check if the user has permission to perform all the inputs they attempted
-            //Also validate that the controller ports they're inputting for are valid
-            //ParserPostProcess.InputValidation inputValidation = ParserPostProcess.CheckInputPermissionsAndPorts(userData.Level, inputSequence.Inputs,
-            //    BotProgram.BotData.InputAccess.InputAccessDict);
-
-            //If the input isn't valid, exit
-            //if (inputValidation.IsValid == false)
-            //{
-            //    if (string.IsNullOrEmpty(inputValidation.Message) == false)
-            //    {
-            //        BotProgram.MsgHandler.QueueMessage(inputValidation.Message);
-            //    }
-            //    return;
-            //}
-
-            //Lastly, check for invalid button combos given the current console
-            //if (BotProgram.BotData.InvalidBtnCombos.InvalidCombos.TryGetValue((int)InputGlobals.CurrentConsoleVal, out List<string> invalidCombos) == true)
-            //{
-            //    bool buttonCombosValidated = ParserPostProcess.ValidateButtonCombos(inputSequence.Inputs, invalidCombos);
-
-            //    if (buttonCombosValidated == false)
-            //    {
-            //        string msg = "Invalid input: buttons ({0}) are not allowed to be pressed at the same time.";
-            //        string combos = string.Empty;
-            //        
-            //        for (int i = 0; i < invalidCombos.Count; i++)
-            //        {
-            //            combos += "\"" + invalidCombos[i] + "\"";
-            //            
-            //            if (i < (invalidCombos.Count - 1))
-            //            {
-            //                combos += ", ";
-            //            }
-            //        }
-            //        
-            //        msg = string.Format(msg, combos);
-            //        BotProgram.MsgHandler.QueueMessage(msg);
-            //        
-            //        return;
-            //    }
-            //}
-
-            #endregion
-
-            if (true)//InputHandler.StopRunningInputs == false)
-            {
-                EvtUserInputArgs userInputArgs = new EvtUserInputArgs()
-                {
-                    //UserData = e.UserData,
-                    UsrMessage = e.UsrMessage,
-                    ValidInputSeq = inputSequence
-                };
-
-                //Invoke input event
-                UserMadeInputEvent?.Invoke(userInputArgs);
-            }
-            else
-            {
-                //BotProgram.MsgHandler.QueueMessage("New inputs cannot be processed until all other inputs have stopped.");
-            }
-        }*/
-
-        private /*async*/ void WaitForMainInitialization()
-        {
-            //Wait for the main program to initialize
-            //while (false)//BotProgram.MsgHandler == null)
-            //{
-            //    await System.Threading.Tasks.Task.Delay(100);
-            //}
-
             SetupStart();
 
             //Create a new thread to handle inputs through the console
@@ -271,17 +122,12 @@ namespace TRBot.Connection
                     break;
                 }
 
-                //if (Console.KeyAvailable == false)
-                //    continue;
-
                 string line = Console.ReadLine();
-
-                //User user = UserData;
 
                 //Send message event
                 EvtUserMessageArgs umArgs = new EvtUserMessageArgs()
                 {
-                    UsrMessage = new EvtUserMsgData("terminalUser", "terminalUser", "terminalUser",
+                    UsrMessage = new EvtUserMsgData(TERMINAL_USER_NAME, TERMINAL_USER_NAME, TERMINAL_USER_NAME,
                         string.Empty, line)
                 };
 
@@ -306,10 +152,8 @@ namespace TRBot.Connection
                     //Now remove the first entry from the list, which is the command, retaining only the arguments
                     argsList.RemoveAt(0);
 
-                    string userName = "terminalUser";
-
                     EvtChatCommandArgs chatcmdArgs = new EvtChatCommandArgs();
-                    EvtUserMsgData msgData = new EvtUserMsgData(userName, userName, userName, string.Empty, line);
+                    EvtUserMsgData msgData = new EvtUserMsgData(TERMINAL_USER_NAME, TERMINAL_USER_NAME, TERMINAL_USER_NAME, string.Empty, line);
 
                     chatcmdArgs.Command = new EvtChatCommandData(argsList, argsAsStr, msgData, CommandIdentifier, cmdText);
 

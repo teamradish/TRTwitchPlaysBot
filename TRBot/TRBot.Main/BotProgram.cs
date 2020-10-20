@@ -24,7 +24,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TRBot.Parsing;
-using TRBot.ParserData;
 using TRBot.Connection;
 using TRBot.Consoles;
 using TRBot.VirtualControllers;
@@ -344,26 +343,6 @@ namespace TRBot.Main
             ProcessMsgAsInput(e);
         }
 
-        private void OnUserMadeInput(EvtUserInputArgs e)
-        {
-            //InputHandler.CarryOutInput(e.ValidInputSeq.Inputs, CurConsole, ControllerMngr);
-
-            //If auto whitelist is enabled, the user reached the whitelist message threshold,
-            //the user isn't whitelisted, and the user hasn't ever been whitelisted, whitelist them
-            //if (BotSettings.AutoWhitelistEnabled == true && user.Level < (int)AccessLevels.Levels.Whitelisted
-            //    && user.AutoWhitelisted == false && user.ValidInputs >= BotSettings.AutoWhitelistInputCount)
-            //{
-            //    user.Level = (int)AccessLevels.Levels.Whitelisted;
-            //    user.SetAutoWhitelist(true);
-            //    if (string.IsNullOrEmpty(BotSettings.MsgSettings.AutoWhitelistMsg) == false)
-            //    {
-            //        //Replace the user's name with the message
-            //        string msg = BotSettings.MsgSettings.AutoWhitelistMsg.Replace("{0}", user.Name);
-            //        MsgHandler.QueueMessage(msg);
-            //    }
-            //}
-        }
-
         private void OnWhisperReceived(EvtWhisperMessageArgs e)
         {
             
@@ -434,7 +413,7 @@ namespace TRBot.Main
             }
 
             //If there are no valid inputs, don't attempt to parse
-            if (usedConsole == null)//if (CurConsole.ValidInputs == null || CurConsole.ValidInputs.Count == 0)
+            if (usedConsole == null)
             {
                 MsgHandler.QueueMessage($"The current console does not point to valid data. Please set a different console to use, or if none are available, add one.");
                 return;
@@ -595,6 +574,8 @@ namespace TRBot.Main
                     if (user.IsOptedOut == false)
                     {
                         user.Stats.ValidInputCount++;
+
+                        //Check for auto promote is enabled and auto promote if applicable
 
                         context.SaveChanges();
                     }

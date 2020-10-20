@@ -23,7 +23,6 @@ using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
 using TRBot.Parsing;
-using TRBot.ParserData;
 using TRBot.Consoles;
 
 namespace TRBot.Misc

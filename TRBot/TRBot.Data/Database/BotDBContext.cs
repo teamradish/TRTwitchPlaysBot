@@ -20,7 +20,7 @@ using System.Text;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
-using TRBot.ParserData;
+using TRBot.Parsing;
 using TRBot.Consoles;
 using TRBot.Permissions;
 using Microsoft.EntityFrameworkCore;

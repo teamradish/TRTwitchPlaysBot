@@ -30,7 +30,7 @@ namespace TRBot.Connection
     {
         public delegate void UserSentMessage(EvtUserMessageArgs e);
 
-        public delegate void UserMadeInput(EvtUserInputArgs e);
+        //public delegate void UserMadeInput(EvtUserInputArgs e);
 
         public delegate void UserNewlySubscribed(EvtOnSubscriptionArgs e);
 

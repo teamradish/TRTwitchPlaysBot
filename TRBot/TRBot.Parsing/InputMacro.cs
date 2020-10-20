@@ -19,65 +19,53 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Text;
 
-namespace TRBot.ParserData
+namespace TRBot.Parsing
 {
     /// <summary>
-    /// Represents an input synonym.
+    /// Represents an input macro.
     /// </summary>
-    public class InputSynonym
+    public class InputMacro
     {
         /// <summary>
-        /// The ID of the synonym.
+        /// The ID of the macro.
         /// </summary>
         public int id { get; set; } = 0;
 
         /// <summary>
-        /// The console ID of the synonym.
+        /// The name of the macro.
         /// </summary>
-        public int console_id { get; set; } = 0;
-
-        /// <summary>
-        /// The name of the synonym.
-        /// </summary>
-        public string SynonymName { get; set; } = string.Empty;
+        public string MacroName { get; set; } = string.Empty;
         
         /// <summary>
-        /// The value of the synonym.
+        /// The value of the macro.
         /// </summary>
-        public string SynonymValue { get; set; } = string.Empty;
+        public string MacroValue { get; set; } = string.Empty;
 
-        public InputSynonym()
+        public InputMacro()
         {
 
         }
 
-        public InputSynonym(string synonymName, string synonymValue)
+        public InputMacro(string macroName, string macroValue)
         {
-            SynonymName = synonymName;
-            SynonymValue = synonymValue;
-        }
-
-        public InputSynonym(in int consoleID, string synonymName, string synonymValue)
-            : this(synonymName, synonymValue)
-        {
-            console_id = consoleID;
+            MacroName = macroName;
+            MacroValue = macroValue;
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                int hash = 29;
-                hash = (hash * 37) + SynonymName.GetHashCode();
-                hash = (hash * 37) + SynonymValue.GetHashCode();
-                hash = (hash * 37) + console_id.GetHashCode();
+                int hash = 11;
+                hash = (hash * 37) + MacroName.GetHashCode();
+                hash = (hash * 37) + MacroValue.GetHashCode();
                 return hash;
             }
         }
 
         public override string ToString()
         {
-            return $"\"{SynonymName}\":\"{SynonymValue}\"";
+            return $"\"{MacroName}\" = \"{MacroValue}\"";
         }
     }
 }

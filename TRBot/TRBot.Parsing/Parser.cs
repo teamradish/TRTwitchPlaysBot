@@ -22,7 +22,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
-using TRBot.ParserData;
 
 namespace TRBot.Parsing
 {
