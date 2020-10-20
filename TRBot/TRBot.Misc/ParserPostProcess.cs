@@ -37,8 +37,15 @@ namespace TRBot.Misc
         /// <summary>
         /// Tells if a <see cref="ParsedInputSequence"/> contains any restricted inputs.
         /// </summary>
-        public static bool InputSequenceContainsRestrictedInputs(in ParsedInputSequence inputSequence, Dictionary<string, int> inputNames)
+        public static InputValidation InputSequenceContainsRestrictedInputs(in ParsedInputSequence inputSequence,
+            Dictionary<string, int> restrictedInputNames)
         {
+            //No restricted inputs
+            if (restrictedInputNames == null || restrictedInputNames.Count == 0)
+            {
+                return new InputValidation(InputValidationTypes.Valid, string.Empty);
+            }
+
             //Go through all inputs and find any restricted ones
             List<List<ParsedInput>> allParsedInputs = inputSequence.Inputs;
             for (int i = 0; i < allParsedInputs.Count; i++)
@@ -48,24 +55,25 @@ namespace TRBot.Misc
                 for (int j = 0; j < inputs.Count; j++)
                 {
                     ParsedInput parsedInput = inputs[i];
-                    
+                    string inputName = parsedInput.name;
+
                     //Check if this input is restricted
-                    if (inputNames.ContainsKey(parsedInput.name) == true)
+                    if (restrictedInputNames.ContainsKey(inputName) == true)
                     {
-                        return true;
+                        return new InputValidation(InputValidationTypes.RestrictedInputs, $"No permission to use input \"{inputName}\".");
                     }
                 }
             }
 
             //No restricted inputs
-            return false;
+            return new InputValidation(InputValidationTypes.Valid, string.Empty);
         }
 
         //Think of a faster way to do this; it's rather slow
         //The idea is to look through and see the inputs that would be held at the same time and avoid the given combo
         //One list is for held inputs with another for pressed inputs - the sum of their counts is compared with the invalid combo list's count
         //Released inputs do not count
-        public static bool ValidateInputCombos(in ParsedInputSequence inputSequence, List<string> invalidCombo,
+        public static InputValidation ValidateInputCombos(in ParsedInputSequence inputSequence, List<string> invalidCombo,
             IVirtualControllerManager vControllerMngr, GameConsole gameConsole)
         {
             List<List<ParsedInput>> inputs = inputSequence.Inputs;
@@ -175,7 +183,23 @@ namespace TRBot.Misc
                             //Check the count after adding
                             if ((subCombo.Count + currentCombo.Count) == invalidCombo.Count)
                             {
-                                return false;
+                                //Make the message mention which inputs aren't allowed
+                                StringBuilder strBuilder = new StringBuilder(128);
+                                strBuilder.Append("Inputs (");
+
+                                for (int k = 0; k < invalidCombo.Count; k++)
+                                {
+                                    strBuilder.Append('"').Append(invalidCombo[k]).Append('"');
+
+                                    if (k < (invalidCombo.Count - 1))
+                                    {
+                                        strBuilder.Append(',').Append(' ');
+                                    }
+                                }
+
+                                strBuilder.Append(") are not allowed to be pressed at the same time.");
+
+                                return new InputValidation(InputValidationTypes.InvalidCombo, strBuilder.ToString());
                             }
                         }
                         
@@ -190,7 +214,23 @@ namespace TRBot.Misc
                                 
                                 if ((currentCombo.Count + subCombo.Count) == invalidCombo.Count)
                                 {
-                                    return false;
+                                    //Make the message mention which inputs aren't allowed
+                                    StringBuilder strBuilder = new StringBuilder(128);
+                                    strBuilder.Append("Inputs (");
+
+                                    for (int k = 0; k < invalidCombo.Count; k++)
+                                    {
+                                        strBuilder.Append('"').Append(invalidCombo[k]).Append('"');
+
+                                        if (k < (invalidCombo.Count - 1))
+                                        {
+                                            strBuilder.Append(',').Append(' ');
+                                        }
+                                    }
+
+                                    strBuilder.Append(") are not allowed to be pressed at the same time.");
+
+                                    return new InputValidation(InputValidationTypes.InvalidCombo, strBuilder.ToString());
                                 }
                             }
                         }
@@ -203,7 +243,7 @@ namespace TRBot.Misc
                 }
             }
 
-            return true;
+            return new InputValidation(InputValidationTypes.Valid, string.Empty);
         }
     }
 }

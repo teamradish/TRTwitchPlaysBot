@@ -45,7 +45,7 @@ namespace TRBot.Misc
 
             //If the input isn't valid, then we can't reverse parse it because it couldn't be parsed!
             //Likewise for a lack of inputs
-            if (inputSequence.InputValidationType != InputValidationTypes.Valid
+            if (inputSequence.ParsedInputResult != ParsedInputResults.Valid
                 || inputsDList == null || inputsDList.Count == 0)
             {
                 return string.Empty;
@@ -126,7 +126,7 @@ namespace TRBot.Misc
             List<List<ParsedInput>> inputsDList = inputSequence.Inputs;
 
             //If the input isn't valid, say so
-            if (inputSequence.InputValidationType != InputValidationTypes.Valid
+            if (inputSequence.ParsedInputResult != ParsedInputResults.Valid
                 || inputsDList == null || inputsDList.Count == 0)
             {
                 return "Invalid input!";

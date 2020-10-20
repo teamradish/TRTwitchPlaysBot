@@ -70,9 +70,38 @@ namespace TRBot.Data
         
         public bool TryGetAbility(string abilityName, out UserAbility userAbility)
         {
-            userAbility = UserAbilities.FirstOrDefault(p => p.PermAbility.Name == abilityName);
+            DateTime now = DateTime.UtcNow;
+            
+            //Check for name and expiration
+            userAbility = UserAbilities.FirstOrDefault(p => p.PermAbility.Name == abilityName && p.expiration != null && p.expiration > now);
 
             return (userAbility != null);
+        }
+
+        /// <summary>
+        /// Gets all restricted inputs.
+        /// </summary>
+        public Dictionary<string, int> GetRestrictedInputs()
+        {
+            DateTime now = DateTime.UtcNow;
+            IEnumerable<RestrictedInput> restrictedInputs = RestrictedInputs.Where(r => r.expiration > now);
+
+            Dictionary<string, int> restrictedInpDict = new Dictionary<string, int>();
+
+            //Put all restricted inputs in a dictionary
+            foreach (RestrictedInput rInput in restrictedInputs)
+            {
+                if (restrictedInpDict.TryGetValue(rInput.input_name, out int val) == false)
+                {
+                    restrictedInpDict.Add(rInput.input_name, 1);
+                    continue;
+                }
+
+                val += 1;
+                restrictedInpDict[rInput.input_name] = val;
+            }
+
+            return restrictedInpDict;
         }
     }
 }

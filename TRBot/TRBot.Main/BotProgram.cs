@@ -504,14 +504,14 @@ namespace TRBot.Main
 
                 //Handle parsing exceptions
                 MsgHandler.QueueMessage($"ERROR: {excMsg} | {exception.StackTrace}");
-                inputSequence.InputValidationType = InputValidationTypes.Invalid;
+                inputSequence.ParsedInputResult = ParsedInputResults.Invalid;
             }
 
             //Check for non-valid messages
-            if (inputSequence.InputValidationType != InputValidationTypes.Valid)
+            if (inputSequence.ParsedInputResult != ParsedInputResults.Valid)
             {
                 //Display error message for invalid inputs
-                if (inputSequence.InputValidationType == InputValidationTypes.Invalid)
+                if (inputSequence.ParsedInputResult == ParsedInputResults.Invalid)
                 {
                     MsgHandler.QueueMessage(inputSequence.Error);
                 }

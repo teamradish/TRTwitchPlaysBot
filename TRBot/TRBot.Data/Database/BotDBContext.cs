@@ -133,7 +133,7 @@ namespace TRBot.Data
                 entity.Property(e => e.Name).HasDefaultValue("GameConsole");
                 entity.Ignore(e => e.InputRegex);
                 entity.Ignore(e => e.ConsoleInputs);
-                entity.HasMany(e => e.InputList).WithOne(c => c.Console).IsRequired().HasForeignKey(c => c.console_id);
+                entity.HasMany(e => e.InputList).WithOne(c => c.Console).IsRequired().HasForeignKey(c => c.console_id).OnDelete(DeleteBehavior.Cascade);
                 entity.HasIndex(e => e.Name).IsUnique();
             });
 
@@ -156,9 +156,9 @@ namespace TRBot.Data
             {
                 entity.HasKey(e => e.id);
                 entity.Property(e => e.Name).HasDefaultValue(string.Empty);
-                entity.HasOne(e => e.Stats).WithOne(u => u.user).IsRequired().HasForeignKey<UserStats>(u => u.user_id);
-                entity.HasMany(e => e.UserAbilities).WithOne().HasForeignKey(u => u.user_id);
-                entity.HasMany(e => e.RestrictedInputs).WithOne().HasForeignKey(e => e.user_id);
+                entity.HasOne(e => e.Stats).WithOne(u => u.user).IsRequired().HasForeignKey<UserStats>(u => u.user_id).OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(e => e.UserAbilities).WithOne().HasForeignKey(u => u.user_id).OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(e => e.RestrictedInputs).WithOne().HasForeignKey(e => e.user_id).OnDelete(DeleteBehavior.Cascade);
                 entity.HasIndex(e => e.Name);
             });
 

@@ -135,7 +135,7 @@ namespace TRBot.Commands
                     inputSequence = parser.ParseInputs(readyMessage, regexStr, new ParserOptions(0, defaultInputDur, true, maxInputDur));
                     //Console.WriteLine(inputSequence.ToString());
 
-                    if (inputSequence.InputValidationType != InputValidationTypes.Valid)
+                    if (inputSequence.ParsedInputResult != ParsedInputResults.Valid)
                     {
                         QueueMessage("Invalid macro.");
                         return;

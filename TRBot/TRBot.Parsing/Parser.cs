@@ -27,9 +27,9 @@ using TRBot.ParserData;
 namespace TRBot.Parsing
 {
     /// <summary>
-    /// The validation types for inputs.
+    /// The possible results for parsed input sequences.
     /// </summary>
-    public enum InputValidationTypes
+    public enum ParsedInputResults
     {
         NormalMsg, Valid, Invalid
     }
@@ -457,11 +457,11 @@ namespace TRBot.Parsing
             {
                 //Console.WriteLine("NO MATCHES");
 
-                return new ParsedInputSequence(InputValidationTypes.NormalMsg, null, 0, "ERR_NORMAL_MSG");
+                return new ParsedInputSequence(ParsedInputResults.NormalMsg, null, 0, "ERR_NORMAL_MSG");
             }
 
             //Set up the input sequence
-            ParsedInputSequence inputSequence = new ParsedInputSequence(InputValidationTypes.Valid, new List<List<ParsedInput>>(matches.Count), 0, string.Empty);
+            ParsedInputSequence inputSequence = new ParsedInputSequence(ParsedInputResults.Valid, new List<List<ParsedInput>>(matches.Count), 0, string.Empty);
 
             //Store the previous index - if there's anything in between that's not picked up by the regex, it's an invalid input
             int prevIndex = 0;
@@ -480,7 +480,7 @@ namespace TRBot.Parsing
                 {
                     //Console.WriteLine($"INDEX GAP. CUR: {m.Index} | PREV: {prevIndex}");
 
-                    inputSequence.InputValidationType = InputValidationTypes.NormalMsg;
+                    inputSequence.ParsedInputResult = ParsedInputResults.NormalMsg;
                     inputSequence.Error = "ERR_NORMAL_MSG";
                     break;
                 }
@@ -495,7 +495,7 @@ namespace TRBot.Parsing
                 //There's an error, so something went wrong
                 if (string.IsNullOrEmpty(input.error) == false)
                 {
-                    inputSequence.InputValidationType = InputValidationTypes.Invalid;
+                    inputSequence.ParsedInputResult = ParsedInputResults.Invalid;
                     inputSequence.Error = input.error + " for: \"" + m.Value + "\"";
 
                     break;
@@ -512,7 +512,7 @@ namespace TRBot.Parsing
                 //There's a plus at the very end of the input sequence, which is invalid
                 if (hasPlus == true && i == (matches.Count - 1))
                 {
-                    inputSequence.InputValidationType = InputValidationTypes.Invalid;
+                    inputSequence.ParsedInputResult = ParsedInputResults.Invalid;
                     inputSequence.Error = "ERR_PLUS_AT_END";
                     break;
                 }
@@ -531,7 +531,7 @@ namespace TRBot.Parsing
                     //Check for max duration and break out early if so
                     if (parserOptions.CheckMaxDur == true && totalDuration > parserOptions.MaxInputDur)
                     {
-                        inputSequence.InputValidationType = InputValidationTypes.Invalid;
+                        inputSequence.ParsedInputResult = ParsedInputResults.Invalid;
                         inputSequence.Error = "ERR_MAX_DURATION";
                         break;
                     }
@@ -542,11 +542,11 @@ namespace TRBot.Parsing
             //Console.WriteLine($"SW MS for ParseInputs: {sw.ElapsedMilliseconds}");
 
             //If there's more past what the regex caught, this isn't a valid input and is likely a normal message
-            if (inputSequence.InputValidationType == InputValidationTypes.Valid && prevIndex != message.Length)
+            if (inputSequence.ParsedInputResult == ParsedInputResults.Valid && prevIndex != message.Length)
             {
                 //Console.WriteLine($"PREVINDEX: {prevIndex} | MESSAGE LENGTH: {message.Length}");
 
-                inputSequence.InputValidationType = InputValidationTypes.NormalMsg;
+                inputSequence.ParsedInputResult = ParsedInputResults.NormalMsg;
                 inputSequence.Error = "ERR_NORMAL_MSG";
             }
 
@@ -821,14 +821,14 @@ namespace TRBot.Parsing
     /// </summary>
     public struct ParsedInputSequence
     {
-        public InputValidationTypes InputValidationType;
+        public ParsedInputResults ParsedInputResult;
         public List<List<ParsedInput>> Inputs;
         public int TotalDuration;
         public string Error;
 
-        public ParsedInputSequence(in InputValidationTypes inputValidationType, List<List<ParsedInput>> inputs, in int totalDuration, string error)
+        public ParsedInputSequence(in ParsedInputResults parsedInputResult, List<List<ParsedInput>> inputs, in int totalDuration, string error)
         {
-            InputValidationType = inputValidationType;
+            ParsedInputResult = parsedInputResult;
             Inputs = inputs;
             TotalDuration = totalDuration;
             Error = error;
@@ -848,7 +848,7 @@ namespace TRBot.Parsing
             unchecked
             {
                 int hash = 17;
-                hash = (hash * 37) + InputValidationType.GetHashCode();
+                hash = (hash * 37) + ParsedInputResult.GetHashCode();
                 hash = (hash * 37) + ((Inputs == null) ? 0 : Inputs.GetHashCode());
                 hash = (hash * 37) + TotalDuration.GetHashCode();
                 hash = (hash * 37) + ((Error == null) ? 0 : Error.GetHashCode());
@@ -858,7 +858,7 @@ namespace TRBot.Parsing
 
         public static bool operator ==(ParsedInputSequence a, ParsedInputSequence b)
         {
-            return (a.InputValidationType == b.InputValidationType
+            return (a.ParsedInputResult == b.ParsedInputResult
                     && a.Inputs == b.Inputs && a.TotalDuration == b.TotalDuration && a.Error == b.Error);
         }
 
@@ -870,7 +870,7 @@ namespace TRBot.Parsing
         public override string ToString()
         {
             int inputCount = (Inputs == null) ? 0 : Inputs.Count;
-            return $"VType:{InputValidationType} | SubInputs:{inputCount} | Duration:{TotalDuration} | Err:{Error}";
+            return $"VType:{ParsedInputResult} | SubInputs:{inputCount} | Duration:{TotalDuration} | Err:{Error}";
         }
     }
 
