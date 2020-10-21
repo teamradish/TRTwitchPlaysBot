@@ -72,7 +72,7 @@ namespace TRBot.Misc
         //The idea is to look through and see the inputs that would be held at the same time and avoid the given combo
         //One list is for held inputs with another for pressed inputs - the sum of their counts is compared with the invalid combo list's count
         //Released inputs do not count
-        public static InputValidation ValidateInputCombos(in ParsedInputSequence inputSequence, List<string> invalidCombo,
+        public static InputValidation ValidateInputCombos(in ParsedInputSequence inputSequence, List<InvalidCombo> invalidCombo,
             IVirtualControllerManager vControllerMngr, GameConsole gameConsole)
         {
             List<List<ParsedInput>> inputs = inputSequence.Inputs;
@@ -94,40 +94,37 @@ namespace TRBot.Misc
                 //Add already pressed inputs from all controllers
                 for (int j = 0; j < invalidCombo.Count; j++)
                 {
-                    string inputName = invalidCombo[j];
+                    string inputName = invalidCombo[j].Input.Name;
 
                     //Check if the button exists and is pressed
-                    if (gameConsole.GetButtonValue(inputName, out InputButton inputBtn) == false)
+                    if (gameConsole.GetButtonValue(inputName, out InputButton inputBtn) == true)
                     {
-                        Console.WriteLine($"Warning: \"{inputName}\" is part of an invalid input combo but doesn't exist for {gameConsole.Name}.");
-                        continue;
-                    }
-                    else if (controller.GetButtonState(inputBtn.ButtonVal) == ButtonStates.Pressed)
-                    {
-                        if (currentComboDict.ContainsKey(i) == false)
+                        if (controller.GetButtonState(inputBtn.ButtonVal) == ButtonStates.Pressed)
                         {
-                            currentComboDict[i] = new List<string>(invalidCombo.Count);
+                            if (currentComboDict.ContainsKey(i) == false)
+                            {
+                                currentComboDict[i] = new List<string>(invalidCombo.Count);
+                            }
+
+                            currentComboDict[i].Add(inputName);
                         }
-
-                        currentComboDict[i].Add(inputName);
-                        continue;
                     }
-
                     //Check if the axis exists and is pressed in any capacity
-                    if (gameConsole.GetAxisValue(inputName, out InputAxis inputAxis) == false)
+                    else if (gameConsole.GetAxisValue(inputName, out InputAxis inputAxis) == true)
+                    {
+                        if (controller.GetAxisState(inputAxis.AxisVal) != 0)
+                        {
+                            if (currentComboDict.ContainsKey(i) == false)
+                            {
+                                currentComboDict[i] = new List<string>(invalidCombo.Count);
+                            }
+
+                            currentComboDict[i].Add(inputName);
+                        }
+                    }
+                    else
                     {
                         Console.WriteLine($"Warning: \"{inputName}\" is part of an invalid input combo but doesn't exist for {gameConsole.Name}.");
-                        continue;
-                    }
-                    else if (controller.GetAxisState(inputAxis.AxisVal) != 0)
-                    {
-                        if (currentComboDict.ContainsKey(i) == false)
-                        {
-                            currentComboDict[i] = new List<string>(invalidCombo.Count);
-                        }
-                        
-                        currentComboDict[i].Add(inputName);
-                        continue;
                     }
                 }
             }
@@ -171,7 +168,7 @@ namespace TRBot.Misc
                     List<string> subCombo = subComboDict[port];
 
                     //Check if this input is in the invalid combo
-                    if (invalidCombo.Contains(input.name) == true)
+                    if (InvalidComboContainsInputName(invalidCombo, input.name) == true)
                     {
                         //If it's not a release input and isn't in the held or current inputs, add it
                         if (input.release == false && subCombo.Contains(input.name) == false
@@ -188,7 +185,7 @@ namespace TRBot.Misc
 
                                 for (int k = 0; k < invalidCombo.Count; k++)
                                 {
-                                    strBuilder.Append('"').Append(invalidCombo[k]).Append('"');
+                                    strBuilder.Append('"').Append(invalidCombo[k].Input.Name).Append('"');
 
                                     if (k < (invalidCombo.Count - 1))
                                     {
@@ -290,6 +287,19 @@ namespace TRBot.Misc
             }
 
             return new InputValidation(InputValidationTypes.Valid, string.Empty);
+        }
+
+        private static bool InvalidComboContainsInputName(List<InvalidCombo> invalidCombo, string inputName)
+        {
+            for (int i = 0; i < invalidCombo.Count; i++)
+            {
+                if (invalidCombo[i].Input.Name == inputName)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

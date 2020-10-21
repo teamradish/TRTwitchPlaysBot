@@ -70,6 +70,8 @@ namespace TRBot.Consoles
                 { "mode", InputData.CreateButton("mode", (int)GlobalButtonVals.BTN32) },
                 { "#", InputData.CreateBlank("#") }
             });
+
+            InvalidCombos = new List<InvalidCombo>();
         }
     }
 }

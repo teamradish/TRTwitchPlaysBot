@@ -82,6 +82,8 @@ namespace TRBot.Consoles
                 { "sb11", InputData.CreateButton("sb11", (int)GlobalButtonVals.BTN27) },
                 { "sb12", InputData.CreateButton("sb12", (int)GlobalButtonVals.BTN28) },
             });
+
+            InvalidCombos = new List<InvalidCombo>();
         }
     }
 }

@@ -54,6 +54,12 @@ namespace TRBot.Consoles
         public virtual List<InputData> InputList { get; set; } = null;
 
         /// <summary>
+        /// The invalid input combos for the console.
+        /// This is used by the database and should not be assigned or modified manually.
+        /// </summary>
+        public virtual List<InvalidCombo> InvalidCombos { get; set; } = null;
+
+        /// <summary>
         /// The input regex for the console.
         /// Update this with <see cref="UpdateInputRegex"/> to warm the regex expression for the parser.
         /// Modifying <see cref="ConsoleInputs"/> will also update this value.
@@ -84,6 +90,12 @@ namespace TRBot.Consoles
             Name = name;
 
             SetInputsFromList(inputList);
+        }
+
+        public GameConsole(string name, List<InputData> inputList, List<InvalidCombo> invalidCombos)
+            : this(name, inputList)
+        {
+            InvalidCombos = new List<InvalidCombo>(invalidCombos);
         }
 
         #region Modifications

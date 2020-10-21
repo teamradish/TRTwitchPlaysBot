@@ -77,6 +77,13 @@ namespace TRBot.Consoles
 
                 { "#", InputData.CreateBlank("#") }
             });
+
+            InvalidCombos = new List<InvalidCombo>(3)
+            {
+                new InvalidCombo(ConsoleInputs["x"]),
+                new InvalidCombo(ConsoleInputs["y"]),
+                new InvalidCombo(ConsoleInputs["start"]),
+            };
         }
     }
 }

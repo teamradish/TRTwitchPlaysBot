@@ -133,7 +133,8 @@ namespace TRBot.Data
                 entity.Property(e => e.Name).HasDefaultValue("GameConsole");
                 entity.Ignore(e => e.InputRegex);
                 entity.Ignore(e => e.ConsoleInputs);
-                entity.HasMany(e => e.InputList).WithOne(c => c.Console).IsRequired().HasForeignKey(c => c.console_id).OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(e => e.InputList).WithOne(c => c.Console).HasForeignKey(c => c.console_id).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(e => e.InvalidCombos).WithOne().OnDelete(DeleteBehavior.Cascade);
                 entity.HasIndex(e => e.Name).IsUnique();
             });
 
@@ -149,6 +150,13 @@ namespace TRBot.Data
                 entity.Property(e => e.MaxAxisVal).HasDefaultValue(1);
                 entity.Property(e => e.MaxAxisPercent).HasDefaultValue(100);
                 entity.HasIndex(e => new { e.Name, e.console_id }).IsUnique();
+            });
+
+            modelBuilder.Entity<InvalidCombo>().ToTable("InvalidInputCombos", "invalidinputcombos");
+            modelBuilder.Entity<InvalidCombo>(entity =>
+            {
+                entity.HasKey(e => e.id);
+                entity.HasOne(e => e.Input).WithOne().HasForeignKey<InvalidCombo>(c => c.input_id).IsRequired().OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<User>().ToTable("Users", "users");
@@ -180,7 +188,7 @@ namespace TRBot.Data
             modelBuilder.Entity<UserAbility>(entity =>
             {
                 entity.HasKey(e => e.id);
-                entity.HasOne(e => e.PermAbility).WithOne().HasForeignKey<UserAbility>(u => u.permability_id);
+                entity.HasOne(e => e.PermAbility).WithOne().HasForeignKey<UserAbility>(u => u.permability_id).IsRequired();
             });
 
             base.OnModelCreating(modelBuilder);

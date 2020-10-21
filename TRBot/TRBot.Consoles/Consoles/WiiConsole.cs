@@ -102,6 +102,8 @@ namespace TRBot.Consoles
                 { "point",      InputData.CreateButton("point", (int)GlobalButtonVals.BTN32) },
                 { "#",          InputData.CreateBlank("#") }
             });
+
+            InvalidCombos = new List<InvalidCombo>();
         }
     }
 }

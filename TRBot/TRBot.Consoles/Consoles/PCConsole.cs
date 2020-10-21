@@ -60,6 +60,8 @@ namespace TRBot.Consoles
                 { "p",          InputData.CreateButton("p", (int)GlobalButtonVals.BTN17) },
                 { "#",          InputData.CreateBlank("#") }
             });
+
+            InvalidCombos = new List<InvalidCombo>();
         }
     }
 }

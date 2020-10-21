@@ -17,22 +17,38 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using TRBot.Parsing;
 
 namespace TRBot.Consoles
 {
     /// <summary>
-    /// An empty stub console.
-    /// </summary>
-    public sealed class BlankConsole : GameConsole
+    /// Represents an input in an invalid input combo.
+    /// </summary> 
+    public class InvalidCombo
     {
-        public BlankConsole()
+        /// <summary>
+        /// The ID of the invalid combo.
+        /// </summary>
+        public int id { get; set; } = 0;
+
+        /// <summary>
+        /// The ID of the input.
+        /// </summary>
+        public int input_id { get; set; } = 0;
+
+        /// <summary>
+        /// The InputData associated with this invalid combo.
+        /// This is used by the database and should not be assigned or modified manually.
+        /// </summary>
+        public virtual InputData Input { get; set; } = null;
+
+        public InvalidCombo()
         {
-            Name = "blank";
 
-            InvalidCombos = new List<InvalidCombo>();
+        }
 
-            UpdateInputRegex();
+        public InvalidCombo(InputData inputData)
+        {
+            Input = inputData;
         }
     }
 }

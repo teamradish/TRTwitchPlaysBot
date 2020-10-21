@@ -408,7 +408,7 @@ namespace TRBot.Main
                 if (lastConsole != null)
                 {
                     //Create a new console using data from the database
-                    usedConsole = new GameConsole(lastConsole.Name, lastConsole.InputList);
+                    usedConsole = new GameConsole(lastConsole.Name, lastConsole.InputList, lastConsole.InvalidCombos);
                 }
             }
 
@@ -518,7 +518,7 @@ namespace TRBot.Main
             /* All this validation may be able to be performed faster.
              * Find a way to speed it up.
              */
-            
+
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
                 InputValidation validation = default;
@@ -537,17 +537,17 @@ namespace TRBot.Main
                     return;
                 }
 
-                //Check for invalid input sequences
-                //validation = ParserPostProcess.ValidateInputCombos(inputSequence, , ControllerMngr, usedConsole);
+                //Check for invalid input combinations
+                validation = ParserPostProcess.ValidateInputCombos(inputSequence, usedConsole.InvalidCombos, ControllerMngr, usedConsole);
 
-                //if (validation.InputValidationType != InputValidationTypes.Valid)
-                //{
-                //    if (string.IsNullOrEmpty(validation.Message) == false)
-                //    {
-                //        MsgHandler.QueueMessage(validation.Message);
-                //    }
-                //    return;
-                //}
+                if (validation.InputValidationType != InputValidationTypes.Valid)
+                {
+                    if (string.IsNullOrEmpty(validation.Message) == false)
+                    {
+                        MsgHandler.QueueMessage(validation.Message);
+                    }
+                    return;
+                }
 
                 //Check for level permissions and ports
                 validation = ParserPostProcess.ValidateInputLvlPermsAndPorts(user.Level, inputSequence,
