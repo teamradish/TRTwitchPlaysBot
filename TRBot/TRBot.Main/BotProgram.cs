@@ -515,51 +515,53 @@ namespace TRBot.Main
 
             #region Parser Post-Process Validation
             
-            /* All this validation is very slow
-             * Find a way to speed it up, ideally without integrating it directly into the parser
+            /* All this validation may be able to be performed faster.
+             * Find a way to speed it up.
              */
             
-            //Check if the user has permission to perform all the inputs they attempted
-            //Also validate that the controller ports they're inputting for are valid
-            //ParserPostProcess.InputValidation inputValidation = ParserPostProcess.CheckInputPermissionsAndPorts(userData.Level, inputSequence.Inputs,
-            //    BotProgram.BotData.InputAccess.InputAccessDict);
-
-            //If the input isn't valid, exit
-            //if (inputValidation.IsValid == false)
-            //{
-            //    if (string.IsNullOrEmpty(inputValidation.Message) == false)
-            //    {
-            //        BotProgram.MsgHandler.QueueMessage(inputValidation.Message);
-            //    }
-            //    return;
-            //}
-
-            //Lastly, check for invalid button combos given the current console
-            /*if (BotProgram.BotData.InvalidBtnCombos.InvalidCombos.TryGetValue((int)InputGlobals.CurrentConsoleVal, out List<string> invalidCombos) == true)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                bool buttonCombosValidated = ParserPostProcess.ValidateButtonCombos(inputSequence.Inputs, invalidCombos);
+                InputValidation validation = default;
 
-                if (buttonCombosValidated == false)
+                User user = DataHelper.GetOrAddUserNoOpen(e.UsrMessage.Username, context, out bool added);
+                
+                //Check for restricted inputs on this user
+                validation = ParserPostProcess.InputSequenceContainsRestrictedInputs(inputSequence, user.GetRestrictedInputs());
+
+                if (validation.InputValidationType != InputValidationTypes.Valid)
                 {
-                    string msg = "Invalid input: buttons ({0}) are not allowed to be pressed at the same time.";
-                    string combos = string.Empty;
-                    
-                    for (int i = 0; i < invalidCombos.Count; i++)
+                    if (string.IsNullOrEmpty(validation.Message) == false)
                     {
-                        combos += "\"" + invalidCombos[i] + "\"";
-                        
-                        if (i < (invalidCombos.Count - 1))
-                        {
-                            combos += ", ";
-                        }
+                        MsgHandler.QueueMessage(validation.Message);
                     }
-                    
-                    msg = string.Format(msg, combos);
-                    BotProgram.MsgHandler.QueueMessage(msg);
-                    
                     return;
                 }
-            }*/
+
+                //Check for invalid input sequences
+                //validation = ParserPostProcess.ValidateInputCombos(inputSequence, , ControllerMngr, usedConsole);
+
+                //if (validation.InputValidationType != InputValidationTypes.Valid)
+                //{
+                //    if (string.IsNullOrEmpty(validation.Message) == false)
+                //    {
+                //        MsgHandler.QueueMessage(validation.Message);
+                //    }
+                //    return;
+                //}
+
+                //Check for level permissions and ports
+                validation = ParserPostProcess.ValidateInputLvlPermsAndPorts(user.Level, inputSequence,
+                    ControllerMngr, usedConsole.ConsoleInputs);
+
+                if (validation.InputValidationType != InputValidationTypes.Valid)
+                {
+                    if (string.IsNullOrEmpty(validation.Message) == false)
+                    {
+                        MsgHandler.QueueMessage(validation.Message);
+                    }
+                    return;
+                }
+            }
 
             #endregion
 

@@ -50,7 +50,7 @@ namespace TRBot.Consoles
         /// <summary>
         /// The access level of the input.
         /// </summary>
-        public int level { get; set; } = 0;
+        public long level { get; set; } = 0;
 
         /// <summary>
         /// The name of the input.
@@ -126,7 +126,7 @@ namespace TRBot.Consoles
 
         public override string ToString()
         {
-            return $"Name: \"{Name}\" | console_id: {console_id} | BtnVal: {ButtonValue} | AxisVal: {AxisValue} | InputType: {InputType} | MinAxis: {MinAxisVal} | MaxAxis: {MaxAxisVal} | MaxAxisPercent: {MaxAxisPercent}";
+            return $"Name: \"{Name}\" | console_id: {console_id} | BtnVal: {ButtonValue} | AxisVal: {AxisValue} | InputType: {InputType} | MinAxis: {MinAxisVal} | MaxAxis: {MaxAxisVal} | MaxAxisPercent: {MaxAxisPercent} | Level: {level}";
         }
 
         public static InputData CreateBlank(string name)

@@ -250,10 +250,10 @@ namespace TRBot.Misc
         /// </summary>
         /// <param name="userLevel">The level of the user.</param>
         /// <param name="inputs">The inputs to check.</param>
-        /// <param name="inputPermissionLevels">The dictionary of permission levels for inputs.</param>
+        /// <param name="inputPermissionLevels">The dictionary of inputs.</param>
         /// <returns>An InputValidation object specifying the InputValidationType and a message, if any.</returns>
-        public static InputValidation ValidateInputLvlPermsAndPorts(in int userLevel, in ParsedInputSequence inputSequence,
-            IVirtualControllerManager vControllerMngr, Dictionary<string, int> inputPermissionLevels)
+        public static InputValidation ValidateInputLvlPermsAndPorts(in long userLevel, in ParsedInputSequence inputSequence,
+            IVirtualControllerManager vControllerMngr, Dictionary<string, InputData> inputPermissionLevels)
         {
             List<List<ParsedInput>> inputs = inputSequence.Inputs;
 
@@ -280,10 +280,11 @@ namespace TRBot.Misc
                     }
 
                     //Check if the user has permission to enter this input
-                    if (inputPermissionLevels.TryGetValue(input.name, out int inputLvl) == true && userLevel < inputLvl)
+                    if (inputPermissionLevels.TryGetValue(input.name, out InputData inputData) == true
+                        && userLevel < inputData.level)
                     {
                         return new InputValidation(InputValidationTypes.InsufficientAccess,
-                            $"No permission to use input \"{input.name}\", which requires at least level {inputLvl}.");
+                            $"No permission to use input \"{input.name}\", which requires at least level {inputData.level}.");
                     }
                 }
             }

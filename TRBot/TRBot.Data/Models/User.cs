@@ -84,7 +84,7 @@ namespace TRBot.Data
         public Dictionary<string, int> GetRestrictedInputs()
         {
             DateTime now = DateTime.UtcNow;
-            IEnumerable<RestrictedInput> restrictedInputs = RestrictedInputs.Where(r => r.expiration > now);
+            IEnumerable<RestrictedInput> restrictedInputs = RestrictedInputs.Where(r => r.expiration == null || r.expiration > now);
 
             Dictionary<string, int> restrictedInpDict = new Dictionary<string, int>();
 
