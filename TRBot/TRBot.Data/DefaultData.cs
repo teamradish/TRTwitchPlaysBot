@@ -109,34 +109,42 @@ namespace TRBot.Data
         {
             List<CommandData> defaultCommands = new List<CommandData>()
             {
-                new CommandData("sourcecode", "TRBot.Commands.MessageCommand", 0, true, true, SettingsConstants.SOURCE_CODE_MESSAGE),
-                new CommandData("info", "TRBot.Commands.MessageCommand", 0, true, true, SettingsConstants.INFO_MESSAGE),
-                new CommandData("tutorial", "TRBot.Commands.MessageCommand", 0, true, true, SettingsConstants.TUTORIAL_MESSAGE),
-                new CommandData("reload", "TRBot.Commands.ReloadCommand", 3, true, true),
-                new CommandData("addcmd", "TRBot.Commands.AddCmdCommand", 4, true, true),
-                new CommandData("removecmd", "TRBot.Commands.RemoveCmdCommand", 4, true, true),
-                new CommandData("version", "TRBot.Commands.VersionCommand", 0, true, true),
-                new CommandData("addconsole", "TRBot.Commands.AddConsoleCommand", 4, true, true),
-                new CommandData("removeconsole", "TRBot.Commands.RemoveConsoleCommand", 4, true, true),
-                new CommandData("console", "TRBot.Commands.GetSetConsoleCommand", 0, true, true),
-                new CommandData("inputs", "TRBot.Commands.InputInfoCommand", 0, true, true),
-                new CommandData("addinput", "TRBot.Commands.AddInputCommand", 4, true, true),
-                new CommandData("removeinput", "TRBot.Commands.RemoveInputCommand", 4, true, true),
-                new CommandData("macros", "TRBot.Commands.ListMacrosCommand", 0, true, true),
-                new CommandData("addmacro", "TRBot.Commands.AddMacroCommand", 0, true, true),
-                new CommandData("removemacro", "TRBot.Commands.RemoveMacroCommand", 0, true, true),
-                new CommandData("memes", "TRBot.Commands.ListMemesCommand", 0, true, true),
-                new CommandData("addmeme", "TRBot.Commands.AddMemeCommand", 0, true, true),
-                new CommandData("removememe", "TRBot.Commands.RemoveMemeCommand", 0, true, true),
-                new CommandData("listsyn", "TRBot.Commands.ListInputSynonymsCommand", 3, true, true),
-                new CommandData("addsyn", "TRBot.Commands.AddInputSynonymCommand", 3, true, true),
-                new CommandData("removesyn", "TRBot.Commands.RemoveInputSynonymCommand", 3, true, true),
-                new CommandData("defaultinputdur", "TRBot.Commands.DefaultInputDurCommand", 3, true, true),
-                new CommandData("maxinputdur", "TRBot.Commands.MaxInputDurCommand", 3, true, true),
-                new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", 1, true, true),
-                new CommandData("viewlog", "TRBot.Commands.ViewGameLogCommand", 0, true, true),
-                new CommandData("stopall", "TRBot.Commands.StopAllInputsCommand", 0, true, true),
-                new CommandData("exec", "TRBot.Commands.ExecCommand", 5, false, false)
+                new CommandData("sourcecode", "TRBot.Commands.MessageCommand", (long)PermissionLevels.User, true, true, SettingsConstants.SOURCE_CODE_MESSAGE),
+                new CommandData("info", "TRBot.Commands.MessageCommand", (long)PermissionLevels.User, true, true, SettingsConstants.INFO_MESSAGE),
+                new CommandData("tutorial", "TRBot.Commands.MessageCommand", (long)PermissionLevels.User, true, true, SettingsConstants.TUTORIAL_MESSAGE),
+                new CommandData("version", "TRBot.Commands.VersionCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("console", "TRBot.Commands.GetSetConsoleCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("inputs", "TRBot.Commands.InputInfoCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("macros", "TRBot.Commands.ListMacrosCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("addmacro", "TRBot.Commands.AddMacroCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("removemacro", "TRBot.Commands.RemoveMacroCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("memes", "TRBot.Commands.ListMemesCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("addmeme", "TRBot.Commands.AddMemeCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("removememe", "TRBot.Commands.RemoveMemeCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("viewlog", "TRBot.Commands.ViewGameLogCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("stopall", "TRBot.Commands.StopAllInputsCommand", (long)PermissionLevels.User, true, true),
+
+                new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
+
+                new CommandData("reload", "TRBot.Commands.ReloadCommand", (long)PermissionLevels.Moderator, true, true),
+                new CommandData("listsyn", "TRBot.Commands.ListInputSynonymsCommand", (long)PermissionLevels.Moderator, true, true),
+                new CommandData("addsyn", "TRBot.Commands.AddInputSynonymCommand", (long)PermissionLevels.Moderator, true, true),
+                new CommandData("removesyn", "TRBot.Commands.RemoveInputSynonymCommand", (long)PermissionLevels.Moderator, true, true),
+                new CommandData("defaultinputdur", "TRBot.Commands.DefaultInputDurCommand", (long)PermissionLevels.Moderator, true, true),
+                new CommandData("maxinputdur", "TRBot.Commands.MaxInputDurCommand", (long)PermissionLevels.Moderator, true, true),
+                new CommandData("setlevel", "TRBot.Commands.SetUserLevelCommand", (long)PermissionLevels.Moderator, true, true),
+
+                new CommandData("addcmd", "TRBot.Commands.AddCmdCommand", (long)PermissionLevels.Admin, true, true),
+                new CommandData("removecmd", "TRBot.Commands.RemoveCmdCommand", (long)PermissionLevels.Admin, true, true),
+                new CommandData("togglecmd", "TRBot.Commands.ToggleCmdCommand", (long)PermissionLevels.Admin, true, true),
+                new CommandData("addconsole", "TRBot.Commands.AddConsoleCommand", (long)PermissionLevels.Admin, true, true),
+                new CommandData("removeconsole", "TRBot.Commands.RemoveConsoleCommand", (long)PermissionLevels.Admin, true, true),
+                new CommandData("addinput", "TRBot.Commands.AddInputCommand", (long)PermissionLevels.Admin, true, true),
+                new CommandData("removeinput", "TRBot.Commands.RemoveInputCommand", (long)PermissionLevels.Admin, true, true),
+                new CommandData("setinputlevel", "TRBot.Commands.SetInputLevelCommand", (long)PermissionLevels.Admin, true, true),
+                new CommandData("updateabilities", "TRBot.Commands.UpdateUserAbilitiesCommand", (long)PermissionLevels.Admin, true, true),
+
+                new CommandData("exec", "TRBot.Commands.ExecCommand", (long)PermissionLevels.Superadmin, false, false),
             };
 
             return defaultCommands;
@@ -171,10 +179,23 @@ namespace TRBot.Data
         {
             List<PermissionAbility> defaultPermissions = new List<PermissionAbility>()
             {
-                new PermissionAbility(SILENCED_ABILITY),
+                new PermissionAbility(BET_ABILITY, PermissionLevels.User),
+                new PermissionAbility(DUEL_ABILITY, PermissionLevels.User),
+                new PermissionAbility(GROUP_BET_ABILITY, PermissionLevels.User),
+                new PermissionAbility(JUMP_ROPE_ABILITY, PermissionLevels.User),
+                new PermissionAbility(FEED_ABILITY, PermissionLevels.User),
+                new PermissionAbility(INPUT_EXERCISE_ABILITY, PermissionLevels.User),
+                new PermissionAbility(CALCULATE_ABILITY, PermissionLevels.User),
+                new PermissionAbility(CHATBOT_ABILITY, PermissionLevels.User),
+                new PermissionAbility(BINGO_ABILITY, PermissionLevels.User),
+
                 new PermissionAbility(SET_CONSOLE_ABILITY, PermissionLevels.Moderator),
                 new PermissionAbility(SET_DEFAULT_INPUT_DUR, PermissionLevels.Moderator),
                 new PermissionAbility(SET_MAX_INPUT_DUR, PermissionLevels.Moderator),
+
+                new PermissionAbility(UPDATE_OTHER_USER_ABILITES, PermissionLevels.Admin),
+                
+                new PermissionAbility(SILENCED_ABILITY),
                 new PermissionAbility(USER_DEFAULT_INPUT_DIR),
                 new PermissionAbility(USER_MAX_INPUT_DIR),
                 

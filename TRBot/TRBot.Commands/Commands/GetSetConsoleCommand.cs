@@ -24,6 +24,7 @@ using TRBot.Misc;
 using TRBot.Utilities;
 using TRBot.Consoles;
 using TRBot.Data;
+using TRBot.Permissions;
 
 namespace TRBot.Commands
 {
@@ -90,10 +91,21 @@ namespace TRBot.Commands
                 return;
             }
 
-            string consoleName = arguments[0].ToLowerInvariant();
+            string consoleName = string.Empty;
 
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
+                //Check if this user has the ability to set the console
+                User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username.ToLowerInvariant(), context);
+
+                if (user != null && user.HasAbility(PermissionConstants.SET_CONSOLE_ABILITY) == false)
+                {
+                    QueueMessage("You do not have permission to change the console!");
+                    return;
+                } 
+
+                consoleName = arguments[0].ToLowerInvariant();
+                
                 GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleName);
 
                 if (console != null)

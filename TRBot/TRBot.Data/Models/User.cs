@@ -67,7 +67,97 @@ namespace TRBot.Data
             UserAbilities = new List<UserAbility>();
             RestrictedInputs = new List<RestrictedInput>();
         }
+
+        public User(string userName, in long level)
+            : this(userName)
+        {
+            Level = level;
+        }
         
+        /// <summary>
+        /// Adds a user ability if it doesn't already exist.
+        /// </summary>
+        /// <param name="permAbility">The PermissionAbility.</param>
+        public bool TryAddAbility(PermissionAbility permAbility)
+        {
+            if (permAbility == null)
+            {
+                return false;
+            }
+
+            //Check if the ability exists
+            UserAbility curAbility = UserAbilities.FirstOrDefault(p => p.PermAbility.Name == permAbility.Name);
+
+            //Add the ability
+            if (curAbility == null)
+            {
+                UserAbility newAbility = new UserAbility(permAbility, permAbility.value_str, permAbility.value_int, null);
+                UserAbilities.Add(newAbility);
+
+                return true;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Adds a user ability if it doesn't already exist and updates one if it does.
+        /// </summary>
+        /// <param name="permAbility">The PermissionAbility.</param>
+        /// <param name="valueStr">The string value of the ability.</param>
+        /// <param name="valueInt">The integer value of the ability.</param>
+        /// <param name="expirationDate">The date when the ability expires.</param>
+        public bool AddAbility(PermissionAbility permAbility, string valueStr, in int valueInt,
+            in DateTime? expirationDate)
+        {
+            if (permAbility == null)
+            {
+                return false;
+            }
+
+            //Check if the ability exists
+            UserAbility curAbility = UserAbilities.FirstOrDefault(p => p.PermAbility.Name == permAbility.Name);
+
+            //Add the ability
+            if (curAbility == null)
+            {
+                UserAbility newAbility = new UserAbility(permAbility, valueStr, valueInt, expirationDate);
+                UserAbilities.Add(newAbility);
+            }
+            //Update the ability
+            else
+            {
+                curAbility.value_str = valueStr;
+                curAbility.value_int = valueInt;
+                curAbility.expiration = expirationDate;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Removes a user ability with a given name.
+        /// </summary>
+        /// <param name="abilityName">The name of the ability to remove.</param>
+        public bool RemoveAbility(string abilityName)
+        {
+            //Find the ability
+            UserAbility ability = UserAbilities.FirstOrDefault(p => p.PermAbility.Name == abilityName);
+
+            if (ability != null)
+            {
+                UserAbilities.Remove(ability);
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool HasAbility(string abilityName)
+        {
+            return TryGetAbility(abilityName, out UserAbility ability);
+        }
+
         public bool TryGetAbility(string abilityName, out UserAbility userAbility)
         {
             DateTime now = DateTime.UtcNow;

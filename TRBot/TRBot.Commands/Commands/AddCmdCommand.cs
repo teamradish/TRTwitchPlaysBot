@@ -23,6 +23,7 @@ using TRBot.Connection;
 using TRBot.Misc;
 using TRBot.Utilities;
 using TRBot.Data;
+using TRBot.Permissions;
 
 namespace TRBot.Commands
 {
@@ -31,7 +32,7 @@ namespace TRBot.Commands
     /// </summary>
     public sealed class AddCmdCommand : BaseCommand
     {
-        private string UsageMessage = $"Usage - \"command name\", \"type w/namespace\", \"argString - optional\", \"level (int)\", \"enabled (bool)\" \"displayInHelp (bool)\"";
+        private string UsageMessage = $"Usage - \"command name\", \"type w/namespace\", \"argString - optional\", \"level (string/int)\", \"enabled (bool)\" \"displayInHelp (bool)\"";
 
         public AddCmdCommand()
         {
@@ -56,7 +57,7 @@ namespace TRBot.Commands
             string commandName = arguments[0].ToLowerInvariant();
             string className = arguments[1];
             string valueStr = string.Empty;
-            string levelStr = arguments[minArgCount];
+            string levelStr = arguments[minArgCount].ToLowerInvariant();
             string enabledStr = arguments[minArgCount + 1];
             string displayInHelpStr = arguments[minArgCount + 2];
 
@@ -70,11 +71,14 @@ namespace TRBot.Commands
                 }
             }
 
-            if (int.TryParse(levelStr, out int levelNum) == false)
+            //Parse the level
+            if (PermissionHelpers.TryParsePermissionLevel(levelStr, out PermissionLevels permLevel) == false)
             {
-                QueueMessage("Incorrect level specified.");
+                QueueMessage("Invalid level specified.");
                 return;
             }
+
+            long levelNum = (long)permLevel;
 
             if (bool.TryParse(enabledStr, out bool cmdEnabled) == false)
             {

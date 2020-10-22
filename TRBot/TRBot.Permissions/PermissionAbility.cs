@@ -27,8 +27,10 @@ namespace TRBot.Permissions
         public int id { get; set; } = 0;
 
         /// <summary>
-        /// Which permission level to automatically grant the permission on.
-        /// A value less than 0 means the permission is not granted automatically.
+        /// Which permission level to automatically grant the ability on.
+        /// A value less than 0 means the ability is not granted automatically.
+        /// <para>Permissions are incremental - that is, advancing a level grants the abilities for that
+        /// level and all levels before it.</para>
         /// </summary>
         public PermissionLevels AutoGrantOnLevel { get; set; } = (PermissionLevels)(-1);
 

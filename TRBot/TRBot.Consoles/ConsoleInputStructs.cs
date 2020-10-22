@@ -113,6 +113,13 @@ namespace TRBot.Consoles
             MaxAxisPercent = Math.Clamp(maxAxisPercent, 0, 100);
         }
 
+        public InputData(string name, in int buttonValue, in int axisValue, in InputTypes inputType,
+            in int minAxisVal, in int maxAxisVal, in int maxAxisPercent, in long inputLevel)
+            : this(name, buttonValue, axisValue, inputType, minAxisVal, maxAxisVal, maxAxisPercent)
+        {
+            level = inputLevel;
+        }
+
         public void UpdateData(in InputData inputData)
         {
             Name = inputData.Name;

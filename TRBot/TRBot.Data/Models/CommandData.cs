@@ -52,6 +52,7 @@ namespace TRBot.Data
 
         /// <summary>
         /// Whether to display the command in the command list.
+        /// If the command is disabled, it won't be displayed regardless.
         /// </summary>
         public long display_in_list { get; set; } = 1;
 

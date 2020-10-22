@@ -25,6 +25,7 @@ using TRBot.Misc;
 using TRBot.Utilities;
 using TRBot.Consoles;
 using TRBot.Data;
+using TRBot.Permissions;
 
 namespace TRBot.Commands
 {
@@ -123,7 +124,7 @@ namespace TRBot.Commands
 
             //Create the input and add it to the console
             InputData inputData = new InputData(inputName, buttonVal, axisVal, (InputTypes)inputType,
-                minAxisVal, maxAxisVal, maxAxisPercent);
+                minAxisVal, maxAxisVal, maxAxisPercent, (long)PermissionLevels.User);
 
             //Check if the input exists
             InputData existingInput = console.InputList.FirstOrDefault((inpData) => inpData.Name == inputName);

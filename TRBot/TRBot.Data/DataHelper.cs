@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Linq;
+using TRBot.Permissions;
 
 namespace TRBot.Data
 {
@@ -159,8 +160,12 @@ namespace TRBot.Data
             //If the user doesn't exist, add it
             if (user == null)
             {
-                user = new User(userName);
+                //Add the lowered version of their name to simplify retrieval, and give them User permissions
+                user = new User(userName.ToLowerInvariant(), (long)PermissionLevels.User);
                 context.Users.Add(user);
+
+                //Update this user's abilities off the bat
+                UpdateUserAutoGrantAbilities(user, context);
 
                 context.SaveChanges();
 
@@ -168,6 +173,88 @@ namespace TRBot.Data
             }
 
             return user;
+        }
+
+        /// <summary>
+        /// Fully updates a user's available abilities based on their current level.
+        /// </summary>
+        /// <param name="user">The User object to update the abilities on.</param>
+        /// <param name="newLevel">The new level the user will be set to.</param>
+        /// <param name="context">The open database context.</param>
+        public static void UpdateUserAutoGrantAbilities(User user, BotDBContext context)
+        {
+            //First, remove all auto grant abilities the user has
+            UserAbility[] userAbilities = user.UserAbilities.ToArray();
+            for (int i = 0; i < userAbilities.Length; i++)
+            {
+                PermissionAbility pAbility = userAbilities[i].PermAbility;
+
+                if ((long)pAbility.AutoGrantOnLevel >= 0)
+                {
+                    user.RemoveAbility(pAbility.Name);
+                }
+            }
+
+            long originalLevel = user.Level;
+
+            //Get all auto grant abilities up to the user's level
+            IEnumerable<PermissionAbility> permAbilities =
+                context.PermAbilities.Where(p => (long)p.AutoGrantOnLevel >= 0
+                    && (long)p.AutoGrantOnLevel <= originalLevel);
+
+            //Add all of those abilities
+            foreach (PermissionAbility permAbility in permAbilities)
+            {
+                user.TryAddAbility(permAbility);
+            }
+        }
+
+        /// <summary>
+        /// Adds or removes user abilities upon changing the user's level.
+        /// </summary>
+        /// <param name="user">The User object to adjust the abilities on.</param>
+        /// <param name="newLevel">The new level the user will be set to.</param>
+        /// <param name="context">The open database context.</param>
+        public static void AdjustUserAbilitiesOnLevel(User user, long newLevel, BotDBContext context)
+        {
+            long originalLevel = user.Level;
+
+            //Nothing to do here if the levels are the same
+            if (originalLevel == newLevel)
+            {
+                return;
+            }
+
+            //Remove all abilities down to the new level
+            if (originalLevel > newLevel)
+            {
+                //Look for all auto grant abilities that are less than or equal to the original level
+                //and greater than the new level
+                IEnumerable<PermissionAbility> permAbilities =
+                    context.PermAbilities.Where(p => (long)p.AutoGrantOnLevel >= 0
+                        && (long)p.AutoGrantOnLevel <= originalLevel && (long)p.AutoGrantOnLevel > newLevel);
+            
+                //Remove all these abilities
+                foreach (PermissionAbility pAbility in permAbilities)
+                {
+                    user.RemoveAbility(pAbility.Name);
+                }
+            }
+            //Add all abilities up to the new level
+            else if (originalLevel < newLevel)
+            {
+                //Look for all auto grant abilities that are greater than the original level
+                //and less than or equal to the new level
+                IEnumerable<PermissionAbility> permAbilities =
+                    context.PermAbilities.Where(p => (long)p.AutoGrantOnLevel >= 0
+                        && (long)p.AutoGrantOnLevel > originalLevel && (long)p.AutoGrantOnLevel <= newLevel);
+
+                //Add all these abilities
+                foreach (PermissionAbility pAbility in permAbilities)
+                {
+                    user.TryAddAbility(pAbility);
+                }
+            }
         }
     }
 }

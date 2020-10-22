@@ -33,7 +33,7 @@ namespace TRBot.Commands
     {
         public bool Enabled = true;
         public bool DisplayInHelp = true;
-        public int Level = 0;
+        public long Level = 0;
         public string ValueStr = string.Empty;
 
         protected CommandHandler CmdHandler = null;

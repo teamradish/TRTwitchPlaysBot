@@ -101,7 +101,7 @@ namespace TRBot.Commands
         }
 
         public bool AddCommand(string commandName, string commandTypeName, string valueStr,
-            in int level, in bool commandEnabled, in bool displayInHelp)
+            in long level, in bool commandEnabled, in bool displayInHelp)
         {
             Type commandType = Type.GetType(commandTypeName, false, true);
             if (commandType == null)

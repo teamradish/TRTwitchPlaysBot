@@ -48,6 +48,13 @@ namespace TRBot.Permissions
 
         }
 
+        public UserAbility(PermissionAbility permAbility, string valueStr, in int valueInt, in DateTime? expirationDate)
+            : this(valueStr, valueInt, expirationDate)
+        {
+            PermAbility = permAbility;
+            permability_id = PermAbility.id;
+        }
+
         public UserAbility(string valueStr, in int valueInt, in DateTime? expirationDate)
         {
             value_str = valueStr;
