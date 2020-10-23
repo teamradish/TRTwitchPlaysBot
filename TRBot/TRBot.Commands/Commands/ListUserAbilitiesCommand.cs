@@ -30,14 +30,13 @@ using TRBot.Permissions;
 namespace TRBot.Commands
 {
     /// <summary>
-    /// Updates a user's abilities.
-    /// For use if changing a user's level outside the application, such as directly through the database.
+    /// Lists a user's abilities.
     /// </summary>
-    public sealed class UpdateUserAbilitiesCommand : BaseCommand
+    public sealed class ListUserAbilitiesCommand : BaseCommand
     {
         private string UsageMessage = "Usage: \"username\"";
 
-        public UpdateUserAbilitiesCommand()
+        public ListUserAbilitiesCommand()
         {
             
         }
@@ -46,7 +45,7 @@ namespace TRBot.Commands
         {
             List<string> arguments = args.Command.ArgumentsAsList;
 
-            //This supports updating another user's abilities if provided as an argument, but only one user at a time
+            //This supports listing another user's abilities if provided as an argument, but only one user at a time
             if (arguments.Count > 1)
             {
                 QueueMessage(UsageMessage);
@@ -58,44 +57,46 @@ namespace TRBot.Commands
             //Get the user calling this
             string thisUserName = args.Command.ChatMessage.Username.ToLowerInvariant();
 
-            User thisUser = DataHelper.GetUserNoOpen(thisUserName, context);
-            User changedUser = thisUser;
+            User user = DataHelper.GetUserNoOpen(thisUserName, context);
 
-            //Check to update another user's abilities
+            //Check to list another user's abilities
             if (arguments.Count == 1)
             {
-                //Check if this user has permission to do this
-                if (thisUser.TryGetAbility(PermissionConstants.UPDATE_OTHER_USER_ABILITES, out UserAbility ability) == false)
-                {
-                    QueueMessage("You do not have permission to update another user's abilities!");
-                    return;
-                }
-
                 string otherUserName = arguments[0].ToLowerInvariant();
 
-                changedUser = DataHelper.GetUserNoOpen(otherUserName, context);
-
-                if (changedUser == null)
-                {
-                    QueueMessage("A user with this name does not exist in the database!");
-                    return;
-                }
-
-                //Prohibit updating abilities for higher levels
-                if (thisUser.Level < changedUser.Level)
-                {
-                    QueueMessage("You cannot update the abilities for someone higher in level than you!");
-                    return;
-                }
+                user = DataHelper.GetUserNoOpen(otherUserName, context);
             }
 
-            //Fully update the abilities
-            DataHelper.UpdateUserAutoGrantAbilities(changedUser, context);
+            if (user == null)
+            {
+                QueueMessage("A user with this name does not exist in the database!");
+                return;
+            }
 
-            //Save the changes
-            context.SaveChanges();
+            //No abilities
+            if (user.UserAbilities.Count == 0)
+            {
+                QueueMessage($"{user.Name} has no abilities!");
+                return;
+            }
 
-            QueueMessage("Updated user abilities!");
+            StringBuilder strBuilder = new StringBuilder(250);
+
+            strBuilder.Append(user.Name).Append("'s abilities: ");
+
+            for (int i = 0; i < user.UserAbilities.Count; i++)
+            {
+                UserAbility ability = user.UserAbilities[i];
+
+                strBuilder.Append(ability.PermAbility.Name);
+                strBuilder.Append(',').Append(' ');
+            }
+
+            strBuilder.Remove(strBuilder.Length - 2, 2);
+
+            int maxCharCount = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.BOT_MSG_CHAR_LIMIT, context, 500L);
+
+            QueueMessageSplit(strBuilder.ToString(), maxCharCount, ", ");
         }
     }
 }

@@ -88,6 +88,15 @@ namespace TRBot.Commands
                     return;
                 }
 
+                //Check if the user has permission to perform this command
+                User user = DataHelper.GetUser(args.Command.ChatMessage.Username);
+
+                if (user != null && user.Level < command.Level)
+                {
+                    DataContainer.MessageHandler.QueueMessage("You do not have permission to do that!");
+                    return;
+                }
+
                 //Execute the command
                 command.ExecuteCommand(args);
             }

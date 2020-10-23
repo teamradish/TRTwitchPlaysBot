@@ -163,7 +163,8 @@ namespace TRBot.Data
             DateTime now = DateTime.UtcNow;
             
             //Check for name and expiration
-            userAbility = UserAbilities.FirstOrDefault(p => p.PermAbility.Name == abilityName && p.expiration != null && p.expiration > now);
+            userAbility = UserAbilities.FirstOrDefault(p => (p.PermAbility?.Name == abilityName)
+                && (p.expiration == null || (p.expiration != null && p.expiration > now)));
 
             return (userAbility != null);
         }

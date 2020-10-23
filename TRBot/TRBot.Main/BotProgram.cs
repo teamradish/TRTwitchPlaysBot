@@ -499,21 +499,6 @@ namespace TRBot.Main
                 return;
             }
 
-            //It's a valid message, so process it
-                
-            //Ignore if user is silenced
-            //if (userData.Silenced == true)
-            //{
-            //    return;
-            //}
-
-            //Ignore based on user level and permissions
-            //if (userData.Level < -1)//BotProgram.BotData.InputPermissions)
-            //{
-            //    BotProgram.MsgHandler.QueueMessage($"Inputs are restricted to levels {(AccessLevels.Levels)BotProgram.BotData.InputPermissions} and above");
-            //    return;
-            //}
-
             #region Parser Post-Process Validation
             
             /* All this validation may be able to be performed faster.
@@ -522,12 +507,25 @@ namespace TRBot.Main
 
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                InputValidation validation = default;
-
                 User user = DataHelper.GetOrAddUserNoOpen(e.UsrMessage.Username, context, out bool added);
                 
+                //Check if the user is silenced and ignore the message if so
+                if (user.HasAbility(PermissionConstants.SILENCED_ABILITY) == true)
+                {
+                    return;
+                }
+
+                long globalInputPermLevel = DataHelper.GetSettingIntNoOpen(SettingsConstants.GLOBAL_INPUT_LEVEL, context, 0L);
+
+                //Ignore based on user level and permissions
+                if (user.Level < globalInputPermLevel)
+                {
+                    MsgHandler.QueueMessage($"Inputs are restricted to levels {(PermissionLevels)globalInputPermLevel} and above.");
+                    return;
+                }
+
                 //Check for restricted inputs on this user
-                validation = ParserPostProcess.InputSequenceContainsRestrictedInputs(inputSequence, user.GetRestrictedInputs());
+                InputValidation validation = ParserPostProcess.InputSequenceContainsRestrictedInputs(inputSequence, user.GetRestrictedInputs());
 
                 if (validation.InputValidationType != InputValidationTypes.Valid)
                 {

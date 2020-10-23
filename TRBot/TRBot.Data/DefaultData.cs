@@ -77,6 +77,7 @@ namespace TRBot.Data
                 SettingsHelper(LAST_CONSOLE, 1L),
                 SettingsHelper(LAST_VCONTROLLER_TYPE, (long)VirtualControllerTypes.vJoy),
                 SettingsHelper(JOYSTICK_COUNT, 1L),
+                SettingsHelper(GLOBAL_INPUT_LEVEL, (long)PermissionLevels.User),
             };
 
             return defaultSettings;
@@ -123,6 +124,8 @@ namespace TRBot.Data
                 new CommandData("removememe", "TRBot.Commands.RemoveMemeCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("viewlog", "TRBot.Commands.ViewGameLogCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("stopall", "TRBot.Commands.StopAllInputsCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("userabilities", "TRBot.Commands.ListUserAbilitiesCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("updateabilities", "TRBot.Commands.UpdateUserAbilitiesCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
 
@@ -142,7 +145,7 @@ namespace TRBot.Data
                 new CommandData("addinput", "TRBot.Commands.AddInputCommand", (long)PermissionLevels.Admin, true, true),
                 new CommandData("removeinput", "TRBot.Commands.RemoveInputCommand", (long)PermissionLevels.Admin, true, true),
                 new CommandData("setinputlevel", "TRBot.Commands.SetInputLevelCommand", (long)PermissionLevels.Admin, true, true),
-                new CommandData("updateabilities", "TRBot.Commands.UpdateUserAbilitiesCommand", (long)PermissionLevels.Admin, true, true),
+                new CommandData("inputperms", "TRBot.Commands.GlobalInputPermissionsCommand", (long)PermissionLevels.Admin, true, true),
 
                 new CommandData("exec", "TRBot.Commands.ExecCommand", (long)PermissionLevels.Superadmin, false, false),
             };
@@ -194,6 +197,7 @@ namespace TRBot.Data
                 new PermissionAbility(SET_MAX_INPUT_DUR, PermissionLevels.Moderator),
 
                 new PermissionAbility(UPDATE_OTHER_USER_ABILITES, PermissionLevels.Admin),
+                new PermissionAbility(SET_GLOBAL_INPUT_LEVEL, PermissionLevels.Admin),
                 
                 new PermissionAbility(SILENCED_ABILITY),
                 new PermissionAbility(USER_DEFAULT_INPUT_DIR),

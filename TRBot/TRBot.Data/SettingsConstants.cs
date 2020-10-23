@@ -72,6 +72,8 @@ namespace TRBot.Data
         public const string LAST_VCONTROLLER_TYPE = "last_vcontroller_type";
         public const string JOYSTICK_COUNT = "joystick_count";
 
+        public const string GLOBAL_INPUT_LEVEL = "global_input_level";
+
         public const string FIRST_LAUNCH = "first_launch";
         public const string FORCE_INIT_DEFAULTS = "force_init_defaults";
         public const string DATA_VERSION_NUM = "data_version";

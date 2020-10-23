@@ -52,16 +52,17 @@ namespace TRBot.Permissions
         public const string USER_MAX_INPUT_DIR = "usermaxinputdur";
 
         public const string UPDATE_OTHER_USER_ABILITES = "updateotheruserabilities";
+        public const string SET_GLOBAL_INPUT_LEVEL = "setglobalinputlevel";
 
         //Abilities for games/extras
-        public const string BET_ABILITY = "betability";
-        public const string DUEL_ABILITY = "duelability";
-        public const string GROUP_BET_ABILITY = "groupbetability";
-        public const string JUMP_ROPE_ABILITY = "jumpropeability";
-        public const string FEED_ABILITY = "feedability";
-        public const string INPUT_EXERCISE_ABILITY = "inputexerciseability";
-        public const string CALCULATE_ABILITY = "calculateability";
-        public const string CHATBOT_ABILITY = "chatbotability";
-        public const string BINGO_ABILITY = "bingoability";
+        public const string BET_ABILITY = "bet";
+        public const string DUEL_ABILITY = "duel";
+        public const string GROUP_BET_ABILITY = "groupbet";
+        public const string JUMP_ROPE_ABILITY = "jumprope";
+        public const string FEED_ABILITY = "feed";
+        public const string INPUT_EXERCISE_ABILITY = "inputexercise";
+        public const string CALCULATE_ABILITY = "calculate";
+        public const string CHATBOT_ABILITY = "chatbot";
+        public const string BINGO_ABILITY = "bingo";
     }
 }
