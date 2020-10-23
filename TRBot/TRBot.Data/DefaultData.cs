@@ -127,6 +127,7 @@ namespace TRBot.Data
                 new CommandData("removememe", "TRBot.Commands.RemoveMemeCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("viewlog", "TRBot.Commands.ViewGameLogCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("stopall", "TRBot.Commands.StopAllInputsCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("allabilities", "TRBot.Commands.ListPermissionAbilitiesCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("userabilities", "TRBot.Commands.ListUserAbilitiesCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("updateabilities", "TRBot.Commands.UpdateUserAbilitiesCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("level", "TRBot.Commands.LevelCommand", (long)PermissionLevels.User, true, true),
@@ -142,6 +143,8 @@ namespace TRBot.Data
                 new CommandData("defaultinputdur", "TRBot.Commands.DefaultInputDurCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("maxinputdur", "TRBot.Commands.MaxInputDurCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("setlevel", "TRBot.Commands.SetUserLevelCommand", (long)PermissionLevels.Moderator, true, true),
+                new CommandData("addability", "TRBot.Commands.AddUserAbilityCommand", (long)PermissionLevels.Moderator, true, true),
+                new CommandData("removeability", "TRBot.Commands.RemoveUserAbilityCommand", (long)PermissionLevels.Moderator, true, true),
 
                 new CommandData("addcmd", "TRBot.Commands.AddCmdCommand", (long)PermissionLevels.Admin, true, true),
                 new CommandData("removecmd", "TRBot.Commands.RemoveCmdCommand", (long)PermissionLevels.Admin, true, true),

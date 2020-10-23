@@ -162,11 +162,9 @@ namespace TRBot.Data
 
         public bool TryGetAbility(string abilityName, out UserAbility userAbility)
         {
-            DateTime now = DateTime.UtcNow;
-            
             //Check for name and expiration
-            userAbility = UserAbilities.FirstOrDefault(p => (p.PermAbility?.Name == abilityName)
-                && (p.expiration == null || (p.expiration != null && p.expiration > now)));
+            userAbility = UserAbilities.FirstOrDefault(p => p.PermAbility?.Name == abilityName
+                && p.HasExpired == false);
 
             return (userAbility != null);
         }

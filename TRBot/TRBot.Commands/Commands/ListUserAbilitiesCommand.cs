@@ -80,6 +80,8 @@ namespace TRBot.Commands
                 return;
             }
 
+            DateTime now = DateTime.UtcNow;
+
             StringBuilder strBuilder = new StringBuilder(250);
 
             strBuilder.Append(user.Name).Append("'s abilities: ");
@@ -89,6 +91,12 @@ namespace TRBot.Commands
                 UserAbility ability = user.UserAbilities[i];
 
                 strBuilder.Append(ability.PermAbility.Name);
+
+                if (ability.HasExpired == false && ability.HasExpiration == true)
+                {
+                    strBuilder.Append("(expires at ").Append(ability.expiration.ToString()).Append(" UTC)");
+                }
+
                 strBuilder.Append(',').Append(' ');
             }
 

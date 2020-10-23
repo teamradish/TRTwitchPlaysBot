@@ -57,6 +57,29 @@ namespace TRBot.Data
         /// </summary>
         public virtual PermissionAbility PermAbility { get; set; } = null;
 
+        /// <summary>
+        /// Tells if this user ability has expired.
+        /// </summary>
+        public bool HasExpired
+        {
+            get
+            {
+                //It hasn't expired if the expiration date is null
+                if (expiration.HasValue == false)
+                {
+                    return false;
+                }
+
+                //Compare dates
+                return expiration.Value >= DateTime.UtcNow;
+            }
+        }
+
+        /// <summary>
+        /// Tells if this user ability has an expiration date.
+        /// </summary>
+        public bool HasExpiration => expiration.HasValue;
+
         public UserAbility()
         {
 
