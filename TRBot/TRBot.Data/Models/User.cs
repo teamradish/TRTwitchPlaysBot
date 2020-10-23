@@ -91,7 +91,7 @@ namespace TRBot.Data
             //Add the ability
             if (curAbility == null)
             {
-                UserAbility newAbility = new UserAbility(permAbility, permAbility.value_str, permAbility.value_int, null);
+                UserAbility newAbility = new UserAbility(permAbility, permAbility.value_str, permAbility.value_int, -1, null);
                 UserAbilities.Add(newAbility);
 
                 return true;
@@ -106,9 +106,10 @@ namespace TRBot.Data
         /// <param name="permAbility">The PermissionAbility.</param>
         /// <param name="valueStr">The string value of the ability.</param>
         /// <param name="valueInt">The integer value of the ability.</param>
+        /// <param name="grantedByLevel">The level of the user that granted this ability.</param>
         /// <param name="expirationDate">The date when the ability expires.</param>
         public bool AddAbility(PermissionAbility permAbility, string valueStr, in int valueInt,
-            in DateTime? expirationDate)
+            in long grantedByLevel, in DateTime? expirationDate)
         {
             if (permAbility == null)
             {
@@ -121,7 +122,7 @@ namespace TRBot.Data
             //Add the ability
             if (curAbility == null)
             {
-                UserAbility newAbility = new UserAbility(permAbility, valueStr, valueInt, expirationDate);
+                UserAbility newAbility = new UserAbility(permAbility, valueStr, valueInt, grantedByLevel, expirationDate);
                 UserAbilities.Add(newAbility);
             }
             //Update the ability
@@ -129,6 +130,7 @@ namespace TRBot.Data
             {
                 curAbility.value_str = valueStr;
                 curAbility.value_int = valueInt;
+                curAbility.GrantedByLevel = grantedByLevel;
                 curAbility.expiration = expirationDate;
             }
 

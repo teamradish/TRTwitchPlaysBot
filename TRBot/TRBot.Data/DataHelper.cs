@@ -196,9 +196,13 @@ namespace TRBot.Data
             UserAbility[] userAbilities = user.UserAbilities.ToArray();
             for (int i = 0; i < userAbilities.Length; i++)
             {
-                PermissionAbility pAbility = userAbilities[i].PermAbility;
+                UserAbility userAbility = userAbilities[i];
+                PermissionAbility pAbility = userAbility.PermAbility;
 
-                if ((long)pAbility.AutoGrantOnLevel >= 0)
+                //Don't remove abilities that were given by a higher level
+                //This prevents users from removing constraints imposed by moderators and such
+                if ((long)pAbility.AutoGrantOnLevel >= 0
+                    && userAbility.GrantedByLevel <= user.Level)
                 {
                     user.RemoveAbility(pAbility.Name);
                 }
@@ -246,7 +250,12 @@ namespace TRBot.Data
                 //Remove all these abilities
                 foreach (PermissionAbility pAbility in permAbilities)
                 {
-                    user.RemoveAbility(pAbility.Name);
+                    //Don't remove abilities granted by a higher level
+                    if (user.TryGetAbility(pAbility.Name, out UserAbility ability) == true
+                        && ability.GrantedByLevel <= user.Level)
+                    {
+                        user.RemoveAbility(pAbility.Name);
+                    }
                 }
             }
             //Add all abilities up to the new level

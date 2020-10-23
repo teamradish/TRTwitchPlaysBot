@@ -34,6 +34,12 @@ namespace TRBot.Data
         public int value_int { get; set; } = 0;
 
         /// <summary>
+        /// Describes the level of the user that assigned this ability.
+        /// A value of -1 means no user assigned this ability.
+        /// </summary>
+        public long GrantedByLevel { get; set; } = -1;
+
+        /// <summary>
         /// When the ability expires.
         /// A value of null indicates the ability never expires.
         /// </summary>
@@ -57,16 +63,13 @@ namespace TRBot.Data
         }
 
         public UserAbility(PermissionAbility permAbility, string valueStr, in int valueInt,
-            in DateTime? expirationDate)
+            in long grantedByLevel, in DateTime? expirationDate)
         {
-            //user = userObj; 
-            //user_id = userObj.id;
-
-            //PermAbility = permAbility; 
             permability_id = permAbility.id;
 
             value_str = valueStr;
             value_int = valueInt;
+            GrantedByLevel = grantedByLevel;
             expiration = expirationDate;
         }
     }
