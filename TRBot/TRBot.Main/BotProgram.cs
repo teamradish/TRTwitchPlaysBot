@@ -48,13 +48,14 @@ namespace TRBot.Main
 
         public bool Initialized { get; private set; } = false;
 
-        public IClientService ClientService { get; private set; } = null;
-        public IVirtualControllerManager ControllerMngr { get; private set; } = null;
+        private IClientService ClientService = null;
+        private IVirtualControllerManager ControllerMngr = null;
+        private VirtualControllerTypes LastVControllerType = VirtualControllerTypes.Invalid;
 
         private Parser InputParser = null;
         private CommandHandler CmdHandler = null;
         
-        public BotMessageHandler MsgHandler { get; private set; } = new BotMessageHandler();
+        private BotMessageHandler MsgHandler = new BotMessageHandler();
         private DataReloader DataReloader = new DataReloader();
         private DataContainer DataContainer = new DataContainer();
 
@@ -161,9 +162,9 @@ namespace TRBot.Main
 
             Console.WriteLine("Setting up virtual controller manager.");
 
-            VirtualControllerTypes lastVControllerType = ValidateVirtualControllerType();
+            LastVControllerType = ValidateVirtualControllerType();
 
-            ControllerMngr = VControllerHelper.GetVControllerMngrForType(lastVControllerType);
+            ControllerMngr = VControllerHelper.GetVControllerMngrForType(LastVControllerType);
 
             //No controller manager - there's a problem
             if (ControllerMngr == null)
@@ -183,7 +184,7 @@ namespace TRBot.Main
             ControllerMngr.Initialize();
             int acquiredCount = ControllerMngr.InitControllers(controllerCount);
 
-            Console.WriteLine($"Setting up virtual controller {lastVControllerType} and acquired {acquiredCount} controllers!");
+            Console.WriteLine($"Setting up virtual controller {LastVControllerType} and acquired {acquiredCount} controllers!");
 
             DataContainer.SetControllerManager(ControllerMngr);
 
@@ -836,12 +837,69 @@ namespace TRBot.Main
 
         private void OnSoftReload()
         {
+            //Check if the virtual controller type was changed
+            if (LastVControllerTypeChanged() == true)
+            {
+                ChangeVControllerType(ValidateVirtualControllerType());
+
+                return; 
+            }
+        
             ReinitVControllerCount();
         }
 
         private void OnHardReload()
         {
+            //Check if the virtual controller type was changed
+            if (LastVControllerTypeChanged() == true)
+            {
+                ChangeVControllerType(ValidateVirtualControllerType());
+
+                return; 
+            }
+
             ReinitVControllerCount();
+        }
+
+        private bool LastVControllerTypeChanged()
+        {
+            VirtualControllerTypes vContType = ValidateVirtualControllerType();
+
+            return (vContType != LastVControllerType);
+        }
+
+        private void ChangeVControllerType(in VirtualControllerTypes newVControllerType)
+        {
+            MsgHandler.QueueMessage("Found virtual controller manager change in database. Stopping all inputs and reinitializing virtual controllers.");
+
+            //First, stop all inputs
+            InputHandler.StopAndHaltAllInputs();
+
+            //Clean up the controller manager
+            ControllerMngr.CleanUp();
+
+            int joystickCount = (int)DataHelper.GetSettingInt(SettingsConstants.JOYSTICK_COUNT, 1L);
+
+            if (joystickCount < 1)
+            {
+                MsgHandler.QueueMessage($"New controller count of {joystickCount} in database is invalid. Falling back to 1.");
+                joystickCount = 1;
+            }
+
+            LastVControllerType = newVControllerType;
+
+            //Assign the new controller manager
+            ControllerMngr = VControllerHelper.GetVControllerMngrForType(LastVControllerType);
+
+            ControllerMngr.Initialize();
+            int acquiredCount = ControllerMngr.InitControllers(joystickCount);
+
+            DataContainer.SetControllerManager(ControllerMngr);
+
+            //Resume inputs
+            InputHandler.ResumeRunningInputs();
+
+            Console.WriteLine($"Changed to up virtual controller {LastVControllerType} and acquired {acquiredCount} controllers!");
         }
 
         private void ReinitVControllerCount()
@@ -864,12 +922,15 @@ namespace TRBot.Main
             MsgHandler.QueueMessage("Found controller count change in database. Stopping all inputs and reinitializing virtual controllers.");
 
             //First, stop all inputs
-            InputHandler.StopAllInputs();
+            InputHandler.StopAndHaltAllInputs();
 
             //Re-initialize the new number of virtual controllers
             ControllerMngr.CleanUp();
             ControllerMngr.Initialize();
             int acquiredCount = ControllerMngr.InitControllers(newJoystickCount);
+
+            //Resume inputs
+            InputHandler.ResumeRunningInputs();
 
             MsgHandler.QueueMessage($"Set up and acquired {acquiredCount} controllers!");
         }   

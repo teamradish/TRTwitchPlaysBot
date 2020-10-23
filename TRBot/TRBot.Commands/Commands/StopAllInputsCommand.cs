@@ -39,7 +39,7 @@ namespace TRBot.Commands
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
-            InputHandler.StopAllInputs();
+            InputHandler.StopThenResumeAllInputs();
 
             QueueMessage("Stopped all running inputs!");
         }

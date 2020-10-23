@@ -76,15 +76,25 @@ namespace TRBot.Misc
         /// <summary>
         /// Allows new inputs to be processed.
         /// </summary>
-        private static void ResumeRunningInputs()
+        public static void ResumeRunningInputs()
         {
             StopRunningInputs = false;
         }
 
         /// <summary>
-        /// Stops all ongoing inputs, waiting until all inputs are completely stopped.
+        /// Stops all ongoing inputs, waiting until all inputs are completely stopped, then keeps inputs halted.
         /// </summary>
-        public static async void StopAllInputs()
+        public static async void StopAndHaltAllInputs()
+        {
+            CancelRunningInputs();
+
+            await WaitAllInputsStopped();
+        }
+
+        /// <summary>
+        /// Stops all ongoing inputs, waiting until all inputs are completely stopped, then resumes them.
+        /// </summary>
+        public static async void StopThenResumeAllInputs()
         {
             //Console.WriteLine("Stopping all inputs!");
             
