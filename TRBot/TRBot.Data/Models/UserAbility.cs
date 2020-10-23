@@ -71,7 +71,7 @@ namespace TRBot.Data
                 }
 
                 //Compare dates
-                return expiration.Value >= DateTime.UtcNow;
+                return expiration.Value < DateTime.UtcNow;
             }
         }
 
