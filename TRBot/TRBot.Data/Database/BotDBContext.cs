@@ -189,6 +189,7 @@ namespace TRBot.Data
             {
                 entity.HasKey(e => e.id);
                 entity.HasOne(e => e.PermAbility).WithOne().HasForeignKey<UserAbility>(u => u.permability_id).IsRequired();
+                entity.HasIndex(e => new { e.user_id, e.permability_id }).IsUnique();
             });
 
             base.OnModelCreating(modelBuilder);
