@@ -131,6 +131,7 @@ namespace TRBot.Data
                 new CommandData("updateabilities", "TRBot.Commands.UpdateUserAbilitiesCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("level", "TRBot.Commands.LevelCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("pressedinputs", "TRBot.Commands.ListPressedInputsCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("vcontroller", "TRBot.Commands.VirtualControllerCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
 
@@ -198,15 +199,16 @@ namespace TRBot.Data
                 new PermissionAbility(BINGO_ABILITY, PermissionLevels.User),
 
                 new PermissionAbility(SET_CONSOLE_ABILITY, PermissionLevels.Moderator),
-                new PermissionAbility(SET_DEFAULT_INPUT_DUR, PermissionLevels.Moderator),
-                new PermissionAbility(SET_MAX_INPUT_DUR, PermissionLevels.Moderator),
+                new PermissionAbility(SET_DEFAULT_INPUT_DUR_ABILITY, PermissionLevels.Moderator),
+                new PermissionAbility(SET_MAX_INPUT_DUR_ABILITY, PermissionLevels.Moderator),
 
                 new PermissionAbility(UPDATE_OTHER_USER_ABILITES, PermissionLevels.Admin),
-                new PermissionAbility(SET_GLOBAL_INPUT_LEVEL, PermissionLevels.Admin),
-                
+                new PermissionAbility(SET_GLOBAL_INPUT_LEVEL_ABILITY, PermissionLevels.Admin),
+                new PermissionAbility(SET_VCONTROLLER_TYPE_ABILITY, PermissionLevels.Admin),
+
                 new PermissionAbility(SILENCED_ABILITY),
-                new PermissionAbility(USER_DEFAULT_INPUT_DIR),
-                new PermissionAbility(USER_MAX_INPUT_DIR),
+                new PermissionAbility(USER_DEFAULT_INPUT_DIR_ABILITY),
+                new PermissionAbility(USER_MAX_INPUT_DIR_ABILITY),
                 
             };
 

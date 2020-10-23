@@ -107,5 +107,46 @@ namespace TRBot.Utilities
 
             return remove;
         }
+
+        /// <summary>
+        /// Converts the string representation of an Enum to its value equivalent.
+        /// This fails if a valid Enum value isn't found.
+        /// </summary>
+        /// <param name="enumStr">The string to convert.</param>
+        /// <param name="enumValue">The Enum value returned. Defaults to the first element if not found.</param>
+        /// <returns>A bool indicating if the conversion was successful.</returns>
+        public static bool TryParseEnumValue<T>(string enumStr, out T enumValue) where T : struct, Enum
+        {
+            //Try to parse into a number
+            if (long.TryParse(enumStr, out long num) == false)
+            {
+                //Failed to parse into a number, so check if the string passed in is a valid name
+                if (Enum.TryParse<T>(enumStr, true, out T result) == false)
+                {
+                    enumValue = result;
+                    return false;
+                }
+                
+                enumValue = result;
+                return true;
+            }
+
+            //Check if the given number matches any of these values
+            T[] enumValArray = EnumUtility.GetValues<T>.EnumValues;
+
+            for (int i = 0; i < enumValArray.Length; i++)
+            {
+                //Check if the values match
+                //Note that this will cause some boxing and thus garbage
+                if (num.CompareTo(enumValArray[i]) == 0)
+                {
+                    enumValue = enumValArray[i];
+                    return true;
+                }
+            }
+
+            enumValue = enumValArray[0];
+            return false;
+        }
     }
 }

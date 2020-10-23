@@ -27,12 +27,19 @@ namespace TRBot.Data
 {
     /// <summary>
     /// A container for common data.
+    /// This is used to pass specific data around among objects.
+    /// When the data is changed in one object, it will reflect across all other objects holding onto this container.
     /// </summary>
     public class DataContainer
     {
         public BotMessageHandler MessageHandler { get; private set; } = null;
         public DataReloader DataReloader { get; private set; } = null;
         public IVirtualControllerManager ControllerMngr { get; private set; } = null;
+
+        //Unsure if this is the best way to track changes
+        //The sole purpose of this is to compare this value with the new virtual controller type
+        //This allows us to change the virtual controller if the value in the database changed
+        public VirtualControllerTypes CurVControllerType { get; private set; } = VirtualControllerTypes.Invalid;
 
         public DataContainer()
         {
@@ -52,6 +59,11 @@ namespace TRBot.Data
         public void SetControllerManager(IVirtualControllerManager controllerMngr)
         {
             ControllerMngr = controllerMngr;
+        }
+
+        public void SetCurVControllerType(in VirtualControllerTypes curVControllerType)
+        {
+            CurVControllerType = curVControllerType;
         }
     }
 }

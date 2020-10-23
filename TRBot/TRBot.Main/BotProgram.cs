@@ -49,8 +49,6 @@ namespace TRBot.Main
         public bool Initialized { get; private set; } = false;
 
         private IClientService ClientService = null;
-        private IVirtualControllerManager ControllerMngr = null;
-        private VirtualControllerTypes LastVControllerType = VirtualControllerTypes.Invalid;
 
         private Parser InputParser = null;
         private CommandHandler CmdHandler = null;
@@ -97,7 +95,7 @@ namespace TRBot.Main
                 ClientService.Disconnect();
 
             //Clean up and relinquish the virtual controllers when we're done
-            ControllerMngr?.CleanUp();
+            DataContainer?.ControllerMngr?.CleanUp();
         }
 
         public void Initialize()
@@ -162,16 +160,35 @@ namespace TRBot.Main
 
             Console.WriteLine("Setting up virtual controller manager.");
 
-            LastVControllerType = ValidateVirtualControllerType();
+            VirtualControllerTypes lastVControllerType = (VirtualControllerTypes)DataHelper.GetSettingInt(SettingsConstants.LAST_VCONTROLLER_TYPE, 0L);
 
-            ControllerMngr = VControllerHelper.GetVControllerMngrForType(LastVControllerType);
+            VirtualControllerTypes curVControllerType = VControllerHelper.ValidateVirtualControllerType(lastVControllerType, TRBotOSPlatform.CurrentOS);
+
+            //Show a message saying the previous value wasn't supported and save the changes
+            if (VControllerHelper.IsVControllerSupported(lastVControllerType, TRBotOSPlatform.CurrentOS) == false)
+            {
+                MsgHandler.QueueMessage($"Current virtual controller {lastVControllerType} is not supported by the {TRBotOSPlatform.CurrentOS} platform. Switched it to the default of {curVControllerType} for this platform.");                
+
+                using (BotDBContext context = DatabaseManager.OpenContext())
+                {
+                    Settings lastVControllerSetting = DataHelper.GetSettingNoOpen(SettingsConstants.LAST_VCONTROLLER_TYPE, context);
+                    lastVControllerSetting.value_int = (long)curVControllerType;
+                    context.SaveChanges();
+                }
+            }
+
+            DataContainer.SetCurVControllerType(curVControllerType);
+
+            IVirtualControllerManager controllerMngr = VControllerHelper.GetVControllerMngrForType(curVControllerType);
 
             //No controller manager - there's a problem
-            if (ControllerMngr == null)
+            if (controllerMngr == null)
             {
                 Console.WriteLine($"Virtual controller manager failed to initialize. This indicates an invalid {SettingsConstants.LAST_VCONTROLLER_TYPE} setting in the database or an unimplemented platform. Aborting.");
                 return;
             }
+
+            DataContainer.SetControllerManager(controllerMngr);
 
             int controllerCount = (int)DataHelper.GetSettingInt(SettingsConstants.JOYSTICK_COUNT, 1L);            
 
@@ -181,12 +198,10 @@ namespace TRBot.Main
                 Console.WriteLine("Controller count less than or equal to 0. This is invalid, so the value has been clamped to 1.");
             }
 
-            ControllerMngr.Initialize();
-            int acquiredCount = ControllerMngr.InitControllers(controllerCount);
+            DataContainer.ControllerMngr.Initialize();
+            int acquiredCount = DataContainer.ControllerMngr.InitControllers(controllerCount);
 
-            Console.WriteLine($"Setting up virtual controller {LastVControllerType} and acquired {acquiredCount} controllers!");
-
-            DataContainer.SetControllerManager(ControllerMngr);
+            Console.WriteLine($"Setting up virtual controller {curVControllerType} and acquired {acquiredCount} controllers!");
 
             CmdHandler = new CommandHandler();
             CmdHandler.Initialize(DataContainer);
@@ -297,7 +312,7 @@ namespace TRBot.Main
 
         private void OnChatCommandReceived(EvtChatCommandArgs e)
         {
-            MsgHandler.QueueMessage($"Received command \"{e.Command.CommandText}\"");
+            //MsgHandler.QueueMessage($"Received command \"{e.Command.CommandText}\"");
 
             CmdHandler.HandleCommand(e);            
         }
@@ -446,7 +461,7 @@ namespace TRBot.Main
                     User user = DataHelper.GetUserNoOpen(e.UsrMessage.Username, context);
 
                     //Check for a user-overridden max input duration
-                    if (user != null && user.TryGetAbility(PermissionConstants.USER_MAX_INPUT_DIR, out UserAbility maxDurAbility) == true)
+                    if (user != null && user.TryGetAbility(PermissionConstants.USER_MAX_INPUT_DIR_ABILITY, out UserAbility maxDurAbility) == true)
                     {
                         maxDur = maxDurAbility.value_int;
                     }
@@ -456,7 +471,7 @@ namespace TRBot.Main
                         maxDur = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.MAX_INPUT_DURATION, context, 60000L);
                     }
 
-                    if (user != null && user.TryGetAbility(PermissionConstants.USER_DEFAULT_INPUT_DIR, out UserAbility defaultDurAbility) == true)
+                    if (user != null && user.TryGetAbility(PermissionConstants.USER_DEFAULT_INPUT_DIR_ABILITY, out UserAbility defaultDurAbility) == true)
                     {
                         defaultDur = defaultDurAbility.value_int;
                     }
@@ -540,7 +555,7 @@ namespace TRBot.Main
                 }
 
                 //Check for invalid input combinations
-                validation = ParserPostProcess.ValidateInputCombos(inputSequence, usedConsole.InvalidCombos, ControllerMngr, usedConsole);
+                validation = ParserPostProcess.ValidateInputCombos(inputSequence, usedConsole.InvalidCombos, DataContainer.ControllerMngr, usedConsole);
 
                 if (validation.InputValidationType != InputValidationTypes.Valid)
                 {
@@ -553,7 +568,7 @@ namespace TRBot.Main
 
                 //Check for level permissions and ports
                 validation = ParserPostProcess.ValidateInputLvlPermsAndPorts(user.Level, inputSequence,
-                    ControllerMngr, usedConsole.ConsoleInputs);
+                    DataContainer.ControllerMngr, usedConsole.ConsoleInputs);
 
                 if (validation.InputValidationType != InputValidationTypes.Valid)
                 {
@@ -585,7 +600,7 @@ namespace TRBot.Main
                     }
                 }
 
-                InputHandler.CarryOutInput(inputSequence.Inputs, usedConsole, ControllerMngr);
+                InputHandler.CarryOutInput(inputSequence.Inputs, usedConsole, DataContainer.ControllerMngr);
             }
             else
             {
@@ -753,7 +768,7 @@ namespace TRBot.Main
             }
         }
 
-        private VirtualControllerTypes ValidateVirtualControllerType()
+        /*private VirtualControllerTypes ValidateVirtualControllerType()
         {
             VirtualControllerTypes lastVControllerType = VirtualControllerTypes.Invalid;
             using BotDBContext dbContext = DatabaseManager.OpenContext();
@@ -782,7 +797,7 @@ namespace TRBot.Main
             }
 
             return lastVControllerType;
-        }
+        }*/
 
         private void InitClientService()
         {
@@ -840,7 +855,22 @@ namespace TRBot.Main
             //Check if the virtual controller type was changed
             if (LastVControllerTypeChanged() == true)
             {
-                ChangeVControllerType(ValidateVirtualControllerType());
+                VirtualControllerTypes lastVControllerType = (VirtualControllerTypes)DataHelper.GetSettingInt(SettingsConstants.LAST_VCONTROLLER_TYPE, 0L);
+                VirtualControllerTypes supportedVCType = VControllerHelper.ValidateVirtualControllerType(lastVControllerType, TRBotOSPlatform.CurrentOS);
+
+                //Show a message saying the previous value wasn't supported
+                if (VControllerHelper.IsVControllerSupported(lastVControllerType, TRBotOSPlatform.CurrentOS) == false)
+                {
+                    MsgHandler.QueueMessage($"Current virtual controller {lastVControllerType} is not supported by the {TRBotOSPlatform.CurrentOS} platform. Switched it to the default of {supportedVCType} for this platform.");                
+                    using (BotDBContext context = DatabaseManager.OpenContext())
+                    {
+                        Settings lastVControllerSetting = DataHelper.GetSettingNoOpen(SettingsConstants.LAST_VCONTROLLER_TYPE, context);
+                        lastVControllerSetting.value_int = (long)supportedVCType;
+                        context.SaveChanges();
+                    }
+                }
+
+                ChangeVControllerType(supportedVCType);
 
                 return; 
             }
@@ -853,7 +883,22 @@ namespace TRBot.Main
             //Check if the virtual controller type was changed
             if (LastVControllerTypeChanged() == true)
             {
-                ChangeVControllerType(ValidateVirtualControllerType());
+                VirtualControllerTypes lastVControllerType = (VirtualControllerTypes)DataHelper.GetSettingInt(SettingsConstants.LAST_VCONTROLLER_TYPE, 0L);
+                VirtualControllerTypes supportedVCType = VControllerHelper.ValidateVirtualControllerType(lastVControllerType, TRBotOSPlatform.CurrentOS);
+
+                //Show a message saying the previous value wasn't supported
+                if (VControllerHelper.IsVControllerSupported(lastVControllerType, TRBotOSPlatform.CurrentOS) == false)
+                {
+                    MsgHandler.QueueMessage($"Current virtual controller {lastVControllerType} is not supported by the {TRBotOSPlatform.CurrentOS} platform. Switched it to the default of {supportedVCType} for this platform.");                
+                    using (BotDBContext context = DatabaseManager.OpenContext())
+                    {
+                        Settings lastVControllerSetting = DataHelper.GetSettingNoOpen(SettingsConstants.LAST_VCONTROLLER_TYPE, context);
+                        lastVControllerSetting.value_int = (long)supportedVCType;
+                        context.SaveChanges();
+                    }
+                }
+
+                ChangeVControllerType(supportedVCType);
 
                 return; 
             }
@@ -863,9 +908,9 @@ namespace TRBot.Main
 
         private bool LastVControllerTypeChanged()
         {
-            VirtualControllerTypes vContType = ValidateVirtualControllerType();
+            VirtualControllerTypes vContType = (VirtualControllerTypes)DataHelper.GetSettingInt(SettingsConstants.LAST_VCONTROLLER_TYPE, 0L);
 
-            return (vContType != LastVControllerType);
+            return (vContType != DataContainer.CurVControllerType);
         }
 
         private void ChangeVControllerType(in VirtualControllerTypes newVControllerType)
@@ -876,7 +921,7 @@ namespace TRBot.Main
             InputHandler.StopAndHaltAllInputs();
 
             //Clean up the controller manager
-            ControllerMngr.CleanUp();
+            DataContainer.ControllerMngr?.CleanUp();
 
             int joystickCount = (int)DataHelper.GetSettingInt(SettingsConstants.JOYSTICK_COUNT, 1L);
 
@@ -886,25 +931,25 @@ namespace TRBot.Main
                 joystickCount = 1;
             }
 
-            LastVControllerType = newVControllerType;
+            DataContainer.SetCurVControllerType(newVControllerType);
 
             //Assign the new controller manager
-            ControllerMngr = VControllerHelper.GetVControllerMngrForType(LastVControllerType);
+            IVirtualControllerManager controllerMngr = VControllerHelper.GetVControllerMngrForType(DataContainer.CurVControllerType);
 
-            ControllerMngr.Initialize();
-            int acquiredCount = ControllerMngr.InitControllers(joystickCount);
+            DataContainer.SetControllerManager(controllerMngr);
 
-            DataContainer.SetControllerManager(ControllerMngr);
+            DataContainer.ControllerMngr.Initialize();
+            int acquiredCount = DataContainer.ControllerMngr.InitControllers(joystickCount);
 
             //Resume inputs
             InputHandler.ResumeRunningInputs();
 
-            Console.WriteLine($"Changed to up virtual controller {LastVControllerType} and acquired {acquiredCount} controllers!");
+            MsgHandler.QueueMessage($"Changed to virtual controller {DataContainer.CurVControllerType} and acquired {acquiredCount} controllers!");
         }
 
         private void ReinitVControllerCount()
         {
-            int curVControllerCount = ControllerMngr.ControllerCount;
+            int curVControllerCount = DataContainer.ControllerMngr.ControllerCount;
             int newJoystickCount = (int)DataHelper.GetSettingInt(SettingsConstants.JOYSTICK_COUNT, 1L);
 
             if (newJoystickCount < 1)
@@ -925,9 +970,9 @@ namespace TRBot.Main
             InputHandler.StopAndHaltAllInputs();
 
             //Re-initialize the new number of virtual controllers
-            ControllerMngr.CleanUp();
-            ControllerMngr.Initialize();
-            int acquiredCount = ControllerMngr.InitControllers(newJoystickCount);
+            DataContainer.ControllerMngr.CleanUp();
+            DataContainer.ControllerMngr.Initialize();
+            int acquiredCount = DataContainer.ControllerMngr.InitControllers(newJoystickCount);
 
             //Resume inputs
             InputHandler.ResumeRunningInputs();

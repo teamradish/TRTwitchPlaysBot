@@ -75,7 +75,7 @@ namespace TRBot.Commands
             User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
 
             //Check if this user has the ability to set this level
-            if (user != null && user.HasAbility(PermissionConstants.SET_GLOBAL_INPUT_LEVEL) == false)
+            if (user != null && user.HasAbility(PermissionConstants.SET_GLOBAL_INPUT_LEVEL_ABILITY) == false)
             {
                 QueueMessage("You do not have the ability to set the global input level!");
                 return;

@@ -34,25 +34,26 @@ namespace TRBot.Permissions
         /// <summary>
         /// The ability to set the global default input duration.
         /// </summary>
-        public const string SET_DEFAULT_INPUT_DUR = "setdefaultinputdur";
+        public const string SET_DEFAULT_INPUT_DUR_ABILITY = "setdefaultinputdur";
         
         /// <summary>
         /// The ability to set the global max input duration.
         /// </summary>
-        public const string SET_MAX_INPUT_DUR = "setmaxinputdur";
+        public const string SET_MAX_INPUT_DUR_ABILITY = "setmaxinputdur";
 
         /// <summary>
         /// User-specific default input duration.
         /// </summary>
-        public const string USER_DEFAULT_INPUT_DIR = "userdefaultinputdur";
+        public const string USER_DEFAULT_INPUT_DIR_ABILITY = "userdefaultinputdur";
 
         /// <summary>
         /// User-specific max input duration.
         /// </summary>
-        public const string USER_MAX_INPUT_DIR = "usermaxinputdur";
+        public const string USER_MAX_INPUT_DIR_ABILITY = "usermaxinputdur";
 
         public const string UPDATE_OTHER_USER_ABILITES = "updateotheruserabilities";
-        public const string SET_GLOBAL_INPUT_LEVEL = "setglobalinputlevel";
+        public const string SET_GLOBAL_INPUT_LEVEL_ABILITY = "setglobalinputlevel";
+        public const string SET_VCONTROLLER_TYPE_ABILITY = "setvcontrollertype";
 
         //Abilities for games/extras
         public const string BET_ABILITY = "bet";

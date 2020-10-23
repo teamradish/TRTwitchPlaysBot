@@ -79,5 +79,36 @@ namespace TRBot.Misc
                     return false;
             }
         }
+
+        /// <summary>
+        /// Validates a given virtual controller type by switching an unsupported type to a supported one on a given operating system.
+        /// </summary>
+        /// <param name="lastVControllerType">The virtual controller type.</param>
+        /// <param name="operatingSystem">The operating system.</param>
+        /// <returns>A valid virtual controller type on the given operating system.</returns>
+        public static VirtualControllerTypes ValidateVirtualControllerType(in VirtualControllerTypes lastVControllerType, in TRBotOSPlatform.OS operatingSystem)
+        {
+            return ValidateVirtualControllerType((long)lastVControllerType, operatingSystem);
+        }
+
+        /// <summary>
+        /// Validates a given virtual controller type by switching an unsupported type to a supported one on a given operating system.
+        /// </summary>
+        /// <param name="lastVControllerType">The virtual controller type.</param>
+        /// <param name="operatingSystem">The operating system.</param>
+        /// <returns>A valid virtual controller type on the given operating system.</returns>
+        public static VirtualControllerTypes ValidateVirtualControllerType(in long lastVControllerType, in TRBotOSPlatform.OS operatingSystem)
+        {
+            VirtualControllerTypes newVControllerType = (VirtualControllerTypes)lastVControllerType;
+
+            //Check if the virtual controller type is supported on this platform
+            if (IsVControllerSupported(newVControllerType, operatingSystem) == false)
+            {
+                //It's not supported, so return a supported value to prevent issues on this platform
+                newVControllerType = VControllerHelper.GetDefaultVControllerTypeForPlatform(operatingSystem);
+            }
+
+            return newVControllerType;
+        }
     }
 }
