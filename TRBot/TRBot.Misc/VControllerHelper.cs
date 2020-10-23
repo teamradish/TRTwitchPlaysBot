@@ -4,10 +4,9 @@ using TRBot.Parsing;
 using TRBot.Connection;
 using TRBot.Consoles;
 using TRBot.VirtualControllers;
-using TRBot.Data;
 using TRBot.Utilities;
 
-namespace TRBot.Main
+namespace TRBot.Misc
 {
     /// <summary>
     /// Contains helper methods regarding virtual controllers.

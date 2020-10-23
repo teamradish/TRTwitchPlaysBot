@@ -18,14 +18,16 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace TRBot.Data
+namespace TRBot.VirtualControllers
 {
     /// <summary>
-    /// The types of client services available.
+    /// The types of virtual controllers available.
     /// </summary>
-    public enum ClientServiceTypes
+    public enum VirtualControllerTypes
     {
-        Terminal = 0,
-        Twitch = 1
+        Invalid = 0,
+        vJoy = 1,
+        uinput = 2,
+        xdotool = 3
     }
 }

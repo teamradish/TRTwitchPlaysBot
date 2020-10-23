@@ -21,6 +21,7 @@ using System.IO;
 using System.Linq;
 using TRBot.Misc;
 using TRBot.Utilities;
+using TRBot.VirtualControllers;
 
 namespace TRBot.Data
 {
@@ -31,6 +32,7 @@ namespace TRBot.Data
     {
         public BotMessageHandler MessageHandler { get; private set; } = null;
         public DataReloader DataReloader { get; private set; } = null;
+        public IVirtualControllerManager ControllerMngr { get; private set; } = null;
 
         public DataContainer()
         {
@@ -45,6 +47,11 @@ namespace TRBot.Data
         public void SetDataReloader(DataReloader dataReloader)
         {
             DataReloader = dataReloader;
+        }
+
+        public void SetControllerManager(IVirtualControllerManager controllerMngr)
+        {
+            ControllerMngr = controllerMngr;
         }
     }
 }

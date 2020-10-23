@@ -185,6 +185,8 @@ namespace TRBot.Main
 
             Console.WriteLine($"Setting up virtual controller {lastVControllerType} and acquired {acquiredCount} controllers!");
 
+            DataContainer.SetControllerManager(ControllerMngr);
+
             CmdHandler = new CommandHandler();
             CmdHandler.Initialize(DataContainer);
 
@@ -866,6 +868,7 @@ namespace TRBot.Main
 
             //Re-initialize the new number of virtual controllers
             ControllerMngr.CleanUp();
+            ControllerMngr.Initialize();
             int acquiredCount = ControllerMngr.InitControllers(newJoystickCount);
 
             MsgHandler.QueueMessage($"Set up and acquired {acquiredCount} controllers!");

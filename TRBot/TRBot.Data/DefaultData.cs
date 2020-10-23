@@ -20,9 +20,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using TRBot.Consoles;
+using TRBot.Connection;
 using TRBot.VirtualControllers;
+using TRBot.Misc;
 using TRBot.Parsing;
 using TRBot.Permissions;
+using TRBot.Utilities;
 using static TRBot.Data.SettingsConstants;
 using static TRBot.Permissions.PermissionConstants;
 
@@ -75,7 +78,7 @@ namespace TRBot.Data
                 SettingsHelper(DEFAULT_INPUT_DURATION, 200L),
                 SettingsHelper(MAX_INPUT_DURATION, 60000L),
                 SettingsHelper(LAST_CONSOLE, 1L),
-                SettingsHelper(LAST_VCONTROLLER_TYPE, (long)VirtualControllerTypes.vJoy),
+                SettingsHelper(LAST_VCONTROLLER_TYPE, (long)VControllerHelper.GetDefaultVControllerTypeForPlatform(TRBotOSPlatform.CurrentOS)),
                 SettingsHelper(JOYSTICK_COUNT, 1L),
                 SettingsHelper(GLOBAL_INPUT_LEVEL, (long)PermissionLevels.User),
             };
@@ -126,6 +129,8 @@ namespace TRBot.Data
                 new CommandData("stopall", "TRBot.Commands.StopAllInputsCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("userabilities", "TRBot.Commands.ListUserAbilitiesCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("updateabilities", "TRBot.Commands.UpdateUserAbilitiesCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("level", "TRBot.Commands.LevelCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("pressedinputs", "TRBot.Commands.ListPressedInputsCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
 
