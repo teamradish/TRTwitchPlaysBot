@@ -306,10 +306,11 @@ namespace TRBot.Main
                 //Look for a user with this name
                 User user = null;
                 string username = e.UsrMessage.Username;
+
                 if (string.IsNullOrEmpty(username) == false)
                 {
                     user = DataHelper.GetOrAddUserNoOpen(username, context, out bool added);
-                    
+
                     if (added == true)
                     {
                         //Get the new user message and replace the variable with their name

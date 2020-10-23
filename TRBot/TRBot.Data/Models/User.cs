@@ -86,7 +86,7 @@ namespace TRBot.Data
             }
 
             //Check if the ability exists
-            UserAbility curAbility = UserAbilities.FirstOrDefault(p => p.PermAbility.Name == permAbility.Name);
+            UserAbility curAbility = UserAbilities.FirstOrDefault(p => p.PermAbility?.Name == permAbility.Name);
 
             //Add the ability
             if (curAbility == null)
@@ -116,7 +116,7 @@ namespace TRBot.Data
             }
 
             //Check if the ability exists
-            UserAbility curAbility = UserAbilities.FirstOrDefault(p => p.PermAbility.Name == permAbility.Name);
+            UserAbility curAbility = UserAbilities.FirstOrDefault(p => p.PermAbility?.Name == permAbility.Name);
 
             //Add the ability
             if (curAbility == null)

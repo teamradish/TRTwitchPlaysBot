@@ -16,8 +16,9 @@
 
 using System;
 using System.Collections.Concurrent;
+using TRBot.Permissions;
 
-namespace TRBot.Permissions
+namespace TRBot.Data
 {
     /// <summary>
     /// Describes an ability the user has.
@@ -39,7 +40,14 @@ namespace TRBot.Permissions
         public DateTime? expiration { get; set; } = null;
 
         /// <summary>
+        /// The User associated with the ability.
+        /// This is used by the database and should not be assigned or modified manually.
+        /// </summary>
+        public virtual User user { get; set; } = null;
+
+        /// <summary>
         /// The PermissionAbility this references.
+        /// This is used by the database and should not be assigned or modified manually.
         /// </summary>
         public virtual PermissionAbility PermAbility { get; set; } = null;
 
@@ -48,15 +56,15 @@ namespace TRBot.Permissions
 
         }
 
-        public UserAbility(PermissionAbility permAbility, string valueStr, in int valueInt, in DateTime? expirationDate)
-            : this(valueStr, valueInt, expirationDate)
+        public UserAbility(PermissionAbility permAbility, string valueStr, in int valueInt,
+            in DateTime? expirationDate)
         {
-            PermAbility = permAbility;
-            permability_id = PermAbility.id;
-        }
+            //user = userObj; 
+            //user_id = userObj.id;
 
-        public UserAbility(string valueStr, in int valueInt, in DateTime? expirationDate)
-        {
+            //PermAbility = permAbility; 
+            permability_id = permAbility.id;
+
             value_str = valueStr;
             value_int = valueInt;
             expiration = expirationDate;

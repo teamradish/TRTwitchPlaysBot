@@ -126,7 +126,9 @@ namespace TRBot.Data
         /// <returns>A user object with the given userName. null if not found.</returns>
         public static User GetUserNoOpen(string userName, BotDBContext context)
         {
-            return context.Users.FirstOrDefault(u => u.Name == userName);
+            string userNameLowered = userName.ToLowerInvariant();
+
+            return context.Users.FirstOrDefault(u => u.Name == userNameLowered);
         }
 
         /// <summary>
@@ -153,20 +155,27 @@ namespace TRBot.Data
         /// <returns>A user object with the given userName.</returns>
         public static User GetOrAddUserNoOpen(string userName, BotDBContext context, out bool added)
         {
-            User user = context.Users.FirstOrDefault(u => u.Name == userName);
+            //Add the lowered version of their name to simplify retrieval
+            string userNameLowered = userName.ToLowerInvariant();
+
+            User user = context.Users.FirstOrDefault(u => u.Name == userNameLowered);
             
             added = false;
 
             //If the user doesn't exist, add it
             if (user == null)
             {
-                //Add the lowered version of their name to simplify retrieval, and give them User permissions
-                user = new User(userName.ToLowerInvariant(), (long)PermissionLevels.User);
+                //Give them User permissions
+                user = new User(userNameLowered, (long)PermissionLevels.User);
                 context.Users.Add(user);
+
+                //Save the changes so the user object is in the database
+                context.SaveChanges();
 
                 //Update this user's abilities off the bat
                 UpdateUserAutoGrantAbilities(user, context);
 
+                //Save changes again to update the abilities
                 context.SaveChanges();
 
                 added = true;

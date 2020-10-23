@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TRBot.Data;
 
 namespace TRBot.Data.Migrations
 {
     [DbContext(typeof(BotDBContext))]
-    partial class BotDBContextModelSnapshot : ModelSnapshot
+    [Migration("20201023010439_DropUserIndexes")]
+    partial class DropUserIndexes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -259,8 +261,6 @@ namespace TRBot.Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("Name");
-
                     b.ToTable("Users", "users");
                 });
 
@@ -268,6 +268,9 @@ namespace TRBot.Data.Migrations
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("PermAbilityid")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime?>("expiration")
@@ -287,12 +290,11 @@ namespace TRBot.Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("permability_id")
-                        .IsUnique();
+                    b.HasIndex("PermAbilityid");
 
                     b.HasIndex("user_id");
 
-                    b.ToTable("UserAbilities", "userabilities");
+                    b.ToTable("UserAbility");
                 });
 
             modelBuilder.Entity("TRBot.Data.UserStats", b =>
@@ -409,9 +411,6 @@ namespace TRBot.Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
                     b.ToTable("PermissionAbilities", "permissionabilities");
                 });
 
@@ -467,10 +466,8 @@ namespace TRBot.Data.Migrations
             modelBuilder.Entity("TRBot.Data.UserAbility", b =>
                 {
                     b.HasOne("TRBot.Permissions.PermissionAbility", "PermAbility")
-                        .WithOne()
-                        .HasForeignKey("TRBot.Data.UserAbility", "permability_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany()
+                        .HasForeignKey("PermAbilityid");
 
                     b.HasOne("TRBot.Data.User", "user")
                         .WithMany("UserAbilities")
