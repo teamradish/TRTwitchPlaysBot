@@ -78,6 +78,15 @@ namespace TRBot.Data
         }
         
         /// <summary>
+        /// Sets the user's status on being opted out of bot stats.
+        /// </summary>
+        /// <param name="optIntoStats">Whether to opt into or out of bot stats.</param>
+        public void SetOptStatus(in bool optIntoStats)
+        {
+            Stats.OptedOut = (optIntoStats == true) ? 0L : 1L;
+        }
+
+        /// <summary>
         /// Adds a user ability if it doesn't already exist.
         /// </summary>
         /// <param name="permAbility">The PermissionAbility.</param>
