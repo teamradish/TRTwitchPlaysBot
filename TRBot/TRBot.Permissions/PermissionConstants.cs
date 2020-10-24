@@ -56,6 +56,8 @@ namespace TRBot.Permissions
         public const string SET_VCONTROLLER_TYPE_ABILITY = "setvcontrollertype";
         public const string SET_VCONTROLLER_COUNT_ABILITY = "setvcontrollercount";
 
+        public const string SET_GAME_MESSAGE_ABILITY = "setgamemessage";
+
         //Abilities for games/extras
         public const string BET_ABILITY = "bet";
         public const string DUEL_ABILITY = "duel";

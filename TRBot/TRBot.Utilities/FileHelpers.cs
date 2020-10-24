@@ -161,5 +161,30 @@ namespace TRBot.Utilities
                 return false;
             }
         }
+
+        /// <summary>
+        /// Attempts to save text to a file.
+        /// </summary>
+        /// <param name="fullPath">The full path including the file name.</param>
+        /// <param name="contents">The contents of the file.</param>
+        /// <returns>true if the text was successfully saved, otherwise false.</returns>
+        public static bool SaveToTextFile(string fullPath, string contents)
+        {
+            if (ValidatePathForFile(fullPath) == false)
+            {
+                return false;
+            }
+
+            try
+            {
+                File.WriteAllText(fullPath, contents);
+                return true;
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"Unable to save to file \"{fullPath}\": {exception.Message}");
+                return false;
+            }
+        }
     }
 }

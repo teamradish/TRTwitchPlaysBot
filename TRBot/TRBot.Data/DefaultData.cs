@@ -73,6 +73,8 @@ namespace TRBot.Data
                 SettingsHelper(RESUBSCRIBER_MESSAGE, "Thank you for subscribing for {1} months, {0} :D !!"),
                 SettingsHelper(SOURCE_CODE_MESSAGE, "This bot is free software licensed under the AGPL v3.0. The code repository and full license terms are at https://github.com/teamradish/TRTwitchPlaysBot - You have the right to obtain source code for the streamer's deployed version of the software."),
                 SettingsHelper(GAME_MESSAGE, "This is a game message."),
+                SettingsHelper(GAME_MESSAGE_PATH, "GameMessage.txt"),
+                SettingsHelper(GAME_MESSAGE_PATH_IS_RELATIVE, true),
                 SettingsHelper(INFO_MESSAGE, "Welcome to the channel! You can play games by submitting messages in chat. Type !inputs to see all available buttons."),
                 SettingsHelper(TUTORIAL_MESSAGE, "Hi {0}, here's how to play: https://github.com/teamradish/TRTwitchPlaysBot/wiki/Syntax-Tutorial"),
                 SettingsHelper(DEFAULT_INPUT_DURATION, 200L),
@@ -145,6 +147,8 @@ namespace TRBot.Data
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
 
+                new CommandData("setmessage", "TRBot.Commands.SetGameMessageCommand", (long)PermissionLevels.VIP, true, true),
+
                 new CommandData("reload", "TRBot.Commands.ReloadCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("listsyn", "TRBot.Commands.ListInputSynonymsCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("addsyn", "TRBot.Commands.AddInputSynonymCommand", (long)PermissionLevels.Moderator, true, true),
@@ -208,6 +212,8 @@ namespace TRBot.Data
                 new PermissionAbility(CALCULATE_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
                 new PermissionAbility(CHATBOT_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
                 new PermissionAbility(BINGO_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+
+                new PermissionAbility(SET_GAME_MESSAGE_ABILITY, PermissionLevels.VIP, PermissionLevels.VIP),
 
                 new PermissionAbility(SET_CONSOLE_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
                 new PermissionAbility(SET_DEFAULT_INPUT_DUR_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
