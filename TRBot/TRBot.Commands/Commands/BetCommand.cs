@@ -33,8 +33,6 @@ namespace TRBot.Commands
         private string UsageMessage = "Usage: \"bet amount (int)\"";
         private Random Rand = new Random();
 
-
-
         public BetCommand()
         {
 
