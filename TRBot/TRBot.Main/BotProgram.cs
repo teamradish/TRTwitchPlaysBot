@@ -351,7 +351,7 @@ namespace TRBot.Main
                     if (added == true)
                     {
                         //Get the new user message and replace the variable with their name
-                        string newUserMessage = DataHelper.GetSettingStringsNoOpen(SettingsConstants.NEW_USER_MESSAGE, context, $"Welcome to the stream, {username}!");
+                        string newUserMessage = DataHelper.GetSettingStringNoOpen(SettingsConstants.NEW_USER_MESSAGE, context, $"Welcome to the stream, {username}!");
                         newUserMessage = newUserMessage.Replace("{0}", username);
                         
                         MsgHandler.QueueMessage(newUserMessage);

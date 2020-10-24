@@ -137,6 +137,8 @@ namespace TRBot.Data
                 new CommandData("help", "TRBot.Commands.ListCmdsCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("removeability", "TRBot.Commands.RemoveUserAbilityCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("controllercount", "TRBot.Commands.ControllerCountCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("credits", "TRBot.Commands.CreditsCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("bet", "TRBot.Commands.BetCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
 

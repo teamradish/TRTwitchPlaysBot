@@ -99,7 +99,7 @@ namespace TRBot.Data
         /// <param name="context">The open database context.</param>
         /// <param name="defaultVal">The default value to fallback to if not found.</param>
         /// <returns>A string value for settingName. If the setting is not found, the default value.</returns>
-        public static string GetSettingStringsNoOpen(string settingName, BotDBContext context, string defaultVal)
+        public static string GetSettingStringNoOpen(string settingName, BotDBContext context, string defaultVal)
         {
             Settings setting = GetSettingNoOpen(settingName, context);
 
