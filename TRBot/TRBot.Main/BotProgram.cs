@@ -32,6 +32,7 @@ using TRBot.Utilities;
 using TRBot.Data;
 using TRBot.Commands;
 using TRBot.Permissions;
+using TRBot.Routines;
 using Newtonsoft.Json;
 using TwitchLib;
 using TwitchLib.Client;
@@ -312,7 +313,11 @@ namespace TRBot.Main
 
         private void InitRoutines()
         {
-            RoutineHandler.AddRoutine(new CreditsGiveRoutine(DataContainer));
+            RoutineHandler.SetDataContainer(DataContainer);
+
+            RoutineHandler.AddRoutine(new CreditsGiveRoutine());
+            RoutineHandler.AddRoutine(new PeriodicMessageRoutine());
+            RoutineHandler.AddRoutine(new ReconnectRoutine());
         }
 
 #region Events
@@ -396,37 +401,45 @@ namespace TRBot.Main
 
         private void OnBeingHosted(EvtOnHostedArgs e)
         {
-            //if (string.IsNullOrEmpty(BotSettings.MsgSettings.BeingHostedMsg) == false)
-            //{
-            //    string finalMsg = BotSettings.MsgSettings.BeingHostedMsg.Replace("{0}", e.HostedData.HostedByChannel);
-            //    MsgHandler.QueueMessage(finalMsg);
-            //}
+            string hostedMessage = DataHelper.GetSettingString(SettingsConstants.BEING_HOSTED_MESSAGE, string.Empty);
+
+            if (string.IsNullOrEmpty(hostedMessage) == false)
+            {
+                string finalMsg = hostedMessage.Replace("{0}", e.HostedData.HostedByChannel);
+                MsgHandler.QueueMessage(finalMsg);
+            }
         }
 
         private void OnNewSubscriber(EvtOnSubscriptionArgs e)
         {
-            //if (string.IsNullOrEmpty(BotSettings.MsgSettings.NewSubscriberMsg) == false)
-            //{
-            //    string finalMsg = BotSettings.MsgSettings.NewSubscriberMsg.Replace("{0}", e.SubscriptionData.DisplayName);
-            //    MsgHandler.QueueMessage(finalMsg);
-            //}
+            string newSubscriberMessage = DataHelper.GetSettingString(SettingsConstants.NEW_SUBSCRIBER_MESSAGE, string.Empty);
+
+            if (string.IsNullOrEmpty(newSubscriberMessage) == false)
+            {
+                string finalMsg = newSubscriberMessage.Replace("{0}", e.SubscriptionData.DisplayName);
+                MsgHandler.QueueMessage(finalMsg);
+            }
         }
 
         private void OnReSubscriber(EvtOnReSubscriptionArgs e)
         {
-            //if (string.IsNullOrEmpty(BotSettings.MsgSettings.ReSubscriberMsg) == false)
-            //{
-            //    string finalMsg = BotSettings.MsgSettings.ReSubscriberMsg.Replace("{0}", e.ReSubscriptionData.DisplayName).Replace("{1}", e.ReSubscriptionData.Months.ToString());
-            //    MsgHandler.QueueMessage(finalMsg);
-            //}
+            string resubscriberMessage = DataHelper.GetSettingString(SettingsConstants.RESUBSCRIBER_MESSAGE, string.Empty);
+
+            if (string.IsNullOrEmpty(resubscriberMessage) == false)
+            {
+                string finalMsg = resubscriberMessage.Replace("{0}", e.ReSubscriptionData.DisplayName).Replace("{1}", e.ReSubscriptionData.Months.ToString());
+                MsgHandler.QueueMessage(finalMsg);
+            }
         }
 
         private void OnReconnected(EvtReconnectedArgs e)
         {
-            //if (string.IsNullOrEmpty(BotSettings.MsgSettings.ReconnectedMsg) == false)
-            //{
-            //    MsgHandler.QueueMessage(BotSettings.MsgSettings.ReconnectedMsg);
-            //}
+            string reconnectedMessage = DataHelper.GetSettingString(SettingsConstants.RECONNECTED_MESSAGE, string.Empty);
+
+            if (string.IsNullOrEmpty(reconnectedMessage) == false)
+            {
+                MsgHandler.QueueMessage(reconnectedMessage);
+            }
         }
 
         private void OnDisconnected(EvtDisconnectedArgs e)

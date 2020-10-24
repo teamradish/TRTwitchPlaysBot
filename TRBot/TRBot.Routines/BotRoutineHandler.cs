@@ -17,8 +17,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TRBot.Data;
 
-namespace TRBot.Misc
+namespace TRBot.Routines
 {
     /// <summary>
     /// Handles bot routines.
@@ -27,9 +28,16 @@ namespace TRBot.Misc
     {
         private readonly List<BaseRoutine> BotRoutines = new List<BaseRoutine>(8);
 
+        private DataContainer DataContainer = null;
+
         public BotRoutineHandler()
         {
 
+        }
+
+        public void SetDataContainer(DataContainer dataContainer)
+        {
+            DataContainer = dataContainer;
         }
 
         public void CleanUp()
@@ -56,7 +64,7 @@ namespace TRBot.Misc
 
         public void AddRoutine(BaseRoutine routine)
         {
-            routine.Initialize();
+            routine.Initialize(DataContainer);
             BotRoutines.Add(routine);
         }
 

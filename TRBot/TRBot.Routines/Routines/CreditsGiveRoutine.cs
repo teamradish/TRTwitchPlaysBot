@@ -22,29 +22,25 @@ using System.Threading.Tasks;
 using TRBot.Connection;
 using TRBot.Data;
 
-namespace TRBot.Misc
+namespace TRBot.Routines
 {
     /// <summary>
     /// The base class for bot routines.
     /// </summary>
     public class CreditsGiveRoutine : BaseRoutine
     {
-        private DataContainer DataContainer = null;
-
         private DateTime CurCreditsTime;
 
         private readonly Dictionary<string, bool> UsersTalked = new Dictionary<string, bool>();
 
-        public CreditsGiveRoutine(DataContainer dataContainer)
+        public CreditsGiveRoutine()
         {
-            Identifier = "CreditsGive";
-
-            DataContainer = dataContainer;
+            Identifier = "creditsgive";
         }
 
-        public override void Initialize()
+        public override void Initialize(DataContainer dataContainer)
         {
-            base.Initialize();
+            base.Initialize(dataContainer);
 
             DataContainer.MessageHandler.ClientService.EventHandler.UserSentMessageEvent -= MessageReceived;
             DataContainer.MessageHandler.ClientService.EventHandler.UserSentMessageEvent += MessageReceived;

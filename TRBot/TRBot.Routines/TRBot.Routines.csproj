@@ -9,16 +9,12 @@
     <ProjectReference Include="..\TRBot.Consoles\TRBot.Consoles.csproj" />
     <ProjectReference Include="..\TRBot.Connection\TRBot.Connection.csproj" />
     <ProjectReference Include="..\TRBot.Permissions\TRBot.Permissions.csproj" />
-    <ProjectReference Include="..\TRBot.Routines\TRBot.Routines.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.7.0" />
   </ItemGroup>
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
+
 
 </Project>
