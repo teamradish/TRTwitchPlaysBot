@@ -131,14 +131,6 @@ namespace TRBot.Commands
                 //Clean up the controller manager
                 DataContainer.ControllerMngr?.CleanUp();
 
-                int joystickCount = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.JOYSTICK_COUNT, context, 1L);
-
-                if (joystickCount < 1)
-                {
-                   QueueMessage($"New controller count of {joystickCount} in database is invalid. Falling back to 1.");
-                   joystickCount = 1;
-                }
-
                 DataContainer.SetCurVControllerType(parsedVCType);
 
                 //Assign the new controller manager
@@ -147,7 +139,28 @@ namespace TRBot.Commands
                 DataContainer.SetControllerManager(controllerMngr);
 
                 DataContainer.ControllerMngr.Initialize();
-                int acquiredCount = DataContainer.ControllerMngr.InitControllers(joystickCount);
+                
+                //Ensure we clamp the controller count to the correct value for this virtual controller manager
+                int minControllerCount = DataContainer.ControllerMngr.MinControllers;
+                int maxControllerCount = DataContainer.ControllerMngr.MaxControllers;
+
+                Settings joystickCountSetting = DataHelper.GetSettingNoOpen(SettingsConstants.JOYSTICK_COUNT, context);
+                if (joystickCountSetting.value_int < minControllerCount)
+                {
+                   QueueMessage($"Controller count of {joystickCountSetting.value_int} is invalid. Clamping to the min of {minControllerCount}.");
+                   joystickCountSetting.value_int = minControllerCount;
+                   context.SaveChanges();
+                }
+                else if (joystickCountSetting.value_int > maxControllerCount)
+                {
+                   QueueMessage($"Controller count of {joystickCountSetting.value_int} is invalid. Clamping to the max of {maxControllerCount}.");
+                   joystickCountSetting.value_int = maxControllerCount;
+                   context.SaveChanges();
+                }
+
+                int acquiredCount = DataContainer.ControllerMngr.InitControllers((int)joystickCountSetting.value_int);
+
+                QueueMessage($"Set virtual controller to {parsedVCType} with {acquiredCount} controllers and reset all running inputs!");
             }
             catch (Exception e)
             {
@@ -159,8 +172,6 @@ namespace TRBot.Commands
                 //Resume inputs
                 InputHandler.ResumeRunningInputs();
             }
-
-            QueueMessage($"Set virtual controller to {parsedVCType} and reset all running inputs!");
         }
     }
 }

@@ -135,6 +135,8 @@ namespace TRBot.Data
                 new CommandData("vcontroller", "TRBot.Commands.VirtualControllerCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("userinfo", "TRBot.Commands.UserInfoCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("help", "TRBot.Commands.ListCmdsCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("removeability", "TRBot.Commands.RemoveUserAbilityCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("controllercount", "TRBot.Commands.ControllerCountCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
 
@@ -146,7 +148,6 @@ namespace TRBot.Data
                 new CommandData("maxinputdur", "TRBot.Commands.MaxInputDurCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("setlevel", "TRBot.Commands.SetUserLevelCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("addability", "TRBot.Commands.AddUserAbilityCommand", (long)PermissionLevels.Moderator, true, true),
-                new CommandData("removeability", "TRBot.Commands.RemoveUserAbilityCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addcmd", "TRBot.Commands.AddCmdCommand", (long)PermissionLevels.Admin, true, true),
                 new CommandData("removecmd", "TRBot.Commands.RemoveCmdCommand", (long)PermissionLevels.Admin, true, true),
@@ -210,6 +211,7 @@ namespace TRBot.Data
                 new PermissionAbility(UPDATE_OTHER_USER_ABILITES, PermissionLevels.Admin, PermissionLevels.Admin),
                 new PermissionAbility(SET_GLOBAL_INPUT_LEVEL_ABILITY, PermissionLevels.Admin, PermissionLevels.Admin),
                 new PermissionAbility(SET_VCONTROLLER_TYPE_ABILITY, PermissionLevels.Admin, PermissionLevels.Admin),
+                new PermissionAbility(SET_VCONTROLLER_COUNT_ABILITY, PermissionLevels.Admin, PermissionLevels.Admin),
 
                 PermissionAbility.CreateWithMinLvlGrant(SILENCED_ABILITY, PermissionLevels.Moderator),
                 PermissionAbility.CreateWithMinLvlGrant(USER_DEFAULT_INPUT_DIR_ABILITY, PermissionLevels.Moderator),

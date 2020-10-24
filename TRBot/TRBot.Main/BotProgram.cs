@@ -190,12 +190,31 @@ namespace TRBot.Main
 
             DataContainer.SetControllerManager(controllerMngr);
 
-            int controllerCount = (int)DataHelper.GetSettingInt(SettingsConstants.JOYSTICK_COUNT, 1L);            
+            int controllerCount = 0;
 
-            if (controllerCount <= 0)
-            {
-                controllerCount = 1;
-                Console.WriteLine("Controller count less than or equal to 0. This is invalid, so the value has been clamped to 1.");
+            //Clamp the controller count to the min and max allowed by the virtual controller manager
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            { 
+                Settings joystickCountSetting = DataHelper.GetSettingNoOpen(SettingsConstants.JOYSTICK_COUNT, context);
+
+                int minCount = DataContainer.ControllerMngr.MinControllers;
+                int maxCount = DataContainer.ControllerMngr.MaxControllers;
+
+                //Validate controller count
+                if (joystickCountSetting.value_int < minCount)
+                {
+                    MsgHandler.QueueMessage($"Controller count of {joystickCountSetting.value_int} in database is invalid. Clamping to the min of {minCount}.");
+                    joystickCountSetting.value_int = minCount;
+                    context.SaveChanges();
+                }
+                else if (joystickCountSetting.value_int > maxCount)
+                {
+                    MsgHandler.QueueMessage($"Controller count of {joystickCountSetting.value_int} in database is invalid. Clamping to the max of {maxCount}.");
+                    joystickCountSetting.value_int = maxCount;
+                    context.SaveChanges();
+                }
+
+                controllerCount = (int)joystickCountSetting.value_int;
             }
 
             DataContainer.ControllerMngr.Initialize();
@@ -917,19 +936,15 @@ namespace TRBot.Main
         {
             MsgHandler.QueueMessage("Found virtual controller manager change in database. Stopping all inputs and reinitializing virtual controllers.");
 
+            using BotDBContext context = DatabaseManager.OpenContext();
+
+            Settings joystickCountSetting = DataHelper.GetSettingNoOpen(SettingsConstants.JOYSTICK_COUNT, context);
+
             //First, stop all inputs
             InputHandler.StopAndHaltAllInputs();
 
             //Clean up the controller manager
             DataContainer.ControllerMngr?.CleanUp();
-
-            int joystickCount = (int)DataHelper.GetSettingInt(SettingsConstants.JOYSTICK_COUNT, 1L);
-
-            if (joystickCount < 1)
-            {
-                MsgHandler.QueueMessage($"New controller count of {joystickCount} in database is invalid. Falling back to 1.");
-                joystickCount = 1;
-            }
 
             DataContainer.SetCurVControllerType(newVControllerType);
 
@@ -939,7 +954,25 @@ namespace TRBot.Main
             DataContainer.SetControllerManager(controllerMngr);
 
             DataContainer.ControllerMngr.Initialize();
-            int acquiredCount = DataContainer.ControllerMngr.InitControllers(joystickCount);
+
+            //Validate virtual controller count for this virtual controller manager
+            int minCount = DataContainer.ControllerMngr.MinControllers;
+            int maxCount = DataContainer.ControllerMngr.MaxControllers;
+
+            if (joystickCountSetting.value_int < minCount)
+            {
+                MsgHandler.QueueMessage($"New controller count of {joystickCountSetting.value_int} in database is invalid. Clamping to the min of {minCount}.");
+                joystickCountSetting.value_int = minCount;
+                context.SaveChanges();
+            }
+            else if (joystickCountSetting.value_int > maxCount)
+            {
+                MsgHandler.QueueMessage($"New controller count of {joystickCountSetting.value_int} in database is invalid. Clamping to the max of {maxCount}.");
+                joystickCountSetting.value_int = maxCount;
+                context.SaveChanges();
+            }
+
+            int acquiredCount = DataContainer.ControllerMngr.InitControllers((int)joystickCountSetting.value_int);
 
             //Resume inputs
             InputHandler.ResumeRunningInputs();
@@ -950,16 +983,30 @@ namespace TRBot.Main
         private void ReinitVControllerCount()
         {
             int curVControllerCount = DataContainer.ControllerMngr.ControllerCount;
-            int newJoystickCount = (int)DataHelper.GetSettingInt(SettingsConstants.JOYSTICK_COUNT, 1L);
 
-            if (newJoystickCount < 1)
+            using BotDBContext context = DatabaseManager.OpenContext();
+
+            Settings joystickCountSetting = DataHelper.GetSettingNoOpen(SettingsConstants.JOYSTICK_COUNT, context);
+
+            int minCount = DataContainer.ControllerMngr.MinControllers;
+            int maxCount = DataContainer.ControllerMngr.MaxControllers;
+
+            //Validate controller count
+            if (joystickCountSetting.value_int < minCount)
             {
-                MsgHandler.QueueMessage($"New controller count of {newJoystickCount} in database is invalid. Falling back to 1.");
-                newJoystickCount = 1;
+                MsgHandler.QueueMessage($"New controller count of {joystickCountSetting.value_int} in database is invalid. Clamping to the min of {minCount}.");
+                joystickCountSetting.value_int = minCount;
+                context.SaveChanges();
+            }
+            else if (joystickCountSetting.value_int > maxCount)
+            {
+                MsgHandler.QueueMessage($"New controller count of {joystickCountSetting.value_int} in database is invalid. Clamping to the max of {maxCount}.");
+                joystickCountSetting.value_int = maxCount;
+                context.SaveChanges();
             }
 
             //Same count, so ignore
-            if (curVControllerCount == newJoystickCount)
+            if (curVControllerCount == joystickCountSetting.value_int)
             {
                 return;
             }
@@ -972,7 +1019,7 @@ namespace TRBot.Main
             //Re-initialize the new number of virtual controllers
             DataContainer.ControllerMngr.CleanUp();
             DataContainer.ControllerMngr.Initialize();
-            int acquiredCount = DataContainer.ControllerMngr.InitControllers(newJoystickCount);
+            int acquiredCount = DataContainer.ControllerMngr.InitControllers((int)joystickCountSetting.value_int);
 
             //Resume inputs
             InputHandler.ResumeRunningInputs();

@@ -54,6 +54,7 @@ namespace TRBot.Permissions
         public const string UPDATE_OTHER_USER_ABILITES = "updateotheruserabilities";
         public const string SET_GLOBAL_INPUT_LEVEL_ABILITY = "setglobalinputlevel";
         public const string SET_VCONTROLLER_TYPE_ABILITY = "setvcontrollertype";
+        public const string SET_VCONTROLLER_COUNT_ABILITY = "setvcontrollercount";
 
         //Abilities for games/extras
         public const string BET_ABILITY = "bet";
