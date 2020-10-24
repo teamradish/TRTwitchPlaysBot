@@ -66,5 +66,29 @@ namespace TRBot.Permissions
             permLevel = PermissionLevels.User;
             return false;
         }
+
+        /// <summary>
+        /// Tells if a given value is a valid permission level.
+        /// </summary>
+        /// <param name="permissionVal">The integer representation of the permission value.</param>
+        /// <returns>true if the given value matches one of the available permissions, otherwise false.</returns>
+        public static bool IsValidPermissionValue(in long permissionVal)
+        {
+            //Check if the given number matches any of these values
+            PermissionLevels[] levelArray = EnumUtility.GetValues<PermissionLevels>.EnumValues;
+
+            for (int i = 0; i < levelArray.Length; i++)
+            {
+                long lvlVal = (long)levelArray[i];
+
+                //Check if the values match
+                if (permissionVal == lvlVal)
+                {
+                    return true;
+                }
+            }
+
+            return true;
+        }
     }
 }

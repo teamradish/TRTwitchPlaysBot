@@ -622,30 +622,82 @@ namespace TRBot.Main
 
             #endregion
 
-            //Make sure inputs aren't currently stopped
-            if (InputHandler.StopRunningInputs == false)
+            //Make sure inputs aren't stopped
+            if (InputHandler.StopRunningInputs == true)
             {
-                //It's a valid input - save it in the user's stats
-                using (BotDBContext context = DatabaseManager.OpenContext())
-                {
-                    User user = DataHelper.GetOrAddUserNoOpen(e.UsrMessage.Username, context, out bool added);
-
-                    if (user.IsOptedOut == false)
-                    {
-                        user.Stats.ValidInputCount++;
-
-                        //Check for auto promote is enabled and auto promote if applicable
-
-                        context.SaveChanges();
-                    }
-                }
-
-                InputHandler.CarryOutInput(inputSequence.Inputs, usedConsole, DataContainer.ControllerMngr);
-            }
-            else
-            {
+                //We can't process inputs because they're currently stopped
                 MsgHandler.QueueMessage("New inputs cannot be processed until all other inputs have stopped.");
+                return;
             }
+                
+            //It's a valid input - save it in the user's stats
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                User user = DataHelper.GetOrAddUserNoOpen(e.UsrMessage.Username, context, out bool added);
+                
+                //Ignore if the user is opted out
+                if (user.IsOptedOut == false)
+                {
+                    user.Stats.ValidInputCount++;
+                    
+                    //Check for auto promote is enabled and auto promote if applicable
+                    if (user.Stats.AutoPromoted == 0)
+                    {
+                        long autoPromoteEnabled = DataHelper.GetSettingIntNoOpen(SettingsConstants.AUTO_PROMOTE_ENABLED, context, 0L);
+                        
+                        //Check if autopromote is enabled
+                        if (autoPromoteEnabled > 0)
+                        {
+                            long autoPromoteInputReq = DataHelper.GetSettingIntNoOpen(SettingsConstants.AUTO_PROMOTE_INPUT_REQ, context, long.MaxValue);
+                            
+                            //Check if the user reached the autopromote input count requirement
+                            if (user.Stats.ValidInputCount >= autoPromoteInputReq)
+                            {
+                                long autoPromoteLevel = DataHelper.GetSettingIntNoOpen(SettingsConstants.AUTO_PROMOTE_LEVEL, context, -1L);
+                                
+                                //Only autopromote if this is a valid permission level
+                                //We may not want to log or send a message for this, as it has potential to be very spammy,
+                                //and it's not something the users can control
+                                if (PermissionHelpers.IsValidPermissionValue(autoPromoteLevel) == true)
+                                {
+                                    long prevLevel = user.Level;
+
+                                    //Mention that the user was autopromoted
+                                    user.Stats.AutoPromoted = 1;   
+
+                                    //If the user is already at or above this level, don't set them to it
+                                    //Only set if the user is below
+                                    if (user.Level < autoPromoteLevel)
+                                    {
+                                        //Adjust abilities and promote to the new level
+                                        DataHelper.AdjustUserAbilitiesOnLevel(user, autoPromoteLevel, context);
+
+                                        user.Level = autoPromoteLevel;
+
+                                        string autoPromoteMsg = DataHelper.GetSettingStringNoOpen(SettingsConstants.AUTOPROMOTE_MESSAGE, context, string.Empty);
+                                        if (string.IsNullOrEmpty(autoPromoteMsg) == false)
+                                        {
+                                            PermissionLevels permLvl = (PermissionLevels)autoPromoteLevel;
+
+                                            string finalMsg = autoPromoteMsg.Replace("{0}", user.Name).Replace("{1}", permLvl.ToString());
+                                            MsgHandler.QueueMessage(finalMsg);
+                                        } 
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    //Save changes
+                    context.SaveChanges();
+                }
+            }
+
+            /************************************
+            * Finally carry out the inputs now! *
+            ************************************/
+
+            InputHandler.CarryOutInput(inputSequence.Inputs, usedConsole, DataContainer.ControllerMngr);
         }
 
 #endregion

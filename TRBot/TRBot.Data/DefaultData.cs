@@ -58,7 +58,7 @@ namespace TRBot.Data
                 SettingsHelper(BINGO_PIPE_PATH_IS_RELATIVE, true),
                 SettingsHelper(CLIENT_SERVICE_TYPE, (long)ClientServiceTypes.Twitch),
                 SettingsHelper(AUTO_PROMOTE_ENABLED, true),
-                SettingsHelper(AUTO_PROMOTE_LEVEL, 1L),
+                SettingsHelper(AUTO_PROMOTE_LEVEL, (long)PermissionLevels.Whitelisted),
                 SettingsHelper(AUTO_PROMOTE_INPUT_REQ, 50L),
                 SettingsHelper(BOT_MSG_CHAR_LIMIT, 500L),
                 SettingsHelper(PERIODIC_MSG_TIME, 1800000L),
