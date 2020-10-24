@@ -149,7 +149,7 @@ namespace TRBot.Commands
                     minLength = 3;
                 }
 
-                if (expirationArg.Length <= minLength)
+                if (expirationArg.Length < minLength)
                 {
                     QueueMessage("Expiration time from now is invalid.");
                     return;
