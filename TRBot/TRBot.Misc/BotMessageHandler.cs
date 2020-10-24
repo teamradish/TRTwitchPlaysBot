@@ -27,19 +27,22 @@ namespace TRBot.Misc
     public class BotMessageHandler
     {
         /// <summary>
-        /// Queued messages.
+        /// The ClientService the message handler is using.
         /// </summary>
-        private readonly Queue<string> ClientMessages = new Queue<string>(16);
-
-        private IClientService ClientService = null;
-
-        private string ChannelName = string.Empty;
-        private long MessageCooldown = 1000L;
+        public IClientService ClientService { get; private set; } = null;
 
         /// <summary>
         /// Whether to also log bot messages to the console.
         /// </summary>
         public bool LogToConsole { get; private set; } = true;
+
+        private string ChannelName = string.Empty;
+        private long MessageCooldown = 1000L;
+
+        /// <summary>
+        /// Queued messages.
+        /// </summary>
+        private readonly Queue<string> ClientMessages = new Queue<string>(16);
 
         private DateTime CurQueueTime = default;
 
@@ -80,9 +83,9 @@ namespace TRBot.Misc
             LogToConsole = logToConsole;
         }
 
-        public void Update(in DateTime now)
+        public void Update(in DateTime nowUTC)
         {
-            TimeSpan queueDiff = now - CurQueueTime;
+            TimeSpan queueDiff = nowUTC - CurQueueTime;
 
             //Queued messages
             if (ClientMessages.Count > 0 && queueDiff.TotalMilliseconds >= MessageCooldown)
@@ -112,7 +115,7 @@ namespace TRBot.Misc
                         Console.WriteLine($"Could not send message: {e.Message}");
                     }
 
-                    CurQueueTime = now;
+                    CurQueueTime = nowUTC;
                 }
             }
         }

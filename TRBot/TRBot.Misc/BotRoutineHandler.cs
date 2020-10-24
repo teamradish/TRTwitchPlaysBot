@@ -40,7 +40,7 @@ namespace TRBot.Misc
             }
         }
 
-        public void Update(in DateTime now)
+        public void Update(in DateTime nowUTC)
         {
             //Update routines
             for (int i = 0; i < BotRoutines.Count; i++)
@@ -50,7 +50,7 @@ namespace TRBot.Misc
                     continue;
                 }
 
-                BotRoutines[i].UpdateRoutine(now);
+                BotRoutines[i].UpdateRoutine(nowUTC);
             }
         }
 
@@ -58,6 +58,25 @@ namespace TRBot.Misc
         {
             routine.Initialize();
             BotRoutines.Add(routine);
+        }
+
+        public void RemoveRoutine(in int index)
+        {
+            if (index < 0 || index >= BotRoutines.Count)
+            {
+                Console.WriteLine($"Index {index} is out of the routine count of 0 through {BotRoutines.Count}."); 
+                return;
+            }
+
+            //Clean up and remove the routine
+            BaseRoutine routine = BotRoutines[index];
+
+            if (routine != null)
+            {
+                routine.CleanUp();
+            }
+
+            BotRoutines.RemoveAt(index);
         }
 
         public void RemoveRoutine(string identifier)

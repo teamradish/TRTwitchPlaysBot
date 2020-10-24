@@ -20,34 +20,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TRBot.Connection;
+using TRBot.Data;
+using TRBot.Utilities;
 
-namespace TRBot.Misc
+namespace TRBot.Commands
 {
     /// <summary>
-    /// The base class for bot routines.
+    /// Displays the bot's uptime.
     /// </summary>
-    public abstract class BaseRoutine
+    public class UptimeCommand : BaseCommand
     {
-        /// <summary>
-        /// The routine's identifier.
-        /// </summary>
-        public string Identifier = string.Empty;
-
-        public BaseRoutine()
+        public UptimeCommand()
         {
 
         }
 
-        public virtual void Initialize()
+        public override void ExecuteCommand(EvtChatCommandArgs e)
         {
+            //Get the time difference between now and the startup time
+            TimeSpan timeSpan = DateTime.UtcNow - Helpers.ApplicationStartTimeUTC;
 
+            string message = $"The bot has been up for {timeSpan.Days} days, {timeSpan.Hours} hours, {timeSpan.Minutes} minutes, and {timeSpan.Seconds} seconds!";
+            
+            QueueMessage(message);
         }
-
-        public virtual void CleanUp()
-        {
-
-        }
-
-        public abstract void UpdateRoutine(in DateTime currentTimeUTC);
     }
 }

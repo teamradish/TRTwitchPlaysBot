@@ -54,6 +54,7 @@ namespace TRBot.Main
         private CommandHandler CmdHandler = null;
         
         private BotMessageHandler MsgHandler = new BotMessageHandler();
+        private BotRoutineHandler RoutineHandler = new BotRoutineHandler();
         private DataReloader DataReloader = new DataReloader();
         private DataContainer DataContainer = new DataContainer();
 
@@ -73,6 +74,9 @@ namespace TRBot.Main
             thisProcess.PriorityClass = ProcessPriorityClass.BelowNormal;
 
             ThreadSleepFindFunc = FindThreadSleepTime;
+
+            //Call this to set the application start time
+            DateTime start = Helpers.ApplicationStartTimeUTC;
         }
 
         //Clean up anything we need to here
@@ -83,11 +87,10 @@ namespace TRBot.Main
 
             UnsubscribeEvents();
 
-            //RoutineHandler?.CleanUp();
-
             ClientService?.CleanUp();
 
             MsgHandler?.CleanUp();
+            RoutineHandler?.CleanUp();
             CmdHandler?.CleanUp();
             DataReloader?.CleanUp();
 
@@ -231,6 +234,9 @@ namespace TRBot.Main
             DataReloader.HardDataReloadedEvent -= OnHardReload;
             DataReloader.HardDataReloadedEvent += OnHardReload;
 
+            //Initialize routines
+            InitRoutines();
+
             Initialized = true;
         }
 
@@ -249,15 +255,12 @@ namespace TRBot.Main
             {
                 //Store the bot's uptime
                 DateTime utcNow = DateTime.UtcNow;
-                //TotalUptime = (utcNow - StartUptime);
-
-                DateTime now = DateTime.Now;
 
                 //Update queued messages
-                MsgHandler.Update(now);
+                MsgHandler.Update(utcNow);
 
                 //Update routines
-                //RoutineHandler.Update(now);
+                RoutineHandler.Update(utcNow);
 
                 int threadSleep = 100;
 
@@ -305,6 +308,11 @@ namespace TRBot.Main
             ClientService.EventHandler.OnConnectionErrorEvent += OnConnectionError;
             ClientService.EventHandler.OnReconnectedEvent += OnReconnected;
             ClientService.EventHandler.OnDisconnectedEvent += OnDisconnected;
+        }
+
+        private void InitRoutines()
+        {
+            RoutineHandler.AddRoutine(new CreditsGiveRoutine(DataContainer));
         }
 
 #region Events
