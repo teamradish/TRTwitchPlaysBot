@@ -90,6 +90,12 @@ namespace TRBot.Commands
                 return;
             }
 
+            if ((long)permAbility.MinLevelToGrant > thisUser.Level)
+            {
+                QueueMessage($"You need to be at least level {(long)permAbility.MinLevelToGrant}, {permAbility.MinLevelToGrant}, to remove this ability.");
+                return;
+            }
+
             if (abilityUser.TryGetAbility(abilityName, out UserAbility userAbility) == false)
             {
                 QueueMessage($"User does not have the \"{abilityName}\" ability!");

@@ -133,6 +133,8 @@ namespace TRBot.Data
                 new CommandData("level", "TRBot.Commands.LevelCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("pressedinputs", "TRBot.Commands.ListPressedInputsCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("vcontroller", "TRBot.Commands.VirtualControllerCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("userinfo", "TRBot.Commands.UserInfoCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("help", "TRBot.Commands.ListCmdsCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
 
@@ -144,7 +146,7 @@ namespace TRBot.Data
                 new CommandData("maxinputdur", "TRBot.Commands.MaxInputDurCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("setlevel", "TRBot.Commands.SetUserLevelCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("addability", "TRBot.Commands.AddUserAbilityCommand", (long)PermissionLevels.Moderator, true, true),
-                new CommandData("removeability", "TRBot.Commands.RemoveUserAbilityCommand", (long)PermissionLevels.Moderator, true, true),
+                new CommandData("removeability", "TRBot.Commands.RemoveUserAbilityCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addcmd", "TRBot.Commands.AddCmdCommand", (long)PermissionLevels.Admin, true, true),
                 new CommandData("removecmd", "TRBot.Commands.RemoveCmdCommand", (long)PermissionLevels.Admin, true, true),
@@ -191,28 +193,27 @@ namespace TRBot.Data
         {
             List<PermissionAbility> defaultPermissions = new List<PermissionAbility>()
             {
-                new PermissionAbility(BET_ABILITY, PermissionLevels.User),
-                new PermissionAbility(DUEL_ABILITY, PermissionLevels.User),
-                new PermissionAbility(GROUP_BET_ABILITY, PermissionLevels.User),
-                new PermissionAbility(JUMP_ROPE_ABILITY, PermissionLevels.User),
-                new PermissionAbility(FEED_ABILITY, PermissionLevels.User),
-                new PermissionAbility(INPUT_EXERCISE_ABILITY, PermissionLevels.User),
-                new PermissionAbility(CALCULATE_ABILITY, PermissionLevels.User),
-                new PermissionAbility(CHATBOT_ABILITY, PermissionLevels.User),
-                new PermissionAbility(BINGO_ABILITY, PermissionLevels.User),
+                new PermissionAbility(BET_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(DUEL_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(GROUP_BET_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(JUMP_ROPE_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(FEED_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(INPUT_EXERCISE_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(CALCULATE_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(CHATBOT_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(BINGO_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
 
-                new PermissionAbility(SET_CONSOLE_ABILITY, PermissionLevels.Moderator),
-                new PermissionAbility(SET_DEFAULT_INPUT_DUR_ABILITY, PermissionLevels.Moderator),
-                new PermissionAbility(SET_MAX_INPUT_DUR_ABILITY, PermissionLevels.Moderator),
+                new PermissionAbility(SET_CONSOLE_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
+                new PermissionAbility(SET_DEFAULT_INPUT_DUR_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
+                new PermissionAbility(SET_MAX_INPUT_DUR_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
 
-                new PermissionAbility(UPDATE_OTHER_USER_ABILITES, PermissionLevels.Admin),
-                new PermissionAbility(SET_GLOBAL_INPUT_LEVEL_ABILITY, PermissionLevels.Admin),
-                new PermissionAbility(SET_VCONTROLLER_TYPE_ABILITY, PermissionLevels.Admin),
+                new PermissionAbility(UPDATE_OTHER_USER_ABILITES, PermissionLevels.Admin, PermissionLevels.Admin),
+                new PermissionAbility(SET_GLOBAL_INPUT_LEVEL_ABILITY, PermissionLevels.Admin, PermissionLevels.Admin),
+                new PermissionAbility(SET_VCONTROLLER_TYPE_ABILITY, PermissionLevels.Admin, PermissionLevels.Admin),
 
-                new PermissionAbility(SILENCED_ABILITY),
-                new PermissionAbility(USER_DEFAULT_INPUT_DIR_ABILITY),
-                new PermissionAbility(USER_MAX_INPUT_DIR_ABILITY),
-                
+                PermissionAbility.CreateWithMinLvlGrant(SILENCED_ABILITY, PermissionLevels.Moderator),
+                PermissionAbility.CreateWithMinLvlGrant(USER_DEFAULT_INPUT_DIR_ABILITY, PermissionLevels.Moderator),
+                PermissionAbility.CreateWithMinLvlGrant(USER_MAX_INPUT_DIR_ABILITY, PermissionLevels.Moderator),
             };
 
             return defaultPermissions;

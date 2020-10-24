@@ -90,6 +90,12 @@ namespace TRBot.Commands
                 return;
             }
 
+            if ((long)permAbility.MinLevelToGrant > thisUser.Level)
+            {
+                QueueMessage($"You need to be at least level {(long)permAbility.MinLevelToGrant}, {permAbility.MinLevelToGrant}, to grant this ability.");
+                return;
+            }
+
             UserAbility newUserAbility = null;
             abilityUser.TryGetAbility(abilityName, out newUserAbility);
 

@@ -34,6 +34,11 @@ namespace TRBot.Permissions
         /// </summary>
         public PermissionLevels AutoGrantOnLevel { get; set; } = (PermissionLevels)(-1);
 
+        /// <summary>
+        /// The minimum level required to grant this ability to someone.
+        /// </summary>
+        public PermissionLevels MinLevelToGrant { get; set; } = (PermissionLevels)(-1);
+
         public string Name { get; set; } = string.Empty;
 
         public string value_str { get; set; } = string.Empty;
@@ -50,10 +55,11 @@ namespace TRBot.Permissions
             Name = name;
         }
 
-        public PermissionAbility(string name, in PermissionLevels autoGrantOnLevel)
+        public PermissionAbility(string name, in PermissionLevels autoGrantOnLevel, in PermissionLevels minLevelToGrant)
             : this(name)
         {
             AutoGrantOnLevel = autoGrantOnLevel;
+            MinLevelToGrant = minLevelToGrant;
         }
 
         public PermissionAbility(string name, string valueStr, in int valueInt)
@@ -68,6 +74,13 @@ namespace TRBot.Permissions
             : this(name, valueStr, valueInt)
         {
             AutoGrantOnLevel = autoGrantOnLevel;
+        }
+
+        public static PermissionAbility CreateWithMinLvlGrant(string name, in PermissionLevels minLevelToGrant)
+        {
+            PermissionAbility pAB = new PermissionAbility(name);
+            pAB.MinLevelToGrant = minLevelToGrant;
+            return pAB;
         }
     }
 }
