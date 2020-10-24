@@ -197,7 +197,20 @@ namespace TRBot.Data
             for (int i = 0; i < userAbilities.Length; i++)
             {
                 UserAbility userAbility = userAbilities[i];
+
+                if (userAbility == null)
+                {
+                    Console.WriteLine($"User ability at {i} is somehow null! UserID: {userAbility.user_id}");
+                    continue;
+                }
+
                 PermissionAbility pAbility = userAbility.PermAbility;
+
+                if (userAbility == null)
+                {
+                    Console.WriteLine($"User linked permission ability at {i} is somehow null! PermID: {userAbility.permability_id} | UserID: {userAbility.user_id}");
+                    continue;
+                }
 
                 //Don't remove abilities that were given by a higher level
                 //This prevents users from removing constraints imposed by moderators and such
