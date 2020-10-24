@@ -489,6 +489,7 @@ namespace TRBot.Main
             {
                 int defaultDur = 200;
                 int maxDur = 60000;
+                int defaultPort = 0;
 
                 string regexStr = usedConsole.InputRegex;
 
@@ -496,9 +497,12 @@ namespace TRBot.Main
                 using (BotDBContext context = DatabaseManager.OpenContext())
                 {
                     //Get default and max input durations
-                    //User user overrides if they exist, otherwise use the global values
+                    //Use user overrides if they exist, otherwise use the global values
 
                     User user = DataHelper.GetUserNoOpen(e.UsrMessage.Username, context);
+
+                    //Get default controller port
+                    defaultPort = (int)user.ControllerPort;
 
                     //Check for a user-overridden max input duration
                     if (user != null && user.TryGetAbility(PermissionConstants.USER_MAX_INPUT_DIR_ABILITY, out UserAbility maxDurAbility) == true)
@@ -531,7 +535,7 @@ namespace TRBot.Main
                 }
 
                 //Parse inputs to get our parsed input sequence
-                inputSequence = InputParser.ParseInputs(readyMessage, regexStr, new ParserOptions(0, defaultDur, true, maxDur));
+                inputSequence = InputParser.ParseInputs(readyMessage, regexStr, new ParserOptions(defaultPort, defaultDur, true, maxDur));
                 //Console.WriteLine(inputSequence.ToString());
                 //Console.WriteLine("\nReverse Parsed: " + ReverseParser.ReverseParse(inputSequence));
                 //Console.WriteLine("\nReverse Parsed Natural:\n" + ReverseParser.ReverseParseNatural(inputSequence));

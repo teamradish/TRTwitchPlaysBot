@@ -51,6 +51,9 @@ namespace TRBot.Data
         /// </summary>
         public virtual List<RestrictedInput> RestrictedInputs { get; set; } = null;
 
+        /// <summary>
+        /// Tells if the user is opted out of stats.
+        /// </summary>
         public bool IsOptedOut => (Stats.OptedOut != 0);
 
         public User()

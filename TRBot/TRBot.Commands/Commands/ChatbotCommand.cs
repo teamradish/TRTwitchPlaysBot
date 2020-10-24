@@ -126,7 +126,7 @@ namespace TRBot.Commands
             }
             catch (Exception exc)
             {
-                QueueMessage($"Error with sending chatbot reply: {exc.Message}. Double check the chatbot socket path and relative path settings.");
+                QueueMessage($"Error with sending chatbot reply: {exc.Message} - Please check the \"{SettingsConstants.CHATBOT_SOCKET_PATH}\" and \"{SettingsConstants.CHATBOT_SOCKET_PATH_IS_RELATIVE}\" settings in the database.");
             }
         }
     }

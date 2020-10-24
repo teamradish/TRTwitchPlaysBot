@@ -141,6 +141,7 @@ namespace TRBot.Data
                 new CommandData("bet", "TRBot.Commands.BetCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("uptime", "TRBot.Commands.UptimeCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("chat", "TRBot.Commands.ChatbotCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("port", "TRBot.Commands.ControllerPortCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
 

@@ -85,7 +85,7 @@ namespace TRBot.Commands
             User user = DataHelper.GetUserNoOpen(gameLog.User, context);
 
             //Don't display username if they opted out
-            if (user != null && user.Stats.OptedOut == 0)
+            if (user != null && user.IsOptedOut == false)
             {
                 QueueMessage($"{gameLog.LogDateTime} (UTC) --> {gameLog.User} : {gameLog.LogMessage}");
             }
