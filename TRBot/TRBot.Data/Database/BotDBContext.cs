@@ -60,8 +60,7 @@ namespace TRBot.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            options.UseSqlite($"Filename={Datasource}", ContextBuilder);
-            options.UseLazyLoadingProxies();
+            options.UseLazyLoadingProxies().UseSqlite($"Filename={Datasource}", ContextBuilder);
             base.OnConfiguring(options);
         }
 

@@ -200,13 +200,13 @@ namespace TRBot.Data
 
                 if (userAbility == null)
                 {
-                    Console.WriteLine($"User ability at {i} is somehow null! UserID: {userAbility.user_id}");
+                    Console.WriteLine($"User ability at {i} is somehow null! UserID: {user.id}");
                     continue;
                 }
 
                 PermissionAbility pAbility = userAbility.PermAbility;
 
-                if (userAbility == null)
+                if (pAbility == null)
                 {
                     Console.WriteLine($"User linked permission ability at {i} is somehow null! PermID: {userAbility.permability_id} | UserID: {userAbility.user_id}");
                     continue;
@@ -217,7 +217,12 @@ namespace TRBot.Data
                 if ((long)pAbility.AutoGrantOnLevel >= 0
                     && userAbility.GrantedByLevel <= user.Level)
                 {
-                    user.RemoveAbility(pAbility.Name);
+                    //Console.WriteLine($"Removed ability \"{pAbility.Name}\", {pAbility.id}");
+
+                    if (user.RemoveAbility(pAbility.Name) == true)
+                    {
+                        
+                    }
                 }
             }
 
