@@ -90,6 +90,7 @@ namespace TRBot.Data
         /// Adds a user ability if it doesn't already exist.
         /// </summary>
         /// <param name="permAbility">The PermissionAbility.</param>
+        /// <returns>true if the ability was added, otherwise false.</returns>
         public bool TryAddAbility(PermissionAbility permAbility)
         {
             if (permAbility == null)
@@ -98,7 +99,9 @@ namespace TRBot.Data
             }
 
             //Check if the ability exists
-            UserAbility curAbility = UserAbilities.FirstOrDefault(p => p.PermAbility?.Name == permAbility.Name);
+            //NOTE: Make ABSOLUTE sure each new ability added is saved into the database
+            //Otherwise, the navigation property will be null and it'll throw an exception here
+            UserAbility curAbility = UserAbilities.FirstOrDefault(p => p.PermAbility.Name == permAbility.Name);
 
             //Add the ability
             if (curAbility == null)
@@ -109,7 +112,7 @@ namespace TRBot.Data
                 return true;
             }
 
-            return true;
+            return false;
         }
 
         /// <summary>
@@ -120,6 +123,7 @@ namespace TRBot.Data
         /// <param name="valueInt">The integer value of the ability.</param>
         /// <param name="grantedByLevel">The level of the user that granted this ability.</param>
         /// <param name="expirationDate">The date when the ability expires.</param>
+        /// <returns>true if the ability was added or updated, otherwise false.</returns>
         public bool AddAbility(PermissionAbility permAbility, string valueStr, in int valueInt,
             in long grantedByLevel, in DateTime? expirationDate)
         {
@@ -129,7 +133,9 @@ namespace TRBot.Data
             }
 
             //Check if the ability exists
-            UserAbility curAbility = UserAbilities.FirstOrDefault(p => p.PermAbility?.Name == permAbility.Name);
+            //NOTE: Make ABSOLUTE sure each new ability added is saved into the database
+            //Otherwise, the navigation property will be null and it'll throw an exception here
+            UserAbility curAbility = UserAbilities.FirstOrDefault(p => p.PermAbility.Name == permAbility.Name);
 
             //Add the ability
             if (curAbility == null)
@@ -153,6 +159,7 @@ namespace TRBot.Data
         /// Removes a user ability with a given name.
         /// </summary>
         /// <param name="abilityName">The name of the ability to remove.</param>
+        /// <returns>true if the ability was removed, otherwise false.</returns>
         public bool RemoveAbility(string abilityName)
         {
             //Find the ability
@@ -175,7 +182,7 @@ namespace TRBot.Data
         public bool TryGetAbility(string abilityName, out UserAbility userAbility)
         {
             //Check for name and expiration
-            userAbility = UserAbilities.FirstOrDefault(p => p.PermAbility?.Name == abilityName
+            userAbility = UserAbilities.FirstOrDefault(p => p.PermAbility.Name == abilityName
                 && p.HasExpired == false);
 
             return (userAbility != null);

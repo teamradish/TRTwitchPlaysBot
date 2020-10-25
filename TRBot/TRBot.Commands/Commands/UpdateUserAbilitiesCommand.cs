@@ -95,7 +95,7 @@ namespace TRBot.Commands
             //Save the changes
             context.SaveChanges();
 
-            QueueMessage("Updated user abilities!");
+            QueueMessage($"Updated {changedUser.Name}'s abilities!");
         }
     }
 }

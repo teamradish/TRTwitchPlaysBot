@@ -115,12 +115,16 @@ namespace TRBot.Commands
                 if (shouldAdd == true)
                 {
                     abilityUser.UserAbilities.Add(newUserAbility);
+
+                    QueueMessage($"Granted the \"{abilityName}\" ability to {abilityUser.Name}!");
+                }
+                else
+                {
+                    QueueMessage($"Updated the \"{abilityName}\" ability on {abilityUser.Name}!");
                 }
 
                 //Save and exit here
                 context.SaveChanges();
-
-                QueueMessage($"Granted the \"{abilityName}\" ability to {abilityUser.Name}!");
 
                 return;
             }
@@ -183,12 +187,16 @@ namespace TRBot.Commands
             if (shouldAdd == true)
             {
                 abilityUser.UserAbilities.Add(newUserAbility);
+
+                QueueMessage($"Granted the \"{abilityName}\" ability to {abilityUser.Name} with values ({valueStrArg}, {valueInt}) and expires in {expirationArg}!");
+            }
+            else
+            {
+                QueueMessage($"Updated the \"{abilityName}\" ability on {abilityUser.Name} with values ({valueStrArg}, {valueInt}) and expires in {expirationArg}!");
             }
 
             //Save
             context.SaveChanges();
-
-            QueueMessage($"Granted the \"{abilityName}\" ability to {abilityUser.Name} with values ({valueStrArg}, {valueInt}) and expires in {expirationArg}!");
         }
 
         private bool CanParseModifier(in long timeVal, string modifier, out TimeSpan timeSpan)

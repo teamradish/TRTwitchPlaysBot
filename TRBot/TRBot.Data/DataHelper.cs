@@ -217,12 +217,7 @@ namespace TRBot.Data
                 if ((long)pAbility.AutoGrantOnLevel >= 0
                     && userAbility.GrantedByLevel <= user.Level)
                 {
-                    //Console.WriteLine($"Removed ability \"{pAbility.Name}\", {pAbility.id}");
-
-                    if (user.RemoveAbility(pAbility.Name) == true)
-                    {
-                        
-                    }
+                    user.RemoveAbility(pAbility.Name);
                 }
             }
 
@@ -236,7 +231,12 @@ namespace TRBot.Data
             //Add all of those abilities
             foreach (PermissionAbility permAbility in permAbilities)
             {
-                user.TryAddAbility(permAbility);
+                if (user.TryAddAbility(permAbility) == true)
+                {
+                    //Save after adding each one to avoid issues with null navigation properties while searching
+                    //NOTE: We will want to find a way to change this to not save inside this method
+                    context.SaveChanges();
+                }
             }
         }
 
@@ -288,7 +288,12 @@ namespace TRBot.Data
                 //Add all these abilities
                 foreach (PermissionAbility pAbility in permAbilities)
                 {
-                    user.TryAddAbility(pAbility);
+                    if (user.TryAddAbility(pAbility) == true)
+                    {
+                        //Save after adding each one to avoid issues with null navigation properties while searching
+                        //NOTE: We will want to find a way to change this to not save inside this method
+                        context.SaveChanges();
+                    }
                 }
             }
         }
