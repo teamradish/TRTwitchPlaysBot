@@ -94,8 +94,7 @@ namespace TRBot.Commands
 
                 if (ability.HasExpired == false && ability.HasExpiration == true)
                 {
-                    strBuilder.Append(" (exp: ").Append(ability.expiration.Value.ToShortDateString());
-                    strBuilder.Append(' ').Append(ability.expiration.Value.ToShortTimeString()).Append(" UTC)");
+                    strBuilder.Append(" (exp: ").Append(ability.expiration.Value.ToString()).Append(" UTC)");
                 }
 
                 strBuilder.Append(',').Append(' ');

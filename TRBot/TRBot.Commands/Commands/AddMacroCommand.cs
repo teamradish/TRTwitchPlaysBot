@@ -25,6 +25,7 @@ using TRBot.Utilities;
 using TRBot.Consoles;
 using TRBot.Parsing;
 using TRBot.Data;
+using TRBot.Permissions;
 
 namespace TRBot.Commands
 {
@@ -91,8 +92,6 @@ namespace TRBot.Commands
 
             using BotDBContext context = DatabaseManager.OpenContext();
 
-            int defaultInputDur = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.DEFAULT_INPUT_DURATION, context, 200L);
-            int maxInputDur = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.MAX_INPUT_DURATION, context, 60000L);
             int lastConsole = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.LAST_CONSOLE, context, 1L);
 
             GameConsole curConsole = context.Consoles.FirstOrDefault(c => c.id == lastConsole);
@@ -125,24 +124,39 @@ namespace TRBot.Commands
 
                 try
                 {
+                    //Get default and max input durations
+                    //Use user overrides if they exist, otherwise use the global values
+                    User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
+
+                    int defaultDur = (int)DataHelper.GetUserOrGlobalDefaultInputDur(user, context);
+                    int maxDur = (int)DataHelper.GetUserOrGlobalMaxInputDur(user, context);
+
                     string regexStr = consoleInstance.InputRegex;
 
                     IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.console_id == curConsole.id);
 
                     string readyMessage = readyMessage = parser.PrepParse(macroVal, context.Macros, synonyms);
 
-                    inputSequence = parser.ParseInputs(readyMessage, regexStr, new ParserOptions(0, defaultInputDur, true, maxInputDur));
+                    inputSequence = parser.ParseInputs(readyMessage, regexStr, new ParserOptions(0, defaultDur, true, maxDur));
                     //Console.WriteLine(inputSequence.ToString());
 
                     if (inputSequence.ParsedInputResult != ParsedInputResults.Valid)
                     {
-                        QueueMessage("Invalid macro.");
+                        if (string.IsNullOrEmpty(inputSequence.Error) == true)
+                        {
+                            QueueMessage("Invalid macro.");
+                        }
+                        else
+                        {
+                            QueueMessage($"Invalid macro: {inputSequence.Error}");
+                        }
+
                         return;
                     }   
                 }
-                catch
+                catch (Exception e)
                 {
-                    QueueMessage("Invalid macro.");
+                    QueueMessage($"Invalid macro: {e.Message}");
                     return;
                 }
             }

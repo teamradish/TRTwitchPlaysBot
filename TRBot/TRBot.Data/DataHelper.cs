@@ -185,6 +185,46 @@ namespace TRBot.Data
         }
 
         /// <summary>
+        /// Retrieves a user's overridden default input duration, or if they don't have one, the global default input duration.
+        /// </summary>
+        /// <param name="user">The User object.</param>
+        /// <param name="context">The open database context</param>
+        /// <returns>The user-overridden or global default input duration.</returns>
+        public static long GetUserOrGlobalDefaultInputDur(User user, BotDBContext context)
+        {
+            //Check for a user-overridden default input duration
+            if (user != null && user.TryGetAbility(PermissionConstants.USER_DEFAULT_INPUT_DIR_ABILITY, out UserAbility defaultDurAbility) == true)
+            {
+                return defaultDurAbility.value_int;
+            }
+            //Use global max input duration
+            else
+            {
+                return DataHelper.GetSettingIntNoOpen(SettingsConstants.DEFAULT_INPUT_DURATION, context, 200L);
+            }
+        }
+
+        /// <summary>
+        /// Retrieves a user's overridden max input duration, or if they don't have one, the global max input duration.
+        /// </summary>
+        /// <param name="user">The User object.</param>
+        /// <param name="context">The open database context</param>
+        /// <returns>The user-overridden or global max input duration.</returns>
+        public static long GetUserOrGlobalMaxInputDur(User user, BotDBContext context)
+        {
+            //Check for a user-overridden max input duration
+            if (user != null && user.TryGetAbility(PermissionConstants.USER_MAX_INPUT_DIR_ABILITY, out UserAbility maxDurAbility) == true)
+            {
+                return maxDurAbility.value_int;
+            }
+            //Use global max input duration
+            else
+            {
+                return DataHelper.GetSettingIntNoOpen(SettingsConstants.MAX_INPUT_DURATION, context, 60000L);
+            }
+        }
+
+        /// <summary>
         /// Fully updates a user's available abilities based on their current level.
         /// </summary>
         /// <param name="user">The User object to update the abilities on.</param>

@@ -498,32 +498,13 @@ namespace TRBot.Main
                 {
                     //Get default and max input durations
                     //Use user overrides if they exist, otherwise use the global values
-
                     User user = DataHelper.GetUserNoOpen(e.UsrMessage.Username, context);
 
                     //Get default controller port
                     defaultPort = (int)user.ControllerPort;
 
-                    //Check for a user-overridden max input duration
-                    if (user != null && user.TryGetAbility(PermissionConstants.USER_MAX_INPUT_DIR_ABILITY, out UserAbility maxDurAbility) == true)
-                    {
-                        maxDur = maxDurAbility.value_int;
-                    }
-                    //Use global max input duration
-                    else
-                    {
-                        maxDur = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.MAX_INPUT_DURATION, context, 60000L);
-                    }
-
-                    if (user != null && user.TryGetAbility(PermissionConstants.USER_DEFAULT_INPUT_DIR_ABILITY, out UserAbility defaultDurAbility) == true)
-                    {
-                        defaultDur = defaultDurAbility.value_int;
-                    }
-                    else
-                    {
-                        //Get default input duration
-                        defaultDur = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.DEFAULT_INPUT_DURATION, context, 200L);
-                    }
+                    defaultDur = (int)DataHelper.GetUserOrGlobalDefaultInputDur(user, context);
+                    maxDur = (int)DataHelper.GetUserOrGlobalMaxInputDur(user, context);
 
                     //Console.WriteLine($"Default dur: {defaultDur} | Max dur: {maxDur}");
 

@@ -124,6 +124,7 @@ namespace TRBot.Data
                 new CommandData("macros", "TRBot.Commands.ListMacrosCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("addmacro", "TRBot.Commands.AddMacroCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("removemacro", "TRBot.Commands.RemoveMacroCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("showmacro", "TRBot.Commands.ShowMacroCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("memes", "TRBot.Commands.ListMemesCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("addmeme", "TRBot.Commands.AddMemeCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("removememe", "TRBot.Commands.RemoveMemeCommand", (long)PermissionLevels.User, true, true),
@@ -145,6 +146,7 @@ namespace TRBot.Data
                 new CommandData("chat", "TRBot.Commands.ChatbotCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("port", "TRBot.Commands.ControllerPortCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("optstats", "TRBot.Commands.OptStatsCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("length", "TRBot.Commands.InputLengthCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
 
