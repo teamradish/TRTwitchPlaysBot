@@ -110,6 +110,8 @@ namespace TRBot.Commands
 
             inputData.level = newLvlNum;
 
+            context.SaveChanges();
+
             QueueMessage($"Set the level of input \"{inputName}\" on \"{consoleStr}\" to {newLvlNum}, {permLevel}!");
         }
 
