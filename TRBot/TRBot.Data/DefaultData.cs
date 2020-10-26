@@ -149,6 +149,7 @@ namespace TRBot.Data
                 new CommandData("optstats", "TRBot.Commands.OptStatsCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("length", "TRBot.Commands.InputLengthCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("clearstats", "TRBot.Commands.ClearUserStatsCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("calculate", "TRBot.Commands.CalculateCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
 
