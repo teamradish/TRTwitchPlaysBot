@@ -35,7 +35,7 @@ namespace TRBot.Commands
         /// <summary>
         /// The response timeout for the chatbot.
         /// </summary>
-        private const int ResponseTimeout = 1000;
+        private const int RESPONSE_TIMEOUT = 1000;
 
         private string UsageMessage = "Usage: \"prompt or question (string)\"";
 
@@ -75,28 +75,28 @@ namespace TRBot.Commands
                 return;
             }
 
-            long pipePathRelative = DataHelper.GetSettingIntNoOpen(SettingsConstants.CHATBOT_SOCKET_PATH_IS_RELATIVE, context, 1L);
+            long chatbotPipePathIsRelative = DataHelper.GetSettingIntNoOpen(SettingsConstants.CHATBOT_SOCKET_PATH_IS_RELATIVE, context, 1L);
 
             string fileName = DataHelper.GetSettingStringNoOpen(SettingsConstants.CHATBOT_SOCKET_PATH, context, string.Empty);
 
             try
             {
-                string pipePath = fileName;
+                string chatbotPipePath = fileName;
 
                 //Get relative path if we should
-                if (pipePathRelative == 1)
+                if (chatbotPipePathIsRelative == 1)
                 {
-                    pipePath = Path.Combine(DataConstants.DataFolderPath, fileName);
+                    chatbotPipePath = Path.Combine(DataConstants.DataFolderPath, fileName);
                 }
 
                 //Console.WriteLine("Full path: " + pipePath);
 
                 //Set up the pipe stream
-                using (NamedPipeClientStream chatterBotClient = new NamedPipeClientStream(".", pipePath, PipeDirection.InOut))
+                using (NamedPipeClientStream chatterBotClient = new NamedPipeClientStream(".", chatbotPipePath, PipeDirection.InOut))
                 {
                     //Connect to the pipe or wait until it's available, with a timeout
                     //Console.WriteLine("Attempting to connect to chatbot socket...");
-                    chatterBotClient.Connect(ResponseTimeout);
+                    chatterBotClient.Connect(RESPONSE_TIMEOUT);
 
                     //Send the input to ChatterBot
                     using (BinaryWriter promptWriter = new BinaryWriter(chatterBotClient))
