@@ -93,24 +93,22 @@ namespace TRBot.Data
         /// <returns>true if the ability was added, otherwise false.</returns>
         public bool TryAddAbility(PermissionAbility permAbility)
         {
-            if (permAbility == null)
-            {
-                return false;
-            }
-
             //Check if the ability exists
-            //NOTE: Make ABSOLUTE sure each new ability added is saved into the database
-            //Otherwise, the navigation property will be null and it'll throw an exception here
-            UserAbility curAbility = UserAbilities.FirstOrDefault(p => p.PermAbility.Name == permAbility.Name);
+            UserAbility curAbility = UserAbilities.FirstOrDefault(p => p.permability_id == permAbility.id);
 
             //Add the ability
             if (curAbility == null)
             {
+                Console.WriteLine($"Ability {permAbility.Name} not found, adding to {Name}");
+
                 UserAbility newAbility = new UserAbility(permAbility, permAbility.value_str, permAbility.value_int, -1, null);
+                newAbility.user_id = id;
                 UserAbilities.Add(newAbility);
 
                 return true;
             }
+
+            Console.WriteLine($"Ability {permAbility.Name} already found on {Name}, not adding");
 
             return false;
         }
@@ -127,20 +125,14 @@ namespace TRBot.Data
         public bool AddAbility(PermissionAbility permAbility, string valueStr, in int valueInt,
             in long grantedByLevel, in DateTime? expirationDate)
         {
-            if (permAbility == null)
-            {
-                return false;
-            }
-
             //Check if the ability exists
-            //NOTE: Make ABSOLUTE sure each new ability added is saved into the database
-            //Otherwise, the navigation property will be null and it'll throw an exception here
-            UserAbility curAbility = UserAbilities.FirstOrDefault(p => p.PermAbility.Name == permAbility.Name);
+            UserAbility curAbility = UserAbilities.FirstOrDefault(p => p.permability_id == permAbility.id);
 
             //Add the ability
             if (curAbility == null)
             {
                 UserAbility newAbility = new UserAbility(permAbility, valueStr, valueInt, grantedByLevel, expirationDate);
+                newAbility.user_id = id;
                 UserAbilities.Add(newAbility);
             }
             //Update the ability
@@ -160,10 +152,10 @@ namespace TRBot.Data
         /// </summary>
         /// <param name="abilityName">The name of the ability to remove.</param>
         /// <returns>true if the ability was removed, otherwise false.</returns>
-        public bool RemoveAbility(string abilityName)
+        public bool RemoveAbility(int permAbilityID)
         {
             //Find the ability
-            UserAbility ability = UserAbilities.FirstOrDefault(p => p.PermAbility.Name == abilityName);
+            UserAbility ability = UserAbilities.FirstOrDefault(p => p.permability_id == permAbilityID);
 
             if (ability != null)
             {
@@ -174,14 +166,29 @@ namespace TRBot.Data
             return false;
         }
 
+        public bool HasAbility(in int permAbilityID)
+        {
+            return TryGetAbility(permAbilityID, out UserAbility ability);
+        }
+
         public bool HasAbility(string abilityName)
         {
             return TryGetAbility(abilityName, out UserAbility ability);
         }
 
+        public bool TryGetAbility(int permAbilityID, out UserAbility userAbility)
+        {
+            userAbility = UserAbilities.FirstOrDefault(p => p.permability_id == permAbilityID
+                && p.HasExpired == false);
+
+            return (userAbility != null);
+        }
+
         public bool TryGetAbility(string abilityName, out UserAbility userAbility)
         {
             //Check for name and expiration
+            //NOTE: Make sure this is called after all user abilities are in the database
+            //Otherwise, the navigation property won't be set and it'll throw an exception
             userAbility = UserAbilities.FirstOrDefault(p => p.PermAbility.Name == abilityName
                 && p.HasExpired == false);
 

@@ -234,13 +234,16 @@ namespace TRBot.Data
         {
             //First, remove all auto grant abilities the user has
             UserAbility[] userAbilities = user.UserAbilities.ToArray();
+
+            Console.WriteLine($"Ability count for {user.Name}: {userAbilities.Length}");
+
             for (int i = 0; i < userAbilities.Length; i++)
             {
                 UserAbility userAbility = userAbilities[i];
 
                 if (userAbility == null)
                 {
-                    Console.WriteLine($"User ability at {i} is somehow null! UserID: {user.id}");
+                    Console.WriteLine($"User ability at {i} is somehow null for {user.Name}! UserID: {user.id}");
                     continue;
                 }
 
@@ -248,7 +251,7 @@ namespace TRBot.Data
 
                 if (pAbility == null)
                 {
-                    Console.WriteLine($"User linked permission ability at {i} is somehow null! PermID: {userAbility.permability_id} | UserID: {userAbility.user_id}");
+                    Console.WriteLine($"User linked permission ability at {i} is somehow null for {user.Name}! PermID: {userAbility.permability_id} | UserAbility UserID: {userAbility.user_id}");
                     continue;
                 }
 
@@ -257,7 +260,16 @@ namespace TRBot.Data
                 if ((long)pAbility.AutoGrantOnLevel >= 0
                     && userAbility.GrantedByLevel <= user.Level)
                 {
-                    user.RemoveAbility(pAbility.Name);
+                    bool removed = user.RemoveAbility(pAbility.id);
+
+                    if (removed == true)
+                    {
+                        Console.WriteLine($"Removed ability {pAbility.Name}. New count for {user.Name}: {user.UserAbilities.Count()}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Didn't remove ability {pAbility.Name} because it's not present. Count for {user.Name}: {user.UserAbilities.Count()}");
+                    }
                 }
             }
 
@@ -268,14 +280,19 @@ namespace TRBot.Data
                 context.PermAbilities.Where(p => (long)p.AutoGrantOnLevel >= 0
                     && (long)p.AutoGrantOnLevel <= originalLevel);
 
+            Console.WriteLine($"Found {permAbilities.Count()} autogrant up to level {originalLevel}");
+
             //Add all of those abilities
             foreach (PermissionAbility permAbility in permAbilities)
             {
-                if (user.TryAddAbility(permAbility) == true)
+                bool added = user.TryAddAbility(permAbility);
+                if (added == true)
                 {
-                    //Save after adding each one to avoid issues with null navigation properties while searching
-                    //NOTE: We will want to find a way to change this to not save inside this method
-                    context.SaveChanges();
+                    Console.WriteLine($"Added ability {permAbility.Name} to {user.Name}. New count: {user.UserAbilities.Count()}");
+                }
+                else
+                {
+                    Console.WriteLine($"Didn't add ability {permAbility.Name} to {user.Name} because it's already present. Count: {user.UserAbilities.Count()}");
                 }
             }
         }
@@ -312,7 +329,7 @@ namespace TRBot.Data
                     if (user.TryGetAbility(pAbility.Name, out UserAbility ability) == true
                         && ability.GrantedByLevel <= user.Level)
                     {
-                        user.RemoveAbility(pAbility.Name);
+                        user.RemoveAbility(pAbility.id);
                     }
                 }
             }
@@ -328,12 +345,7 @@ namespace TRBot.Data
                 //Add all these abilities
                 foreach (PermissionAbility pAbility in permAbilities)
                 {
-                    if (user.TryAddAbility(pAbility) == true)
-                    {
-                        //Save after adding each one to avoid issues with null navigation properties while searching
-                        //NOTE: We will want to find a way to change this to not save inside this method
-                        context.SaveChanges();
-                    }
+                    user.TryAddAbility(pAbility);
                 }
             }
         }
