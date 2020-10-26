@@ -190,14 +190,27 @@ namespace TRBot.Consoles
         }
 
         /// <summary>
+        /// Tells if a given input exists and is enabled for this console.
+        /// </summary>
+        /// <param name="inputName">The name of the input.</param>
+        /// <returns>true if the input name is a valid input and the input is enabled, otherwise false.</returns>
+        public bool IsInputEnabled(string inputName)
+        {
+            ConsoleInputs.TryGetValue(inputName, out InputData inputData);
+            
+            return (inputData != null && inputData.enabled != 0);
+        }
+
+        /// <summary>
         /// Tells if a given axis value exists and returns it if so.
         /// </summary>
         /// <param name="axisName">The name of the axis to get the value for.</param>
         /// <param name="inputAxis">The returned InputAxis if found.</param>
-        /// <returns>true if an axis with the given name exists, otherwise false.</returns>
+        /// <returns>true if an enabled axis with the given name exists, otherwise false.</returns>
         public bool GetAxisValue(string axisName, out InputAxis inputAxis)
         {
             if (ConsoleInputs.TryGetValue(axisName, out InputData inputData) == false
+                || inputData.enabled == 0
                 || EnumUtility.HasEnumVal((long)inputData.InputType, (long)InputTypes.Axis) == false)
             {
                 inputAxis = default;
@@ -213,10 +226,11 @@ namespace TRBot.Consoles
         /// </summary>
         /// <param name="buttonName">The name of the button to get the value for.</param>
         /// <param name="inputButton">The returned InputButton if found.</param>
-        /// <returns>true if a button with the given name exists, otherwise false.</returns>
+        /// <returns>true if an enabled button with the given name exists, otherwise false.</returns>
         public bool GetButtonValue(string buttonName, out InputButton inputButton)
         {
             if (ConsoleInputs.TryGetValue(buttonName, out InputData inputData) == false
+                || inputData.enabled == 0
                 || EnumUtility.HasEnumVal((long)inputData.InputType, (long)InputTypes.Button) == false)
             {
                 inputButton = default;
@@ -235,12 +249,12 @@ namespace TRBot.Consoles
         /// </summary>
         /// <param name="input">The input to check.</param>
         /// <param name="axis">The InputAxis value that is assigned. If no axis is found, the default value.</param>
-        /// <returns>true if the input is an axis, otherwise false.</returns>
+        /// <returns>true if the input is an enabled axis, otherwise false.</returns>
         public virtual bool GetAxis(in ParsedInput input, out InputAxis axis)
         {
             ConsoleInputs.TryGetValue(input.name, out InputData inputData);
 
-            if (inputData == null || EnumUtility.HasEnumVal((long)inputData.InputType, (long)InputTypes.Axis) == false)
+            if (inputData == null || inputData.enabled == 0 || EnumUtility.HasEnumVal((long)inputData.InputType, (long)InputTypes.Axis) == false)
             {
                 axis = default;
                 return false;
@@ -260,7 +274,7 @@ namespace TRBot.Consoles
         /// Tells whether an input is an axis or not.
         /// </summary>
         /// <param name="input">The input to check.</param>
-        /// <returns>true if the input is an axis, otherwise false.</returns>
+        /// <returns>true if the input is an enabled axis, otherwise false.</returns>
         public virtual bool IsAxis(in ParsedInput input)
         {
             return GetAxis(input, out InputAxis axis);
@@ -270,12 +284,13 @@ namespace TRBot.Consoles
         /// Tells whether the input is a button.
         /// </summary>
         /// <param name="input">The input to check.</param>
-        /// <returns>true if the input is a button, otherwise false.</returns>
+        /// <returns>true if the input is an enabled button, otherwise false.</returns>
         public virtual bool IsButton(in ParsedInput input)
         {
             ConsoleInputs.TryGetValue(input.name, out InputData inputData);
 
-            if (inputData == null)
+            //Not a button if null or not enabled
+            if (inputData == null || inputData.enabled == 0)
             {
                 return false;
             }
@@ -291,26 +306,40 @@ namespace TRBot.Consoles
         /// Tells whether the input is a blank input, an input without any specially defined function.
         /// </summary>
         /// <param name="input">The input to check.</param>
-        /// <returns>true if the input is not a button or axes, otherwise false.</returns>
+        /// <returns>true if the input is enabled and is not a button or axes, otherwise false.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsBlankInput(in ParsedInput input)
         {
             ConsoleInputs.TryGetValue(input.name, out InputData inputData);
 
-            if (inputData == null || inputData.InputType == (int)InputTypes.None)
+            //Not a blank input if null, disabled, or not None
+            if (inputData == null || inputData.enabled == 0 || inputData.InputType != (int)InputTypes.None)
             {
-                return true;
+                return false;
             }
 
-            return false;
+            return true;
         }
 
         /// <summary>
-        /// Updates the input regex for the console.
+        /// Updates the input regex for the console. This excludes disabled inputs.
         /// </summary>
         public void UpdateInputRegex()
         {
-            InputRegex = Parser.BuildInputRegex(Parser.DEFAULT_PARSE_REGEX_START, Parser.DEFAULT_PARSE_REGEX_END, ConsoleInputs.Keys.ToArray());//ValidInputs);
+            List<string> validInputs = new List<string>(ConsoleInputs.Count);
+
+            foreach (KeyValuePair<string, InputData> kvPair in ConsoleInputs)
+            {
+                //Don't add if disabled
+                if (kvPair.Value.enabled == 0)
+                {
+                    continue;
+                }
+
+                validInputs.Add(kvPair.Key);
+            }
+
+            InputRegex = Parser.BuildInputRegex(Parser.DEFAULT_PARSE_REGEX_START, Parser.DEFAULT_PARSE_REGEX_END, validInputs);
         }
 
         #endregion

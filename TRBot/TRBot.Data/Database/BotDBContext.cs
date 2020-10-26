@@ -148,6 +148,7 @@ namespace TRBot.Data
                 entity.Property(e => e.MinAxisVal).HasDefaultValue(0);
                 entity.Property(e => e.MaxAxisVal).HasDefaultValue(1);
                 entity.Property(e => e.MaxAxisPercent).HasDefaultValue(100);
+                entity.Property(e => e.enabled).HasDefaultValue(1);
                 entity.HasIndex(e => new { e.Name, e.console_id }).IsUnique();
             });
 
@@ -165,7 +166,7 @@ namespace TRBot.Data
                 entity.Property(e => e.Name).HasDefaultValue(string.Empty);
                 entity.HasOne(e => e.Stats).WithOne(u => u.user).HasForeignKey<UserStats>(u => u.user_id).IsRequired().OnDelete(DeleteBehavior.Cascade);
                 entity.HasMany(e => e.UserAbilities).WithOne(c => c.user).HasForeignKey(u => u.user_id).IsRequired().OnDelete(DeleteBehavior.Cascade);
-                entity.HasMany(e => e.RestrictedInputs).WithOne().HasForeignKey(e => e.user_id).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(e => e.RestrictedInputs).WithOne(e => e.user).HasForeignKey(e => e.user_id).IsRequired().OnDelete(DeleteBehavior.Cascade);
                 entity.HasIndex(e => e.Name);
             });
 
@@ -189,6 +190,14 @@ namespace TRBot.Data
                 entity.HasKey(e => e.id);
                 entity.HasOne(e => e.PermAbility).WithOne().HasForeignKey<UserAbility>(u => u.permability_id).IsRequired();
                 entity.HasIndex(e => new { e.user_id, e.permability_id }).IsUnique();
+            });
+
+            modelBuilder.Entity<RestrictedInput>().ToTable("RestrictedInputs", "restrictedinputs");
+            modelBuilder.Entity<RestrictedInput>(entity =>
+            {
+                entity.HasKey(e => e.id);
+                entity.HasOne(e => e.inputData).WithOne().HasForeignKey<RestrictedInput>(e => e.input_id).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(e => new { e.user_id, e.input_id }).IsUnique();
             });
 
             base.OnModelCreating(modelBuilder);

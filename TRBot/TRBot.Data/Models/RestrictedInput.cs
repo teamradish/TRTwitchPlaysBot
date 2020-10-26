@@ -16,8 +16,9 @@
 
 using System;
 using System.Collections.Concurrent;
+using TRBot.Consoles;
 
-namespace TRBot.Permissions
+namespace TRBot.Data
 {
     /// <summary>
     /// Describes a restricted input for a user.
@@ -25,12 +26,16 @@ namespace TRBot.Permissions
     public class RestrictedInput
     {
         public int id { get; set; } = 0;
+
+        /// <summary>
+        /// The ID of the user the restricted input belongs to.
+        /// </summary>
         public int user_id { get; set; } = 0;
 
         /// <summary>
-        /// The name of the input the user is restricted from inputting.
+        /// The ID of the input the user is restricted from inputting.
         /// </summary>
-        public string input_name { get; set; } = string.Empty;
+        public int input_id { get; set; } = 0;
 
         /// <summary>
         /// When the restriction expires.
@@ -38,14 +43,27 @@ namespace TRBot.Permissions
         /// </summary>
         public DateTime? expiration { get; set; } = null;
 
+        /// <summary>
+        /// The User associated with the restricted input.
+        /// This is used by the database and should not be assigned or modified manually.
+        /// </summary>
+        public virtual User user { get; set; } = null;
+
+        /// <summary>
+        /// The InputData associated with the restricted input.
+        /// This is used by the database and should not be assigned or modified manually.
+        /// </summary>
+        public virtual InputData inputData { get; set; } = null;
+
         public RestrictedInput()
         {
 
         }
 
-        public RestrictedInput(string inputName, DateTime? expirationDate)
+        public RestrictedInput(int userID, int inputID, string inputName, DateTime? expirationDate)
         {
-            input_name = inputName;
+            user_id = userID;
+            input_id = inputID;
             expiration = expirationDate;
         }
     }

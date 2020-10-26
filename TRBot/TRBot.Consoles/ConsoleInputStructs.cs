@@ -91,6 +91,11 @@ namespace TRBot.Consoles
         public int MaxAxisPercent { get; set; } = 100;
 
         /// <summary>
+        /// Whether the input is enabled.
+        /// </summary>
+        public long enabled { get; set; } = 1;
+
+        /// <summary>
         /// The GameConsole associated with this input.
         /// This is used by the database and should not be assigned or modified manually.
         /// </summary>
@@ -133,7 +138,7 @@ namespace TRBot.Consoles
 
         public override string ToString()
         {
-            return $"Name: \"{Name}\" | console_id: {console_id} | BtnVal: {ButtonValue} | AxisVal: {AxisValue} | InputType: {InputType} | MinAxis: {MinAxisVal} | MaxAxis: {MaxAxisVal} | MaxAxisPercent: {MaxAxisPercent} | Level: {level}";
+            return $"Name: \"{Name}\" | console_id: {console_id} | BtnVal: {ButtonValue} | AxisVal: {AxisValue} | InputType: {InputType} | MinAxis: {MinAxisVal} | MaxAxis: {MaxAxisVal} | MaxAxisPercent: {MaxAxisPercent} | Level: {level} | Enabled: {enabled}";
         }
 
         public static InputData CreateBlank(string name)

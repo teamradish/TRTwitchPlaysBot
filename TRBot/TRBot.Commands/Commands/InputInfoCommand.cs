@@ -112,7 +112,15 @@ namespace TRBot.Commands
             
             foreach (InputData inputData in console.InputList)
             {
-                strBuilder.Append(inputData.Name).Append(", ");
+                strBuilder.Append(inputData.Name);
+
+                //Note if the input is disabled
+                if (inputData.enabled == 0)
+                {
+                    strBuilder.Append(" (disabled)");
+                }
+
+                strBuilder.Append(", ");
             }
             
             Settings charCount = context.SettingCollection.FirstOrDefault(set => set.key == SettingsConstants.BOT_MSG_CHAR_LIMIT);

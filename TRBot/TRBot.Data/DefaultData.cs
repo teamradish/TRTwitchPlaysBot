@@ -172,6 +172,7 @@ namespace TRBot.Data
                 new CommandData("addinput", "TRBot.Commands.AddInputCommand", (long)PermissionLevels.Admin, true, true),
                 new CommandData("removeinput", "TRBot.Commands.RemoveInputCommand", (long)PermissionLevels.Admin, true, true),
                 new CommandData("setinputlevel", "TRBot.Commands.SetInputLevelCommand", (long)PermissionLevels.Admin, true, true),
+                new CommandData("toggleinput", "TRBot.Commands.SetInputEnabledCommand", (long)PermissionLevels.Admin, true, true),
                 new CommandData("inputperms", "TRBot.Commands.GlobalInputPermissionsCommand", (long)PermissionLevels.Admin, true, true),
 
                 new CommandData("exec", "TRBot.Commands.ExecCommand", (long)PermissionLevels.Superadmin, false, false),

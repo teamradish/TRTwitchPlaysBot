@@ -30,13 +30,13 @@ using TRBot.Permissions;
 namespace TRBot.Commands
 {
     /// <summary>
-    /// A command that sets the permission level for an input on a console.
+    /// A command that enables or disables an input on a console.
     /// </summary>
-    public sealed class SetInputLevelCommand : BaseCommand
+    public sealed class SetInputEnabledCommand : BaseCommand
     {
-        private string UsageMessage = $"Usage - \"console name\", \"input name\", \"level (string/int)\"";
+        private string UsageMessage = $"Usage - \"console name\", \"input name\", \"true or false\"";
 
-        public SetInputLevelCommand()
+        public SetInputEnabledCommand()
         {
             
         }
@@ -76,43 +76,35 @@ namespace TRBot.Commands
                 return;
             }
 
-            string levelStr = arguments[2].ToLowerInvariant();
+            string enabledStr = arguments[2].ToLowerInvariant();
 
-            //Parse the permission level
-            if (PermissionHelpers.TryParsePermissionLevel(levelStr, out PermissionLevels permLevel) == false)
+            //Parse the enabled state
+            if (bool.TryParse(enabledStr, out bool inputEnabled) == false)
             {
-                QueueMessage("Invalid level specified.");
+                QueueMessage("Invalid enable state specified.");
                 return;
             }
 
             //Compare this user's level with the input's current level
             User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username.ToLowerInvariant(), context);
-            
-            long newLvlNum = (long)permLevel;
 
             if (user != null)
             {
                 long curInputLvl = inputData.level;
 
-                //Your level is less than the current input's level - invalid
+                //Your level is less than the current input's level - cannot change state
                 if (user.Level < curInputLvl)
                 {
-                    QueueMessage("Cannot change this input's access level because your level is lower than it.");
-                    return;
-                }
-                //The new level number is higher than your level - invalid
-                else if (user.Level < newLvlNum)
-                {
-                    QueueMessage("Cannot change this input's access level because the new level would be higher than yours.");
+                    QueueMessage("Cannot change this input's enabled state because your level is lower than it.");
                     return;
                 }
             }
 
-            inputData.level = newLvlNum;
+            inputData.enabled = (inputEnabled == false) ? 0L : 1L;
 
             context.SaveChanges();
 
-            QueueMessage($"Set the level of input \"{inputName}\" on \"{consoleStr}\" to {newLvlNum}, {permLevel}!");
+            QueueMessage($"Set the enabled state of input \"{inputName}\" on \"{consoleStr}\" to {inputEnabled}!");
         }
     }
 }

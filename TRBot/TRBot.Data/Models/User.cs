@@ -208,14 +208,15 @@ namespace TRBot.Data
             //Put all restricted inputs in a dictionary
             foreach (RestrictedInput rInput in restrictedInputs)
             {
-                if (restrictedInpDict.TryGetValue(rInput.input_name, out int val) == false)
+                //Search by name
+                if (restrictedInpDict.TryGetValue(rInput.inputData.Name, out int val) == false)
                 {
-                    restrictedInpDict.Add(rInput.input_name, 1);
+                    restrictedInpDict.Add(rInput.inputData.Name, 1);
                     continue;
                 }
 
                 val += 1;
-                restrictedInpDict[rInput.input_name] = val;
+                restrictedInpDict[rInput.inputData.Name] = val;
             }
 
             return restrictedInpDict;
