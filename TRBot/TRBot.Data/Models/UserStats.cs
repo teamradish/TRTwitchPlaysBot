@@ -48,5 +48,15 @@ namespace TRBot.Data
         {
 
         }
+
+        /// <summary>
+        /// Clears counted stats, such as credits, message count, and valid inputs.
+        /// </summary>
+        public void ClearCountedStats()
+        {
+            Credits = 0L;
+            TotalMessageCount = 0L;
+            ValidInputCount = 0L;
+        }
     }
 }

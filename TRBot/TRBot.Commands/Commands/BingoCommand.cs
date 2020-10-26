@@ -27,6 +27,9 @@ using TRBot.Data;
 
 namespace TRBot.Commands
 {
+    /// <summary>
+    /// Allows users to interact with an external bingo application.
+    /// </summary>
     public class BingoCommand : BaseCommand
     {
         /// <summary>
