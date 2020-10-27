@@ -41,10 +41,18 @@ namespace TRBot.Routines
 
         }
 
-        public virtual void Initialize(BotRoutineHandler routineHandler, DataContainer dataContainer)
+        /// <summary>
+        /// Sets data required for many routines to function.
+        /// </summary>
+        public void SetRequiredData(BotRoutineHandler routineHandler, DataContainer dataContainer)
         {
             RoutineHandler = routineHandler;
             DataContainer = dataContainer;
+        }
+
+        public virtual void Initialize()
+        {
+
         }
 
         public virtual void CleanUp()

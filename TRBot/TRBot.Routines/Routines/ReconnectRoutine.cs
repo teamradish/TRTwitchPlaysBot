@@ -47,16 +47,6 @@ namespace TRBot.Routines
             Identifier = RoutineConstants.RECONNECT_ROUTINE_ID;
         }
 
-        public override void Initialize(BotRoutineHandler routineHandler, DataContainer dataContainer)
-        {
-            base.Initialize(routineHandler, dataContainer);
-        }
-
-        public override void CleanUp()
-        {
-            base.CleanUp();
-        }
-
         public override void UpdateRoutine(in DateTime currentTimeUTC)
         {
             //If connected, simply return

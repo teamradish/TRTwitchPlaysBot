@@ -50,6 +50,8 @@ namespace TRBot.Data
                 SettingsHelper(CREDITS_NAME, "Credits"),
                 SettingsHelper(CREDITS_GIVE_TIME, 120000L),
                 SettingsHelper(CREDITS_GIVE_AMOUNT, 100L),
+                SettingsHelper(GROUP_BET_TOTAL_TIME, 120000L),
+                SettingsHelper(GROUP_BET_MIN_PARTICIPANTS, 3L),
                 SettingsHelper(CHATBOT_ENABLED, false),
                 SettingsHelper(CHATBOT_SOCKET_PATH, "ChatterBotSocket"),
                 SettingsHelper(CHATBOT_SOCKET_PATH_IS_RELATIVE, true),
@@ -150,6 +152,9 @@ namespace TRBot.Data
                 new CommandData("length", "TRBot.Commands.InputLengthCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("clearstats", "TRBot.Commands.ClearUserStatsCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("calculate", "TRBot.Commands.CalculateCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("listresinputs", "TRBot.Commands.ListRestrictedInputsCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("groupbet", "TRBot.Commands.EnterGroupBetCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("exitgroupbet", "TRBot.Commands.LeaveGroupBetCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
 
@@ -165,7 +170,6 @@ namespace TRBot.Data
                 new CommandData("addability", "TRBot.Commands.AddUserAbilityCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("restrictinput", "TRBot.Commands.AddRestrictedInputCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("unrestrictinput", "TRBot.Commands.RemoveRestrictedInputCommand", (long)PermissionLevels.Moderator, true, true),
-                new CommandData("listresinputs", "TRBot.Commands.ListRestrictedInputsCommand", (long)PermissionLevels.Moderator, true, true),
 
                 new CommandData("addcmd", "TRBot.Commands.AddCmdCommand", (long)PermissionLevels.Admin, true, true),
                 new CommandData("removecmd", "TRBot.Commands.RemoveCmdCommand", (long)PermissionLevels.Admin, true, true),

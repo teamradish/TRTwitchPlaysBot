@@ -24,6 +24,7 @@ using TRBot.Connection;
 using TRBot.Data;
 using TRBot.Misc;
 using TRBot.Utilities;
+using TRBot.Routines;
 
 namespace TRBot.Commands
 {
@@ -34,13 +35,14 @@ namespace TRBot.Commands
     {
         private ConcurrentDictionary<string, BaseCommand> AllCommands = new ConcurrentDictionary<string, BaseCommand>(Environment.ProcessorCount * 2, 32);
         private DataContainer DataContainer = null;
+        private BotRoutineHandler RoutineHandler = null;
 
         public CommandHandler()
         {
 
         }
 
-        public void Initialize(DataContainer dataContainer)
+        public void Initialize(DataContainer dataContainer, BotRoutineHandler routineHandler)
         {
             DataContainer = dataContainer;
 
@@ -49,6 +51,8 @@ namespace TRBot.Commands
 
             DataContainer.DataReloader.HardDataReloadedEvent -= OnDataReloadedHard;
             DataContainer.DataReloader.HardDataReloadedEvent += OnDataReloadedHard;
+
+            RoutineHandler = routineHandler;
 
             PopulateCommandsFromDB();            
             InitializeCommands();
@@ -60,6 +64,7 @@ namespace TRBot.Commands
             DataContainer.DataReloader.HardDataReloadedEvent -= OnDataReloadedHard;
 
             DataContainer = null;
+            RoutineHandler = null;
 
             CleanUpCommands();
         }
@@ -154,7 +159,8 @@ namespace TRBot.Commands
 
             //Set and initialize the command
             AllCommands[commandName] = command;
-            AllCommands[commandName].Initialize(this, DataContainer);
+            AllCommands[commandName].SetRequiredData(this, DataContainer, RoutineHandler);
+            AllCommands[commandName].Initialize();
 
             return true;
         }
@@ -173,7 +179,8 @@ namespace TRBot.Commands
         {
             foreach (KeyValuePair<string, BaseCommand> cmd in AllCommands)
             {
-                cmd.Value.Initialize(this, DataContainer);
+                cmd.Value.SetRequiredData(this, DataContainer, RoutineHandler);
+                cmd.Value.Initialize();
             }
         }
 

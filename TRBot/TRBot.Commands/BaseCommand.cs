@@ -23,6 +23,7 @@ using TRBot.Connection;
 using TRBot.Misc;
 using TRBot.Utilities;
 using TRBot.Data;
+using TRBot.Routines;
 
 namespace TRBot.Commands
 {
@@ -38,16 +39,26 @@ namespace TRBot.Commands
 
         protected CommandHandler CmdHandler = null;
         protected DataContainer DataContainer = null;
+        protected BotRoutineHandler RoutineHandler = null;
 
         public BaseCommand()
         {
             
         }
 
-        public virtual void Initialize(CommandHandler cmdHandler, DataContainer dataContainer)
+        /// <summary>
+        /// Sets required data for many commands to function.
+        /// </summary>
+        public void SetRequiredData(CommandHandler cmdHandler, DataContainer dataContainer, BotRoutineHandler routineHandler)
         {
             CmdHandler = cmdHandler;
             DataContainer = dataContainer;
+            RoutineHandler = routineHandler;
+        }
+
+        public virtual void Initialize()
+        {
+            
         }
 
         public virtual void CleanUp()

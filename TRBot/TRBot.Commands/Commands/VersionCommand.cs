@@ -36,16 +36,6 @@ namespace TRBot.Commands
             
         }
 
-        public override void Initialize(CommandHandler cmdHandler, DataContainer dataContainer)
-        {
-            base.Initialize(cmdHandler, dataContainer);
-        }
-
-        public override void CleanUp()
-        {
-            base.CleanUp();
-        }
-
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
             string versionString = DataHelper.GetSettingString(SettingsConstants.DATA_VERSION_NUM, "Unknown??");

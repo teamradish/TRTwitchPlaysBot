@@ -227,7 +227,7 @@ namespace TRBot.Main
             Console.WriteLine($"Setting up virtual controller {curVControllerType} and acquired {acquiredCount} controllers!");
 
             CmdHandler = new CommandHandler();
-            CmdHandler.Initialize(DataContainer);
+            CmdHandler.Initialize(DataContainer, RoutineHandler);
 
             DataReloader.SoftDataReloadedEvent -= OnSoftReload;
             DataReloader.SoftDataReloadedEvent += OnSoftReload;

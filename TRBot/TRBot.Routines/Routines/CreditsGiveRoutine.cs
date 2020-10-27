@@ -38,9 +38,9 @@ namespace TRBot.Routines
             Identifier = RoutineConstants.CREDITS_GIVE_ROUTINE_ID;
         }
 
-        public override void Initialize(BotRoutineHandler routineHandler, DataContainer dataContainer)
+        public override void Initialize()
         {
-            base.Initialize(routineHandler, dataContainer);
+            base.Initialize();
 
             DataContainer.MessageHandler.ClientService.EventHandler.UserSentMessageEvent -= MessageReceived;
             DataContainer.MessageHandler.ClientService.EventHandler.UserSentMessageEvent += MessageReceived;

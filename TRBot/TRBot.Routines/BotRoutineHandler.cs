@@ -64,7 +64,8 @@ namespace TRBot.Routines
 
         public void AddRoutine(BaseRoutine routine)
         {
-            routine.Initialize(this, DataContainer);
+            routine.SetRequiredData(this, DataContainer);
+            routine.Initialize();
             BotRoutines.Add(routine);
         }
 

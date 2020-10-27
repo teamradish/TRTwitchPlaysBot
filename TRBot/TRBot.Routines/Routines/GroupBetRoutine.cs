@@ -29,48 +29,86 @@ namespace TRBot.Routines
     /// </summary>
     public class GroupBetRoutine : BaseRoutine
     {
-        private Random Rand = new Random();
-        private int MinutesForBet = 0;
+        public long MillisecondsForBet { get; private set; } = 0L;
+        public int MinParticipants { get; private set; }= 3;
 
-        private DateTime CurGroupBetTime = default;
-        private DateTime CurMinute = default;
+        private DateTime GroupBetStartTime = default;
+        private int CurMinute = 0;
+        private TimeSpan TotalTime = TimeSpan.Zero;
+        private Random Rand = new Random();
 
         private Dictionary<string, long> Participants = new Dictionary<string, long>(4);
 
-        public GroupBetRoutine(in int minutesForBet)
+        /// <summary>
+        /// The number of participants in the group bet.
+        /// </summary>
+        public int ParticipantCount => Participants.Count;
+
+        public GroupBetRoutine(in long millisecondsForBet, in int minParticipants)
         {
             Identifier = RoutineConstants.GROUP_BET_ROUTINE_ID;
 
-            MinutesForBet = minutesForBet;
+            MillisecondsForBet = millisecondsForBet;
+            MinParticipants = minParticipants;
+
+            TotalTime = TimeSpan.FromMilliseconds(MillisecondsForBet);
         }
 
-        public override void Initialize(BotRoutineHandler routineHandler, DataContainer dataContainer)
+        public override void Initialize()
         {
-            base.Initialize(routineHandler, dataContainer);
+            base.Initialize();
 
             DateTime nowUTC = DateTime.UtcNow;
-            CurGroupBetTime = nowUTC;
-            CurMinute = nowUTC;
+            GroupBetStartTime = nowUTC;
+
+            CurMinute = 0;
         }
 
         public override void CleanUp()
         {
+            CurMinute = 0;
             Participants.Clear();
 
             base.CleanUp();
         }
 
         /// <summary>
-        /// Adds a participant to the group bet.
+        /// Retrieves data about a participant from the group bet.
+        /// </summary>
+        /// <param name="username">The name of the participant in the group bet.</param>
+        /// <param name="participantData">Returned data about the participant if found in the group bet.</param>
+        /// <returns>true if the participant is in the group bet, otherwise false.</returns>
+        public bool TryGetParticipant(string username, out ParticipantData participantData)
+        {
+            if (Participants.TryGetValue(username, out long betAmount) == true)
+            {
+                participantData = new ParticipantData(username, betAmount);
+                return true;
+            }
+
+            participantData = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Adds a participant to the group bet or updates their information if already participating.
         /// </summary>
         /// <param name="username">The name of the participant entering the group bet.</param>
         /// <param name="betAmount">The participant's bet amount.</param>
-        /// <param name="added">A return value indicating if the participant was newly added to the group bet.</param>
-        public void AddParticipant(string username, in long betAmount, out bool added)
+        public void AddOrUpdateParticipant(string username, in long betAmount)
         {
-            added = !Participants.ContainsKey(username);
+            bool added = !Participants.ContainsKey(username);
 
             Participants[username] = betAmount;
+
+            //Update the time if the we added the last participant required to start
+            if (added == true && ParticipantCount == MinParticipants)
+            {
+                DateTime nowUTC = DateTime.UtcNow;
+                GroupBetStartTime = nowUTC;
+
+                CurMinute = 0;
+            }
         }
 
         /// <summary>
@@ -85,24 +123,43 @@ namespace TRBot.Routines
 
         public override void UpdateRoutine(in DateTime currentTimeUTC)
         {
-            TimeSpan diff = currentTimeUTC - CurGroupBetTime;
-            TimeSpan minuteDiff = currentTimeUTC - CurMinute;
+            //Return if we don't have enough participants
+            if (ParticipantCount < MinParticipants)
+            {
+                return;
+            }
+
+            //Get time difference and time remaining
+            TimeSpan diff = currentTimeUTC - GroupBetStartTime;
+
+            //Floor the total seconds so the millisecond component doesn't get in the way
+            //This lets the time remaining second count stay in sync with the time difference second count
+            //The millisecond component would otherwise make it one second off (Ex. saying 29 seconds remaining instead of 30)
+            TimeSpan timeRemaining = TotalTime - TimeSpan.FromSeconds((long)Math.Floor(diff.TotalSeconds));
+
+            //Console.WriteLine($"CurMinute: {CurMinute} | diff minutes: {diff.Minutes} Seconds: {diff.Seconds} | Remaining: Min: {timeRemaining.Minutes} Sec: {timeRemaining.Seconds}");
 
             //Remind users about the group bet every minute
-            if (minuteDiff.TotalMinutes >= 1)
+            if (diff.Minutes > CurMinute && diff.TotalMilliseconds < MillisecondsForBet)
             {
-                int minutesRemaining =  MinutesForBet - (int)Math.Round(diff.TotalMinutes, 2);
+                CurMinute = (int)diff.Minutes;
 
-                if (minutesRemaining >= 1)
+                long minutesRemaining = (long)timeRemaining.Minutes;
+                long secondsRemaining = (long)timeRemaining.Seconds;
+
+                //If there are minutes remaining state them, otherwise state only the seconds remaining
+                if (minutesRemaining > 0)
                 {
-                    DataContainer.MessageHandler.QueueMessage($"{minutesRemaining} minute(s) remaining for the group bet! Join while you still can! Current number of participants: {Participants.Count}");
+                    DataContainer.MessageHandler.QueueMessage($"{minutesRemaining} minute(s) and {secondsRemaining} second(s) remaining for the group bet! Join while you still can! Current number of participants: {Participants.Count}");
                 }
-
-                CurMinute = currentTimeUTC;
+                else
+                {
+                    DataContainer.MessageHandler.QueueMessage($"{secondsRemaining} second(s) remaining for the group bet! Join while you still can! Current number of participants: {Participants.Count}");
+                }
             }
 
             //Not enough time passed - return
-            if (diff.TotalMinutes < MinutesForBet)
+            if (diff.TotalMilliseconds < MillisecondsForBet)
             {
                 return;
             }
@@ -184,15 +241,15 @@ namespace TRBot.Routines
                 
                 DataContainer.MessageHandler.QueueMessage($"{winnerName} won the group bet and {total} credit(s) PogChamp! Nice!");
 
-                //No one else had enough credits
-                if (participants.Count == 1)
+                //If there's more than one minimum participants and no one else had enough credits, mention the disappointment
+                if (participants.Count == 1 && MinParticipants > 1)
                 {
                     DataContainer.MessageHandler.QueueMessage("What a bummer! Everyone else was disqualified from the group bet, so the winner won only their bet!");
                 }
             }
 
             //Update time just in case
-            CurGroupBetTime = currentTimeUTC;
+            GroupBetStartTime = currentTimeUTC;
 
             //Clear participants
             Participants.Clear();
@@ -204,6 +261,28 @@ namespace TRBot.Routines
         private void RemoveGroupBet()
         {
             RoutineHandler.RemoveRoutine(Identifier);
+        }
+
+        /// <summary>
+        /// Represents data about a participant in the group bet.
+        /// </summary>
+        public struct ParticipantData
+        {
+            /// <summary>
+            /// The name of the participant.
+            /// </summary>
+            public string ParticipantName;
+            
+            /// <summary>
+            /// The participant's bet amount.
+            /// </summary>
+            public long ParticipantBet;
+
+            public ParticipantData(string participantName, in long participantBet)
+            {
+                ParticipantName = participantName;
+                ParticipantBet = participantBet;
+            }
         }
     }
 }

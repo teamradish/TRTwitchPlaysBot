@@ -37,9 +37,9 @@ namespace TRBot.Commands
             
         }
 
-        public override void Initialize(CommandHandler cmdHandler, DataContainer dataContainer)
+        public override void Initialize()
         {
-            base.Initialize(cmdHandler, dataContainer);
+            base.Initialize();
 
             string[] names = EnumUtility.GetNames<PermissionLevels>.EnumNames;
 

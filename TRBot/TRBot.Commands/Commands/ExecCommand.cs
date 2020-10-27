@@ -80,10 +80,8 @@ namespace TRBot.Commands
 
         }
 
-        public override void Initialize(CommandHandler cmdHandler, DataContainer dataContainer)
+        public override void Initialize()
         {
-            base.Initialize(cmdHandler, dataContainer);
-
             ScriptCompileOptions = ScriptOptions.Default.WithReferences(References).WithImports(Imports);
         }
 

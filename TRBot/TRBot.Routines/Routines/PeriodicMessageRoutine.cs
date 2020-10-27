@@ -36,16 +36,11 @@ namespace TRBot.Routines
             Identifier = RoutineConstants.PERIODIC_MSG_ROUTINE_ID;
         }
 
-        public override void Initialize(BotRoutineHandler routineHandler, DataContainer dataContainer)
+        public override void Initialize()
         {
-            base.Initialize(routineHandler, dataContainer);
+            base.Initialize();
 
             CurMsgTime = DateTime.UtcNow;
-        }
-
-        public override void CleanUp()
-        {
-            base.CleanUp();
         }
 
         public override void UpdateRoutine(in DateTime currentTimeUTC)
