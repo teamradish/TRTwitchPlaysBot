@@ -23,7 +23,7 @@ using TRBot.Data;
 namespace TRBot.Routines
 {
     /// <summary>
-    /// Attempts to reconnect.
+    /// A routine that attempts to reconnect to the client service after detecting a disconnection.
     /// </summary>
     public class ReconnectRoutine : BaseRoutine
     {
@@ -44,12 +44,12 @@ namespace TRBot.Routines
 
         public ReconnectRoutine()
         {
-            Identifier = "reconnect";
+            Identifier = RoutineConstants.RECONNECT_ROUTINE_ID;
         }
 
-        public override void Initialize(DataContainer dataContainer)
+        public override void Initialize(BotRoutineHandler routineHandler, DataContainer dataContainer)
         {
-            base.Initialize(dataContainer);
+            base.Initialize(routineHandler, dataContainer);
         }
 
         public override void CleanUp()

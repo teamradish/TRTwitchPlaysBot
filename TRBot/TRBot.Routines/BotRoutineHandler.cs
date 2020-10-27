@@ -64,7 +64,7 @@ namespace TRBot.Routines
 
         public void AddRoutine(BaseRoutine routine)
         {
-            routine.Initialize(DataContainer);
+            routine.Initialize(this, DataContainer);
             BotRoutines.Add(routine);
         }
 
@@ -122,9 +122,19 @@ namespace TRBot.Routines
             return null;
         }
 
-        public BaseRoutine FindRoutine<T>()
+        public T FindRoutine<T>() where T : BaseRoutine
         {
-            return BotRoutines.Find((routine) => routine is T);
+            for (int i = 0; i < BotRoutines.Count; i++)
+            {
+                BaseRoutine routine = BotRoutines[i];
+
+                if (routine is T typeRoutine)
+                {
+                    return typeRoutine;
+                }
+            }
+
+            return null;
         }
 
         public BaseRoutine FindRoutine(Predicate<BaseRoutine> predicate)

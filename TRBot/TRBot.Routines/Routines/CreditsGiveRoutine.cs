@@ -25,7 +25,7 @@ using TRBot.Data;
 namespace TRBot.Routines
 {
     /// <summary>
-    /// The base class for bot routines.
+    /// A routine that grants users credits for participating in chat after some time.
     /// </summary>
     public class CreditsGiveRoutine : BaseRoutine
     {
@@ -35,12 +35,12 @@ namespace TRBot.Routines
 
         public CreditsGiveRoutine()
         {
-            Identifier = "creditsgive";
+            Identifier = RoutineConstants.CREDITS_GIVE_ROUTINE_ID;
         }
 
-        public override void Initialize(DataContainer dataContainer)
+        public override void Initialize(BotRoutineHandler routineHandler, DataContainer dataContainer)
         {
-            base.Initialize(dataContainer);
+            base.Initialize(routineHandler, dataContainer);
 
             DataContainer.MessageHandler.ClientService.EventHandler.UserSentMessageEvent -= MessageReceived;
             DataContainer.MessageHandler.ClientService.EventHandler.UserSentMessageEvent += MessageReceived;
@@ -50,11 +50,9 @@ namespace TRBot.Routines
 
         public override void CleanUp()
         {
-            base.CleanUp();
-
             DataContainer.MessageHandler.ClientService.EventHandler.UserSentMessageEvent -= MessageReceived;
 
-            DataContainer = null;
+            base.CleanUp();
         }
 
         public override void UpdateRoutine(in DateTime currentTimeUTC)

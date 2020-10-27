@@ -19,40 +19,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TRBot.Data;
 
 namespace TRBot.Routines
 {
     /// <summary>
-    /// The base class for bot routines.
+    /// Constants for bot routines.
     /// </summary>
-    public abstract class BaseRoutine
+    public static class RoutineConstants
     {
-        /// <summary>
-        /// The routine's identifier.
-        /// </summary>
-        public string Identifier = string.Empty;
-
-        protected BotRoutineHandler RoutineHandler = null;
-        protected DataContainer DataContainer = null; 
-
-        public BaseRoutine()
-        {
-
-        }
-
-        public virtual void Initialize(BotRoutineHandler routineHandler, DataContainer dataContainer)
-        {
-            RoutineHandler = routineHandler;
-            DataContainer = dataContainer;
-        }
-
-        public virtual void CleanUp()
-        {
-            RoutineHandler = null;
-            DataContainer = null;
-        }
-
-        public abstract void UpdateRoutine(in DateTime currentTimeUTC);
+        public const string CREDITS_GIVE_ROUTINE_ID = "creditsgive";
+        public const string GROUP_BET_ROUTINE_ID = "groupbet";
+        public const string PERIODIC_MSG_ROUTINE_ID = "periodicmessage";
+        public const string RECONNECT_ROUTINE_ID = "reconnect";
     }
 }

@@ -24,18 +24,21 @@ using TRBot.Data;
 
 namespace TRBot.Routines
 {
-    public sealed class PeriodicMessageRoutine : BaseRoutine
+    /// <summary>
+    /// A routine that displays the periodic message at a given interval. 
+    /// </summary>
+    public class PeriodicMessageRoutine : BaseRoutine
     {
         private DateTime CurMsgTime = default;
 
         public PeriodicMessageRoutine()
         {
-            Identifier = "periodicmessage";
+            Identifier = RoutineConstants.PERIODIC_MSG_ROUTINE_ID;
         }
 
-        public override void Initialize(DataContainer dataContainer)
+        public override void Initialize(BotRoutineHandler routineHandler, DataContainer dataContainer)
         {
-            base.Initialize(dataContainer);
+            base.Initialize(routineHandler, dataContainer);
 
             CurMsgTime = DateTime.UtcNow;
         }
