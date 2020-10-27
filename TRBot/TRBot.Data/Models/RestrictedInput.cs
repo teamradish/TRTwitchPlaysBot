@@ -55,12 +55,35 @@ namespace TRBot.Data
         /// </summary>
         public virtual InputData inputData { get; set; } = null;
 
+        /// <summary>
+        /// Tells if this restricted input has expired.
+        /// </summary>
+        public bool HasExpired
+        {
+            get
+            {
+                //It hasn't expired if the expiration date is null
+                if (expiration.HasValue == false)
+                {
+                    return false;
+                }
+
+                //Compare dates
+                return expiration.Value < DateTime.UtcNow;
+            }
+        }
+
+        /// <summary>
+        /// Tells if this restricted input has an expiration date.
+        /// </summary>
+        public bool HasExpiration => expiration.HasValue;
+
         public RestrictedInput()
         {
 
         }
 
-        public RestrictedInput(int userID, int inputID, string inputName, DateTime? expirationDate)
+        public RestrictedInput(int userID, int inputID, DateTime? expirationDate)
         {
             user_id = userID;
             input_id = inputID;

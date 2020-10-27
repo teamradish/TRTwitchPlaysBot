@@ -346,7 +346,14 @@ namespace TRBot.Main
         {
             //MsgHandler.QueueMessage($"Received command \"{e.Command.CommandText}\"");
 
-            CmdHandler.HandleCommand(e);            
+            try
+            {
+                CmdHandler.HandleCommand(e);
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine($"Ran into exception on command {e.Command.CommandText}: {exc.Message}"); 
+            }
         }
 
         private void OnUserSentMessage(EvtUserMessageArgs e)

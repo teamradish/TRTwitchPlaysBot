@@ -120,7 +120,7 @@ namespace TRBot.Data
 
         /// <summary>
         /// Obtains a user object from the database with an opened context.
-        /// </summary>        
+        /// </summary>
         /// <param name="userName">The name of the user.</param>
         /// <param name="context">The open database context.</param>
         /// <returns>A user object with the given userName. null if not found.</returns>

@@ -35,7 +35,7 @@ namespace TRBot.Commands
     public sealed class AddUserAbilityCommand : BaseCommand
     {
         private const string NULL_EXPIRATION_ARG = "null";
-        private string UsageMessage = "Usage: \"username\", \"ability name\", (\"ability value_str (string)\", \"ability value_int (int)\", \"expiration from now (Ex. 30ms/30s/30m/30h/30d) - \"null\" for no expiration\") (optional group)";
+        private string UsageMessage = "Usage: \"username\", \"ability name\", (\"ability value_str (string)\", \"ability value_int (int)\", \"expiration from now (Ex. 30 ms/s/m/h/d) - \"null\" for no expiration\") (optional group)";
 
         public AddUserAbilityCommand()
         {
@@ -150,33 +150,9 @@ namespace TRBot.Commands
             }
             else
             {
-                int endTrimLength = 1;
-                int minLength = 2;
-
-                if (expirationArg.EndsWith("ms") == true)
+                if (Helpers.TryParseTimeModifierFromStr(expirationArg, out TimeSpan timeFromNow) == false)
                 {
-                    endTrimLength = 2;
-                    minLength = 3;
-                }
-
-                if (expirationArg.Length < minLength)
-                {
-                    QueueMessage("Expiration time from now is invalid.");
-                    return;
-                }
-
-                string expirationIntStr = expirationArg.Substring(0, expirationArg.Length - endTrimLength);
-                if (int.TryParse(expirationIntStr, out int expirationVal) == false)
-                {
-                    QueueMessage("Expiration time from now is invalid.");
-                    return;
-                }
-
-                string timeModifier = expirationArg.Substring(expirationArg.Length - endTrimLength, endTrimLength);
-
-                if (CanParseModifier(expirationVal, timeModifier, out TimeSpan timeFromNow) == false)
-                {
-                    QueueMessage("Unable to parse expiration time.");
+                    QueueMessage("Unable to parse expiration time from now.");
                     return;
                 }
 
@@ -197,31 +173,6 @@ namespace TRBot.Commands
 
             //Save
             context.SaveChanges();
-        }
-
-        private bool CanParseModifier(in long timeVal, string modifier, out TimeSpan timeSpan)
-        {
-            switch (modifier)
-            {
-                case "ms": 
-                    timeSpan = TimeSpan.FromMilliseconds(timeVal);
-                    return true;
-                case "s": 
-                    timeSpan = TimeSpan.FromSeconds(timeVal);
-                    return true;
-                case "m":
-                    timeSpan = TimeSpan.FromMinutes(timeVal);
-                    return true;
-                case "h":
-                    timeSpan = TimeSpan.FromHours(timeVal);
-                    return true;
-                case "d":
-                    timeSpan = TimeSpan.FromDays(timeVal);
-                    return true;
-                default:
-                    timeSpan = TimeSpan.Zero;
-                    return false;
-            }
         }
     }
 }

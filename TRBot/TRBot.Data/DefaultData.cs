@@ -163,6 +163,9 @@ namespace TRBot.Data
                 new CommandData("maxinputdur", "TRBot.Commands.MaxInputDurCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("setlevel", "TRBot.Commands.SetUserLevelCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("addability", "TRBot.Commands.AddUserAbilityCommand", (long)PermissionLevels.Moderator, true, true),
+                new CommandData("restrictinput", "TRBot.Commands.AddRestrictedInputCommand", (long)PermissionLevels.Moderator, true, true),
+                new CommandData("unrestrictinput", "TRBot.Commands.RemoveRestrictedInputCommand", (long)PermissionLevels.Moderator, true, true),
+                new CommandData("listresinputs", "TRBot.Commands.ListRestrictedInputsCommand", (long)PermissionLevels.Moderator, true, true),
 
                 new CommandData("addcmd", "TRBot.Commands.AddCmdCommand", (long)PermissionLevels.Admin, true, true),
                 new CommandData("removecmd", "TRBot.Commands.RemoveCmdCommand", (long)PermissionLevels.Admin, true, true),

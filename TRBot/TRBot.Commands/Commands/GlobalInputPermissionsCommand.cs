@@ -24,6 +24,9 @@ using TRBot.Utilities;
 
 namespace TRBot.Commands
 {
+    /// <summary>
+    /// Gets or sets the global minimum level required to perform inputs.
+    /// </summary>
     public class GlobalInputPermissionsCommand : BaseCommand
     {
         private string UsageMessage = "Usage: \"level (string/int)\"";

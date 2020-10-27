@@ -344,5 +344,80 @@ namespace TRBot.Utilities
 
             return textList;
         }
+
+        /// <summary>
+        /// Attempts to construct a TimeSpan given a string containing a value and modifier.
+        /// Examples include "30ms", "72s", "15m", "24h", and "365d".
+        /// </summary>
+        /// <param name="timeStr">A string representing the time.</param>
+        /// <param name="timeSpan">A returned TimeSpan object.</param>
+        /// <returns>true if the TimeSpan is successfully created from the given information, otherwise false.</returns>
+        public static bool TryParseTimeModifierFromStr(string timeStr, out TimeSpan timeSpan)
+        {
+            //Everything except the milliseconds modifier has one character, so default to these values 
+            int endTrimLength = 1;
+            int minLength = 2;
+
+            //If we found the milliseconds modifier at the end, increase the values by one
+            if (timeStr.EndsWith("ms") == true)
+            {
+                endTrimLength = 2;
+                minLength = 3;
+            }
+
+            //String is shorter than the format we need - invalid
+            if (timeStr.Length < minLength)
+            {
+                timeSpan = TimeSpan.Zero;
+                return false;
+            }
+
+            //Get the time value from the string (Ex. 30 in "30s")
+            string timeValStr = timeStr.Substring(0, timeStr.Length - endTrimLength);
+            if (int.TryParse(timeValStr, out int expirationVal) == false)
+            {
+                timeSpan = TimeSpan.Zero;
+                return false;
+            }
+
+            //Now obtain the modifier (Ex. "s" in "30s")
+            string timeModifier = timeStr.Substring(timeStr.Length - endTrimLength, endTrimLength);
+
+            //Try to parse the values
+            return TryParseTimeModifierFromVal(expirationVal, timeModifier, out timeSpan);
+        }
+
+        /// <summary>
+        /// Attempts to construct a TimeSpan given a value and a modifier.
+        /// Valid modifiers include "ms", "s", "m", "h", and "d".
+        /// </summary>
+        /// <param name="timeVal">A value representing the amount of time.</param>
+        /// <param name="modifier">A string representing the time modifier.</param>
+        /// <param name="timeSpan">A returned TimeSpan object.</param>
+        /// <returns>true if the TimeSpan is successfully created from the given information, otherwise false.</returns>
+        public static bool TryParseTimeModifierFromVal(in long timeVal, string modifier, out TimeSpan timeSpan)
+        {
+            switch (modifier)
+            {
+                case "ms": 
+                    timeSpan = TimeSpan.FromMilliseconds(timeVal);
+                    return true;
+                case "s": 
+                    timeSpan = TimeSpan.FromSeconds(timeVal);
+                    return true;
+                case "m":
+                    timeSpan = TimeSpan.FromMinutes(timeVal);
+                    return true;
+                case "h":
+                    timeSpan = TimeSpan.FromHours(timeVal);
+                    return true;
+                case "d":
+                    timeSpan = TimeSpan.FromDays(timeVal);
+                    return true;
+                default:
+                    timeSpan = TimeSpan.Zero;
+                    return false;
+            }
+        }
     }
 }
