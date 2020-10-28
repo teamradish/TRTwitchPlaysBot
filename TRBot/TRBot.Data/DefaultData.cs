@@ -157,6 +157,8 @@ namespace TRBot.Data
                 new CommandData("groupbet", "TRBot.Commands.EnterGroupBetCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("exitgroupbet", "TRBot.Commands.LeaveGroupBetCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("randnum", "TRBot.Commands.RandomNumberCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("defaultinputdur", "TRBot.Commands.DefaultInputDurCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("maxinputdur", "TRBot.Commands.MaxInputDurCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
 
@@ -166,8 +168,6 @@ namespace TRBot.Data
                 new CommandData("listsyn", "TRBot.Commands.ListInputSynonymsCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("addsyn", "TRBot.Commands.AddInputSynonymCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("removesyn", "TRBot.Commands.RemoveInputSynonymCommand", (long)PermissionLevels.Moderator, true, true),
-                new CommandData("defaultinputdur", "TRBot.Commands.DefaultInputDurCommand", (long)PermissionLevels.Moderator, true, true),
-                new CommandData("maxinputdur", "TRBot.Commands.MaxInputDurCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("setlevel", "TRBot.Commands.SetUserLevelCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("addability", "TRBot.Commands.AddUserAbilityCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("restrictinput", "TRBot.Commands.AddRestrictedInputCommand", (long)PermissionLevels.Moderator, true, true),

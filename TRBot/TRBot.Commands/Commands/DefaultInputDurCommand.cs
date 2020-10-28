@@ -25,6 +25,7 @@ using TRBot.Utilities;
 using TRBot.Consoles;
 using TRBot.Parsing;
 using TRBot.Data;
+using TRBot.Permissions;
 
 namespace TRBot.Commands
 {
@@ -59,6 +60,21 @@ namespace TRBot.Commands
             if (arguments.Count > 1)
             {
                 QueueMessage(UsageMessage);
+                return;
+            }
+
+            //Check if the user has this ability
+            User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
+
+            if (user == null)
+            {
+                QueueMessage("Somehow, the user calling this is not in the database.");
+                return;
+            }
+
+            if (user.HasAbility(PermissionConstants.SET_DEFAULT_INPUT_DUR_ABILITY) == false)
+            {
+                QueueMessage("You do not have the ability to set the global default input duration!");
                 return;
             }
 
