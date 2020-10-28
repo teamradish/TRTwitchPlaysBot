@@ -1,17 +1,15 @@
-* The _Classes_ folder contains all of the code you'll find in TRBot
-  * **BotProgram** is the main code that connects everything together.
-  * **BotMessageHandler** handles sending messages with rate limiting.
-  * **CommandHandler** stores all the bot commands for quick fetching and execution.
-  * **ClientServices** is where connections to the streaming service (such as Twitch) are handled. The base interface is **IClientService**.
-  * **Commands** contains all the bot commands. You can find code for commands such as "!say" here.
-  * **DataObjects** contains all the bot data, such as game logs, user objects, input access, and more.
-  * **EventHandlers** is where the event handlers reside. They are used with the client service.
-  * **Input** is where anything input-related is handled. You can find the virtual controllers and their implementations, consoles, and the input parser here.
-    * **Parser** is the input parser, transforming text into inputs.
-    * **InputHandler** is where inputs are actually carried out to the virtual controllers.
-    * **InputGlobals** is a helper class to facilitate input-related functions, such as setting virtual controllers and consoles and obtaining a list of valid inputs for the current console.
-    * **IVirtualControllerManager** is the interface for virtual controller managers.
-    * **IVirtualController** is the interface for virtual controllers.
-  * **Routines** contains all non-command routines that are periodically run and updated, such as reconnection and the periodic message.
-  * **Native** contains all native code and wrappers. You can find the native C code for setting up virtual controllers with uinput on Linux here.
-  * **Supplementary** contains anything not directly related to the bot. You can find the Python code for setting up a local ChatterBot instance for viewers to interact with here.
+TRBot contains several different projects with the purpose of isolating functionality. This approach allows TRBot to scale well over time, and it allows each project to use only the parts it needs instead of requiring the entire package.
+
+# Project Structure
+* TRBot.Commands - Contains code for all commands entered through chat.
+* TRBot.Connection - Handles sending and receiving events to and from client services and TRBot. You'll find the Twitch integration here.
+* TRBot.Consoles - The console infrastructure that TRBot uses as the foundation for its input system. Many pre-configured consoles are available.
+* TRBot.Data - Contains everything relating to the database, including the database context.
+* TRBot.Main - The main application that connects everything together. This is what you are running with a binary release.
+* TRBot.Misc - Shared code used by various other projects that doesn't fit neatly into any single other project. You'll find the crash handler here.
+* TRBot.Parsing - Strictly handles TRBot's parser, which transforms text into inputs that TRBot can read.
+* TRBot.Permissions - Code for the access levels and other moderation features.
+* TRBot.Routines - Deals with bot routines, or pieces of code that run each tick.
+* TRBot.Tests - Unit tests for TRBot.
+* TRBot.Utilities - Contains various utilities, including operating system detection, methods for reading/writing files, algorithms and other mathematical operations. Relies on no other projects.
+* TRBot.VirtualControllers - Handles everything related to virtual controllers, including the implementations for each platform and pressing/releasing buttons on them. This also contains the native code required to manage a given virtual controller implementation.
