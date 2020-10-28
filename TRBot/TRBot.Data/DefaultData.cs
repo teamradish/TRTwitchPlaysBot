@@ -156,6 +156,7 @@ namespace TRBot.Data
                 new CommandData("listresinputs", "TRBot.Commands.ListRestrictedInputsCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("groupbet", "TRBot.Commands.EnterGroupBetCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("exitgroupbet", "TRBot.Commands.LeaveGroupBetCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("randnum", "TRBot.Commands.RandomNumberCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
 
