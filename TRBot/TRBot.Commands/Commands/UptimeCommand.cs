@@ -35,7 +35,7 @@ namespace TRBot.Commands
 
         }
 
-        public override void ExecuteCommand(EvtChatCommandArgs e)
+        public override void ExecuteCommand(EvtChatCommandArgs args)
         {
             //Get the time difference between now and the startup time
             TimeSpan timeSpan = DateTime.UtcNow - Helpers.ApplicationStartTimeUTC;

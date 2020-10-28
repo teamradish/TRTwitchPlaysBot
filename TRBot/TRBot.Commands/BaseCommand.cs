@@ -75,7 +75,7 @@ namespace TRBot.Commands
 
         protected void QueueMessageSplit(string message, in int maxCharCount, string separator)
         {
-            string sentMessage = Helpers.SplitStringWithinCharCount(message, maxCharCount, out List<string> textList);
+            string sentMessage = Helpers.SplitStringWithinCharCount(message, maxCharCount, separator, out List<string> textList);
 
             //If the text fits within the character limit, print it all out at once
             if (textList == null)
