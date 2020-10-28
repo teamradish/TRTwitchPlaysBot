@@ -6,7 +6,7 @@ The bot is inspired by TwitchPlays_Everything; the input syntax allows for great
 [Example of an advanced command.](https://tdeeb.github.io/projects/images/TRBot/TRBot_AdvancedCommands.gif)
 
 ## Features
-* [Simple yet expressive input syntax](https://github.com/teamradish/TRTwitchPlaysBot/Wiki/Syntax-Tutorial.md) - translate your text to game inputs easily. Make your inputs as simple or precise as you want!
+* [Simple yet expressive input syntax](./Wiki/Syntax-Tutorial.md) - translate your text to game inputs easily. Make your inputs as simple or precise as you want!
 * Game-agnostic; TRBot runs alongside your game.
 * Emulator support - NES, SNES, N64, GCN, and more. Several [emulator controller config files](https://github.com/teamradish/TRTwitchPlaysBot/tree/master/Emulator%20Controller%20Configs) are available.
 * Runs on Windows (vJoy) and GNU/Linux (uinput).
@@ -19,7 +19,7 @@ The bot is inspired by TwitchPlays_Everything; the input syntax allows for great
 * Additional goodies and games - duel for credits, create memes, calculate expressions, and talk to a chatbot.
 
 ## Documentation, setup, building from source, playing
-Please see the [wiki home](https://github.com/teamradish/TRTwitchPlaysBot/Wiki/Home.md) for your use-cases.
+Please see the [wiki home](./Wiki/Home.md) for your use-cases.
 
 ## Credits
 The original Python version of the original parser was written by TwitchPlays_Everything and greatly helped jump-start TRBot.

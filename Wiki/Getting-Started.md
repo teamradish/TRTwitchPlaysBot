@@ -1,4 +1,4 @@
-Welcome to the TRBot wiki! This short guide should help get you up and running with TRBot, your own Twitch Plays bot!
+Welcome to the TRBot setup guide! This short guide should help get you up and running with TRBot, your own Twitch Plays bot!
 
 #### Table of Contents
 * [Getting TRBot](#getting-trbot)
@@ -19,7 +19,7 @@ Welcome to the TRBot wiki! This short guide should help get you up and running w
 
 # Getting TRBot
 * To get started immediately, download the latest release on the [releases page](https://github.com/teamradish/TRTwitchPlaysBot/releases). Keep in mind that there is no schedule for releases, so they may be far behind the latest on develop.
-* To build from source, please follow the [building guide](https://github.com/teamradish/TRTwitchPlaysBot/Wiki/Building.md).
+* To build from source, please follow the [building guide](./Building.md).
 
 # Setting up TRBot
 If you installed a pre-built binary, run `TRBot` (Ex. `TRBot.exe` on Windows, `./TRBot` on GNU/Linux). If you built the project, use either `dotnet run` or open the native executable depending on whether the runtime is self-contained or not.
