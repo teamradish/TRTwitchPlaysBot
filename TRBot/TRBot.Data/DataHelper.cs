@@ -107,6 +107,25 @@ namespace TRBot.Data
         }
 
         /// <summary>
+        /// A helper method to obtain the name of the bot credits.
+        /// </summary>        
+        /// <returns>The name of the bot credits.</returns>
+        public static string GetCreditsName()
+        {
+            return GetSettingString(SettingsConstants.CREDITS_NAME, "Credits");
+        }
+
+        /// <summary>
+        /// A helper method to obtain the name of the bot credits with an opened context.
+        /// </summary>
+        /// <param name="context">The open database context.</param>
+        /// <returns>The name of the bot credits.</returns>
+        public static string GetCreditsNameNoOpen(BotDBContext context)
+        {
+            return GetSettingStringNoOpen(SettingsConstants.CREDITS_NAME, context, "Credits");
+        }
+
+        /// <summary>
         /// Obtains a user object from the database.
         /// </summary>        
         /// <param name="userName">The name of the user.</param>

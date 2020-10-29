@@ -44,6 +44,8 @@ namespace TRBot.Commands
 
             using BotDBContext context = DatabaseManager.OpenContext();
 
+            string creditsName = DataHelper.GetCreditsNameNoOpen(context);
+
             string userName = args.Command.ChatMessage.Username;
             User bettingUser = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
 
@@ -79,7 +81,7 @@ namespace TRBot.Commands
 
             if (creditBet > bettingUser.Stats.Credits)
             {
-                QueueMessage("Bet amount is greater than credits!");
+                QueueMessage($"Bet amount is greater than {creditsName}!");
                 return;
             }
 
@@ -91,12 +93,12 @@ namespace TRBot.Commands
             if (success)
             {
                 bettingUser.Stats.Credits += creditBet;
-                message = $"{bettingUser.Name} won {creditBet} credits PogChamp";
+                message = $"{bettingUser.Name} won {creditBet} {creditsName} PogChamp";
             }
             else
             {
                 bettingUser.Stats.Credits -= creditBet;
-                message = $"{bettingUser.Name} lost {creditBet} credits BibleThump";
+                message = $"{bettingUser.Name} lost {creditBet} {creditsName} BibleThump";
             }
 
             context.SaveChanges();

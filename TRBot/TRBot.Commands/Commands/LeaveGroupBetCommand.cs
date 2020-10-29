@@ -57,7 +57,9 @@ namespace TRBot.Commands
             
             groupBetRoutine.RemoveParticipant(username);
 
-            QueueMessage($"{username} has backed out of the group bet and retained their {participantData.ParticipantBet} credit(s)!");
+            string creditsName = DataHelper.GetCreditsName();
+
+            QueueMessage($"{username} has backed out of the group bet and retained their {participantData.ParticipantBet} {creditsName}!");
             
             int participantCount = groupBetRoutine.ParticipantCount;
             int minParticipants = groupBetRoutine.MinParticipants;

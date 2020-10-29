@@ -56,6 +56,7 @@ namespace TRBot.Commands
 
             using BotDBContext context = DatabaseManager.OpenContext();
 
+            string creditsName = DataHelper.GetCreditsNameNoOpen(context);
             string username = args.Command.ChatMessage.Username;
 
             //Check if the user exists
@@ -78,14 +79,14 @@ namespace TRBot.Commands
             bool success = long.TryParse(arguments[0], out betAmount);
             if (success == false || betAmount <= 0)
             {
-                QueueMessage("Please specify a positive whole number of credits greater than 0!");
+                QueueMessage($"Please specify a positive whole number of {creditsName} greater than 0!");
                 return;
             }
 
             //Validate credit amount
             if (user.Stats.Credits < betAmount)
             {
-                QueueMessage("You don't have enough credits to bet this much!");
+                QueueMessage($"You don't have enough {creditsName} to bet this much!");
                 return;
             }
 
@@ -146,7 +147,7 @@ namespace TRBot.Commands
             }
             else
             {
-                QueueMessage($"{username} adjusted their group bet from {participantData.ParticipantBet} to {betAmount} credit(s)!");
+                QueueMessage($"{username} adjusted their group bet from {participantData.ParticipantBet} to {betAmount} {creditsName}!");
             }
         }
     }

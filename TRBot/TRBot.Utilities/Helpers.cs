@@ -69,6 +69,23 @@ namespace TRBot.Utilities
         }
 
         /// <summary>
+        /// Wraps a long around a min (inclusive) and max (exclusive) value.
+        /// </summary>
+        /// <param name="value">The value to wrap.</param>
+        /// <param name="min">The inclusive min value to wrap around.</param>
+        /// <param name="max">The exclusive max value to wrap around.</param>
+        /// <returns>An integer wrapped around <paramref name="min"/> and <paramref name="max"/>.</returns>
+        public static long Wrap(long value, in long min, in long max)
+        {
+            if (value < min)
+                value = max - (min - value) % (max - min);
+            else
+                value = min + (value - min) % (max - min);
+    
+            return value;
+        }
+
+        /// <summary>
         /// Splits a string into multiple parts with each part's length being less than or equal to a given max character count.
         /// This overload returns both the original text and the text list.
         /// The returned text list is null if the text is already within the max character count.

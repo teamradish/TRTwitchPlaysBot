@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using TRBot.Connection;
 using TRBot.Data;
 using TRBot.Permissions;
@@ -24,41 +25,28 @@ using TRBot.Permissions;
 namespace TRBot.Commands
 {
     /// <summary>
-    /// Views a user's credit count.
+    /// Views the average credit count among users.
     /// </summary>
-    public sealed class CreditsCommand : BaseCommand
+    public sealed class AverageCreditsCommand : BaseCommand
     {
-        private string UsageMessage = "Usage: \"username (optional)\"";
-
-        public CreditsCommand()
+        public AverageCreditsCommand()
         {
 
         }
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
-            List<string> arguments = args.Command.ArgumentsAsList;
-
-            if (arguments.Count > 1)
-            {
-                QueueMessage(UsageMessage);
-                return;
-            }
-
             using BotDBContext context = DatabaseManager.OpenContext();
 
-            string creditsUsername = (arguments.Count == 1) ? arguments[0].ToLowerInvariant() : args.Command.ChatMessage.Username.ToLowerInvariant();
-            User creditsUser = DataHelper.GetUserNoOpen(creditsUsername, context);
-
-            if (creditsUser == null)
+            if (context.Users.Count() == 0)
             {
-                QueueMessage($"User does not exist in database!");
+                QueueMessage("There are no users in the database!");
                 return;
             }
 
-            string creditsName = DataHelper.GetCreditsNameNoOpen(context);
+            long averageCredits = (long)context.Users.Average(u => u.Stats.Credits);
 
-            QueueMessage($"{creditsUsername} has {creditsUser.Stats.Credits} {creditsName}!");
+            QueueMessage($"The average number of credits is {averageCredits}!");
         }
     }
 }
