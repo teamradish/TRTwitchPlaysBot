@@ -68,5 +68,6 @@ namespace TRBot.Permissions
         public const string CALCULATE_ABILITY = "calculate";
         public const string CHATBOT_ABILITY = "chatbot";
         public const string BINGO_ABILITY = "bingo";
+        public const string TRANSFER_ABILITY = "transfer";
     }
 }

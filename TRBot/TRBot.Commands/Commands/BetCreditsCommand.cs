@@ -28,12 +28,12 @@ namespace TRBot.Commands
     /// <summary>
     /// Allows a user to bet credits for a chance to win.
     /// </summary>
-    public class BetCommand : BaseCommand
+    public class BetCreditsCommand : BaseCommand
     {
         private string UsageMessage = "Usage: \"bet amount (int)\"";
         private Random Rand = new Random();
 
-        public BetCommand()
+        public BetCreditsCommand()
         {
 
         }

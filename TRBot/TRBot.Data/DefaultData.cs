@@ -136,6 +136,7 @@ namespace TRBot.Data
                 new CommandData("userabilities", "TRBot.Commands.ListUserAbilitiesCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("updateabilities", "TRBot.Commands.UpdateUserAbilitiesCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("level", "TRBot.Commands.LevelCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("runninginputs", "TRBot.Commands.NumRunningInputsCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("pressedinputs", "TRBot.Commands.ListPressedInputsCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("vcontroller", "TRBot.Commands.VirtualControllerCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("userinfo", "TRBot.Commands.UserInfoCommand", (long)PermissionLevels.User, true, true),
@@ -146,7 +147,6 @@ namespace TRBot.Data
                 new CommandData("highestcredits", "TRBot.Commands.HighestCreditsCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("averagecredits", "TRBot.Commands.AverageCreditsCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("mediancredits", "TRBot.Commands.MedianCreditsCommand", (long)PermissionLevels.User, true, true),
-                new CommandData("bet", "TRBot.Commands.BetCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("time", "TRBot.Commands.TimeCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("uptime", "TRBot.Commands.UptimeCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("chat", "TRBot.Commands.ChatbotCommand", (long)PermissionLevels.User, true, true),
@@ -157,6 +157,8 @@ namespace TRBot.Data
                 new CommandData("clearstats", "TRBot.Commands.ClearUserStatsCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("calculate", "TRBot.Commands.CalculateCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("listresinputs", "TRBot.Commands.ListRestrictedInputsCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("bet", "TRBot.Commands.BetCreditsCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("transfer", "TRBot.Commands.TransferCreditsCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("groupbet", "TRBot.Commands.EnterGroupBetCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("exitgroupbet", "TRBot.Commands.LeaveGroupBetCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("randnum", "TRBot.Commands.RandomNumberCommand", (long)PermissionLevels.User, true, true),
@@ -164,6 +166,7 @@ namespace TRBot.Data
                 new CommandData("maxinputdur", "TRBot.Commands.MaxInputDurCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("say", "TRBot.Commands.SayCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("reverse", "TRBot.Commands.ReverseCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("numlogs", "TRBot.Commands.NumGameLogsCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
 
@@ -233,6 +236,7 @@ namespace TRBot.Data
                 new PermissionAbility(CALCULATE_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
                 new PermissionAbility(CHATBOT_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
                 new PermissionAbility(BINGO_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(TRANSFER_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
 
                 new PermissionAbility(SET_GAME_MESSAGE_ABILITY, PermissionLevels.VIP, PermissionLevels.VIP),
 
