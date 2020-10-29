@@ -40,6 +40,8 @@ namespace TRBot.Commands
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
+            ClientServiceTypes clientServiceType = ClientServiceTypes.Terminal;
+
             //Check if the user has the ability to calculate
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
@@ -50,6 +52,8 @@ namespace TRBot.Commands
                     QueueMessage("You do not have the ability to make calculations.");
                     return;
                 }
+
+                clientServiceType = DataHelper.GetClientServiceTypeNoOpen(context);
             }
 
             Expression exp = null;
@@ -67,7 +71,7 @@ namespace TRBot.Commands
 
                 //You can use text in calculate to make the bot do things, such as Twitch chat commands
                 //Ignore any output starting with a "/" to avoid exploiting this
-                if (finalExpr.StartsWith('/') == true)
+                if (clientServiceType == ClientServiceTypes.Twitch && finalExpr.StartsWith('/') == true)
                 {
                     QueueMessage("Very clever, but I'm one step ahead of you.");
                     return;

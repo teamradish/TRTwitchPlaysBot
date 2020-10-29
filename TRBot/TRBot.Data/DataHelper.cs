@@ -20,6 +20,7 @@ using System.Text;
 using System.IO;
 using System.Linq;
 using TRBot.Permissions;
+using TRBot.Connection;
 
 namespace TRBot.Data
 {
@@ -123,6 +124,25 @@ namespace TRBot.Data
         public static string GetCreditsNameNoOpen(BotDBContext context)
         {
             return GetSettingStringNoOpen(SettingsConstants.CREDITS_NAME, context, "Credits");
+        }
+
+        /// <summary>
+        /// A helper method to obtain the current client service type.
+        /// </summary>
+        /// <returns>The current ClientServiceType.</returns>
+        public static ClientServiceTypes GetClientServiceType()
+        {
+            return (ClientServiceTypes)GetSettingInt(SettingsConstants.CLIENT_SERVICE_TYPE, 0L);
+        }
+
+        /// <summary>
+        /// A helper method to obtain the current client service type with an opened context.
+        /// </summary>
+        /// <param name="context">The open database context.</param>
+        /// <returns>The current ClientServiceType.</returns>
+        public static ClientServiceTypes GetClientServiceTypeNoOpen(BotDBContext context)
+        {
+            return (ClientServiceTypes)GetSettingInt(SettingsConstants.CLIENT_SERVICE_TYPE, 0L);
         }
 
         /// <summary>

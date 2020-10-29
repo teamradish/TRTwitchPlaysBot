@@ -162,6 +162,8 @@ namespace TRBot.Data
                 new CommandData("randnum", "TRBot.Commands.RandomNumberCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("defaultinputdur", "TRBot.Commands.DefaultInputDurCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("maxinputdur", "TRBot.Commands.MaxInputDurCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("say", "TRBot.Commands.SayCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("reverse", "TRBot.Commands.ReverseCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
 
