@@ -40,7 +40,7 @@ namespace TRBot.Commands
     /// You are responsible for entrusting use of this command to others.
     /// </para>
     /// </summary>
-    public sealed class ExecCommand : BaseCommand
+    public class ExecCommand : BaseCommand
     {
         //Add references and assemblies
         private readonly Assembly[] References = new Assembly[]
@@ -98,7 +98,7 @@ namespace TRBot.Commands
             ExecuteCSharpScript(code);
         }
 
-        private async void ExecuteCSharpScript(string code)
+        protected async void ExecuteCSharpScript(string code)
         {
             //Store the default console output stream
             TextWriter defaultOut = Console.Out;

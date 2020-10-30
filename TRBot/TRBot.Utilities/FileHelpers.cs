@@ -60,9 +60,40 @@ namespace TRBot.Utilities
         /// <returns>true if the path for the file exists or is created, false if the path for the file doesn't exist and cannot be created.</returns>
         public static bool ValidatePathForFile(string path)
         {
+            //If the path name is empty, exit early
+            if (string.IsNullOrEmpty(path) == false)
+            {
+                return false;
+            }
+
             string dirName = Path.GetDirectoryName(path);
 
             return ValidatePath(dirName);
+        }
+
+        /// <summary>
+        /// Attempts to read text from a file.
+        /// </summary>
+        /// <param name="fullPath">The full path including the file name.</param>
+        /// <param name="fileName">The name of the file.</param>
+        /// <returns>A string containing the contents of the file. If the file doesn't exist, <see cref="string.Empty"/>.</returns>
+        public static string ReadFromTextFile(string fullPath)
+        {
+            if (File.Exists(fullPath) == false)
+            {
+                return string.Empty;
+            }
+
+            //Try to read the file
+            try
+            {
+                return File.ReadAllText(fullPath);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"Unable to read from file \"{fullPath}\": {exception.Message}");
+                return string.Empty;
+            }
         }
 
         /// <summary>
@@ -73,12 +104,17 @@ namespace TRBot.Utilities
         /// <returns>A string containing the contents of the file. If the file doesn't exist, <see cref="string.Empty"/>.</returns>
         public static string ReadFromTextFile(string path, string fileName)
         {
-            if (ValidatePath(path) == false)
+            if (Directory.Exists(path) == false)
             {
                 return string.Empty;
             }
 
             string fullPath = Path.Combine(path, fileName);
+
+            if (File.Exists(fullPath) == false)
+            {
+                return string.Empty;
+            }
 
             //Try to read the file
             try
@@ -88,6 +124,45 @@ namespace TRBot.Utilities
             catch (Exception exception)
             {
                 Console.WriteLine($"Unable to read from file \"{fileName}\": {exception.Message}");
+                return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Attempts to read text from a file. If the file doesn't exist, it is created.
+        /// </summary>
+        /// <param name="fullPath">The full path including the file name.</param>
+        /// <returns>A string containing the contents of the file.</returns>
+        public static string ReadFromTextFileOrCreate(string fullPath)
+        {
+            if (ValidatePathForFile(fullPath) == false)
+            {
+                return string.Empty;
+            }
+            
+            if (File.Exists(fullPath) == false)
+            {
+                //Create the file if it doesn't exist
+                try
+                {
+                    File.WriteAllText(fullPath, string.Empty);
+                    return string.Empty;
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine($"Unable to create file \"{fullPath}\": {exception.Message}");
+                    return string.Empty;
+                }
+            }
+
+            //Try to read the file
+            try
+            {
+                return File.ReadAllText(fullPath);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"Unable to read from file \"{fullPath}\": {exception.Message}");
                 return string.Empty;
             }
         }
