@@ -31,6 +31,7 @@ namespace TRBot.Data
         public const string CREDITS_NAME = "credits_name";
         public const string CREDITS_GIVE_TIME = "credits_give_time";
         public const string CREDITS_GIVE_AMOUNT = "credits_give_amount";
+        public const string DUEL_TIMEOUT = "duel_timeout";
         public const string GROUP_BET_TOTAL_TIME = "group_bet_total_time";
         public const string GROUP_BET_MIN_PARTICIPANTS = "group_bet_min_participants";
 

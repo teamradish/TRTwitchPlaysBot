@@ -50,6 +50,7 @@ namespace TRBot.Data
                 SettingsHelper(CREDITS_NAME, "Credits"),
                 SettingsHelper(CREDITS_GIVE_TIME, 120000L),
                 SettingsHelper(CREDITS_GIVE_AMOUNT, 100L),
+                SettingsHelper(DUEL_TIMEOUT, 60000L),
                 SettingsHelper(GROUP_BET_TOTAL_TIME, 120000L),
                 SettingsHelper(GROUP_BET_MIN_PARTICIPANTS, 3L),
                 SettingsHelper(CHATBOT_ENABLED, false),
@@ -169,6 +170,7 @@ namespace TRBot.Data
                 new CommandData("numlogs", "TRBot.Commands.NumGameLogsCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("reverseparse", "TRBot.Commands.ReverseParseInputCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("cmdinfo", "TRBot.Commands.CmdInfoCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("duel", "TRBot.Commands.DuelCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
 

@@ -67,7 +67,7 @@ namespace TRBot.Commands
                     message += "into ";
                 }
 
-                message += "bot stats.";
+                message += "bot stats. Enter \"true\" or \"false\" as an argument to change your opt status.";
                 
                 QueueMessage(message);
 
