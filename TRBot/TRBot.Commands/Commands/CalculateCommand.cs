@@ -47,7 +47,7 @@ namespace TRBot.Commands
             {
                 User user = DataHelper.GetOrAddUserNoOpen(args.Command.ChatMessage.Username, context, out bool added);
 
-                if (user.HasAbility(PermissionConstants.CALCULATE_ABILITY) == false)
+                if (user.HasEnabledAbility(PermissionConstants.CALCULATE_ABILITY) == false)
                 {
                     QueueMessage("You do not have the ability to make calculations.");
                     return;

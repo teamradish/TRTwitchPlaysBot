@@ -98,7 +98,7 @@ namespace TRBot.Commands
                 //Check if this user has the ability to set the console
                 User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username.ToLowerInvariant(), context);
 
-                if (user != null && user.HasAbility(PermissionConstants.SET_CONSOLE_ABILITY) == false)
+                if (user != null && user.HasEnabledAbility(PermissionConstants.SET_CONSOLE_ABILITY) == false)
                 {
                     QueueMessage("You do not have permission to change the console!");
                     return;

@@ -232,7 +232,8 @@ namespace TRBot.Data
         public static long GetUserOrGlobalDefaultInputDur(User user, BotDBContext context)
         {
             //Check for a user-overridden default input duration
-            if (user != null && user.TryGetAbility(PermissionConstants.USER_DEFAULT_INPUT_DIR_ABILITY, out UserAbility defaultDurAbility) == true)
+            if (user != null && user.TryGetAbility(PermissionConstants.USER_DEFAULT_INPUT_DIR_ABILITY, out UserAbility defaultDurAbility) == true
+                && defaultDurAbility.IsEnabled == true)
             {
                 return defaultDurAbility.value_int;
             }
@@ -252,7 +253,8 @@ namespace TRBot.Data
         public static long GetUserOrGlobalMaxInputDur(User user, BotDBContext context)
         {
             //Check for a user-overridden max input duration
-            if (user != null && user.TryGetAbility(PermissionConstants.USER_MAX_INPUT_DIR_ABILITY, out UserAbility maxDurAbility) == true)
+            if (user != null && user.TryGetAbility(PermissionConstants.USER_MAX_INPUT_DIR_ABILITY, out UserAbility maxDurAbility) == true
+                && maxDurAbility.IsEnabled == true)
             {
                 return maxDurAbility.value_int;
             }
@@ -273,13 +275,18 @@ namespace TRBot.Data
         {
             long originalLevel = user.Level;
 
-            //First, remove all auto grant abilities the user has
-            //Don't remove abilities that were given by a higher level
+            //First, disable all auto grant abilities the user has
+            //Don't disable abilities that were given by a higher level
             //This prevents users from removing constraints imposed by moderators and such
-            int removed = user.UserAbilities.RemoveAll(p => (long)p.PermAbility.AutoGrantOnLevel >= 0
+            IEnumerable<UserAbility> abilities = user.UserAbilities.Where(p => (long)p.PermAbility.AutoGrantOnLevel >= 0
                     && p.GrantedByLevel <= originalLevel);
 
-            Console.WriteLine($"Removed {removed} abilities!");
+            foreach (UserAbility ability in abilities)
+            {
+                ability.SetEnabledState(false);
+                ability.expiration = null;
+                ability.GrantedByLevel = -1;
+            }
 
             //Get all auto grant abilities up to the user's level
             IEnumerable<PermissionAbility> permAbilities =
@@ -288,23 +295,15 @@ namespace TRBot.Data
 
             Console.WriteLine($"Found {permAbilities.Count()} autogrant up to level {originalLevel}");
 
-            //Add all of those abilities
+            //Enable all of those abilities
             foreach (PermissionAbility permAbility in permAbilities)
             {
-                bool added = user.TryAddAbility(permAbility);
-                //if (added == true)
-                //{
-                //    Console.WriteLine($"Added ability {permAbility.Name} to {user.Name}. New count: {user.UserAbilities.Count}");
-                //}
-                //else
-                //{
-                //    Console.WriteLine($"Didn't add ability {permAbility.Name} to {user.Name} because it's already present. Count: {user.UserAbilities.Count}");
-                //}
+                user.EnableAbility(permAbility);
             }
         }
 
         /// <summary>
-        /// Adds or removes user abilities upon changing the user's level.
+        /// Updates user abilities upon changing the user's level.
         /// </summary>
         /// <param name="user">The User object to adjust the abilities on.</param>
         /// <param name="newLevel">The new level the user will be set to.</param>
@@ -319,16 +318,23 @@ namespace TRBot.Data
                 return;
             }
 
-            //Remove all abilities down to the new level
+            //Disable all abilities down to the new level
             if (originalLevel > newLevel)
             {
                 //Look for all auto grant abilities that are less than or equal to the original level
-                //and greater than the new level, and remove them
-                int removed = user.UserAbilities.RemoveAll(p => p.PermAbility.AutoGrantOnLevel >= 0
+                //and greater than the new level, and disable them
+                IEnumerable<UserAbility> abilities = user.UserAbilities.Where(p => p.PermAbility.AutoGrantOnLevel >= 0
                     && (long)p.PermAbility.AutoGrantOnLevel <= originalLevel
                     && (long)p.PermAbility.AutoGrantOnLevel > newLevel);
+
+                foreach (UserAbility ability in abilities)
+                {
+                    ability.SetEnabledState(false);
+                    ability.expiration = null;
+                    ability.GrantedByLevel = -1;
+                }
             }
-            //Add all abilities up to the new level
+            //Enable all abilities up to the new level
             else if (originalLevel < newLevel)
             {
                 //Look for all auto grant abilities that are greater than the original level
@@ -340,7 +346,7 @@ namespace TRBot.Data
                 //Add all these abilities
                 foreach (PermissionAbility pAbility in permAbilities)
                 {
-                    user.TryAddAbility(pAbility);
+                    user.EnableAbility(pAbility);
                 }
             }
         }

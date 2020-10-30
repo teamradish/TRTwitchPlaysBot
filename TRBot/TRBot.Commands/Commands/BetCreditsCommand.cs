@@ -49,7 +49,7 @@ namespace TRBot.Commands
             string userName = args.Command.ChatMessage.Username;
             User bettingUser = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
 
-            if (bettingUser.HasAbility(PermissionConstants.BET_ABILITY) == false)
+            if (bettingUser.HasEnabledAbility(PermissionConstants.BET_ABILITY) == false)
             {
                 QueueMessage("You do not have the ability to bet!");
                 return;

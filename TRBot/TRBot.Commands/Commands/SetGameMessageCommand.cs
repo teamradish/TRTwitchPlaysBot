@@ -42,7 +42,7 @@ namespace TRBot.Commands
             //Check if the user has the ability to set the message
             User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
 
-            if (user != null && user.HasAbility(PermissionConstants.SET_GAME_MESSAGE_ABILITY) == false)
+            if (user != null && user.HasEnabledAbility(PermissionConstants.SET_GAME_MESSAGE_ABILITY) == false)
             {
                 QueueMessage("You don't have the ability to set the game message!");
                 return;

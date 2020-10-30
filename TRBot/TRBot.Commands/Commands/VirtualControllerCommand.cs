@@ -88,7 +88,7 @@ namespace TRBot.Commands
             //Check if the user has the ability to set the type
             User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
 
-            if (user != null && user.HasAbility(PermissionConstants.SET_VCONTROLLER_TYPE_ABILITY) == false)
+            if (user != null && user.HasEnabledAbility(PermissionConstants.SET_VCONTROLLER_TYPE_ABILITY) == false)
             {
                 QueueMessage("You don't have the ability to set the virtual controller type!");
                 return;

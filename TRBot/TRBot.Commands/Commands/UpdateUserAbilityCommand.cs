@@ -32,12 +32,12 @@ namespace TRBot.Commands
     /// <summary>
     /// Adds a user ability.
     /// </summary>
-    public sealed class AddUserAbilityCommand : BaseCommand
+    public sealed class UpdateUserAbilityCommand : BaseCommand
     {
         private const string NULL_EXPIRATION_ARG = "null";
-        private string UsageMessage = "Usage: \"username\", \"ability name\", (\"ability value_str (string)\", \"ability value_int (int)\", \"expiration from now (Ex. 30 ms/s/m/h/d) - \"null\" for no expiration\") (optional group)";
+        private string UsageMessage = "Usage: \"username\", \"ability name\", \"enabled state (bool)\" (\"ability value_str (string)\", \"ability value_int (int)\", \"expiration from now (Ex. 30 ms/s/m/h/d) - \"null\" for no expiration\") (optional group)";
 
-        public AddUserAbilityCommand()
+        public UpdateUserAbilityCommand()
         {
             
         }
@@ -46,7 +46,7 @@ namespace TRBot.Commands
         {
             List<string> arguments = args.Command.ArgumentsAsList;
 
-            if (arguments.Count != 2 && arguments.Count != 5)
+            if (arguments.Count != 3 && arguments.Count != 6)
             {
                 QueueMessage(UsageMessage);
                 return;
@@ -61,6 +61,7 @@ namespace TRBot.Commands
 
             string username = arguments[0];
             string abilityName = arguments[1].ToLowerInvariant();
+            string abilityEnabledStr = arguments[2].ToLowerInvariant();
 
             User abilityUser = DataHelper.GetUserNoOpen(username, context);
 
@@ -96,6 +97,12 @@ namespace TRBot.Commands
                 return;
             }
 
+            if (bool.TryParse(abilityEnabledStr, out bool enabledState) == false)
+            {
+                QueueMessage("Invalid enabled state.");
+                return;
+            }
+
             UserAbility newUserAbility = null;
             abilityUser.TryGetAbility(abilityName, out newUserAbility);
 
@@ -108,19 +115,24 @@ namespace TRBot.Commands
             }
 
             newUserAbility.permability_id = permAbility.id;
+            newUserAbility.user_id = abilityUser.id;
             newUserAbility.GrantedByLevel = thisUser.Level;
+            newUserAbility.SetEnabledState(enabledState);
 
             if (arguments.Count == 2)
             {
                 if (shouldAdd == true)
                 {
                     abilityUser.UserAbilities.Add(newUserAbility);
+                }
 
-                    QueueMessage($"Granted the \"{abilityName}\" ability to {abilityUser.Name}!");
+                if (enabledState == true)
+                {
+                    QueueMessage($"Enabled the \"{abilityName}\" ability for {abilityUser.Name}!");
                 }
                 else
                 {
-                    QueueMessage($"Updated the \"{abilityName}\" ability on {abilityUser.Name}!");
+                    QueueMessage($"Disabled the \"{abilityName}\" ability for {abilityUser.Name}!");
                 }
 
                 //Save and exit here
@@ -129,9 +141,9 @@ namespace TRBot.Commands
                 return;
             }
 
-            string valueStrArg = arguments[2];
-            string valueIntArg = arguments[3];
-            string expirationArg = arguments[4].ToLowerInvariant();
+            string valueStrArg = arguments[3];
+            string valueIntArg = arguments[4];
+            string expirationArg = arguments[5].ToLowerInvariant();
 
             newUserAbility.value_str = valueStrArg;
 
@@ -163,12 +175,15 @@ namespace TRBot.Commands
             if (shouldAdd == true)
             {
                 abilityUser.UserAbilities.Add(newUserAbility);
+            }
 
-                QueueMessage($"Granted the \"{abilityName}\" ability to {abilityUser.Name} with values ({valueStrArg}, {valueInt}) and expires in {expirationArg}!");
+            if (enabledState == true)
+            {
+                QueueMessage($"Enabled the \"{abilityName}\" ability to {abilityUser.Name} with values ({valueStrArg}, {valueInt}) and expires in {expirationArg}!");
             }
             else
             {
-                QueueMessage($"Updated the \"{abilityName}\" ability on {abilityUser.Name} with values ({valueStrArg}, {valueInt}) and expires in {expirationArg}!");
+                QueueMessage($"Disabled the \"{abilityName}\" ability on {abilityUser.Name} with values ({valueStrArg}, {valueInt}) and expires in {expirationArg}!");
             }
 
             //Save

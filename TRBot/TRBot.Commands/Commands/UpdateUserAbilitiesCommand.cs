@@ -55,6 +55,9 @@ namespace TRBot.Commands
 
             using BotDBContext context = DatabaseManager.OpenContext();
 
+            context.ChangeTracker.StateChanged -= OnEntityChanged;
+            context.ChangeTracker.StateChanged += OnEntityChanged;
+
             //Get the user calling this
             string thisUserName = args.Command.ChatMessage.Username.ToLowerInvariant();
 
@@ -65,7 +68,7 @@ namespace TRBot.Commands
             if (arguments.Count == 1)
             {
                 //Check if this user has permission to do this
-                if (thisUser.TryGetAbility(PermissionConstants.UPDATE_OTHER_USER_ABILITES, out UserAbility ability) == false)
+                if (thisUser.HasEnabledAbility(PermissionConstants.UPDATE_OTHER_USER_ABILITES) == false)
                 {
                     QueueMessage("You do not have permission to update another user's abilities!");
                     return;
@@ -95,7 +98,14 @@ namespace TRBot.Commands
             //Save the changes
             context.SaveChanges();
 
+            context.ChangeTracker.StateChanged -= OnEntityChanged;
+
             QueueMessage($"Updated {changedUser.Name}'s abilities!");
+        }
+
+        private void OnEntityChanged(object sender, Microsoft.EntityFrameworkCore.ChangeTracking.EntityStateChangedEventArgs e)
+        {
+            Console.WriteLine($"Entity {e.Entry} Old: {e.OldState} | New: {e.NewState}");
         }
     }
 }

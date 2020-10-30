@@ -142,7 +142,6 @@ namespace TRBot.Data
                 new CommandData("vcontroller", "TRBot.Commands.VirtualControllerCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("userinfo", "TRBot.Commands.UserInfoCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("help", "TRBot.Commands.ListCmdsCommand", (long)PermissionLevels.User, true, true),
-                new CommandData("removeability", "TRBot.Commands.RemoveUserAbilityCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("controllercount", "TRBot.Commands.ControllerCountCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("credits", "TRBot.Commands.CreditsCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("highestcredits", "TRBot.Commands.HighestCreditsCommand", (long)PermissionLevels.User, true, true),
@@ -181,7 +180,7 @@ namespace TRBot.Data
                 new CommandData("addsyn", "TRBot.Commands.AddInputSynonymCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("removesyn", "TRBot.Commands.RemoveInputSynonymCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("setlevel", "TRBot.Commands.SetUserLevelCommand", (long)PermissionLevels.Moderator, true, true),
-                new CommandData("addability", "TRBot.Commands.AddUserAbilityCommand", (long)PermissionLevels.Moderator, true, true),
+                new CommandData("toggleability", "TRBot.Commands.UpdateUserAbilityCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("restrictinput", "TRBot.Commands.AddRestrictedInputCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("unrestrictinput", "TRBot.Commands.RemoveRestrictedInputCommand", (long)PermissionLevels.Moderator, true, true),
 

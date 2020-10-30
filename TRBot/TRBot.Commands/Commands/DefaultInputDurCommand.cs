@@ -72,7 +72,7 @@ namespace TRBot.Commands
                 return;
             }
 
-            if (user.HasAbility(PermissionConstants.SET_DEFAULT_INPUT_DUR_ABILITY) == false)
+            if (user.HasEnabledAbility(PermissionConstants.SET_DEFAULT_INPUT_DUR_ABILITY) == false)
             {
                 QueueMessage("You do not have the ability to set the global default input duration!");
                 return;

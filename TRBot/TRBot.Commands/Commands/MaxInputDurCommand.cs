@@ -72,7 +72,7 @@ namespace TRBot.Commands
                 return;
             }
 
-            if (user.HasAbility(PermissionConstants.SET_MAX_INPUT_DUR_ABILITY) == false)
+            if (user.HasEnabledAbility(PermissionConstants.SET_MAX_INPUT_DUR_ABILITY) == false)
             {
                 QueueMessage("You do not have the ability to set the global max input duration!");
                 return;

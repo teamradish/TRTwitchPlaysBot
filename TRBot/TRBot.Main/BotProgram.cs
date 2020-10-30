@@ -352,7 +352,7 @@ namespace TRBot.Main
             }
             catch (Exception exc)
             {
-                Console.WriteLine($"Ran into exception on command {e.Command.CommandText}: {exc.Message}"); 
+                Console.WriteLine($"Ran into exception on command {e.Command.CommandText}: {exc.Message}\n{exc.StackTrace}"); 
             }
         }
 
@@ -560,7 +560,7 @@ namespace TRBot.Main
                 User user = DataHelper.GetOrAddUserNoOpen(e.UsrMessage.Username, context, out bool added);
                 
                 //Check if the user is silenced and ignore the message if so
-                if (user.HasAbility(PermissionConstants.SILENCED_ABILITY) == true)
+                if (user.HasEnabledAbility(PermissionConstants.SILENCED_ABILITY) == true)
                 {
                     return;
                 }

@@ -37,19 +37,19 @@ namespace TRBot.Data
         /// User stats.
         /// This is used by the database and should not be assigned or modified manually.
         /// </summary>
-        public virtual UserStats Stats { get; set; } = null;
+        public virtual UserStats Stats { get; set; }
 
         /// <summary>
         /// The permissions available to the user.
         /// This is used by the database and should not be assigned manually.
         /// </summary>
-        public virtual List<UserAbility> UserAbilities { get; set; } = null;
+        public virtual List<UserAbility> UserAbilities { get; set; }
 
         /// <summary>
         /// The inputs the user is restricted from performing.
         /// This is used by the database and should not be assigned manually.
         /// </summary>
-        public virtual List<RestrictedInput> RestrictedInputs { get; set; } = null;
+        public virtual List<RestrictedInput> RestrictedInputs { get; set; }
 
         /// <summary>
         /// Tells if the user is opted out of stats.
@@ -86,11 +86,11 @@ namespace TRBot.Data
         }
 
         /// <summary>
-        /// Adds a user ability if it doesn't already exist.
+        /// Enables a user ability and adds one if it doesn't already exist.
         /// </summary>
         /// <param name="permAbility">The PermissionAbility.</param>
-        /// <returns>true if the ability was added, otherwise false.</returns>
-        public bool TryAddAbility(PermissionAbility permAbility)
+        /// <returns>true if the ability was enabled, otherwise false.</returns>
+        public bool EnableAbility(PermissionAbility permAbility)
         {
             //Check if the ability exists
             UserAbility curAbility = UserAbilities.FirstOrDefault(p => p.permability_id == permAbility.id);
@@ -100,7 +100,7 @@ namespace TRBot.Data
             {
                 //Console.WriteLine($"Ability {permAbility.Name} not found, adding to {Name}");
 
-                UserAbility newAbility = new UserAbility(permAbility, permAbility.value_str, permAbility.value_int, -1, null);
+                UserAbility newAbility = new UserAbility(permAbility, true, permAbility.value_str, permAbility.value_int, -1, null);
                 newAbility.user_id = id;
                 UserAbilities.Add(newAbility);
 
@@ -108,6 +108,10 @@ namespace TRBot.Data
 
                 return true;
             }
+
+            curAbility.SetEnabledState(true);
+            curAbility.expiration = null;
+            curAbility.GrantedByLevel = -1;
 
             //Console.WriteLine($"Ability {permAbility.Name} already found on {Name}, not adding");
 
@@ -118,12 +122,13 @@ namespace TRBot.Data
         /// Adds a user ability if it doesn't already exist and updates one if it does.
         /// </summary>
         /// <param name="permAbility">The PermissionAbility.</param>
+        /// <param name="enabledState">The enabled state of the ability.</param>
         /// <param name="valueStr">The string value of the ability.</param>
         /// <param name="valueInt">The integer value of the ability.</param>
         /// <param name="grantedByLevel">The level of the user that granted this ability.</param>
         /// <param name="expirationDate">The date when the ability expires.</param>
         /// <returns>true if the ability was added or updated, otherwise false.</returns>
-        public bool AddAbility(PermissionAbility permAbility, string valueStr, in int valueInt,
+        public bool AddAbility(PermissionAbility permAbility, in bool enabledState, string valueStr, in int valueInt,
             in long grantedByLevel, in DateTime? expirationDate)
         {
             //Check if the ability exists
@@ -132,13 +137,14 @@ namespace TRBot.Data
             //Add the ability
             if (curAbility == null)
             {
-                UserAbility newAbility = new UserAbility(permAbility, valueStr, valueInt, grantedByLevel, expirationDate);
+                UserAbility newAbility = new UserAbility(permAbility, enabledState, valueStr, valueInt, grantedByLevel, expirationDate);
                 newAbility.user_id = id;
                 UserAbilities.Add(newAbility);
             }
             //Update the ability
             else
             {
+                curAbility.SetEnabledState(enabledState);
                 curAbility.value_str = valueStr;
                 curAbility.value_int = valueInt;
                 curAbility.GrantedByLevel = grantedByLevel;
@@ -149,18 +155,19 @@ namespace TRBot.Data
         }
 
         /// <summary>
-        /// Removes a user ability with a given name.
+        /// Disables a user ability with a given name.
         /// </summary>
-        /// <param name="abilityName">The name of the ability to remove.</param>
-        /// <returns>true if the ability was removed, otherwise false.</returns>
-        public bool RemoveAbility(int permAbilityID)
+        /// <param name="abilityName">The name of the ability to disable.</param>
+        /// <returns>true if the ability was disabled, otherwise false.</returns>
+        public bool DisableAbility(int permAbilityID)
         {
             //Find the ability
             UserAbility ability = UserAbilities.FirstOrDefault(p => p.permability_id == permAbilityID);
 
             if (ability != null)
             {
-                UserAbilities.Remove(ability);
+                ability.SetEnabledState(false);
+                ability.expiration = null;
                 return true;
             }
 
@@ -177,21 +184,28 @@ namespace TRBot.Data
             return TryGetAbility(abilityName, out UserAbility ability);
         }
 
-        public bool TryGetAbility(int permAbilityID, out UserAbility userAbility)
+        public bool HasEnabledAbility(string abilityName)
         {
-            userAbility = UserAbilities.FirstOrDefault(p => p.permability_id == permAbilityID
-                && p.HasExpired == false);
+            TryGetAbility(abilityName, out UserAbility ability);
 
-            return (userAbility != null);
+            if (ability == null)
+            {
+                return false;
+            }
+
+            return ability.IsEnabled;
         }
 
         public bool TryGetAbility(string abilityName, out UserAbility userAbility)
         {
-            //Check for name and expiration
-            //NOTE: Make sure this is called after all user abilities are in the database
-            //Otherwise, the navigation property won't be set and it'll throw an exception
-            userAbility = UserAbilities.FirstOrDefault(p => p.PermAbility.Name == abilityName
-                && p.HasExpired == false);
+            userAbility = UserAbilities.FirstOrDefault(p => p.PermAbility.Name == abilityName);
+
+            return (userAbility != null);
+        }
+
+        public bool TryGetAbility(int permAbilityID, out UserAbility userAbility)
+        {
+            userAbility = UserAbilities.FirstOrDefault(p => p.permability_id == permAbilityID);
 
             return (userAbility != null);
         }

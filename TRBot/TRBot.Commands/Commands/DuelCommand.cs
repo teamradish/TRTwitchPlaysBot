@@ -97,7 +97,7 @@ namespace TRBot.Commands
             }
 
             //Confirm the user has the ability to duel
-            if (thisUser.HasAbility(PermissionConstants.DUEL_ABILITY) == false)
+            if (thisUser.HasEnabledAbility(PermissionConstants.DUEL_ABILITY) == false)
             {
                 QueueMessage("You do not have the ability to duel!");
                 return;
@@ -141,7 +141,7 @@ namespace TRBot.Commands
             }
 
             //Confirm the opponent has the ability to duel
-            if (opponentUser.HasAbility(PermissionConstants.DUEL_ABILITY) == false)
+            if (opponentUser.HasEnabledAbility(PermissionConstants.DUEL_ABILITY) == false)
             {
                 QueueMessage("The one you're attempting to duel does not have the ability to duel!");
                 return;

@@ -54,7 +54,7 @@ namespace TRBot.Commands
             string giverName = args.Command.ChatMessage.Username;
             User giverUser = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
 
-            if (giverUser.HasAbility(PermissionConstants.TRANSFER_ABILITY) == false)
+            if (giverUser.HasEnabledAbility(PermissionConstants.TRANSFER_ABILITY) == false)
             {
                 QueueMessage($"You do not have the ability to transfer {creditsName}!");
                 return;

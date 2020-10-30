@@ -68,7 +68,7 @@ namespace TRBot.Commands
             }
 
             //No ability to enter group bets
-            if (user.HasAbility(PermissionConstants.GROUP_BET_ABILITY) == false)
+            if (user.HasEnabledAbility(PermissionConstants.GROUP_BET_ABILITY) == false)
             {
                 QueueMessage("You do not have the ability to participate in a group bet!");
                 return;

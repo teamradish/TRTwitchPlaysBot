@@ -60,7 +60,7 @@ namespace TRBot.Commands
             //Check if the user has the ability to chat with the chatbot
             User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
 
-            if (user != null && user.HasAbility(PermissionConstants.CHATBOT_ABILITY) == false)
+            if (user != null && user.HasEnabledAbility(PermissionConstants.CHATBOT_ABILITY) == false)
             {
                 QueueMessage("You do not have the ability to chat with the chatbot.");
                 return;

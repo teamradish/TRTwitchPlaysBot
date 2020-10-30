@@ -189,7 +189,7 @@ namespace TRBot.Data
             {
                 entity.HasKey(e => e.id);
                 entity.HasOne(e => e.PermAbility).WithOne().HasForeignKey<UserAbility>(u => u.permability_id).IsRequired();
-                entity.HasIndex(e => new { e.user_id, e.permability_id }).IsUnique();
+                //entity.HasIndex(e => new { e.user_id, e.permability_id }).IsUnique();
             });
 
             modelBuilder.Entity<RestrictedInput>().ToTable("RestrictedInputs", "restrictedinputs");
@@ -206,6 +206,15 @@ namespace TRBot.Data
         private void ContextBuilder(SqliteDbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.MigrationsAssembly(System.Reflection.Assembly.GetExecutingAssembly().FullName);
+        }
+
+        public override int SaveChanges()
+        {
+            int saved = base.SaveChanges();
+
+            Console.WriteLine($"Saved {saved} changes!");
+
+            return saved;
         }
     }
 }
