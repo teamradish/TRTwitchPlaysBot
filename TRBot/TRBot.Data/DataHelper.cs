@@ -271,48 +271,15 @@ namespace TRBot.Data
         /// <param name="context">The open database context.</param>
         public static void UpdateUserAutoGrantAbilities(User user, BotDBContext context)
         {
-            //First, remove all auto grant abilities the user has
-            UserAbility[] userAbilities = user.UserAbilities.ToArray();
-
-            Console.WriteLine($"Ability count for {user.Name}: {userAbilities.Length}");
-
-            for (int i = 0; i < userAbilities.Length; i++)
-            {
-                UserAbility userAbility = userAbilities[i];
-
-                if (userAbility == null)
-                {
-                    Console.WriteLine($"User ability at {i} is somehow null for {user.Name}! UserID: {user.id}");
-                    continue;
-                }
-
-                PermissionAbility pAbility = userAbility.PermAbility;
-
-                if (pAbility == null)
-                {
-                    Console.WriteLine($"User linked permission ability at {i} is somehow null for {user.Name}! PermID: {userAbility.permability_id} | UserAbility UserID: {userAbility.user_id}");
-                    continue;
-                }
-
-                //Don't remove abilities that were given by a higher level
-                //This prevents users from removing constraints imposed by moderators and such
-                if ((long)pAbility.AutoGrantOnLevel >= 0
-                    && userAbility.GrantedByLevel <= user.Level)
-                {
-                    bool removed = user.RemoveAbility(pAbility.id);
-
-                    if (removed == true)
-                    {
-                        Console.WriteLine($"Removed ability {pAbility.Name}. New count for {user.Name}: {user.UserAbilities.Count()}");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Didn't remove ability {pAbility.Name} because it's not present. Count for {user.Name}: {user.UserAbilities.Count()}");
-                    }
-                }
-            }
-
             long originalLevel = user.Level;
+
+            //First, remove all auto grant abilities the user has
+            //Don't remove abilities that were given by a higher level
+            //This prevents users from removing constraints imposed by moderators and such
+            int removed = user.UserAbilities.RemoveAll(p => (long)p.PermAbility.AutoGrantOnLevel >= 0
+                    && p.GrantedByLevel <= originalLevel);
+
+            Console.WriteLine($"Removed {removed} abilities!");
 
             //Get all auto grant abilities up to the user's level
             IEnumerable<PermissionAbility> permAbilities =
@@ -325,14 +292,14 @@ namespace TRBot.Data
             foreach (PermissionAbility permAbility in permAbilities)
             {
                 bool added = user.TryAddAbility(permAbility);
-                if (added == true)
-                {
-                    Console.WriteLine($"Added ability {permAbility.Name} to {user.Name}. New count: {user.UserAbilities.Count()}");
-                }
-                else
-                {
-                    Console.WriteLine($"Didn't add ability {permAbility.Name} to {user.Name} because it's already present. Count: {user.UserAbilities.Count()}");
-                }
+                //if (added == true)
+                //{
+                //    Console.WriteLine($"Added ability {permAbility.Name} to {user.Name}. New count: {user.UserAbilities.Count}");
+                //}
+                //else
+                //{
+                //    Console.WriteLine($"Didn't add ability {permAbility.Name} to {user.Name} because it's already present. Count: {user.UserAbilities.Count}");
+                //}
             }
         }
 
@@ -356,21 +323,10 @@ namespace TRBot.Data
             if (originalLevel > newLevel)
             {
                 //Look for all auto grant abilities that are less than or equal to the original level
-                //and greater than the new level
-                IEnumerable<PermissionAbility> permAbilities =
-                    context.PermAbilities.Where(p => (long)p.AutoGrantOnLevel >= 0
-                        && (long)p.AutoGrantOnLevel <= originalLevel && (long)p.AutoGrantOnLevel > newLevel);
-            
-                //Remove all these abilities
-                foreach (PermissionAbility pAbility in permAbilities)
-                {
-                    //Don't remove abilities granted by a higher level
-                    if (user.TryGetAbility(pAbility.Name, out UserAbility ability) == true
-                        && ability.GrantedByLevel <= user.Level)
-                    {
-                        user.RemoveAbility(pAbility.id);
-                    }
-                }
+                //and greater than the new level, and remove them
+                int removed = user.UserAbilities.RemoveAll(p => p.PermAbility.AutoGrantOnLevel >= 0
+                    && (long)p.PermAbility.AutoGrantOnLevel <= originalLevel
+                    && (long)p.PermAbility.AutoGrantOnLevel > newLevel);
             }
             //Add all abilities up to the new level
             else if (originalLevel < newLevel)

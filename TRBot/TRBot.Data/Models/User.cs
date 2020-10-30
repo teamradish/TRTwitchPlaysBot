@@ -62,7 +62,6 @@ namespace TRBot.Data
         }
 
         public User(string userName)
-            : this()
         {
             Name = userName;
 
@@ -99,16 +98,18 @@ namespace TRBot.Data
             //Add the ability
             if (curAbility == null)
             {
-                Console.WriteLine($"Ability {permAbility.Name} not found, adding to {Name}");
+                //Console.WriteLine($"Ability {permAbility.Name} not found, adding to {Name}");
 
                 UserAbility newAbility = new UserAbility(permAbility, permAbility.value_str, permAbility.value_int, -1, null);
                 newAbility.user_id = id;
                 UserAbilities.Add(newAbility);
 
+                //Console.WriteLine($"New ability user id: {newAbility.user_id}");
+
                 return true;
             }
 
-            Console.WriteLine($"Ability {permAbility.Name} already found on {Name}, not adding");
+            //Console.WriteLine($"Ability {permAbility.Name} already found on {Name}, not adding");
 
             return false;
         }
