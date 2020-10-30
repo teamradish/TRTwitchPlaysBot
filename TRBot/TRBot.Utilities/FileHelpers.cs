@@ -61,7 +61,7 @@ namespace TRBot.Utilities
         public static bool ValidatePathForFile(string path)
         {
             //If the path name is empty, exit early
-            if (string.IsNullOrEmpty(path) == false)
+            if (string.IsNullOrEmpty(path) == true)
             {
                 return false;
             }

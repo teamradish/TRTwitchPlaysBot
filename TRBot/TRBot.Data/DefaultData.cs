@@ -168,6 +168,7 @@ namespace TRBot.Data
                 new CommandData("reverse", "TRBot.Commands.ReverseCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("numlogs", "TRBot.Commands.NumGameLogsCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("reverseparse", "TRBot.Commands.ReverseParseInputCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("cmdinfo", "TRBot.Commands.CmdInfoCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
 
