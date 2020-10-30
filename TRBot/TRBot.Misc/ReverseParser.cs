@@ -33,12 +33,24 @@ namespace TRBot.Misc
     public static class ReverseParser
     {
         /// <summary>
+        /// The ways to show controller ports in the reverse parser.
+        /// </summary>
+        public enum ShowPortTypes
+        {
+            None = 0,
+            ShowAllPorts = 1,
+            ShowNonDefaultPorts = 2
+        }
+
+        /// <summary>
         /// Generates an input string given an <see cref="ParsedInputSequence"/>.
         /// </summary>
         /// <param name="inputSequence">The input sequence.</param>
         /// <param name="gameConsole">The game console to reference.</param>
+        /// <param name="options">Options for the reverse parser.</param>
         /// <returns>A string of the reverse parsed inputs.</returns>
-        public static string ReverseParse(in ParsedInputSequence inputSequence, GameConsole gameConsole)
+        public static string ReverseParse(in ParsedInputSequence inputSequence, GameConsole gameConsole,
+            in ReverseParserOptions options)
         {
             List<List<ParsedInput>> inputsDList = inputSequence.Inputs;
 
@@ -61,6 +73,17 @@ namespace TRBot.Misc
                 for (int j = 0; j < inputList.Count; j++)
                 {
                     ParsedInput input = inputList[j];
+
+                    //Show the port number if it's not a blank input,
+                    //we should show all ports, or we should show a non-default port
+                    //and the input's controller port is not the default port
+                    if (gameConsole.IsBlankInput(input) == false
+                        && options.ShowPortType == ShowPortTypes.ShowAllPorts
+                        || (options.ShowPortType == ShowPortTypes.ShowNonDefaultPorts 
+                            && input.controllerPort != options.DefaultPortNum))
+                    {
+                        strBuilder.Append(Parser.DEFAULT_PARSE_REGEX_PORT_INPUT).Append(input.controllerPort + 1);
+                    }
 
                     //Add hold string
                     if (input.hold == true)
@@ -118,9 +141,11 @@ namespace TRBot.Misc
         /// </summary>
         /// <param name="inputSequence">The input sequence.</param>
         /// <param name="gameConsole">The game console to reference.</param>
+        /// <param name="options">Options for the reverse parser.</param>
         /// <returns>A string of the natural sentence.</returns>
         /// <remarks>Wording is cut back to balance readability with the bot's character limit.</remarks>
-        public static string ReverseParseNatural(in ParsedInputSequence inputSequence, GameConsole gameConsole)
+        public static string ReverseParseNatural(in ParsedInputSequence inputSequence, GameConsole gameConsole,
+            in ReverseParserOptions options)
         {
             List<List<ParsedInput>> inputsDList = inputSequence.Inputs;
 
@@ -143,6 +168,8 @@ namespace TRBot.Misc
                 {
                     ParsedInput input = inputList[j];
 
+                    bool isBlankInput = gameConsole.IsBlankInput(input);
+
                     //Handle hold
                     if (input.hold == true)
                     {
@@ -155,14 +182,14 @@ namespace TRBot.Misc
                         if (i == 0 && j ==0) strBuilder.Append("Release ");
                         else strBuilder.Append("release ");
                     }
-                    else if (gameConsole.IsBlankInput(input) == false)
+                    else if (isBlankInput == false)
                     {
                         if (i == 0 && j ==0) strBuilder.Append("Press ");
                         else strBuilder.Append("press ");
                     }
 
                     //If waiting, say we should wait
-                    if (gameConsole.IsBlankInput(input) ==true)
+                    if (isBlankInput == true)
                     {
                         if (i == 0 && j ==0) strBuilder.Append("Wait ");
                         else strBuilder.Append("wait ");
@@ -198,6 +225,16 @@ namespace TRBot.Misc
                         strBuilder.Append('s');
                     }
 
+                    //Show the port number if it's not a blank input,
+                    //we should show all ports, or we should show a non-default port
+                    //and the input's controller port is not the default port
+                    if (isBlankInput == false && options.ShowPortType == ShowPortTypes.ShowAllPorts
+                        || (options.ShowPortType == ShowPortTypes.ShowNonDefaultPorts 
+                            && input.controllerPort != options.DefaultPortNum))
+                    {
+                        strBuilder.Append(" on port ").Append(input.controllerPort + 1);
+                    }
+
                     //Add plus string if there are more in the subsequence
                     if (j < (inputList.Count - 1))
                     {
@@ -220,6 +257,51 @@ namespace TRBot.Misc
             string finalVal = Regex.Unescape(strBuilderVal);
 
             return finalVal;
+        }
+
+        /// <summary>
+        /// Options for the reverse parser.
+        /// </summary>
+        public struct ReverseParserOptions
+        {
+            public ShowPortTypes ShowPortType;
+            public int DefaultPortNum;
+            
+            public ReverseParserOptions(in ShowPortTypes showPortType, in int defaultPortNum)
+            {
+                ShowPortType = showPortType;
+                DefaultPortNum = defaultPortNum;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj is ReverseParserOptions inpSeq)
+                {
+                    return (this == inpSeq);
+                }
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hash = 59;
+                    hash = (hash * 37) + ShowPortType.GetHashCode();
+                    hash = (hash * 37) + DefaultPortNum.GetHashCode();
+                    return hash;
+                }
+            }
+
+            public static bool operator ==(ReverseParserOptions a, ReverseParserOptions b)
+            {
+                return (a.ShowPortType == b.ShowPortType && a.DefaultPortNum == b.DefaultPortNum);
+            }
+
+            public static bool operator !=(ReverseParserOptions a, ReverseParserOptions b)
+            {
+                return !(a == b);
+            }
         }
     }
 }

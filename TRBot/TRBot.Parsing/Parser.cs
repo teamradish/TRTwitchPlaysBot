@@ -873,11 +873,29 @@ namespace TRBot.Parsing
         }
     }
 
+    /// <summary>
+    /// Options for the parser.
+    /// </summary>
     public struct ParserOptions
     {
+        /// <summary>
+        /// The default controller port to use for each parsed input.
+        /// </summary>
         public int DefaultControllerPort;
+
+        /// <summary>
+        /// The default input duration to use for each parsed input.
+        /// </summary>
         public int DefaultInputDur;
+
+        /// <summary>
+        /// Whether to cancel parsing early if a given maximum input duration has been exceeded.
+        /// </summary>
         public bool CheckMaxDur;
+        
+        /// <summary>
+        /// The maximum total input duration the parser will parse.
+        /// </summary>
         public int MaxInputDur;
 
         public ParserOptions(in int defControllerPort, in int defaultInputDur, in bool checkMaxDur)
