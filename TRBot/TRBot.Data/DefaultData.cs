@@ -170,6 +170,8 @@ namespace TRBot.Data
                 new CommandData("reverseparse", "TRBot.Commands.ReverseParseInputCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("cmdinfo", "TRBot.Commands.CmdInfoCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("duel", "TRBot.Commands.DuelCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("highfive", "TRBot.Commands.HighFiveCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("inspiration", "TRBot.Commands.InspirationCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
 
