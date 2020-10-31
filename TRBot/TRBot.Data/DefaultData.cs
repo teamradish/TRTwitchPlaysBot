@@ -196,6 +196,7 @@ namespace TRBot.Data
                 new CommandData("inputperms", "TRBot.Commands.GlobalInputPermissionsCommand", (long)PermissionLevels.Admin, true, true),
 
                 new CommandData("exec", "TRBot.Commands.ExecCommand", (long)PermissionLevels.Superadmin, false, false),
+                new CommandData("exportbotdata", "TRBot.Commands.ExportBotDataCommand", (long)PermissionLevels.Superadmin, true, true),
             };
 
             return defaultCommands;

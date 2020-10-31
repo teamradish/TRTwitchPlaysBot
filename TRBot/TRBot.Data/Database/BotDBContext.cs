@@ -26,6 +26,8 @@ using TRBot.Permissions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace TRBot.Data
 {
@@ -61,6 +63,9 @@ namespace TRBot.Data
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             options.UseLazyLoadingProxies().UseSqlite($"Filename={Datasource}", ContextBuilder);
+
+            //options.LogTo(Console.WriteLine, LogLevel.None);
+
             base.OnConfiguring(options);
         }
 
@@ -212,7 +217,7 @@ namespace TRBot.Data
         {
             int saved = base.SaveChanges();
 
-            Console.WriteLine($"Saved {saved} changes!");
+            //Console.WriteLine($"Saved {saved} changes!");
 
             return saved;
         }

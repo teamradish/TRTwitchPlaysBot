@@ -30,7 +30,12 @@ namespace TRBot.Data
         /// The name of the data folder.
         /// </summary>
         public const string DATA_FOLDER_NAME = "Data";
-        
+
+        /// <summary>
+        /// The name of the database file.
+        /// </summary>
+        public const string DATABASE_FILE_NAME = "TRBotData.db";
+
         /// <summary>
         /// The identifier character for commands.
         /// </summary>

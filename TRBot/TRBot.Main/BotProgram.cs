@@ -113,7 +113,7 @@ namespace TRBot.Main
             InputParser = new Parser();
 
             //Initialize database
-            string databasePath = Path.Combine(DataConstants.DataFolderPath, "TRBotData.db");
+            string databasePath = Path.Combine(DataConstants.DataFolderPath, DataConstants.DATABASE_FILE_NAME);
 
             Console.WriteLine($"Validating database at: {databasePath}");
             if (Utilities.FileHelpers.ValidatePathForFile(databasePath) == false)
@@ -127,7 +127,7 @@ namespace TRBot.Main
             DatabaseManager.SetDatabasePath(databasePath);
             DatabaseManager.InitAndMigrateContext();
             
-            Console.WriteLine("Checking to initialize default values for non-existent database entries.");
+            Console.WriteLine("Checking to initialize default values for missing database entries.");
 
             //Check for and initialize default values if the database was newly created or needs updating
             InitDefaultData(out int entries);
