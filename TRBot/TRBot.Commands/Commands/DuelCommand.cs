@@ -40,7 +40,7 @@ namespace TRBot.Commands
         /// <summary>
         /// The dictionary to hold data on pending duels.
         /// </summary>
-        private static Dictionary<string, DuelData> DuelRequests = null;
+        private Dictionary<string, DuelData> DuelRequests = null;
 
         private string UsageMessage = "Usage: \"user to duel - or (accept/deny)\" \"bet amount (int)\"";
         private Random Rand = new Random();
