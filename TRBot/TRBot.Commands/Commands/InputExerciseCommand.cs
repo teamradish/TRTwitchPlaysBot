@@ -394,12 +394,12 @@ namespace TRBot.Commands
             //NOTE: To improve performance we should trim only at the highest level, not here in the subsequences
             List<InputData> validInputs = TrimInvalidExerciseInputs(userLevel, console.ConsoleInputs);
 
-            //If there's more than one subsequence, remove wait inputs since they're redundant in this case
+            //If there's more than one subsequence, remove blank inputs since they're redundant in this case
             if (numSubSequences > 1)
             {
                 for (int i = validInputs.Count - 1; i >= 0; i--)
                 {
-                    if (validInputs[i].InputType == InputTypes.None)
+                    if (validInputs[i].InputType == InputTypes.Blank)
                     {
                         validInputs.RemoveAt(i);
                     }

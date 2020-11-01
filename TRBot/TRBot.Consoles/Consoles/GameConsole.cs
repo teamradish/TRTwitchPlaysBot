@@ -312,8 +312,8 @@ namespace TRBot.Consoles
         {
             ConsoleInputs.TryGetValue(input.name, out InputData inputData);
 
-            //Not a blank input if null, disabled, or not None
-            if (inputData == null || inputData.enabled == 0 || inputData.InputType != (int)InputTypes.None)
+            //Not a blank input if null, disabled, or not Blank
+            if (inputData == null || inputData.enabled == 0 || inputData.InputType != (int)InputTypes.Blank)
             {
                 return false;
             }

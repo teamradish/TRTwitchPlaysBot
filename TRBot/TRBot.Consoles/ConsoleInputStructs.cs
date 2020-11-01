@@ -27,7 +27,7 @@ namespace TRBot.Consoles
     [Flags]
     public enum InputTypes
     {
-        None = 0,
+        Blank = 0,
         Button = 1 << 0,
         Axis = 1 << 1
     }
@@ -70,7 +70,7 @@ namespace TRBot.Consoles
         /// <summary>
         /// The type of input this input is. An input can be more than one type.
         /// </summary>
-        public InputTypes InputType { get; set; } = InputTypes.None;
+        public InputTypes InputType { get; set; } = InputTypes.Blank;
 
         /// <summary>
         /// The minimum value of the axis, normalized from -1 to 1.
@@ -138,14 +138,14 @@ namespace TRBot.Consoles
 
         public override string ToString()
         {
-            return $"Name: \"{Name}\" | console_id: {console_id} | BtnVal: {ButtonValue} | AxisVal: {AxisValue} | InputType: {InputType} | MinAxis: {MinAxisVal} | MaxAxis: {MaxAxisVal} | MaxAxisPercent: {MaxAxisPercent} | Level: {level} | Enabled: {enabled}";
+            return $"Name: \"{Name}\" | console_id: {console_id} | BtnVal: {ButtonValue} | AxisVal: {AxisValue} | InputType: {(int)InputType} ({InputType}) | MinAxis: {MinAxisVal} | MaxAxis: {MaxAxisVal} | MaxAxisPercent: {MaxAxisPercent} | Level: {level} | Enabled: {enabled}";
         }
 
         public static InputData CreateBlank(string name)
         {
             InputData blankInput = new InputData();
             blankInput.Name = name;
-            blankInput.InputType = InputTypes.None;
+            blankInput.InputType = InputTypes.Blank;
 
             return blankInput;
         }

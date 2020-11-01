@@ -23,13 +23,13 @@ using TRBot.VirtualControllers;
 namespace TRBot.Consoles
 {
     /// <summary>
-    /// The PlayStation 2.
+    /// The PlayStation 4.
     /// </summary>
-    public sealed class PS2Console : GameConsole
+    public sealed class PS4Console : GameConsole
     {
-        public PS2Console()
+        public PS4Console()
         {
-            Name = "ps2";
+            Name = "ps4";
 
             Initialize();
 
@@ -48,13 +48,17 @@ namespace TRBot.Consoles
                 { "rright",     InputData.CreateAxis("rright", (int)GlobalAxisVals.AXIS_RX, 0, 1) },
                 { "rup",        InputData.CreateAxis("rup", (int)GlobalAxisVals.AXIS_RY, 0, -1) },
                 { "rdown",      InputData.CreateAxis("rdown", (int)GlobalAxisVals.AXIS_RY, 0, 1) },
+                { "swipeleft",  InputData.CreateAxis("swipeleft", (int)GlobalAxisVals.AXIS_M1, 0, -1) },
+                { "swiperight", InputData.CreateAxis("swiperight", (int)GlobalAxisVals.AXIS_M1, 0, 1) },
+                { "swipeup",    InputData.CreateAxis("swipeup", (int)GlobalAxisVals.AXIS_M2, 0, -1) },
+                { "swipedown",  InputData.CreateAxis("swipedown", (int)GlobalAxisVals.AXIS_M2, 0, 1) },
 
                 { "square",     InputData.CreateButton("square", (int)GlobalButtonVals.BTN9) },
                 { "triangle",   InputData.CreateButton("triangle", (int)GlobalButtonVals.BTN10) },
                 { "circle",     InputData.CreateButton("circle", (int)GlobalButtonVals.BTN11) },
                 { "cross",      InputData.CreateButton("cross", (int)GlobalButtonVals.BTN12) },
-                { "select",     InputData.CreateButton("select", (int)GlobalButtonVals.BTN13) },
-                { "start",      InputData.CreateButton("start", (int)GlobalButtonVals.BTN14) },
+                { "share",      InputData.CreateButton("share", (int)GlobalButtonVals.BTN13) },
+                { "options",      InputData.CreateButton("options", (int)GlobalButtonVals.BTN14) },
                 { "l1",         InputData.CreateButton("l1", (int)GlobalButtonVals.BTN15) },
                 { "r1",         InputData.CreateButton("r1", (int)GlobalButtonVals.BTN16) },
                 { "l2",         InputData.CreateButton("l2", (int)GlobalButtonVals.BTN17) },
@@ -65,26 +69,20 @@ namespace TRBot.Consoles
                 { "ddown",      InputData.CreateButton("ddown", (int)GlobalButtonVals.BTN22) },
                 { "dleft",      InputData.CreateButton("dleft", (int)GlobalButtonVals.BTN23) },
                 { "dright",     InputData.CreateButton("dright", (int)GlobalButtonVals.BTN24) },
-                { "ss1",        InputData.CreateButton("ss1", (int)GlobalButtonVals.BTN25) },
-                { "ss2",        InputData.CreateButton("ss2", (int)GlobalButtonVals.BTN26) },
-                { "ss3",        InputData.CreateButton("ss3", (int)GlobalButtonVals.BTN27) },
-                { "ss4",        InputData.CreateButton("ss4", (int)GlobalButtonVals.BTN28) },
-                { "ls1",        InputData.CreateButton("ls1", (int)GlobalButtonVals.BTN29) },
-                { "ls2",        InputData.CreateButton("ls2", (int)GlobalButtonVals.BTN30) },
-                { "ls3",        InputData.CreateButton("ls3", (int)GlobalButtonVals.BTN31) },
-                { "ls4",        InputData.CreateButton("ls4", (int)GlobalButtonVals.BTN32) },
-                { "#",          InputData.CreateBlank("#") }
+                { "touchclick", InputData.CreateButton("touchclick", (int)GlobalButtonVals.BTN25) },
+                { "#",          InputData.CreateBlank("#") },
+
+                //Spare buttons
+                { "sb1",        InputData.CreateButton("sb1", (int)GlobalButtonVals.BTN26) },
+                { "sb2",        InputData.CreateButton("sb2", (int)GlobalButtonVals.BTN27) },
+                { "sb3",        InputData.CreateButton("sb3", (int)GlobalButtonVals.BTN28) },
+                { "sb4",        InputData.CreateButton("sb4", (int)GlobalButtonVals.BTN29) },
+                { "sb5",        InputData.CreateButton("sb5", (int)GlobalButtonVals.BTN30) },
+                { "sb6",        InputData.CreateButton("sb6", (int)GlobalButtonVals.BTN31) },
+                { "sb7",        InputData.CreateButton("sb7", (int)GlobalButtonVals.BTN32) },
             });
 
-            InvalidCombos = new List<InvalidCombo>(6)
-            {
-                new InvalidCombo(ConsoleInputs["l1"]),
-                new InvalidCombo(ConsoleInputs["r1"]),
-                new InvalidCombo(ConsoleInputs["l2"]),
-                new InvalidCombo(ConsoleInputs["r2"]),
-                new InvalidCombo(ConsoleInputs["start"]),
-                new InvalidCombo(ConsoleInputs["select"]),
-            };
+            InvalidCombos = new List<InvalidCombo>();
         }
     }
 }

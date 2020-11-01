@@ -149,7 +149,7 @@ namespace TRBot.Data
                 entity.Property(e => e.Name).HasDefaultValue(string.Empty);
                 entity.Property(e => e.ButtonValue).HasDefaultValue(0);
                 entity.Property(e => e.AxisValue).HasDefaultValue(0);
-                entity.Property(e => e.InputType).HasDefaultValue(InputTypes.None).HasConversion(new EnumToNumberConverter<InputTypes, int>());
+                entity.Property(e => e.InputType).HasDefaultValue(InputTypes.Blank).HasConversion(new EnumToNumberConverter<InputTypes, int>());
                 entity.Property(e => e.MinAxisVal).HasDefaultValue(0);
                 entity.Property(e => e.MaxAxisVal).HasDefaultValue(1);
                 entity.Property(e => e.MaxAxisPercent).HasDefaultValue(100);

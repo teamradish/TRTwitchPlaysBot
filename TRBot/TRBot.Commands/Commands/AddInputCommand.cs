@@ -39,7 +39,7 @@ namespace TRBot.Commands
         /// </summary>
         public const int MAX_INPUT_NAME_LENGTH = 20;
 
-        private string UsageMessage = $"Usage - \"console name\", \"input name\", \"buttonVal (int)\", \"axisVal (int)\" \"inputType (int)\" \"minAxis (-1 to 1)\" \"maxAxis (-1 to 1)\" \"maxAxis % (0 to 100)\"";
+        private string UsageMessage = $"Usage - \"console name\", \"input name\", \"buttonVal (int)\", \"axisVal (int)\" \"inputType (int: 0 = Blank, 1 = Button, 2 = Axis, 3 = Button+Axis)\" \"minAxis (-1 to 1)\" \"maxAxis (-1 to 1)\" \"maxAxis % (0 to 100)\"";
 
         public AddInputCommand()
         {
