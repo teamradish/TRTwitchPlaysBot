@@ -30,14 +30,15 @@ using TRBot.Permissions;
 namespace TRBot.Commands
 {
     /// <summary>
-    /// Updates a user's abilities.
+    /// Updates all of a user's abilities, enabling the ones they should have at their current access level,
+    /// and disabling the ones they shouldn't have at their access level.
     /// For use if changing a user's level outside the application, such as directly through the database.
     /// </summary>
-    public sealed class UpdateUserAbilitiesCommand : BaseCommand
+    public sealed class UpdateAllUserAbilitiesCommand : BaseCommand
     {
         private string UsageMessage = "Usage: \"username\"";
 
-        public UpdateUserAbilitiesCommand()
+        public UpdateAllUserAbilitiesCommand()
         {
             
         }

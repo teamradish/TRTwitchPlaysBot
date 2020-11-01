@@ -135,7 +135,7 @@ namespace TRBot.Data
                 new CommandData("stopall", "TRBot.Commands.StopAllInputsCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("allabilities", "TRBot.Commands.ListPermissionAbilitiesCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("userabilities", "TRBot.Commands.ListUserAbilitiesCommand", (long)PermissionLevels.User, true, true),
-                new CommandData("updateabilities", "TRBot.Commands.UpdateUserAbilitiesCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("updateabilities", "TRBot.Commands.UpdateAllUserAbilitiesCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("level", "TRBot.Commands.LevelCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("runninginputs", "TRBot.Commands.NumRunningInputsCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("pressedinputs", "TRBot.Commands.ListPressedInputsCommand", (long)PermissionLevels.User, true, true),
