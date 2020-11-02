@@ -1,4 +1,4 @@
-﻿/* This file is part of TRBot.
+/* This file is part of TRBot.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,33 +16,21 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using TRBot.Connection;
-using TRBot.Data;
-using TRBot.Utilities;
 
-namespace TRBot.Commands
+namespace TRBotDataMigrationTool
 {
     /// <summary>
-    /// Displays the bot's uptime.
+    /// The consoles that inputs are supported for.
     /// </summary>
-    public class UptimeCommand : BaseCommand
+    public enum InputConsoles
     {
-        public UptimeCommand()
-        {
-
-        }
-
-        public override void ExecuteCommand(EvtChatCommandArgs args)
-        {
-            //Get the time difference between now and the startup time
-            TimeSpan timeSpan = DateTime.UtcNow - Application.ApplicationStartTimeUTC;
-
-            string message = $"The bot has been up for {timeSpan.Days} days, {timeSpan.Hours} hours, {timeSpan.Minutes} minutes, and {timeSpan.Seconds} seconds!";
-            
-            QueueMessage(message);
-        }
+        Blank,
+        NES,
+        SNES, Genesis,
+        N64,
+        GC, PS2, GBA,
+        Wii,
+        PC
     }
 }

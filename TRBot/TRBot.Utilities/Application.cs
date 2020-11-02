@@ -15,34 +15,28 @@
 */
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TRBot.Connection;
-using TRBot.Data;
-using TRBot.Utilities;
 
-namespace TRBot.Commands
+namespace TRBot.Utilities
 {
     /// <summary>
-    /// Displays the bot's uptime.
+    /// Helpers that deal with the general application.
     /// </summary>
-    public class UptimeCommand : BaseCommand
+    public static class Application
     {
-        public UptimeCommand()
-        {
+        /// <summary>
+        /// The version number of the application.
+        /// </summary>
+        public const string VERSION_NUMBER = "2.0.0";
 
-        }
-
-        public override void ExecuteCommand(EvtChatCommandArgs args)
-        {
-            //Get the time difference between now and the startup time
-            TimeSpan timeSpan = DateTime.UtcNow - Application.ApplicationStartTimeUTC;
-
-            string message = $"The bot has been up for {timeSpan.Days} days, {timeSpan.Hours} hours, {timeSpan.Minutes} minutes, and {timeSpan.Seconds} seconds!";
-            
-            QueueMessage(message);
-        }
+        /// <summary>
+        /// The start time of the application.
+        /// <para>To ensure this is accurate, call it at the start of the application to set the value.</para>
+        /// </summary>
+        public static readonly DateTime ApplicationStartTimeUTC = DateTime.UtcNow;
     }
 }

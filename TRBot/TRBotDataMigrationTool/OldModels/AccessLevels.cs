@@ -16,33 +16,25 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using TRBot.Connection;
-using TRBot.Data;
-using TRBot.Utilities;
 
-namespace TRBot.Commands
+namespace TRBotDataMigrationTool
 {
     /// <summary>
-    /// Displays the bot's uptime.
+    /// Access levels.
     /// </summary>
-    public class UptimeCommand : BaseCommand
+    public static class AccessLevels
     {
-        public UptimeCommand()
+        /// <summary>
+        /// The access levels for commands.
+        /// </summary>
+        public enum Levels
         {
-
-        }
-
-        public override void ExecuteCommand(EvtChatCommandArgs args)
-        {
-            //Get the time difference between now and the startup time
-            TimeSpan timeSpan = DateTime.UtcNow - Application.ApplicationStartTimeUTC;
-
-            string message = $"The bot has been up for {timeSpan.Days} days, {timeSpan.Hours} hours, {timeSpan.Minutes} minutes, and {timeSpan.Seconds} seconds!";
-            
-            QueueMessage(message);
+            User = 0,
+            Whitelisted = 1,
+            VIP = 2,
+            Moderator = 3,
+            Admin = 4
         }
     }
 }

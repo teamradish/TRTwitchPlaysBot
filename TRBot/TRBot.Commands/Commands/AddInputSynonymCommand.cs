@@ -68,7 +68,7 @@ namespace TRBot.Commands
 
             InputSynonym inputSynonym = context.InputSynonyms.FirstOrDefault(syn => syn.console_id == console.id && syn.SynonymName == synonymName);
 
-            //Add to the dictionary if it doesn't exist
+            //Add if it doesn't exist
             if (inputSynonym == null)
             {
                 InputSynonym newSynonym = new InputSynonym(console.id, synonymName, synonymValue);

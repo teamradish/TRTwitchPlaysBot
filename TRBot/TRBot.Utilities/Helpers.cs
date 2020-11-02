@@ -29,12 +29,6 @@ namespace TRBot.Utilities
     public static class Helpers
     {
         /// <summary>
-        /// The start time of the application.
-        /// <para>To ensure this is accurate, call it at the start of the application to set the value.</para>
-        /// </summary>
-        public static readonly DateTime ApplicationStartTimeUTC = DateTime.UtcNow;
-
-        /// <summary>
         /// Linearly interpolates between two values.
         /// </summary>
         /// <param name="value1">The first value.</param>

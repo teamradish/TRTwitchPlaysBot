@@ -16,33 +16,18 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using TRBot.Connection;
-using TRBot.Data;
-using TRBot.Utilities;
 
-namespace TRBot.Commands
+namespace TRBotDataMigrationTool
 {
     /// <summary>
-    /// Displays the bot's uptime.
+    /// Data for invalid button combos.
     /// </summary>
-    public class UptimeCommand : BaseCommand
+    public sealed class InvalidButtonComboData
     {
-        public UptimeCommand()
+        public readonly Dictionary<int, List<string>> InvalidCombos = new Dictionary<int, List<string>>(4)
         {
-
-        }
-
-        public override void ExecuteCommand(EvtChatCommandArgs args)
-        {
-            //Get the time difference between now and the startup time
-            TimeSpan timeSpan = DateTime.UtcNow - Application.ApplicationStartTimeUTC;
-
-            string message = $"The bot has been up for {timeSpan.Days} days, {timeSpan.Hours} hours, {timeSpan.Minutes} minutes, and {timeSpan.Seconds} seconds!";
-            
-            QueueMessage(message);
-        }
+            { (int)InputConsoles.GBA, new List<string>() { "a", "b", "start", "select" } }
+        };
     }
 }

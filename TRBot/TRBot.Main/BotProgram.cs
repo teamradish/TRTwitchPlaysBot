@@ -45,8 +45,6 @@ namespace TRBot.Main
 {
     public sealed class BotProgram : IDisposable
     {
-        public const string VERSION_NUMBER = "2.0.0";
-
         public bool Initialized { get; private set; } = false;
 
         private IClientService ClientService = null;
@@ -77,7 +75,7 @@ namespace TRBot.Main
             ThreadSleepFindFunc = FindThreadSleepTime;
 
             //Call this to set the application start time
-            DateTime start = Helpers.ApplicationStartTimeUTC;
+            DateTime start = Application.ApplicationStartTimeUTC;
         }
 
         //Clean up anything we need to here
@@ -107,7 +105,7 @@ namespace TRBot.Main
             if (Initialized == true)
                 return;
 
-            //Kimimaru: Use invariant culture
+            //Use invariant culture
             Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
             InputParser = new Parser();
@@ -129,12 +127,16 @@ namespace TRBot.Main
             
             Console.WriteLine("Checking to initialize default values for missing database entries.");
 
-            //Check for and initialize default values if the database was newly created or needs updating
-            InitDefaultData(out int entries);
-
-            if (entries > 0)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                Console.WriteLine($"Added {entries} additional entries to the database."); 
+                //Check for and initialize default values if the database was newly created or needs updating
+                int addedDefaultEntries = DataHelper.InitDefaultData(context);
+
+                if (addedDefaultEntries > 0)
+                {
+                    context.SaveChanges();
+                    Console.WriteLine($"Added {addedDefaultEntries} additional entries to the database.");
+                }
             }
 
             Console.WriteLine("Initializing client service");
@@ -693,195 +695,6 @@ namespace TRBot.Main
         }
 
 #endregion
-
-        /// <summary>
-        /// Initializes default values for data.
-        /// </summary>
-        private void InitDefaultData(out int entriesAdded)
-        {
-            entriesAdded = 0;
-
-            using (BotDBContext dbContext = DatabaseManager.OpenContext())
-            {
-                /* First check if we should actually initialize defaults
-                 * This depends on the force init setting: initialize defaults if it's either missing or true
-                 * If the data version is less than the bot version, then we set force init to true
-                 */
-
-                //Check data version
-                Settings dataVersionSetting = dbContext.SettingCollection.FirstOrDefault((set) => set.key == SettingsConstants.DATA_VERSION_NUM);
-                
-                //Add the version to the lowest number if the entry doesn't exist
-                //This will force an init
-                if (dataVersionSetting == null)
-                {
-                    dataVersionSetting = new Settings(SettingsConstants.DATA_VERSION_NUM, "0.0.0", 0L);
-                    dbContext.SettingCollection.Add(dataVersionSetting);
-                    
-                    entriesAdded++;
-                    Console.WriteLine($"Data version setting \"{SettingsConstants.DATA_VERSION_NUM}\" not found in database; adding.");
-                }
-                
-                string dataVersionStr = dataVersionSetting.value_str;
-
-                //Compare versions
-                Version dataVersion = new Version(dataVersionStr);
-                Version curVersion = new Version(VERSION_NUMBER);
-
-                int result = dataVersion.CompareTo(curVersion);
-
-                Settings forceInitSetting = dbContext.SettingCollection.FirstOrDefault((set) => set.key == SettingsConstants.FORCE_INIT_DEFAULTS);
-                if (forceInitSetting == null)
-                {
-                    forceInitSetting = new Settings(SettingsConstants.FORCE_INIT_DEFAULTS, string.Empty, 1L);
-                    dbContext.SettingCollection.Add(forceInitSetting);
-
-                    entriesAdded++;
-                    Console.WriteLine($"Force initialize setting \"{SettingsConstants.FORCE_INIT_DEFAULTS}\" not found in database; adding.");
-                }
-
-                long forceInit = forceInitSetting.value_int;
-
-                //The bot version is greater, so update the data version number and set it to force init
-                if (result < 0)
-                {
-                    Console.WriteLine($"Data version {dataVersionSetting.value_str} is less than bot version {VERSION_NUMBER}. Updating version number and forcing database initialization for missing entries.");
-                    dataVersionSetting.value_str = VERSION_NUMBER;
-                }
-                //If the data version is greater than the bot, we should let them know
-                else if (result > 0)
-                {
-                    Console.WriteLine($"Data version {dataVersionSetting.value_str} is greater than bot version {VERSION_NUMBER}. Ensure you're running the correct version of TRBot to avoid potential issues.");
-                }
-
-                //Initialize if we're told to
-                if (forceInit > 0)
-                {
-                    Console.WriteLine($"{SettingsConstants.FORCE_INIT_DEFAULTS} is true; initializing missing defaults in database.");
-
-                    //Tell it to no longer force initializing
-                    forceInitSetting.value_int = 0;
-
-                    //Check all settings with the defaults
-                    List<Settings> settings = DefaultData.GetDefaultSettings();
-                    for (int i = 0; i < settings.Count; i++)
-                    {
-                        Settings setting = settings[i];
-                        
-                        //See if the setting exists
-                        Settings foundSetting = dbContext.SettingCollection.FirstOrDefault((set) => set.key == setting.key);
-                        
-                        if (foundSetting == null)
-                        {
-                            //Default setting does not exist, so add it
-                            dbContext.SettingCollection.Add(setting);
-                            entriesAdded++;
-                        }
-                    }
-
-                    List<CommandData> cmdData = DefaultData.GetDefaultCommands();
-                    for (int i = 0; i < cmdData.Count; i++)
-                    {
-                        CommandData commandData = cmdData[i];
-                        
-                        //See if the command data exists
-                        CommandData foundCommand = dbContext.Commands.FirstOrDefault((cmd) => cmd.name == commandData.name);
-                        
-                        if (foundCommand == null)
-                        {
-                            //Default command does not exist, so add it
-                            dbContext.Commands.Add(commandData);
-                            entriesAdded++;
-                        }
-                    }
-
-                    List<PermissionAbility> permAbilities = DefaultData.GetDefaultPermAbilities();
-                    for (int i = 0; i < permAbilities.Count; i++)
-                    {
-                        PermissionAbility permAbility = permAbilities[i];
-                        
-                        //See if the command data exists
-                        PermissionAbility foundPerm = dbContext.PermAbilities.FirstOrDefault((pAb) => pAb.Name == permAbility.Name);
-                        
-                        if (foundPerm == null)
-                        {
-                            //Default permission ability does not exist, so add it
-                            dbContext.PermAbilities.Add(permAbility);
-                            entriesAdded++;
-                        }
-                    }
-                }
-
-                Settings firstLaunchSetting = dbContext.SettingCollection.FirstOrDefault((set) => set.key == SettingsConstants.FIRST_LAUNCH);
-                if (firstLaunchSetting == null)
-                {
-                    firstLaunchSetting = new Settings(SettingsConstants.FIRST_LAUNCH, string.Empty, 1L);
-                    dbContext.SettingCollection.Add(firstLaunchSetting);
-
-                    entriesAdded++;
-                }
-
-                //Do these things upon first launching the bot
-                if (firstLaunchSetting.value_int > 0)
-                {
-                    //Populate default consoles - this will also populate inputs
-                    List<GameConsole> consoleData = DefaultData.GetDefaultConsoles();
-                    if (dbContext.Consoles.Count() < consoleData.Count)
-                    {
-                        for (int i = 0; i < consoleData.Count; i++)
-                        {
-                            GameConsole console = consoleData[i];
-                            
-                            //See if the console exists
-                            GameConsole foundConsole = dbContext.Consoles.FirstOrDefault((c) => c.Name == console.Name);
-                            if (foundConsole == null)
-                            {
-                                //This console isn't in the database, so add it
-                                dbContext.Consoles.Add(console);
-
-                                entriesAdded++;
-                            }
-                        }
-                    }
-
-                    //Set first launch to 0
-                    firstLaunchSetting.value_int = 0;
-                }
-
-                dbContext.SaveChanges();
-            }
-        }
-
-        /*private VirtualControllerTypes ValidateVirtualControllerType()
-        {
-            VirtualControllerTypes lastVControllerType = VirtualControllerTypes.Invalid;
-            using BotDBContext dbContext = DatabaseManager.OpenContext();
-            
-            //Validate the last virtual controller type
-            Settings vControllerSetting = dbContext.SettingCollection.FirstOrDefault((set) => set.key == SettingsConstants.LAST_VCONTROLLER_TYPE);
-            if (vControllerSetting != null)
-            {
-                lastVControllerType = (VirtualControllerTypes)vControllerSetting.value_int;
-            }
-
-            //Check if the virtual controller type is supported on this platform
-            if (VControllerHelper.IsVControllerSupported(lastVControllerType, TRBotOSPlatform.CurrentOS) == false)
-            {
-                //It's not supported, so switch it to prevent issues on this platform
-                VirtualControllerTypes defaultVContType = VControllerHelper.GetDefaultVControllerTypeForPlatform(TRBotOSPlatform.CurrentOS);
-                if (vControllerSetting != null)
-                {
-                    vControllerSetting.value_int = (long)defaultVContType;
-                }
-
-                MsgHandler.QueueMessage($"Current virtual controller {lastVControllerType} is not supported by the {TRBotOSPlatform.CurrentOS} platform. Switched it to the default of {defaultVContType} for this platform.");
-                lastVControllerType = defaultVContType;
-                
-                dbContext.SaveChanges();
-            }
-
-            return lastVControllerType;
-        }*/
 
         private void InitClientService()
         {

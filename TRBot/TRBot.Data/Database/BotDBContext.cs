@@ -39,7 +39,6 @@ namespace TRBot.Data
         //We use properties here to lazy load and avoid needing Set<T>() to load the collections
         public DbSet<Settings> SettingCollection { get; set; } = null;
         public DbSet<GameLog> GameLogs { get; set; } = null; 
-        public DbSet<SavestateLog> SavestateLogs { get; set; } = null;
         public DbSet<CommandData> Commands { get; set; } = null;
         public DbSet<Meme> Memes { get; set; } = null;
         public DbSet<InputMacro> Macros { get; set; } = null;
@@ -84,12 +83,6 @@ namespace TRBot.Data
 
             modelBuilder.Entity<GameLog>().ToTable("GameLogs", "gamelogs");
             modelBuilder.Entity<GameLog>(entity => 
-            {
-                entity.HasKey(e => e.id);
-            });
-
-            modelBuilder.Entity<SavestateLog>().ToTable("SavestateLogs", "savestatelogs");
-            modelBuilder.Entity<SavestateLog>(entity =>
             {
                 entity.HasKey(e => e.id);
             });

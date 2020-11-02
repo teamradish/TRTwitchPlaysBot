@@ -39,7 +39,7 @@ namespace TRBot.Commands
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
             string versionString = DataHelper.GetSettingString(SettingsConstants.DATA_VERSION_NUM, "Unknown??");
-            ValueStr = $"This bot is running TRBot version {versionString}!";
+            ValueStr = $"This bot is running TRBot version {Application.VERSION_NUMBER} with data version {versionString}!";
             
             base.ExecuteCommand(args);
         }

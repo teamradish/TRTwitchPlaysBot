@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\TRBot.Utilities\TRBot.Utilities.csproj" />
+    <ProjectReference Include="..\TRBot.Parsing\TRBot.Parsing.csproj" />
+    <ProjectReference Include="..\TRBot.Data\TRBot.Data.csproj" />
+    <ProjectReference Include="..\TRBot.Consoles\TRBot.Consoles.csproj" />
+    <ProjectReference Include="..\TRBot.Permissions\TRBot.Permissions.csproj" />
+    <ProjectReference Include="..\TRBot.Misc\TRBot.Misc.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+</Project>
