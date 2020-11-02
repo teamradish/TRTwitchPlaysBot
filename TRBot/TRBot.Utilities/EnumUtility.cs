@@ -136,9 +136,13 @@ namespace TRBot.Utilities
 
             for (int i = 0; i < enumValArray.Length; i++)
             {
+                //We can't cast generic enums directly to an integer, and enums can be of different integer types
+                //Use Convert, which uses the IConvertible interface to convert the incompatible types.
+                //Note that this may cause some boxing and thus garbage
+                long enumNumVal = Convert.ToInt64(enumValArray[i]);
+
                 //Check if the values match
-                //Note that this will cause some boxing and thus garbage
-                if (num.CompareTo(enumValArray[i]) == 0)
+                if (num == enumNumVal)
                 {
                     enumValue = enumValArray[i];
                     return true;

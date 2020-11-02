@@ -38,8 +38,8 @@ namespace TRBotDataMigrationTool
         private const string OLD_BOT_DATA_FILE = "BotData.txt";
         private const string OLD_SETTINGS_FILE = "Settings.txt";
 
-        private static readonly string OldBotDataFileMessage = $"Please specify the location of the \"{OLD_BOT_DATA_FILE}\" file from your TRBot 1.8 install, or type \"{SKIP_ARG}\" to skip this step.";
-        private static readonly string OldSettingsFileMessage = $"Please specify the location of the \"{OLD_SETTINGS_FILE}\" file from your TRBot 1.8 install, or type \"{SKIP_ARG}\" to skip this step.";
+        private static readonly string OldBotDataFileMessage = $"Please specify the location of the \"{OLD_BOT_DATA_FILE}\" file from your TRBot 1.8 install. Type \"{SKIP_ARG}\" to skip this step.";
+        private static readonly string OldSettingsFileMessage = $"Please specify the location of the \"{OLD_SETTINGS_FILE}\" file from your TRBot 1.8 install, Type \"{SKIP_ARG}\" to skip this step.";
 
         private static Dictionary<AccessLevels.Levels, PermissionLevels> AccessLvlMap = new Dictionary<AccessLevels.Levels, TRBot.Permissions.PermissionLevels>(5)
         {
@@ -55,10 +55,14 @@ namespace TRBotDataMigrationTool
             //Use invariant culture
             Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
-            Console.WriteLine($"Welcome to the TRBot 1.8 to 2.X data migration tool! This is currently running TRBot version {Application.VERSION_NUMBER}.");
-            Console.WriteLine("Keep in mind that the 2.X releases have a vastly different data structure, so some data may not be able to be migrated.");
+            Console.WriteLine($"Welcome to the TRBot 1.8 to 2.X data migration tool! This is currently running TRBot version {Application.VERSION_NUMBER}.\n");
+            Console.WriteLine();
+            Console.WriteLine("Keep in mind that the 2.X releases have a vastly different data structure, so some data may not be able to be migrated.\nPress any key to continue.\n");
+            Console.ReadKey();
 
-            Console.WriteLine($"The first thing we are going to do is create a template database file for your new 2.X data. You can also provide an existing \"{DataConstants.DATABASE_FILE_NAME}\" data file in this application's \"{DataConstants.DATA_FOLDER_NAME}\" folder to migrate the data to. HOWEVER, keep in mind that doing so WILL OVERWRITE EXISTING DATA! Please be careful.");
+            Console.WriteLine($"The first thing we are going to do is create a template database file for your new 2.X data. You can also provide an existing \"{DataConstants.DATABASE_FILE_NAME}\" data file in this application's \"{DataConstants.DATA_FOLDER_NAME}\" folder to migrate the data to. HOWEVER, keep in mind that doing so WILL OVERWRITE EXISTING DATA! Please be careful.\nPress any key to continue.\n");
+            Console.ReadKey();
+            
             Console.WriteLine("Initializing the template file now...");
 
             //Make template
@@ -66,6 +70,7 @@ namespace TRBotDataMigrationTool
 
             Console.WriteLine("Template file created and/or validated!");
             Console.WriteLine(OldBotDataFileMessage);
+            Console.WriteLine();
 
             bool fileExists = false;
             bool skippedData = false;
@@ -85,7 +90,8 @@ namespace TRBotDataMigrationTool
                 fileExists = File.Exists(line);
                 if (fileExists == false)
                 {
-                    Console.WriteLine($"Sorry, I can't find the file specified. {OldBotDataFileMessage}");
+                    Console.WriteLine($"Sorry, I can't find the file specified.\n{OldBotDataFileMessage}");
+                    Console.WriteLine();
                     continue;
                 }
 
@@ -103,7 +109,7 @@ namespace TRBotDataMigrationTool
                 catch (Exception e)
                 {
                     fileExists = false;
-                    Console.WriteLine($"Sorry, I was unable to read data from the given file for the following reason: {e.Message}. {OldBotDataFileMessage}");
+                    Console.WriteLine($"Sorry, I was unable to read data from the given file for the following reason: {e.Message}\n{e.StackTrace}\n\n{OldBotDataFileMessage}");
                     continue;
                 }
             }
@@ -112,6 +118,9 @@ namespace TRBotDataMigrationTool
             //Reset flag
             fileExists = false;
             bool skippedSettings = false;
+
+            Console.WriteLine(OldSettingsFileMessage);
+            Console.WriteLine();
 
             //Bot settings
             do
@@ -128,7 +137,8 @@ namespace TRBotDataMigrationTool
                 fileExists = File.Exists(line);
                 if (fileExists == false)
                 {
-                    Console.WriteLine($"Sorry, I can't find the file specified. {OldSettingsFileMessage}");
+                    Console.WriteLine($"Sorry, I can't find the file specified.\n{OldSettingsFileMessage}");
+                    Console.WriteLine();
                     continue;
                 }
 
@@ -141,11 +151,12 @@ namespace TRBotDataMigrationTool
                     TRBotDataMigrationTool.Settings botSettings = JsonConvert.DeserializeObject<TRBotDataMigrationTool.Settings>(settingsDataStr);
                     
                     //Convert all the settings data
+                    AddOldBotSettingsToNewDB(botSettings);
                 }
                 catch (Exception e)
                 {
                     fileExists = false;
-                    Console.WriteLine($"Sorry, I was unable to read data from the given file for the following reason: {e.Message}. {OldSettingsFileMessage}");
+                    Console.WriteLine($"Sorry, I was unable to read data from the given file for the following reason: {e.Message}\n{e.StackTrace}\n\n{OldSettingsFileMessage}");
                     continue;
                 }
             }
@@ -205,6 +216,7 @@ namespace TRBotDataMigrationTool
                 if (newMacro == null)
                 {
                     newMacro = new InputMacro();
+                    context.Macros.Add(newMacro);
                 }
 
                 newMacro.MacroName = macros.Key;
@@ -227,6 +239,7 @@ namespace TRBotDataMigrationTool
                 if (newMeme == null)
                 {
                     newMeme = new Meme();
+                    context.Memes.Add(newMeme);
                 }
 
                 newMeme.MemeName = memes.Key;
@@ -303,7 +316,7 @@ namespace TRBotDataMigrationTool
                 int endIndex = middleIndex + separatorLength;
 
                 //Parse time
-                string time = log.DateTimeString.Substring(endIndex + 1, log.DateTimeString.Length - endIndex);
+                string time = log.DateTimeString.Substring(endIndex, log.DateTimeString.Length - endIndex);
                 int.TryParse(time.Substring(0, 2), out int hour);
                 int.TryParse(time.Substring(3, 2), out int minute);
                 int.TryParse(time.Substring(6, 2), out int seconds);
@@ -482,7 +495,7 @@ namespace TRBotDataMigrationTool
 
             /* Bingo Settings */
             AddSettingIntHelper(SettingsConstants.BINGO_ENABLED, (oldBotSettings.BingoSettings.UseBingo == true) ? 1L : 0L, context);
-            AddSettingIntHelper(SettingsConstants.BINGO_PIPE_PATH_IS_RELATIVE, 1L, context);
+            AddSettingIntHelper(SettingsConstants.BINGO_PIPE_PATH_IS_RELATIVE, 0L, context);
             AddSettingStrHelper(SettingsConstants.BINGO_PIPE_PATH, oldBotSettings.BingoSettings.BingoPipeFilePath, context);
 
             /* Credits Settings */
