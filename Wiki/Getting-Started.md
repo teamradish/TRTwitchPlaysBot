@@ -24,13 +24,15 @@ Welcome to the TRBot setup guide! This short guide should help get you up and ru
 # Setting up TRBot
 If you installed a pre-built binary, run `TRBot` (Ex. `TRBot.exe` on Windows, `./TRBot` on GNU/Linux). If you built the project, use either `dotnet run` or open the native executable depending on whether the runtime is self-contained or not.
 
-After running TRBot once, it will create a **Data** folder in the same folder you ran it from along with a **TRBotData.db** database file, which holds all your settings. If you are connecting through Twitch or another online service, TRBot will also create a template file for the login information in this folder. Open the **LoginInfo.txt** file and fill out the login information for your bot. The settings are described below:
+After running TRBot once, it will create a **Data** folder in the same folder you ran it from along with a **TRBotData.db** database file, which holds all your settings. It's highly recommended to first go through the [tutorial on managing TRBot's data](./Managing-Data.md) to learn how to view and modify this data.
+
+If you are connecting through Twitch or another online service, TRBot will also create a template file for the login information in this folder. Open the **LoginInfo.txt** file and fill out the login information for your bot. The settings are described below:
 
 *BotName* = Username of your bot.<br />
 *Password* = Password for your bot. This may start with "oauth."<br />
 *ChannelName* = The name of the channel to have the bot connect to. Multiple channels are not currently supported.
 
-For security reasons, no user is an Admin or Superadmin by default. To set a user as an Admin or Superadmin, open up the **TRBotData.db** file in SQLite or a database viewer, find the user under the "Users" table, and manually change their level to 40 (Admin) or 50 (Superadmin), then save your changes. 
+For security reasons, no user is an Admin or Superadmin by default. To set a user as an Admin or Superadmin, open up the **TRBotData.db** file in SQLite or a database viewer, find the user under the "Users" table, and manually change their level to 40 (Admin) or 50 (Superadmin), then save your changes.
 
 After these are set, run TRBot again and you should see it connect to the channel.
 <br />***IMPORTANT:*** If you don't see the bot's connection message on the channel, make sure the channel doesn't have chat restrictions, such as Followers-only, or have the bot account adhere to the restrictions so it can chat.
