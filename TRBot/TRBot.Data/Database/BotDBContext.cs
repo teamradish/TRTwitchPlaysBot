@@ -51,7 +51,7 @@ namespace TRBot.Data
 
         public BotDBContext()
         {
-            
+            //Console.WriteLine("CONTEXT OPENED\n" + Environment.StackTrace);
         }
 
         public BotDBContext(string dataSource) : this()
@@ -59,11 +59,18 @@ namespace TRBot.Data
             Datasource = dataSource;
         }
 
+        public override void Dispose()
+        {
+            //Console.WriteLine("CONTEXT DISPOSED\n" + Environment.StackTrace);
+            base.Dispose();
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             options.UseLazyLoadingProxies().UseSqlite($"Filename={Datasource}", ContextBuilder);
 
-            //options.LogTo(Console.WriteLine, LogLevel.None);
+            //options.LogTo(Console.WriteLine, LogLevel.Debug);
+            //options.EnableSensitiveDataLogging(true);
 
             base.OnConfiguring(options);
         }
@@ -210,7 +217,7 @@ namespace TRBot.Data
         {
             int saved = base.SaveChanges();
 
-            //Console.WriteLine($"Saved {saved} changes!");
+            Console.WriteLine($"Saved {saved} changes!");
 
             return saved;
         }

@@ -265,7 +265,7 @@ namespace TRBot.Main
                 //Update routines
                 RoutineHandler.Update(utcNow);
 
-                int threadSleep = 100;
+                int threadSleep = 500;
 
                 //Get the thread sleep value from the database
                 using (BotDBContext context = DatabaseManager.OpenContext())

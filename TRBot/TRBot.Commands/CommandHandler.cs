@@ -96,7 +96,7 @@ namespace TRBot.Commands
                 //Check if the user has permission to perform this command
                 using (BotDBContext context = DatabaseManager.OpenContext())
                 {
-                    User user = DataHelper.GetUser(args.Command.ChatMessage.Username);
+                    User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
 
                     if (user != null && user.Level < command.Level)
                     {
