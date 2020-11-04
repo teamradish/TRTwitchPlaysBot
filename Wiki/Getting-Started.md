@@ -114,7 +114,7 @@ If there's no way to prevent players from exiting the game, you can set up a scr
 done)
 ```
 
-This may not work for games that have DRM and can only be launched through a client, such as Steam.
+This may not always work for games that have DRM and can only be launched through a client, such as Steam. However, you can find a script that does this for Steam games [here](../Supplementary/RestartSteamGame.sh).
 
 # Contributing
 If you find any problems with TRBot, please file an [issue](https://github.com/teamradish/TRTwitchPlaysBot/issues). [Pull requests](https://github.com/teamradish/TRTwitchPlaysBot/pulls) are encouraged if you'd like to make contributions.
