@@ -55,12 +55,12 @@ namespace TRBotDataMigrationTool
             //Use invariant culture
             Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
-            Console.WriteLine($"Welcome to the TRBot 1.8 to 2.X data migration tool! This is currently running TRBot version {Application.VERSION_NUMBER}.\n");
+            Console.WriteLine($"Welcome to the TRBot 1.8 to 2.0+ data migration tool! This is currently running TRBot version {Application.VERSION_NUMBER}.\n");
             Console.WriteLine();
-            Console.WriteLine("Keep in mind that the 2.X releases have a vastly different data structure, so some data may not be able to be migrated.\nPress any key to continue.\n");
+            Console.WriteLine("Keep in mind that the 2.0+ releases have a vastly different data structure, so some data may not be able to be migrated.\nPress any key to continue.\n");
             Console.ReadKey();
 
-            Console.WriteLine($"The first thing we are going to do is create a template database file for your new 2.X data. You can also provide an existing \"{DataConstants.DATABASE_FILE_NAME}\" data file in this application's \"{DataConstants.DATA_FOLDER_NAME}\" folder to migrate the data to. HOWEVER, keep in mind that doing so WILL OVERWRITE EXISTING DATA! Please be careful.\nPress any key to continue.\n");
+            Console.WriteLine($"The first thing we are going to do is create a template database file for your new 2.0+ data. You can also provide an existing \"{DataConstants.DATABASE_FILE_NAME}\" data file in this application's \"{DataConstants.DATA_FOLDER_NAME}\" folder to migrate the data to. HOWEVER, keep in mind that doing so WILL OVERWRITE EXISTING DATA! Please be careful.\nPress any key to continue.\n");
             Console.ReadKey();
             
             Console.WriteLine("Initializing the template file now...");
@@ -337,16 +337,16 @@ namespace TRBotDataMigrationTool
             context.SaveChanges();
 
             /* Savestate Logs */
-            Console.WriteLine("Skipping importing savestate logs, as they don't exist in TRBot 2.X.");
+            Console.WriteLine("Skipping importing savestate logs, as they don't exist in TRBot 2.0+.");
 
             /* Silenced Users */
-            Console.WriteLine("Skipping importing silenced users, as TRBot 2.X has a new ability system.");
+            Console.WriteLine("Skipping importing silenced users, as TRBot 2.0+ has a new ability system.");
 
             /* Input Callbacks */
-            Console.WriteLine("Skipping importing input callbacks, as they don't exist in TRBot 2.X.");
+            Console.WriteLine("Skipping importing input callbacks, as they don't exist in TRBot 2.0+.");
 
             /* Input Access */
-            Console.WriteLine("Skipping importing InputAccess, as input access is console-specific in TRBot 2.X.");
+            Console.WriteLine("Skipping importing InputAccess, as input access is console-specific in TRBot 2.0+.");
 
             /* Invalid Button Combos */
             Console.WriteLine("Begin importing invalid button combos...");

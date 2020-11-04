@@ -31,6 +31,7 @@ namespace TRBotDataMigrationTool
         N64,
         GC, PS2, GBA,
         Wii,
-        PC
+        PC,
+        PS4
     }
 }
