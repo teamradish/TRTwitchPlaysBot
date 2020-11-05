@@ -27,12 +27,12 @@ namespace TRBot.Data
     /// </summary>
     public class Settings
     {
-        public int id { get; set; } = 0;
-        public string key { get; set; } = string.Empty;
-        public string value_str { get; set; } = string.Empty;
-        public long value_int { get; set; } = 0L;
+        public int ID { get; set; } = 0;
+        public string Key { get; set; } = string.Empty;
+        public string ValueStr { get; set; } = string.Empty;
+        public long ValueInt { get; set; } = 0L;
 
-        public bool GetBool => (value_int == 0L) ? false : true;
+        public bool GetBool => (ValueInt == 0L) ? false : true;
 
         public Settings()
         {
@@ -41,17 +41,17 @@ namespace TRBot.Data
 
         public Settings(string Key, string Value_str, in long Value_int)
         {
-            key = Key;
-            value_str = Value_str;
-            value_int = Value_int;
+            this.Key = Key;
+            ValueStr = Value_str;
+            ValueInt = Value_int;
         }
 
         public Settings(in int Id, string Key, string Value_str, in long Value_int)
         {
-            id = Id;
-            key = Key;
-            value_str = Value_str;
-            value_int = Value_int;
+            ID = Id;
+            this.Key = Key;
+            ValueStr = Value_str;
+            ValueInt = Value_int;
         }
     }
 }

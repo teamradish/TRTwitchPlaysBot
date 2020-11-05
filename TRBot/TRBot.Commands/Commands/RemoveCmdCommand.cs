@@ -58,7 +58,7 @@ namespace TRBot.Commands
                 //Remove this command from the database
                 using (BotDBContext context = DatabaseManager.OpenContext())
                 {
-                    CommandData cmdData = context.Commands.FirstOrDefault((cmd) => cmd.name == commandName);
+                    CommandData cmdData = context.Commands.FirstOrDefault((cmd) => cmd.Name == commandName);
                     if (cmdData != null)
                     {
                         context.Commands.Remove(cmdData);

@@ -26,6 +26,7 @@ using TRBot.Parsing;
 using TRBot.Consoles;
 using TRBot.Misc;
 using TRBot.Data;
+using TRBot.Utilities;
 
 namespace TRBot.Commands
 {
@@ -108,7 +109,7 @@ namespace TRBot.Commands
 
             //Get the last console used
             int lastConsoleID = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.LAST_CONSOLE, context, 1L);
-            GameConsole lastConsole = context.Consoles.FirstOrDefault(c => c.id == lastConsoleID);
+            GameConsole lastConsole = context.Consoles.FirstOrDefault(c => c.ID == lastConsoleID);
             GameConsole usedConsole = null;
 
             if (lastConsole != null)
@@ -221,7 +222,7 @@ namespace TRBot.Commands
                     user.Stats.Credits += creditReward;
                     context.SaveChanges();
 
-                    QueueMessage($"Correct input! Awesome job! You've earned your {creditReward} {creditsName}!");
+                    QueueMessage($"Correct input! Awesome job! You've earned your {creditReward} {creditsName.Pluralize(false, creditReward)}!");
                 }
                 else
                 {
@@ -493,7 +494,7 @@ namespace TRBot.Commands
             for (int i = inputs.Count - 1; i >= 0; i--)
             {
                 //Remove the input if the user doesn't have access to use it
-                if (userLevel < inputs[i].level)
+                if (userLevel < inputs[i].Level)
                 {
                     inputs.RemoveAt(i);
                 }

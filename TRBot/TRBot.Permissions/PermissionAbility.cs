@@ -24,7 +24,7 @@ namespace TRBot.Permissions
     /// </summary>
     public class PermissionAbility
     {
-        public int id { get; set; } = 0;
+        public int ID { get; set; } = 0;
 
         /// <summary>
         /// Which permission level to automatically grant the ability on.
@@ -41,9 +41,9 @@ namespace TRBot.Permissions
 
         public string Name { get; set; } = string.Empty;
 
-        public string value_str { get; set; } = string.Empty;
+        public string ValueStr { get; set; } = string.Empty;
 
-        public int value_int { get; set; } = 0;
+        public int ValueInt { get; set; } = 0;
 
         public PermissionAbility()
         {
@@ -66,8 +66,8 @@ namespace TRBot.Permissions
             : this(name)
         {
             Name = name;
-            value_str = valueStr;
-            value_int = valueInt;
+            ValueStr = valueStr;
+            ValueInt = valueInt;
         }
 
         public PermissionAbility(string name, in PermissionLevels autoGrantOnLevel, string valueStr, in int valueInt)

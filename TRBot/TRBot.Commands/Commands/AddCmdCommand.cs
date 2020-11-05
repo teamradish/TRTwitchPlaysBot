@@ -100,7 +100,7 @@ namespace TRBot.Commands
                 using (BotDBContext context = DatabaseManager.OpenContext())
                 {
                     //If this command already exists, remove it so it can be replaced with the new data
-                    CommandData cmdData = context.Commands.FirstOrDefault((cmd) => cmd.name == commandName);
+                    CommandData cmdData = context.Commands.FirstOrDefault((cmd) => cmd.Name == commandName);
                     if (cmdData != null)
                     {
                         //Remove command

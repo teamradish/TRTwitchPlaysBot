@@ -88,7 +88,7 @@ namespace TRBot.Commands
 
                 if (resInp.HasExpiration == true)
                 {
-                    strBuilder.Append(" (exp: ").Append(resInp.expiration.Value.ToString()).Append(" UTC)");
+                    strBuilder.Append(" (exp: ").Append(resInp.Expiration.Value.ToString()).Append(" UTC)");
                 }
 
                 strBuilder.Append(',').Append(' ');

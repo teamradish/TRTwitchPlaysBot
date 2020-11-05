@@ -88,5 +88,78 @@ namespace TRBot.Utilities
                 dictCopiedTo[kvPair.Key] = kvPair.Value;
             }
         }
+
+        /// <summary>
+        /// Makes a string singular or plural and lowercase or capitalized based on the context.
+        /// </summary>
+        /// <param name="str">The string to pluralize.</param>
+        /// <param name="capital">Whether the string should be capitalized. false means lowercase.</param>
+        /// <param name="count">A given number, used to indicate if the string should be singular or plural.</param>
+        /// <returns>A pluralized string.</returns>
+        public static string Pluralize(this string str, in bool capital, in long count)
+        {
+            //We can't do anything for an empty or null string
+            if (string.IsNullOrEmpty(str) == true)
+            {
+                return str;
+            }
+
+            string newStr = str;
+
+            //Get the character values so we can see if a character is uppercase or lowercase
+            int firstCapital = (int)'A';
+            int lastCapital = (int)'Z';
+            int firstLower = (int)'a';
+            int lastLower = (int)'z';
+
+            int diff = firstLower - firstCapital;
+            char firstChar = str[0];
+            char lastChar = str[str.Length - 1];
+
+            int firstCharVal = (int)firstChar;
+
+            //Set capital
+            if (capital == true)
+            {
+                //If it's 'a' through 'z', replace it with the capital version
+                if (firstChar >= firstLower && firstChar <= lastLower)
+                {
+                    char capitalChar = (char)(firstCharVal - diff);
+                    newStr = newStr.Remove(0, 1);
+                    newStr = capitalChar.ToString() + newStr;
+                }
+            }
+            else
+            {
+                //If it's 'A' through 'Z', replace it with the lowercase version
+                if (firstChar >= firstCapital && firstChar <= lastCapital)
+                {
+                    char lowercaseChar = (char)(firstCharVal + diff);
+                    newStr = newStr.Remove(0, 1);
+                    newStr = lowercaseChar.ToString() + newStr;
+                }
+            }
+
+            if (count == 1)
+            {
+                //If the string ends with a plural, remove it
+                //This doesn't cover all possible plural forms
+                if ((lastChar == 's' || lastChar == 'S') && newStr.Length > 1)
+                {
+                    newStr = newStr.Remove(str.Length - 1, 1);
+                }
+            }
+            else
+            {
+                //If the string is singular, make it plural
+                //This doesn't cover all possible plural forms
+                if (lastChar != 's')
+                {
+                    newStr = newStr + "s";
+                }
+            }
+
+            return newStr;
+        }
     }
 }

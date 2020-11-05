@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using TRBot.Connection;
 using TRBot.Permissions;
 using TRBot.Data;
+using TRBot.Utilities;
 
 namespace TRBot.Commands
 {
@@ -81,7 +82,7 @@ namespace TRBot.Commands
 
             if (creditBet > bettingUser.Stats.Credits)
             {
-                QueueMessage($"Bet amount is greater than {creditsName}!");
+                QueueMessage($"Bet amount is greater than {creditsName.Pluralize(false, 0)}!");
                 return;
             }
 
@@ -93,12 +94,12 @@ namespace TRBot.Commands
             if (success)
             {
                 bettingUser.Stats.Credits += creditBet;
-                message = $"{bettingUser.Name} won {creditBet} {creditsName} PogChamp";
+                message = $"{bettingUser.Name} won {creditBet} {creditsName.Pluralize(false, creditBet)} PogChamp";
             }
             else
             {
                 bettingUser.Stats.Credits -= creditBet;
-                message = $"{bettingUser.Name} lost {creditBet} {creditsName} BibleThump";
+                message = $"{bettingUser.Name} lost {creditBet} {creditsName.Pluralize(false, creditBet)} BibleThump";
             }
 
             context.SaveChanges();

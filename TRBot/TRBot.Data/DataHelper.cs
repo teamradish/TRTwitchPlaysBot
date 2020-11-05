@@ -40,7 +40,7 @@ namespace TRBot.Data
         {
             using (BotDBContext dbContext = DatabaseManager.OpenContext())
             {
-                return dbContext.SettingCollection.FirstOrDefault((set) => set.key == settingName);
+                return dbContext.SettingCollection.FirstOrDefault((set) => set.Key == settingName);
             }
         }
 
@@ -52,7 +52,7 @@ namespace TRBot.Data
         /// <returns>A Settings object corresponding to settingName. If the setting is not found, null.</returns>
         public static Settings GetSettingNoOpen(string settingName, BotDBContext context)
         {
-            return context.SettingCollection.FirstOrDefault((set) => set.key == settingName);
+            return context.SettingCollection.FirstOrDefault((set) => set.Key == settingName);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace TRBot.Data
         {
             Settings setting = GetSetting(settingName);
 
-            return setting != null ? setting.value_int : defaultVal;
+            return setting != null ? setting.ValueInt : defaultVal;
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace TRBot.Data
         {
             Settings setting = GetSettingNoOpen(settingName, context);
 
-            return setting != null ? setting.value_int : defaultVal;
+            return setting != null ? setting.ValueInt : defaultVal;
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace TRBot.Data
         {
             Settings setting = GetSetting(settingName);
 
-            return setting != null ? setting.value_str : defaultVal;
+            return setting != null ? setting.ValueStr : defaultVal;
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace TRBot.Data
         {
             Settings setting = GetSettingNoOpen(settingName, context);
 
-            return setting != null ? setting.value_str : defaultVal;
+            return setting != null ? setting.ValueStr : defaultVal;
         }
 
         /// <summary>
@@ -211,7 +211,7 @@ namespace TRBot.Data
             if (user != null && user.TryGetAbility(PermissionConstants.USER_DEFAULT_INPUT_DIR_ABILITY, out UserAbility defaultDurAbility) == true
                 && defaultDurAbility.IsEnabled == true)
             {
-                return defaultDurAbility.value_int;
+                return defaultDurAbility.ValueInt;
             }
             //Use global max input duration
             else
@@ -232,7 +232,7 @@ namespace TRBot.Data
             if (user != null && user.TryGetAbility(PermissionConstants.USER_MAX_INPUT_DIR_ABILITY, out UserAbility maxDurAbility) == true
                 && maxDurAbility.IsEnabled == true)
             {
-                return maxDurAbility.value_int;
+                return maxDurAbility.ValueInt;
             }
             //Use global max input duration
             else
@@ -260,7 +260,7 @@ namespace TRBot.Data
             foreach (UserAbility ability in abilities)
             {
                 ability.SetEnabledState(false);
-                ability.expiration = null;
+                ability.Expiration = null;
                 ability.GrantedByLevel = -1;
             }
 
@@ -306,7 +306,7 @@ namespace TRBot.Data
                 foreach (UserAbility ability in abilities)
                 {
                     ability.SetEnabledState(false);
-                    ability.expiration = null;
+                    ability.Expiration = null;
                     ability.GrantedByLevel = -1;
                 }
             }
@@ -355,7 +355,7 @@ namespace TRBot.Data
                 Console.WriteLine($"Data version setting \"{SettingsConstants.DATA_VERSION_NUM}\" not found in database; adding.");
             }
                 
-            string dataVersionStr = dataVersionSetting.value_str;
+            string dataVersionStr = dataVersionSetting.ValueStr;
 
             //Compare versions
             Version dataVersion = new Version(dataVersionStr);
@@ -373,18 +373,18 @@ namespace TRBot.Data
                 Console.WriteLine($"Force initialize setting \"{SettingsConstants.FORCE_INIT_DEFAULTS}\" not found in database; adding.");
             }
 
-            long forceInit = forceInitSetting.value_int;
+            long forceInit = forceInitSetting.ValueInt;
 
             //The bot version is greater, so update the data version number and set it to force init
             if (result < 0)
             {
-                Console.WriteLine($"Data version {dataVersionSetting.value_str} is less than bot version {Application.VERSION_NUMBER}. Updating version number and forcing database initialization for missing entries.");
-                dataVersionSetting.value_str = Application.VERSION_NUMBER;
+                Console.WriteLine($"Data version {dataVersionSetting.ValueStr} is less than bot version {Application.VERSION_NUMBER}. Updating version number and forcing database initialization for missing entries.");
+                dataVersionSetting.ValueStr = Application.VERSION_NUMBER;
             }
             //If the data version is greater than the bot, we should let them know
             else if (result > 0)
             {
-                Console.WriteLine($"Data version {dataVersionSetting.value_str} is greater than bot version {Application.VERSION_NUMBER}. Ensure you're running the correct version of TRBot to avoid potential issues.");
+                Console.WriteLine($"Data version {dataVersionSetting.ValueStr} is greater than bot version {Application.VERSION_NUMBER}. Ensure you're running the correct version of TRBot to avoid potential issues.");
             }
 
             //Initialize if we're told to
@@ -393,7 +393,7 @@ namespace TRBot.Data
                 Console.WriteLine($"{SettingsConstants.FORCE_INIT_DEFAULTS} is true; initializing missing defaults in database.");
 
                 //Tell it to no longer force initializing
-                forceInitSetting.value_int = 0;
+                forceInitSetting.ValueInt = 0;
 
                 //Check all settings with the defaults
                 List<Settings> settings = DefaultData.GetDefaultSettings();
@@ -402,7 +402,7 @@ namespace TRBot.Data
                     Settings setting = settings[i];
                         
                     //See if the setting exists
-                    Settings foundSetting = dbContext.SettingCollection.FirstOrDefault((set) => set.key == setting.key);
+                    Settings foundSetting = dbContext.SettingCollection.FirstOrDefault((set) => set.Key == setting.Key);
                         
                     if (foundSetting == null)
                     {
@@ -418,7 +418,7 @@ namespace TRBot.Data
                     CommandData commandData = cmdData[i];
                         
                     //See if the command data exists
-                    CommandData foundCommand = dbContext.Commands.FirstOrDefault((cmd) => cmd.name == commandData.name);
+                    CommandData foundCommand = dbContext.Commands.FirstOrDefault((cmd) => cmd.Name == commandData.Name);
                         
                     if (foundCommand == null)
                     {
@@ -454,7 +454,7 @@ namespace TRBot.Data
                 }
 
                 //Do these things upon first launching the bot
-                if (firstLaunchSetting.value_int > 0)
+                if (firstLaunchSetting.ValueInt > 0)
                 {
                     //Populate default consoles - this will also populate inputs
                     List<GameConsole> consoleData = DefaultData.GetDefaultConsoles();
@@ -477,7 +477,7 @@ namespace TRBot.Data
                     }
 
                     //Set first launch to 0
-                    firstLaunchSetting.value_int = 0;
+                    firstLaunchSetting.ValueInt = 0;
                 }
             }
 

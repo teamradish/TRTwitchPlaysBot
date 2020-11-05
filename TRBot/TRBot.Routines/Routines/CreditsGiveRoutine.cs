@@ -80,8 +80,6 @@ namespace TRBot.Routines
                 {
                     User user = DataHelper.GetUserNoOpen(talkedNames[i], context);
                     user.Stats.Credits += creditsGiveAmount;
-
-                    //Console.WriteLine($"Gave {user.Name} credits!");
                 }
 
                 context.SaveChanges();

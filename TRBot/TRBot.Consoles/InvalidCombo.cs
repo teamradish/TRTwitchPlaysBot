@@ -28,12 +28,12 @@ namespace TRBot.Consoles
         /// <summary>
         /// The ID of the invalid combo.
         /// </summary>
-        public int id { get; set; } = 0;
+        public int ID { get; set; } = 0;
 
         /// <summary>
         /// The ID of the input.
         /// </summary>
-        public int input_id { get; set; } = 0;
+        public int InputID { get; set; } = 0;
 
         /// <summary>
         /// The InputData associated with this invalid combo.

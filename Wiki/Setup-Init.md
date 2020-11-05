@@ -22,7 +22,7 @@ After these are set, run TRBot again and you should see it connect to the channe
 The bot internally uses [TwitchLib](https://github.com/TwitchLib/TwitchLib) to handle Twitch connection.
 
 ## Running via Terminal (optional)
-If you'd like to run TRBot locally directly through the terminal, open **TRBotData.db** in the **Data** folder in SQLite or a database viewer, and change the `value_int` of the `client_service_type` setting to 0, save your changes, then restart TRBot if it's already running. Set it back to 1 if you'd like to connect to Twitch once again.
+If you'd like to run TRBot locally directly through the terminal, open **TRBotData.db** in the **Data** folder in SQLite or a database viewer, and change the `ValueInt` column of the `client_service_type` setting to 0, save your changes, then restart TRBot if it's already running. Set it back to 1 if you'd like to connect to Twitch once again.
 
 When running TRBot through the terminal, **LoginInformation.txt** isn't used or required at all. Instead, it uses a static user named "terminalUser".
 

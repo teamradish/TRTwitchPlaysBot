@@ -81,27 +81,27 @@ namespace TRBot.Data
             modelBuilder.Entity<Settings>().ToTable("Settings", "settings");
             modelBuilder.Entity<Settings>(entity =>
             {
-                entity.HasKey(e => e.id);
-                entity.Property(e => e.key).HasDefaultValue(string.Empty);
-                entity.Property(e => e.value_str).HasDefaultValue(string.Empty);
-                entity.Property(e => e.value_int).HasDefaultValue(0L);
-                entity.HasIndex(e => e.key).IsUnique();
+                entity.HasKey(e => e.ID);
+                entity.Property(e => e.Key).HasDefaultValue(string.Empty);
+                entity.Property(e => e.ValueStr).HasDefaultValue(string.Empty);
+                entity.Property(e => e.ValueInt).HasDefaultValue(0L);
+                entity.HasIndex(e => e.Key).IsUnique();
             });
 
             modelBuilder.Entity<GameLog>().ToTable("GameLogs", "gamelogs");
             modelBuilder.Entity<GameLog>(entity => 
             {
-                entity.HasKey(e => e.id);
+                entity.HasKey(e => e.ID);
             });
 
             modelBuilder.Entity<CommandData>().ToTable("CommandData", "commanddata");
             modelBuilder.Entity<CommandData>(entity =>
             {
-                entity.HasKey(e => e.id);
-                entity.Property(e => e.level).HasDefaultValue(0);
-                entity.Property(e => e.enabled);
-                entity.Property(e => e.display_in_list);
-                entity.HasIndex(e => e.name).IsUnique();
+                entity.HasKey(e => e.ID);
+                entity.Property(e => e.Level).HasDefaultValue(0);
+                entity.Property(e => e.Enabled);
+                entity.Property(e => e.DisplayInList);
+                entity.HasIndex(e => e.Name).IsUnique();
             });
 
             modelBuilder.Entity<Meme>().ToTable("Memes", "memes");
@@ -114,7 +114,7 @@ namespace TRBot.Data
             modelBuilder.Entity<InputMacro>().ToTable("Macros", "macros");
             modelBuilder.Entity<InputMacro>(entity =>
             {
-                entity.HasKey(e => e.id);
+                entity.HasKey(e => e.ID);
                 entity.Property(e => e.MacroName).HasDefaultValue(string.Empty);
                 entity.Property(e => e.MacroValue).HasDefaultValue(string.Empty);
                 entity.HasIndex(e => e.MacroName).IsUnique();
@@ -123,21 +123,21 @@ namespace TRBot.Data
             modelBuilder.Entity<InputSynonym>().ToTable("InputSynonyms", "inputsynonyms");
             modelBuilder.Entity<InputSynonym>(entity =>
             {
-                entity.HasKey(e => e.id);
+                entity.HasKey(e => e.ID);
                 entity.Property(e => e.SynonymName).HasDefaultValue(string.Empty);
                 entity.Property(e => e.SynonymValue).HasDefaultValue(string.Empty);
-                entity.Property(e => e.console_id).HasDefaultValue(1);
-                entity.HasIndex(e => new { e.SynonymName, e.console_id }).IsUnique();
+                entity.Property(e => e.ConsoleID).HasDefaultValue(1);
+                entity.HasIndex(e => new { e.SynonymName, e.ConsoleID }).IsUnique();
             });
 
             modelBuilder.Entity<GameConsole>().ToTable("Consoles", "consoles");
             modelBuilder.Entity<GameConsole>(entity =>
             {
-                entity.HasKey(e => e.id);
+                entity.HasKey(e => e.ID);
                 entity.Property(e => e.Name).HasDefaultValue("GameConsole");
                 entity.Ignore(e => e.InputRegex);
                 entity.Ignore(e => e.ConsoleInputs);
-                entity.HasMany(e => e.InputList).WithOne(c => c.Console).HasForeignKey(c => c.console_id).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(e => e.InputList).WithOne(c => c.Console).HasForeignKey(c => c.ConsoleID).IsRequired().OnDelete(DeleteBehavior.Cascade);
                 entity.HasMany(e => e.InvalidCombos).WithOne().OnDelete(DeleteBehavior.Cascade);
                 entity.HasIndex(e => e.Name).IsUnique();
             });
@@ -145,7 +145,7 @@ namespace TRBot.Data
             modelBuilder.Entity<InputData>().ToTable("Inputs", "inputs");
             modelBuilder.Entity<InputData>(entity =>
             {
-                entity.HasKey(e => e.id);
+                entity.HasKey(e => e.ID);
                 entity.Property(e => e.Name).HasDefaultValue(string.Empty);
                 entity.Property(e => e.ButtonValue).HasDefaultValue(0);
                 entity.Property(e => e.AxisValue).HasDefaultValue(0);
@@ -153,38 +153,38 @@ namespace TRBot.Data
                 entity.Property(e => e.MinAxisVal).HasDefaultValue(0);
                 entity.Property(e => e.MaxAxisVal).HasDefaultValue(1);
                 entity.Property(e => e.MaxAxisPercent).HasDefaultValue(100);
-                entity.Property(e => e.enabled).HasDefaultValue(1);
-                entity.HasIndex(e => new { e.Name, e.console_id }).IsUnique();
+                entity.Property(e => e.Enabled).HasDefaultValue(1);
+                entity.HasIndex(e => new { e.Name, e.ConsoleID }).IsUnique();
             });
 
             modelBuilder.Entity<InvalidCombo>().ToTable("InvalidInputCombos", "invalidinputcombos");
             modelBuilder.Entity<InvalidCombo>(entity =>
             {
-                entity.HasKey(e => e.id);
-                entity.HasOne(e => e.Input).WithOne().HasForeignKey<InvalidCombo>(c => c.input_id).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                entity.HasKey(e => e.ID);
+                entity.HasOne(e => e.Input).WithOne().HasForeignKey<InvalidCombo>(c => c.InputID).IsRequired().OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<User>().ToTable("Users", "users");
             modelBuilder.Entity<User>(entity =>
             {
-                entity.HasKey(e => e.id);
+                entity.HasKey(e => e.ID);
                 entity.Property(e => e.Name).HasDefaultValue(string.Empty);
-                entity.HasOne(e => e.Stats).WithOne(u => u.user).HasForeignKey<UserStats>(u => u.user_id).IsRequired().OnDelete(DeleteBehavior.Cascade);
-                entity.HasMany(e => e.UserAbilities).WithOne(c => c.user).HasForeignKey(u => u.user_id).IsRequired().OnDelete(DeleteBehavior.Cascade);
-                entity.HasMany(e => e.RestrictedInputs).WithOne(e => e.user).HasForeignKey(e => e.user_id).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.Stats).WithOne(u => u.user).HasForeignKey<UserStats>(u => u.UserID).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(e => e.UserAbilities).WithOne(c => c.user).HasForeignKey(u => u.UserID).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(e => e.RestrictedInputs).WithOne(e => e.user).HasForeignKey(e => e.UserID).IsRequired().OnDelete(DeleteBehavior.Cascade);
                 entity.HasIndex(e => e.Name);
             });
 
             modelBuilder.Entity<UserStats>().ToTable("UserStats", "userstats");
             modelBuilder.Entity<UserStats>(entity =>
             {
-                entity.HasKey(e => e.id);
+                entity.HasKey(e => e.ID);
             });
 
             modelBuilder.Entity<PermissionAbility>().ToTable("PermissionAbilities", "permissionabilities");
             modelBuilder.Entity<PermissionAbility>(entity =>
             {
-                entity.HasKey(e => e.id);
+                entity.HasKey(e => e.ID);
                 entity.Property(e => e.AutoGrantOnLevel).HasConversion(new EnumToNumberConverter<PermissionLevels, int>());
                 entity.HasIndex(e => e.Name).IsUnique();
             });
@@ -192,17 +192,17 @@ namespace TRBot.Data
             modelBuilder.Entity<UserAbility>().ToTable("UserAbilities", "userabilities");
             modelBuilder.Entity<UserAbility>(entity =>
             {
-                entity.HasKey(e => e.id);
-                entity.HasOne(e => e.PermAbility).WithOne().HasForeignKey<UserAbility>(u => u.permability_id).IsRequired();
-                entity.HasIndex(e => new { e.user_id, e.permability_id }).IsUnique();
+                entity.HasKey(e => e.ID);
+                entity.HasOne(e => e.PermAbility).WithOne().HasForeignKey<UserAbility>(u => u.PermabilityID).IsRequired();
+                entity.HasIndex(e => new { e.UserID, e.PermabilityID }).IsUnique();
             });
 
             modelBuilder.Entity<RestrictedInput>().ToTable("RestrictedInputs", "restrictedinputs");
             modelBuilder.Entity<RestrictedInput>(entity =>
             {
-                entity.HasKey(e => e.id);
-                entity.HasOne(e => e.inputData).WithOne().HasForeignKey<RestrictedInput>(e => e.input_id).IsRequired().OnDelete(DeleteBehavior.Cascade);
-                entity.HasIndex(e => new { e.user_id, e.input_id }).IsUnique();
+                entity.HasKey(e => e.ID);
+                entity.HasOne(e => e.inputData).WithOne().HasForeignKey<RestrictedInput>(e => e.InputID).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(e => new { e.UserID, e.InputID }).IsUnique();
             });
 
             base.OnModelCreating(modelBuilder);
@@ -217,7 +217,7 @@ namespace TRBot.Data
         {
             int saved = base.SaveChanges();
 
-            Console.WriteLine($"Saved {saved} changes!");
+            //Console.WriteLine($"Saved {saved} changes!");
 
             return saved;
         }

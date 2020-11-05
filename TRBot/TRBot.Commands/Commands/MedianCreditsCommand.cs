@@ -21,6 +21,7 @@ using System.Linq;
 using TRBot.Connection;
 using TRBot.Data;
 using TRBot.Permissions;
+using TRBot.Utilities;
 
 namespace TRBot.Commands
 {
@@ -57,7 +58,7 @@ namespace TRBot.Commands
 
             User userWithMedian = orderedCredits[medianIndex];
 
-            QueueMessage($"The median number of {creditsName} in the database is {userWithMedian.Stats.Credits}!");
+            QueueMessage($"The median number of {creditsName.Pluralize(false, 0)} in the database is {userWithMedian.Stats.Credits}!");
         }
     }
 }

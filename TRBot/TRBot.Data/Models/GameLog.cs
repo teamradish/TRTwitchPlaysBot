@@ -28,7 +28,7 @@ namespace TRBot.Data
         /// <summary>
         /// The game log's ID.
         /// </summary>
-        public int id { get; set; } = 0;
+        public int ID { get; set; } = 0;
 
         /// <summary>
         /// The date and time of the log.

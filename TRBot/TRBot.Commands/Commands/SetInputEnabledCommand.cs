@@ -90,7 +90,7 @@ namespace TRBot.Commands
 
             if (user != null)
             {
-                long curInputLvl = inputData.level;
+                long curInputLvl = inputData.Level;
 
                 //Your level is less than the current input's level - cannot change state
                 if (user.Level < curInputLvl)
@@ -100,7 +100,7 @@ namespace TRBot.Commands
                 }
             }
 
-            inputData.enabled = (inputEnabled == false) ? 0L : 1L;
+            inputData.Enabled = (inputEnabled == false) ? 0L : 1L;
 
             context.SaveChanges();
 

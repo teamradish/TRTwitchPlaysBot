@@ -45,12 +45,12 @@ namespace TRBot.Commands
             using BotDBContext context = DatabaseManager.OpenContext();
 
             Settings joystickCountSetting = DataHelper.GetSettingNoOpen(SettingsConstants.JOYSTICK_COUNT, context);
-            int prevJoystickCount = (int)joystickCountSetting.value_int;
+            int prevJoystickCount = (int)joystickCountSetting.ValueInt;
 
             //See the number of controllers
             if (arguments.Count == 0)
             {
-                QueueMessage($"There are {joystickCountSetting.value_int} controller(s) plugged in! To set the controller count, please provide a number as an argument.");
+                QueueMessage($"There are {joystickCountSetting.ValueInt} controller(s) plugged in! To set the controller count, please provide a number as an argument.");
                 return;
             }
 
@@ -80,7 +80,7 @@ namespace TRBot.Commands
             }
 
             //Same type
-            if (newJoystickCount == joystickCountSetting.value_int)
+            if (newJoystickCount == joystickCountSetting.ValueInt)
             {
                 QueueMessage($"There are already {newJoystickCount} controllers plugged in.");
                 return;
@@ -101,7 +101,7 @@ namespace TRBot.Commands
             }
 
             //Set the value and save
-            joystickCountSetting.value_int = newJoystickCount;
+            joystickCountSetting.ValueInt = newJoystickCount;
             context.SaveChanges();
 
             //Stop and halt all inputs

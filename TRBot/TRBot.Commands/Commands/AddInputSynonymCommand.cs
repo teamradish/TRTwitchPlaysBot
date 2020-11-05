@@ -66,12 +66,12 @@ namespace TRBot.Commands
             //Get the actual synonym from the remaining arguments
             string synonymValue = args.Command.ArgumentsAsString.Remove(0, arguments[0].Length + 1).Remove(0, synonymName.Length + 1);
 
-            InputSynonym inputSynonym = context.InputSynonyms.FirstOrDefault(syn => syn.console_id == console.id && syn.SynonymName == synonymName);
+            InputSynonym inputSynonym = context.InputSynonyms.FirstOrDefault(syn => syn.ConsoleID == console.ID && syn.SynonymName == synonymName);
 
             //Add if it doesn't exist
             if (inputSynonym == null)
             {
-                InputSynonym newSynonym = new InputSynonym(console.id, synonymName, synonymValue);
+                InputSynonym newSynonym = new InputSynonym(console.ID, synonymName, synonymValue);
 
                 context.InputSynonyms.Add(newSynonym);
                 QueueMessage($"Added input synonym \"{synonymName}\" for \"{synonymValue}\"!");

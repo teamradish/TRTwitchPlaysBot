@@ -29,7 +29,7 @@ namespace TRBot.Parsing
         /// <summary>
         /// The ID of the macro.
         /// </summary>
-        public int id { get; set; } = 0;
+        public int ID { get; set; } = 0;
 
         /// <summary>
         /// The name of the macro.

@@ -47,9 +47,9 @@ namespace TRBot.Commands
 
             using BotDBContext context = DatabaseManager.OpenContext();
 
-            Settings defaultDurSetting = context.SettingCollection.FirstOrDefault(set => set.key == SettingsConstants.DEFAULT_INPUT_DURATION);
+            Settings defaultDurSetting = context.SettingCollection.FirstOrDefault(set => set.Key == SettingsConstants.DEFAULT_INPUT_DURATION);
 
-            int defaultInputDur = (int)defaultDurSetting.value_int;
+            int defaultInputDur = (int)defaultDurSetting.ValueInt;
 
             if (arguments.Count == 0)
             {
@@ -96,7 +96,7 @@ namespace TRBot.Commands
                 return;
             }
 
-            defaultDurSetting.value_int = newDefaultDur;
+            defaultDurSetting.ValueInt = newDefaultDur;
             
             context.SaveChanges();
 

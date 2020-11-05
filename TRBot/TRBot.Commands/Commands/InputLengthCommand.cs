@@ -58,7 +58,7 @@ namespace TRBot.Commands
             int lastConsoleID = 1;
 
             lastConsoleID = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.LAST_CONSOLE, context, 1L);
-            GameConsole lastConsole = context.Consoles.FirstOrDefault(c => c.id == lastConsoleID);
+            GameConsole lastConsole = context.Consoles.FirstOrDefault(c => c.ID == lastConsoleID);
 
             if (lastConsole != null)
             {
@@ -95,7 +95,7 @@ namespace TRBot.Commands
                 int maxDur = (int)DataHelper.GetUserOrGlobalMaxInputDur(user, context);
                 
                 //Get input synonyms for this console
-                IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.console_id == lastConsoleID);
+                IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.ConsoleID == lastConsoleID);
                 
                 Parser parser = new Parser();
 

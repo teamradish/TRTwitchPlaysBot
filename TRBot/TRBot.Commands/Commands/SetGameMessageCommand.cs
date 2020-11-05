@@ -58,7 +58,7 @@ namespace TRBot.Commands
 
             //Save the new message into our data
             Settings gameMsgSetting = DataHelper.GetSettingNoOpen(SettingsConstants.GAME_MESSAGE, context);
-            gameMsgSetting.value_str = gameMsgText;
+            gameMsgSetting.ValueStr = gameMsgText;
 
             context.SaveChanges();
 

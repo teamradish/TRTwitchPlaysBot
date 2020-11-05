@@ -43,7 +43,7 @@ namespace TRBot.Commands
             User infoUser = DataHelper.GetUserNoOpen(userName, context);
 
             //Show all enabled commands that should be displayed, and order them alphabetically
-            IQueryable<CommandData> commandList = context.Commands.Where(c => c.enabled != 0 && c.display_in_list != 0 && c.level <= infoUser.Level).OrderBy(c => c.name);
+            IQueryable<CommandData> commandList = context.Commands.Where(c => c.Enabled != 0 && c.DisplayInList != 0 && c.Level <= infoUser.Level).OrderBy(c => c.Name);
 
             if (commandList.Count() == 0)
             {
@@ -58,7 +58,7 @@ namespace TRBot.Commands
 
             foreach (CommandData cmd in commandList)
             {
-                stringBuilder.Append(cmd.name).Append(',').Append(' ');
+                stringBuilder.Append(cmd.Name).Append(',').Append(' ');
             }
 
             stringBuilder.Remove(stringBuilder.Length - 2, 2);

@@ -202,10 +202,10 @@ namespace TRBot.Commands
                 foreach (CommandData cmdData in context.Commands)
                 {
                     //Find the type corresponding to this class name
-                    Type commandType = Type.GetType(cmdData.class_name, false, true);
+                    Type commandType = Type.GetType(cmdData.ClassName, false, true);
                     if (commandType == null)
                     {
-                        DataContainer.MessageHandler.QueueMessage($"Cannot find command type \"{cmdData.class_name}\" - skipping.");
+                        DataContainer.MessageHandler.QueueMessage($"Cannot find command type \"{cmdData.ClassName}\" - skipping.");
                         continue;
                     }
 
@@ -213,16 +213,16 @@ namespace TRBot.Commands
                     try
                     {
                         BaseCommand baseCmd = (BaseCommand)Activator.CreateInstance(commandType, Array.Empty<object>());
-                        baseCmd.Enabled = cmdData.enabled > 0;
-                        baseCmd.DisplayInHelp = cmdData.display_in_list > 0;
-                        baseCmd.Level = (int)cmdData.level;
-                        baseCmd.ValueStr = cmdData.value_str;
+                        baseCmd.Enabled = cmdData.Enabled > 0;
+                        baseCmd.DisplayInHelp = cmdData.DisplayInList > 0;
+                        baseCmd.Level = (int)cmdData.Level;
+                        baseCmd.ValueStr = cmdData.ValueStr;
 
-                        AllCommands[cmdData.name] = baseCmd;
+                        AllCommands[cmdData.Name] = baseCmd;
                     }
                     catch (Exception e)
                     {
-                        DataContainer.MessageHandler.QueueMessage($"Unable to create class type \"{cmdData.class_name}\": {e.Message}");
+                        DataContainer.MessageHandler.QueueMessage($"Unable to create class type \"{cmdData.ClassName}\": {e.Message}");
                     }
                 }
             }
@@ -253,11 +253,11 @@ namespace TRBot.Commands
 
                 foreach (CommandData cmdData in context.Commands)
                 {
-                    string commandName = cmdData.name;
+                    string commandName = cmdData.Name;
                     if (AllCommands.TryGetValue(commandName, out BaseCommand baseCmd) == true)
                     {
                         //Remove this command if the type name is different so we can reconstruct it
-                        if (baseCmd.GetType().FullName != cmdData.class_name)
+                        if (baseCmd.GetType().FullName != cmdData.ClassName)
                         {
                             RemoveCommand(commandName);
                         }
@@ -269,15 +269,15 @@ namespace TRBot.Commands
                     if (baseCmd == null)
                     {
                         //Add this command
-                        AddCommand(commandName, cmdData.class_name, cmdData.value_str,
-                            (int)cmdData.level, cmdData.enabled != 0, cmdData.display_in_list != 0 );
+                        AddCommand(commandName, cmdData.ClassName, cmdData.ValueStr,
+                            (int)cmdData.Level, cmdData.Enabled != 0, cmdData.DisplayInList != 0 );
                     }
                     else
                     {
-                        baseCmd.Level = (int)cmdData.level;
-                        baseCmd.Enabled = cmdData.enabled != 0;
-                        baseCmd.DisplayInHelp = cmdData.display_in_list != 0;
-                        baseCmd.ValueStr = cmdData.value_str;
+                        baseCmd.Level = (int)cmdData.Level;
+                        baseCmd.Enabled = cmdData.Enabled != 0;
+                        baseCmd.DisplayInHelp = cmdData.DisplayInList != 0;
+                        baseCmd.ValueStr = cmdData.ValueStr;
                     }
 
                     encounteredCommands.Add(commandName);

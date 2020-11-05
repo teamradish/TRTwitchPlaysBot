@@ -94,7 +94,7 @@ namespace TRBot.Commands
 
             int lastConsole = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.LAST_CONSOLE, context, 1L);
 
-            GameConsole curConsole = context.Consoles.FirstOrDefault(c => c.id == lastConsole);
+            GameConsole curConsole = context.Consoles.FirstOrDefault(c => c.ID == lastConsole);
             if (curConsole == null)
             {
                 QueueMessage("Cannot validate macro, as the current console is invalid. Fix this by setting another console.");
@@ -133,7 +133,7 @@ namespace TRBot.Commands
 
                     string regexStr = consoleInstance.InputRegex;
 
-                    IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.console_id == curConsole.id);
+                    IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.ConsoleID == curConsole.ID);
 
                     string readyMessage = readyMessage = parser.PrepParse(macroVal, context.Macros, synonyms);
 

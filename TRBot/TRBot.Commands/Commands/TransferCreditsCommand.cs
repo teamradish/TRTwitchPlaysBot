@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using TRBot.Connection;
 using TRBot.Permissions;
 using TRBot.Data;
+using TRBot.Utilities;
 
 namespace TRBot.Commands
 {
@@ -56,7 +57,7 @@ namespace TRBot.Commands
 
             if (giverUser.HasEnabledAbility(PermissionConstants.TRANSFER_ABILITY) == false)
             {
-                QueueMessage($"You do not have the ability to transfer {creditsName}!");
+                QueueMessage($"You do not have the ability to transfer !");
                 return;
             }
 
@@ -97,7 +98,7 @@ namespace TRBot.Commands
 
             if (transferAmount > giverUser.Stats.Credits)
             {
-                QueueMessage($"Transfer amount is greater than {creditsName}!");
+                QueueMessage($"Transfer amount is greater than {creditsName.Pluralize(false, 0)}!");
                 return;
             }
 
@@ -106,7 +107,7 @@ namespace TRBot.Commands
 
             context.SaveChanges();
                 
-            QueueMessage($"{giverUser.Name} has transferred {transferAmount} {creditsName} to {receiverUser.Name} :D !");
+            QueueMessage($"{giverUser.Name} has transferred {transferAmount} {creditsName.Pluralize(false, transferAmount)} to {receiverUser.Name} :D !");
         }
     }
 }

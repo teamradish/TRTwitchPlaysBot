@@ -21,6 +21,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TRBot.Connection;
 using TRBot.Data;
+using TRBot.Utilities;
 
 namespace TRBot.Commands
 {
@@ -58,7 +59,7 @@ namespace TRBot.Commands
 
             if (ConfirmClearedStatsUsers.Contains(userName) == false)
             {
-                QueueMessage($"WARNING {userName}: this clears all miscellaneous user stats, such as {creditsName} and message/input counts. If you're sure, retype this command with \"{CONFIRM_CLEAR_STR}\" as an argument to clear or \"{CONFIRM_STOP_STR}\" to decline.");
+                QueueMessage($"WARNING {userName}: this clears all miscellaneous user stats, such as {creditsName.Pluralize(false, 0)} and message/input counts. If you're sure, retype this command with \"{CONFIRM_CLEAR_STR}\" as an argument to clear or \"{CONFIRM_STOP_STR}\" to decline.");
                 ConfirmClearedStatsUsers.Add(userName);
                 return;
             }

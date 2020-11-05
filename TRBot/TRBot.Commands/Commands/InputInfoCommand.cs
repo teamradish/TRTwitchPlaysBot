@@ -54,8 +54,8 @@ namespace TRBot.Commands
             {
                 //First find the console
                 case 0:
-                    Settings lastSetting = context.SettingCollection.FirstOrDefault(set => set.key == SettingsConstants.LAST_CONSOLE);
-                    console = context.Consoles.FirstOrDefault(console => console.id == lastSetting.value_int);
+                    Settings lastSetting = context.SettingCollection.FirstOrDefault(set => set.Key == SettingsConstants.LAST_CONSOLE);
+                    console = context.Consoles.FirstOrDefault(console => console.ID == lastSetting.ValueInt);
                     break;
                 case 1:
                     console = context.Consoles.FirstOrDefault(console => console.Name == arguments[0]);
@@ -115,7 +115,7 @@ namespace TRBot.Commands
                 strBuilder.Append(inputData.Name);
 
                 //Note if the input is disabled
-                if (inputData.enabled == 0)
+                if (inputData.Enabled == 0)
                 {
                     strBuilder.Append(" (disabled)");
                 }
@@ -123,8 +123,8 @@ namespace TRBot.Commands
                 strBuilder.Append(", ");
             }
             
-            Settings charCount = context.SettingCollection.FirstOrDefault(set => set.key == SettingsConstants.BOT_MSG_CHAR_LIMIT);
-            int maxCharCount = (int)charCount.value_int;
+            Settings charCount = context.SettingCollection.FirstOrDefault(set => set.Key == SettingsConstants.BOT_MSG_CHAR_LIMIT);
+            int maxCharCount = (int)charCount.ValueInt;
             strBuilder.Remove(strBuilder.Length - 2, 2);
             
             QueueMessageSplit(strBuilder.ToString(), maxCharCount, ", ");

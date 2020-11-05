@@ -127,7 +127,7 @@ namespace TRBot.Commands
             //Already restricted - update the expiration
             if (restInput != null)
             {
-                restInput.expiration = expiration;
+                restInput.Expiration = expiration;
 
                 QueueMessage($"Updated \"{inputName}\" restriction on {restrictedUser.Name}, which expires in {expirationArg}!");
             }
@@ -135,7 +135,7 @@ namespace TRBot.Commands
             else
             {
                 //Add the restricted input
-                RestrictedInput newRestrictedInput = new RestrictedInput(restrictedUser.id, inputData.id, expiration);
+                RestrictedInput newRestrictedInput = new RestrictedInput(restrictedUser.ID, inputData.ID, expiration);
                 restrictedUser.RestrictedInputs.Add(newRestrictedInput);
 
                 QueueMessage($"Restricted {restrictedUser.Name} from inputting \"{inputName}\", which expires in {expirationArg}!");

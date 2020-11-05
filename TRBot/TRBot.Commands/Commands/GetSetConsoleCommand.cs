@@ -55,9 +55,9 @@ namespace TRBot.Commands
                 //List the current console and available consoles
                 using (BotDBContext context = DatabaseManager.OpenContext())
                 {
-                    Settings lastSetting = context.SettingCollection.FirstOrDefault(set => set.key == SettingsConstants.LAST_CONSOLE);
+                    Settings lastSetting = context.SettingCollection.FirstOrDefault(set => set.Key == SettingsConstants.LAST_CONSOLE);
 
-                    GameConsole curConsole = context.Consoles.FirstOrDefault(console => console.id == lastSetting.value_int);
+                    GameConsole curConsole = context.Consoles.FirstOrDefault(console => console.ID == lastSetting.ValueInt);
                     if (curConsole == null)
                     {
                         strBuilder.Append("Invalid!? Set a different console to fix this. ");
@@ -73,8 +73,8 @@ namespace TRBot.Commands
                         strBuilder.Append(gameConsole.Name).Append(", ");
                     }
 
-                    Settings charCount = context.SettingCollection.FirstOrDefault(set => set.key == SettingsConstants.BOT_MSG_CHAR_LIMIT);
-                    maxCharCount = (int)charCount.value_int;
+                    Settings charCount = context.SettingCollection.FirstOrDefault(set => set.Key == SettingsConstants.BOT_MSG_CHAR_LIMIT);
+                    maxCharCount = (int)charCount.ValueInt;
                 }
 
                 strBuilder.Remove(strBuilder.Length - 2, 2);
@@ -110,8 +110,8 @@ namespace TRBot.Commands
 
                 if (console != null)
                 {
-                    Settings lastSetting = context.SettingCollection.FirstOrDefault(set => set.key == SettingsConstants.LAST_CONSOLE);
-                    lastSetting.value_int = console.id;
+                    Settings lastSetting = context.SettingCollection.FirstOrDefault(set => set.Key == SettingsConstants.LAST_CONSOLE);
+                    lastSetting.ValueInt = console.ID;
 
                     context.SaveChanges();
 

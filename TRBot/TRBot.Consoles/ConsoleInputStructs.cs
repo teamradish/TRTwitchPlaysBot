@@ -40,17 +40,17 @@ namespace TRBot.Consoles
         /// <summary>
         /// The ID of the input.
         /// </summary>
-        public int id { get; set; } = 0;
+        public int ID { get; set; } = 0;
 
         /// <summary>
         /// The console ID the input belongs to.
         /// </summary>
-        public int console_id { get; set; } = 0;
+        public int ConsoleID { get; set; } = 0;
 
         /// <summary>
         /// The access level of the input.
         /// </summary>
-        public long level { get; set; } = 0;
+        public long Level { get; set; } = 0;
 
         /// <summary>
         /// The name of the input.
@@ -93,7 +93,7 @@ namespace TRBot.Consoles
         /// <summary>
         /// Whether the input is enabled.
         /// </summary>
-        public long enabled { get; set; } = 1;
+        public long Enabled { get; set; } = 1;
 
         /// <summary>
         /// The GameConsole associated with this input.
@@ -122,7 +122,7 @@ namespace TRBot.Consoles
             in int minAxisVal, in int maxAxisVal, in int maxAxisPercent, in long inputLevel)
             : this(name, buttonValue, axisValue, inputType, minAxisVal, maxAxisVal, maxAxisPercent)
         {
-            level = inputLevel;
+            Level = inputLevel;
         }
 
         public void UpdateData(in InputData inputData)
@@ -138,7 +138,7 @@ namespace TRBot.Consoles
 
         public override string ToString()
         {
-            return $"Name: \"{Name}\" | console_id: {console_id} | BtnVal: {ButtonValue} | AxisVal: {AxisValue} | InputType: {(int)InputType} ({InputType}) | MinAxis: {MinAxisVal} | MaxAxis: {MaxAxisVal} | MaxAxisPercent: {MaxAxisPercent} | Level: {level} | Enabled: {enabled}";
+            return $"Name: \"{Name}\" | console_id: {ConsoleID} | BtnVal: {ButtonValue} | AxisVal: {AxisValue} | InputType: {(int)InputType} ({InputType}) | MinAxis: {MinAxisVal} | MaxAxis: {MaxAxisVal} | MaxAxisPercent: {MaxAxisPercent} | Level: {Level} | Enabled: {Enabled}";
         }
 
         public static InputData CreateBlank(string name)

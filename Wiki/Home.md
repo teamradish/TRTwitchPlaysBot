@@ -1,4 +1,4 @@
-Welcome to the TRTwitchPlaysBot wiki! Choose the relevant section for your needs.
+Welcome to the TRBot wiki! Choose the relevant section for your needs.
 
 ## Streamers
 ### Setup

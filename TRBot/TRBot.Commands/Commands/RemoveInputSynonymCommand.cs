@@ -63,7 +63,7 @@ namespace TRBot.Commands
 
             string synonymName = arguments[1].ToLowerInvariant();
 
-            InputSynonym inputSynonym = context.InputSynonyms.FirstOrDefault(syn => syn.console_id == console.id && syn.SynonymName == synonymName);
+            InputSynonym inputSynonym = context.InputSynonyms.FirstOrDefault(syn => syn.ConsoleID == console.ID && syn.SynonymName == synonymName);
 
             if (inputSynonym == null)
             {

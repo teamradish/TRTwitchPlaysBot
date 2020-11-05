@@ -108,7 +108,7 @@ namespace TRBot.Commands
             //Get the console
             long lastConsoleID = DataHelper.GetSettingIntNoOpen(SettingsConstants.LAST_CONSOLE, context, 1L);
 
-            GameConsole lastConsole = context.Consoles.FirstOrDefault(c => c.id == lastConsoleID);
+            GameConsole lastConsole = context.Consoles.FirstOrDefault(c => c.ID == lastConsoleID);
 
             if (lastConsole == null)
             {

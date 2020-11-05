@@ -26,17 +26,17 @@ namespace TRBot.Data
     /// </summary>
     public class UserAbility
     {
-        public int id { get; set; } = 0;
-        public int user_id { get; set; } = 0;
-        public int permability_id { get; set; } = 0;
+        public int ID { get; set; } = 0;
+        public int UserID { get; set; } = 0;
+        public int PermabilityID { get; set; } = 0;
 
         /// <summary>
         /// The enabled state of the ability.
         /// </summary>
-        public int enabled { get; set; } = 1;
+        public int Enabled { get; set; } = 1;
 
-        public string value_str { get; set; } = string.Empty;
-        public int value_int { get; set; } = 0;
+        public string ValueStr { get; set; } = string.Empty;
+        public int ValueInt { get; set; } = 0;
 
         /// <summary>
         /// Describes the level of the user that assigned this ability.
@@ -48,7 +48,7 @@ namespace TRBot.Data
         /// When the ability's current state expires.
         /// A value of null indicates the ability's current state never expires.
         /// </summary>
-        public DateTime? expiration { get; set; } = null;
+        public DateTime? Expiration { get; set; } = null;
 
         /// <summary>
         /// The User associated with the ability.
@@ -71,7 +71,7 @@ namespace TRBot.Data
             {
                 //Abilities default to enabled
                 //If the ability is disabled, check if it has expired
-                if (enabled == 0)
+                if (Enabled == 0)
                 {
                     return HasExpired == true;
                 }
@@ -89,20 +89,20 @@ namespace TRBot.Data
             get
             {
                 //It hasn't expired if the expiration date is null
-                if (expiration.HasValue == false)
+                if (Expiration.HasValue == false)
                 {
                     return false;
                 }
 
                 //Compare dates
-                return expiration.Value < DateTime.UtcNow;
+                return Expiration.Value < DateTime.UtcNow;
             }
         }
 
         /// <summary>
         /// Tells if this user ability has an expiration date.
         /// </summary>
-        public bool HasExpiration => expiration.HasValue;
+        public bool HasExpiration => Expiration.HasValue;
 
         public UserAbility()
         {
@@ -112,18 +112,18 @@ namespace TRBot.Data
         public UserAbility(PermissionAbility permAbility, in bool enabledState, string valueStr, in int valueInt,
             in long grantedByLevel, in DateTime? expirationDate)
         {
-            permability_id = permAbility.id;
+            PermabilityID = permAbility.ID;
 
             SetEnabledState(enabledState);
-            value_str = valueStr;
-            value_int = valueInt;
+            ValueStr = valueStr;
+            ValueInt = valueInt;
             GrantedByLevel = grantedByLevel;
-            expiration = expirationDate;
+            Expiration = expirationDate;
         }
 
         public void SetEnabledState(in bool enabledState)
         {
-            enabled = (enabledState == false) ? 0 : 1;
+            Enabled = (enabledState == false) ? 0 : 1;
         }
     }
 }

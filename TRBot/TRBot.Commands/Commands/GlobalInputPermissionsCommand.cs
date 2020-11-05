@@ -71,7 +71,7 @@ namespace TRBot.Commands
             //See the permissions
             if (arguments.Count == 0)
             {
-                QueueMessage($"Inputs are allowed for {(PermissionLevels)inputPermsSetting.value_int} and above. To set the permissions, add one as an argument: {CachedPermsStr}");
+                QueueMessage($"Inputs are allowed for {(PermissionLevels)inputPermsSetting.ValueInt} and above. To set the permissions, add one as an argument: {CachedPermsStr}");
                 return;
             }
 
@@ -94,7 +94,7 @@ namespace TRBot.Commands
             }
 
             //The permissions are already this value
-            if (inputPermsSetting.value_int == (long)permLevel)
+            if (inputPermsSetting.ValueInt == (long)permLevel)
             {
                 QueueMessage($"The permissions are already {permLevel}!");
                 return;
@@ -108,11 +108,11 @@ namespace TRBot.Commands
             }
 
             //Set new value and save
-            inputPermsSetting.value_int = (long)permLevel;
+            inputPermsSetting.ValueInt = (long)permLevel;
 
             context.SaveChanges();
 
-            QueueMessage($"Set input permissions to {(PermissionLevels)inputPermsSetting.value_int} and above!");
+            QueueMessage($"Set input permissions to {(PermissionLevels)inputPermsSetting.ValueInt} and above!");
         }
     }
 }

@@ -92,7 +92,7 @@ namespace TRBot.Commands
 
             if (user != null)
             {
-                long curInputLvl = inputData.level;
+                long curInputLvl = inputData.Level;
 
                 //Your level is less than the current input's level - invalid
                 if (user.Level < curInputLvl)
@@ -108,7 +108,7 @@ namespace TRBot.Commands
                 }
             }
 
-            inputData.level = newLvlNum;
+            inputData.Level = newLvlNum;
 
             context.SaveChanges();
 

@@ -25,23 +25,23 @@ namespace TRBot.Data
     /// </summary>
     public class RestrictedInput
     {
-        public int id { get; set; } = 0;
+        public int ID { get; set; } = 0;
 
         /// <summary>
         /// The ID of the user the restricted input belongs to.
         /// </summary>
-        public int user_id { get; set; } = 0;
+        public int UserID { get; set; } = 0;
 
         /// <summary>
         /// The ID of the input the user is restricted from inputting.
         /// </summary>
-        public int input_id { get; set; } = 0;
+        public int InputID { get; set; } = 0;
 
         /// <summary>
         /// When the restriction expires.
         /// A value of null indicates the restriction never expires.
         /// </summary>
-        public DateTime? expiration { get; set; } = null;
+        public DateTime? Expiration { get; set; } = null;
 
         /// <summary>
         /// The User associated with the restricted input.
@@ -63,20 +63,20 @@ namespace TRBot.Data
             get
             {
                 //It hasn't expired if the expiration date is null
-                if (expiration.HasValue == false)
+                if (Expiration.HasValue == false)
                 {
                     return false;
                 }
 
                 //Compare dates
-                return expiration.Value < DateTime.UtcNow;
+                return Expiration.Value < DateTime.UtcNow;
             }
         }
 
         /// <summary>
         /// Tells if this restricted input has an expiration date.
         /// </summary>
-        public bool HasExpiration => expiration.HasValue;
+        public bool HasExpiration => Expiration.HasValue;
 
         public RestrictedInput()
         {
@@ -85,9 +85,9 @@ namespace TRBot.Data
 
         public RestrictedInput(int userID, int inputID, DateTime? expirationDate)
         {
-            user_id = userID;
-            input_id = inputID;
-            expiration = expirationDate;
+            UserID = userID;
+            InputID = inputID;
+            Expiration = expirationDate;
         }
     }
 }

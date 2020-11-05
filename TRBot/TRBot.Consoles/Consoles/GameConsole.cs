@@ -35,7 +35,7 @@ namespace TRBot.Consoles
         /// <summary>
         /// The id of the console.
         /// </summary>
-        public int id { get; set; } 
+        public int ID { get; set; } 
 
         /// <summary>
         /// The name of the console.
@@ -198,7 +198,7 @@ namespace TRBot.Consoles
         {
             ConsoleInputs.TryGetValue(inputName, out InputData inputData);
             
-            return (inputData != null && inputData.enabled != 0);
+            return (inputData != null && inputData.Enabled != 0);
         }
 
         /// <summary>
@@ -210,7 +210,7 @@ namespace TRBot.Consoles
         public bool GetAxisValue(string axisName, out InputAxis inputAxis)
         {
             if (ConsoleInputs.TryGetValue(axisName, out InputData inputData) == false
-                || inputData.enabled == 0
+                || inputData.Enabled == 0
                 || EnumUtility.HasEnumVal((long)inputData.InputType, (long)InputTypes.Axis) == false)
             {
                 inputAxis = default;
@@ -230,7 +230,7 @@ namespace TRBot.Consoles
         public bool GetButtonValue(string buttonName, out InputButton inputButton)
         {
             if (ConsoleInputs.TryGetValue(buttonName, out InputData inputData) == false
-                || inputData.enabled == 0
+                || inputData.Enabled == 0
                 || EnumUtility.HasEnumVal((long)inputData.InputType, (long)InputTypes.Button) == false)
             {
                 inputButton = default;
@@ -254,7 +254,7 @@ namespace TRBot.Consoles
         {
             ConsoleInputs.TryGetValue(input.name, out InputData inputData);
 
-            if (inputData == null || inputData.enabled == 0 || EnumUtility.HasEnumVal((long)inputData.InputType, (long)InputTypes.Axis) == false)
+            if (inputData == null || inputData.Enabled == 0 || EnumUtility.HasEnumVal((long)inputData.InputType, (long)InputTypes.Axis) == false)
             {
                 axis = default;
                 return false;
@@ -290,7 +290,7 @@ namespace TRBot.Consoles
             ConsoleInputs.TryGetValue(input.name, out InputData inputData);
 
             //Not a button if null or not enabled
-            if (inputData == null || inputData.enabled == 0)
+            if (inputData == null || inputData.Enabled == 0)
             {
                 return false;
             }
@@ -313,7 +313,7 @@ namespace TRBot.Consoles
             ConsoleInputs.TryGetValue(input.name, out InputData inputData);
 
             //Not a blank input if null, disabled, or not Blank
-            if (inputData == null || inputData.enabled == 0 || inputData.InputType != (int)InputTypes.Blank)
+            if (inputData == null || inputData.Enabled == 0 || inputData.InputType != (int)InputTypes.Blank)
             {
                 return false;
             }
@@ -331,7 +331,7 @@ namespace TRBot.Consoles
             foreach (KeyValuePair<string, InputData> kvPair in ConsoleInputs)
             {
                 //Don't add if disabled
-                if (kvPair.Value.enabled == 0)
+                if (kvPair.Value.Enabled == 0)
                 {
                     continue;
                 }

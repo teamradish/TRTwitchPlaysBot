@@ -20,6 +20,7 @@ using System.Text;
 using TRBot.Connection;
 using TRBot.Data;
 using TRBot.Permissions;
+using TRBot.Utilities;
 
 namespace TRBot.Commands
 {
@@ -58,7 +59,7 @@ namespace TRBot.Commands
 
             string creditsName = DataHelper.GetCreditsNameNoOpen(context);
 
-            QueueMessage($"{creditsUsername} has {creditsUser.Stats.Credits} {creditsName}!");
+            QueueMessage($"{creditsUsername} has {creditsUser.Stats.Credits} {creditsName.Pluralize(false, creditsUser.Stats.Credits)}!");
         }
     }
 }

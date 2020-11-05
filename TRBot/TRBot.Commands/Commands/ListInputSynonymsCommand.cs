@@ -61,7 +61,7 @@ namespace TRBot.Commands
                 return;
             }
 
-            IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.console_id == console.id);
+            IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.ConsoleID == console.ID);
 
             int count = synonyms.Count();
             

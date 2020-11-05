@@ -278,10 +278,10 @@ namespace TRBot.Misc
 
                     //Check if the user has permission to enter this input
                     if (inputPermissionLevels.TryGetValue(input.name, out InputData inputData) == true
-                        && userLevel < inputData.level)
+                        && userLevel < inputData.Level)
                     {
                         return new InputValidation(InputValidationTypes.InsufficientAccess,
-                            $"No permission to use input \"{input.name}\", which requires at least level {inputData.level}.");
+                            $"No permission to use input \"{input.name}\", which requires at least level {inputData.Level}.");
                     }
                 }
             }

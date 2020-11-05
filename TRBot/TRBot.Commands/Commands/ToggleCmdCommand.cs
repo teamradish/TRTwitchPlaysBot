@@ -58,7 +58,7 @@ namespace TRBot.Commands
             using BotDBContext context = DatabaseManager.OpenContext();
 
             //Find the command
-            CommandData cmdData = context.Commands.FirstOrDefault(c => c.name == commandName);
+            CommandData cmdData = context.Commands.FirstOrDefault(c => c.Name == commandName);
 
             if (cmdData == null)
             {
@@ -72,7 +72,7 @@ namespace TRBot.Commands
                 return;
             }
 
-            cmdData.enabled = (cmdEnabled == true) ? 1 : 0;
+            cmdData.Enabled = (cmdEnabled == true) ? 1 : 0;
 
             context.SaveChanges();
 

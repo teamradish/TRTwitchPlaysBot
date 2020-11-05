@@ -21,6 +21,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TRBot.Connection;
 using TRBot.Data;
+using TRBot.Utilities;
 
 namespace TRBot.Routines
 {
@@ -229,7 +230,7 @@ namespace TRBot.Routines
                 invalid = invalid.Remove(invalid.Length - 2, 2);
 
                 //Mention who was disqualified
-                DataContainer.MessageHandler.QueueMessage($"{invalid} was/were disqualified from the group bet since either their {creditsName} are now lower than their bet(s) or they were removed from the database!");
+                DataContainer.MessageHandler.QueueMessage($"{invalid} was/were disqualified from the group bet since either their {creditsName.Pluralize(false, 0)} are now lower than their bet(s) or they were removed from the database!");
             }
 
             if (total > 0)
@@ -241,7 +242,7 @@ namespace TRBot.Routines
                 
                 context.SaveChanges();
                 
-                DataContainer.MessageHandler.QueueMessage($"{winnerName} won the group bet and {total} {creditsName} PogChamp! Nice!");
+                DataContainer.MessageHandler.QueueMessage($"{winnerName} won the group bet and {total} {creditsName.Pluralize(false, total)} PogChamp! Nice!");
 
                 //If there's more than one minimum participants and no one else had enough credits, mention the disappointment
                 if (participants.Count == 1 && MinParticipants > 1)

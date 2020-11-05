@@ -47,9 +47,9 @@ namespace TRBot.Commands
 
             using BotDBContext context = DatabaseManager.OpenContext();
 
-            Settings maxDurSetting = context.SettingCollection.FirstOrDefault(set => set.key == SettingsConstants.MAX_INPUT_DURATION);
+            Settings maxDurSetting = context.SettingCollection.FirstOrDefault(set => set.Key == SettingsConstants.MAX_INPUT_DURATION);
 
-            int maxInputDur = (int)maxDurSetting.value_int;
+            int maxInputDur = (int)maxDurSetting.ValueInt;
 
             if (arguments.Count == 0)
             {
@@ -96,7 +96,7 @@ namespace TRBot.Commands
                 return;
             }
 
-            maxDurSetting.value_int = newMaxDur;
+            maxDurSetting.ValueInt = newMaxDur;
             
             context.SaveChanges();
 

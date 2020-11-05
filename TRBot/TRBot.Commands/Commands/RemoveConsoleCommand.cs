@@ -62,15 +62,15 @@ namespace TRBot.Commands
 
                     QueueMessage($"Successfully removed console \"{consoleName}\"!");
 
-                    Settings lastConsoleSetting = context.SettingCollection.FirstOrDefault(set => set.key == SettingsConstants.LAST_CONSOLE);
+                    Settings lastConsoleSetting = context.SettingCollection.FirstOrDefault(set => set.Key == SettingsConstants.LAST_CONSOLE);
                     
                     //After removing the console, set the last console ID to the first console in the list
-                    if (lastConsoleSetting.value_int == console.id)
+                    if (lastConsoleSetting.ValueInt == console.ID)
                     {
                         GameConsole firstConsole = context.Consoles.FirstOrDefault();
                         if (firstConsole != null)
                         {
-                            lastConsoleSetting.value_int = firstConsole.id;
+                            lastConsoleSetting.ValueInt = firstConsole.ID;
                             QueueMessage($"\"{consoleName}\" used to be the current console, so the current console has been set to \"{firstConsole.Name}\"!");
                         }
                         else

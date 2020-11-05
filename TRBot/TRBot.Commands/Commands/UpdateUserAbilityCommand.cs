@@ -114,8 +114,8 @@ namespace TRBot.Commands
                 shouldAdd = true;
             }
 
-            newUserAbility.permability_id = permAbility.id;
-            newUserAbility.user_id = abilityUser.id;
+            newUserAbility.PermabilityID = permAbility.ID;
+            newUserAbility.UserID = abilityUser.ID;
             newUserAbility.GrantedByLevel = thisUser.Level;
             newUserAbility.SetEnabledState(enabledState);
 
@@ -145,7 +145,7 @@ namespace TRBot.Commands
             string valueIntArg = arguments[4];
             string expirationArg = arguments[5].ToLowerInvariant();
 
-            newUserAbility.value_str = valueStrArg;
+            newUserAbility.ValueStr = valueStrArg;
 
             //Validate arguments
             if (int.TryParse(valueIntArg, out int valueInt) == false)
@@ -154,11 +154,11 @@ namespace TRBot.Commands
                 return;
             }
             
-            newUserAbility.value_int = valueInt;
+            newUserAbility.ValueInt = valueInt;
 
             if (expirationArg == NULL_EXPIRATION_ARG)
             {
-                newUserAbility.expiration = null;
+                newUserAbility.Expiration = null;
             }
             else
             {
@@ -169,7 +169,7 @@ namespace TRBot.Commands
                 }
 
                 //Set the time to this amount from now
-                newUserAbility.expiration = DateTime.UtcNow + timeFromNow;
+                newUserAbility.Expiration = DateTime.UtcNow + timeFromNow;
             }
 
             if (shouldAdd == true)

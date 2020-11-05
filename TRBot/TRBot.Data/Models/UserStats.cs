@@ -26,8 +26,8 @@ namespace TRBot.Data
     /// </summary>
     public class UserStats
     {
-        public int id { get; set; } = 0;
-        public int user_id { get; set; } = 0;
+        public int ID { get; set; } = 0;
+        public int UserID { get; set; } = 0;
         
         public long Credits { get; set; } = 0;
         public long TotalMessageCount { get; set; } = 0;

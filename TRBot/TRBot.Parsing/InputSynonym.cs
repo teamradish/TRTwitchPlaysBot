@@ -29,12 +29,12 @@ namespace TRBot.Parsing
         /// <summary>
         /// The ID of the synonym.
         /// </summary>
-        public int id { get; set; } = 0;
+        public int ID { get; set; } = 0;
 
         /// <summary>
         /// The console ID of the synonym.
         /// </summary>
-        public int console_id { get; set; } = 0;
+        public int ConsoleID { get; set; } = 0;
 
         /// <summary>
         /// The name of the synonym.
@@ -60,7 +60,7 @@ namespace TRBot.Parsing
         public InputSynonym(in int consoleID, string synonymName, string synonymValue)
             : this(synonymName, synonymValue)
         {
-            console_id = consoleID;
+            ConsoleID = consoleID;
         }
 
         public override int GetHashCode()
@@ -70,7 +70,7 @@ namespace TRBot.Parsing
                 int hash = 29;
                 hash = (hash * 37) + SynonymName.GetHashCode();
                 hash = (hash * 37) + SynonymValue.GetHashCode();
-                hash = (hash * 37) + console_id.GetHashCode();
+                hash = (hash * 37) + ConsoleID.GetHashCode();
                 return hash;
             }
         }

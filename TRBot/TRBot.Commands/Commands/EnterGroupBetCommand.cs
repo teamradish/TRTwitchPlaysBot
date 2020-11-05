@@ -23,6 +23,7 @@ using TRBot.Connection;
 using TRBot.Permissions;
 using TRBot.Data;
 using TRBot.Routines;
+using TRBot.Utilities;
 
 namespace TRBot.Commands
 {
@@ -79,14 +80,14 @@ namespace TRBot.Commands
             bool success = long.TryParse(arguments[0], out betAmount);
             if (success == false || betAmount <= 0)
             {
-                QueueMessage($"Please specify a positive whole number of {creditsName} greater than 0!");
+                QueueMessage($"Please specify a positive whole number of {creditsName.Pluralize(false, 0)} greater than 0!");
                 return;
             }
 
             //Validate credit amount
             if (user.Stats.Credits < betAmount)
             {
-                QueueMessage($"You don't have enough {creditsName} to bet this much!");
+                QueueMessage($"You don't have enough {creditsName.Pluralize(false, 0)} to bet this much!");
                 return;
             }
 
@@ -125,7 +126,7 @@ namespace TRBot.Commands
             //Newly added since they were not previously there
             if (prevParticipant == false)
             {
-                message = $"{username} entered the group bet with {betAmount} credit(s)!";
+                message = $"{username} entered the group bet with {betAmount} {creditsName.Pluralize(false, betAmount)}!";
                 
                 int participantCount = groupBetRoutine.ParticipantCount;
                 
@@ -147,7 +148,7 @@ namespace TRBot.Commands
             }
             else
             {
-                QueueMessage($"{username} adjusted their group bet from {participantData.ParticipantBet} to {betAmount} {creditsName}!");
+                QueueMessage($"{username} adjusted their group bet from {participantData.ParticipantBet} to {betAmount} {creditsName.Pluralize(false, betAmount)}!");
             }
         }
     }
