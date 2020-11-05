@@ -16,6 +16,11 @@ namespace TRBot.Tests
            Find a way to supply ALL the necessary data ahead of time so each test can focus on just one thing.
         */
 
+        /*
+           ALSO, these tests are VERY BAD! We need to test ONLY specific functions. There should be little
+           to no preparation required for these tests.
+        */
+
         [TestCase("a", true, 60000)]
         [TestCase("b", true, 60000)]
         [TestCase("x", true, 60000)]

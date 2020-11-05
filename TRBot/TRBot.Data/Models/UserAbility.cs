@@ -54,13 +54,13 @@ namespace TRBot.Data
         /// The User associated with the ability.
         /// This is used by the database and should not be assigned or modified manually.
         /// </summary>
-        public virtual User user { get; set; }
+        public virtual User user { get; set; } = null;
 
         /// <summary>
         /// The PermissionAbility this references.
         /// This is used by the database and should not be assigned or modified manually.
         /// </summary>
-        public virtual PermissionAbility PermAbility { get; set; }
+        public virtual PermissionAbility PermAbility { get; set; } = null;
 
         /// <summary>
         /// Tells if this user ability is enabled.
