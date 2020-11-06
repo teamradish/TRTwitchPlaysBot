@@ -172,7 +172,8 @@ namespace TRBot.Data
                 new CommandData("duel", "TRBot.Commands.DuelCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("highfive", "TRBot.Commands.HighFiveCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("inspiration", "TRBot.Commands.InspirationCommand", (long)PermissionLevels.User, true, true),
-                new CommandData("exercise", "TRBot.Commands.InputExerciseCommand", (long)PermissionLevels.User, true, true),
+                //By default, exclude the common savestate inputs from input exercises
+                new CommandData("exercise", "TRBot.Commands.InputExerciseCommand", (long)PermissionLevels.User, true, true, "ss,incs,decs,ss1,ss2,ss3,ss4,ss5,ss6,ls1,ls2,ls3,ls4,ls5,ls6"),
                 new CommandData("slots", "TRBot.Commands.SlotsCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),

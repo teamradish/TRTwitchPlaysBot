@@ -48,7 +48,9 @@ namespace TRBot.Commands
 
         private const int BASE_CREDIT_REWARD = 100;
         private const int CREDIT_REWARD_MULTIPLIER = 3;
-        private const double HARD_EXERCISE_MULTIPLIER = 1.1d;
+        private const double HARD_EXERCISE_MULTIPLIER = 1.3d;
+
+        private const int MAX_PORTS = 8;
 
         private const string GENERATE_NEW_ARG = "new";
         private const string EASY_DIFFICULTY_ARG = "easy";
@@ -56,7 +58,10 @@ namespace TRBot.Commands
 
         private const string NO_EXERCISE_FOUND_MSG = "No input exercise found. Generate a new one with \"" + GENERATE_NEW_ARG + "\" as an argument to this command, optionally with a difficulty level: \"" + EASY_DIFFICULTY_ARG + "\" or \"" + HARD_DIFFICULTY_ARG + "\".";
 
+        private const char SPLIT_CHAR = ',';
+
         private ConcurrentDictionary<string, InputExercise> UserExercises = null;
+        private string[] InvalidExerciseInputNames = Array.Empty<string>();
         private readonly Random Rand = new Random();
 
         private string UsageMessage = "Usage: (\"new\" \"difficulty - easy (default) or hard\") for new exercise, or \"input sequence\" to input exercise";
@@ -73,6 +78,18 @@ namespace TRBot.Commands
             if (UserExercises == null)
             {
                 UserExercises = new ConcurrentDictionary<string, InputExercise>(Environment.ProcessorCount * 2, 32);
+            }
+
+            //Split inputs by what's in the value string
+            if (string.IsNullOrEmpty(ValueStr) == false)
+            {
+                InvalidExerciseInputNames = ValueStr.Split(SPLIT_CHAR, StringSplitOptions.RemoveEmptyEntries);
+                
+                //Trim whitespace
+                for (int i = 0; i < InvalidExerciseInputNames.Length; i++)
+                {
+                    InvalidExerciseInputNames[i] = InvalidExerciseInputNames[i].Trim();
+                }
             }
         }
 
@@ -167,15 +184,7 @@ namespace TRBot.Commands
                     }
                     else if (difString == HARD_DIFFICULTY_ARG)
                     {
-                        //We can't increase difficulty with more ports if there's only one controller
-                        if (DataContainer.ControllerMngr.ControllerCount > 1)
-                        {
-                            parseOptions.ShowPortType = ReverseParser.ShowPortTypes.ShowNonDefaultPorts;
-                        }
-                        else
-                        {
-                            QueueMessage($"Defaulting to \"{EASY_DIFFICULTY_ARG}\" difficulty, as there is only one controller port available.");
-                        }
+                        parseOptions.ShowPortType = ReverseParser.ShowPortTypes.ShowNonDefaultPorts;
                     }
                     else
                     {
@@ -349,16 +358,6 @@ namespace TRBot.Commands
             return true;
         }
 
-        //private bool CompareInputs(in ParsedInput input1, in ParsedInput input2)
-        //{
-        //    return (input1.hold == input2.hold
-        //            && input1.release == input2.release
-        //            && input1.name == input2.name
-        //            && input1.percent == input2.percent
-        //            && input1.duration == input2.duration
-        //            && input1.duration_type == input2.duration_type);
-        //}
-
         #region Exercise Generation
 
         private ParsedInputSequence GenerateExercise(in long userLevel, in int defaultInputDur, GameConsole console,
@@ -457,7 +456,7 @@ namespace TRBot.Commands
                     //Randomize port if we should
                     if (options.ShowPortType != ReverseParser.ShowPortTypes.None)
                     {
-                        int randPort = Rand.Next(0, DataContainer.ControllerMngr.ControllerCount);
+                        int randPort = Rand.Next(0, MAX_PORTS);
                         input.controllerPort = randPort;
                     }
                 }
@@ -486,17 +485,27 @@ namespace TRBot.Commands
         private List<InputData> TrimInvalidExerciseInputs(in long userLevel, Dictionary<string, InputData> validInputs)
         {
             List<InputData> inputs = new List<InputData>(validInputs.Values);
-            //for (int i = 0; i < InvalidExerciseInputs.Length; i++)
-            //{
-            //    inputs.Remove(InvalidExerciseInputs[i]);
-            //}
 
             for (int i = inputs.Count - 1; i >= 0; i--)
             {
+                InputData inp = inputs[i];
+
                 //Remove the input if the user doesn't have access to use it
                 if (userLevel < inputs[i].Level)
                 {
                     inputs.RemoveAt(i);
+                    continue;
+                }
+
+                //Also remove any inputs with prohibited names
+                for (int j = 0; j < InvalidExerciseInputNames.Length; j++)
+                {
+                    string invalidInputName = InvalidExerciseInputNames[j];
+                    if (inp.Name == invalidInputName)
+                    {
+                        inputs.RemoveAt(i);
+                        break;
+                    }
                 }
             }
 
