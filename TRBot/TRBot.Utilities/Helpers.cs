@@ -430,5 +430,27 @@ namespace TRBot.Utilities
                     return false;
             }
         }
+
+        /// <summary>
+        /// Chooses a random index in a list of percentages.
+        /// </summary>
+        /// <param name="percentages">The container of percentages, each with positive values, with the sum adding up to 1.</param>
+        /// <returns>The index in the container of percentages that was chosen.</returns>
+        public static int ChoosePercentage(in double randomVal, in IList<double> percentages)
+        {
+            double value = 0d;
+
+            for (int i = 0; i < percentages.Count; i++)
+            {
+                value += percentages[i];
+                if (value > randomVal)
+                {
+                    return i;
+                }
+            }
+
+            //Return the last one if it goes through
+            return percentages.Count - 1;
+        }
     }
 }

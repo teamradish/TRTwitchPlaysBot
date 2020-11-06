@@ -1,0 +1,349 @@
+﻿/* This file is part of TRBot.
+ *
+ * TRBot is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * TRBot is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with TRBot.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using TRBot.Connection;
+using TRBot.Misc;
+using TRBot.Utilities;
+using TRBot.Data;
+using TRBot.Permissions;
+
+namespace TRBot.Commands
+{
+    /// <summary>
+    /// Plays a game of slots.
+    /// </summary>
+    /// <remarks>This uses an implementation similar to real slots, based on data from here: https://wizardofodds.com/games/slots/appendix/2/ </remarks>
+    public sealed class SlotsCommand : BaseCommand
+    {
+        /// <summary>
+        /// Internal names for the slot panels.
+        /// </summary>
+        private enum SlotInternalNames
+        {
+            Blank,
+            Cherry,
+            Plum,
+            Watermelon,
+            Orange,
+            Lemon,
+            Bar
+        }
+
+        /// <summary>
+        /// Slot results.
+        /// </summary>
+        private enum SlotResults
+        {
+            Nothing,
+            Standard,
+            Jackpot
+        }
+
+        /// <summary>
+        /// Maps a slot name to an emote.
+        /// </summary>
+        private readonly Dictionary<SlotInternalNames, string> SlotToEmoteMap = new Dictionary<SlotInternalNames, string>(7)
+        {
+            { SlotInternalNames.Blank, "FailFish" },
+            { SlotInternalNames.Cherry, "Kappa" },
+            { SlotInternalNames.Plum, "HeyGuys" },
+            { SlotInternalNames.Watermelon, "SeemsGood" },
+            { SlotInternalNames.Orange, "CoolCat" },
+            { SlotInternalNames.Lemon, "PartyTime" },
+            { SlotInternalNames.Bar, "PogChamp" }
+        };
+        
+        private readonly Dictionary<SlotInternalNames, double> SlotRewardModifiers = new Dictionary<SlotInternalNames, double>(7)
+        {
+            { SlotInternalNames.Blank, 0d },
+            { SlotInternalNames.Cherry, 100d },
+            { SlotInternalNames.Plum, 2d },
+            { SlotInternalNames.Watermelon, 1d },
+            { SlotInternalNames.Orange, .5d },
+            { SlotInternalNames.Lemon, .25d },
+            { SlotInternalNames.Bar, 500d },
+        };
+
+        /// <summary>
+        /// The weight table specifying the weights of each type of slot for each reel.
+        /// </summary>
+        private Dictionary<int, List<ReelWeight>> WeightTable = null;
+
+        /// <summary>
+        /// A cached list used when determining which slot to choose.
+        /// </summary>
+        private readonly List<double> WeightCache = new List<double>();
+
+        private Random Rand = new Random();
+
+        private string UsageMessage = "Usage: \"buy-in (int)\"";
+
+        public SlotsCommand()
+        {
+            BuildWeightTable();
+        }
+
+        public override void ExecuteCommand(EvtChatCommandArgs args)
+        {
+            List<string> arguments = args.Command.ArgumentsAsList;
+
+            if (arguments.Count != 1)
+            {
+                QueueMessage(UsageMessage);
+                return;
+            }
+
+            using BotDBContext context = DatabaseManager.OpenContext();
+
+            //Start off getting the credits name and user, as usual
+            string creditsName = DataHelper.GetCreditsNameNoOpen(context);
+            User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
+
+            if (user == null)
+            {
+                QueueMessage("You're somehow not in the database!");
+                return;
+            }
+
+            //Can't play without the ability
+            if (user.HasEnabledAbility(PermissionConstants.SLOTS_ABILITY) == false)
+            {
+                QueueMessage("You don't have the ability to play the slots!");
+                return;
+            }
+
+            //Check for opt-out
+            if (user.IsOptedOut == true)
+            {
+                QueueMessage("You cannot play the slots while opted out of stats.");
+                return;
+            }
+
+            string buyInStr = arguments[0];
+
+            //Validate argument
+            if (long.TryParse(buyInStr, out long buyInAmount) == false)
+            {
+                QueueMessage("Please enter a valid buy-in amount!");
+                return;
+            }
+
+            if (buyInAmount <= 0)
+            {
+                QueueMessage("Buy-in amount must be greater than 0!");
+                return;
+            }
+
+            if (buyInAmount > user.Stats.Credits)
+            {
+                QueueMessage($"Buy-in amount is greater than {creditsName.Pluralize(false, 0)}!");
+                return;
+            }
+
+            //Roll the slots!
+            StringBuilder strBuilder = new StringBuilder(128);
+            strBuilder.Append('(').Append(' ');
+
+            SlotInternalNames[] slotsChosen = new SlotInternalNames[WeightTable.Count];
+            int i = 0;
+
+            foreach (KeyValuePair<int, List<ReelWeight>> weight in WeightTable)
+            {
+                SlotInternalNames chosenSlot = ChooseSlot(weight.Value);
+                slotsChosen[i] = chosenSlot;
+
+                strBuilder.Append(SlotToEmoteMap[chosenSlot]).Append(' ').Append('|').Append(' ');
+
+                i++;
+            }
+
+            strBuilder.Remove(strBuilder.Length - 3, 3);
+            strBuilder.Append(' ').Append(')').Append(" = ");
+
+            //Evaluate the reward based on what we got
+            double rewardModifier = EvaluateReward(slotsChosen, out SlotResults slotResult);
+
+            //Intentionally floor the reward - slots are like that :P
+            long reward = (long)(buyInAmount * rewardModifier); 
+
+            //Change the message based on the result
+            switch (slotResult)
+            {
+                case SlotResults.Nothing:
+                    strBuilder.Append(user.Name).Append(" didn't win BibleThump Better luck next time!");
+                    break;
+                case SlotResults.Standard:
+                    strBuilder.Append(user.Name).Append(" won ").Append(reward).Append(' ').Append(creditsName.Pluralize(false, reward)).Append(", nice! SeemsGood");
+                    break;
+                case SlotResults.Jackpot:
+                    strBuilder.Append(user.Name).Append(" hit the JACKPOT and won ").Append(reward).Append(' ').Append(creditsName.Pluralize(false, reward)).Append("!! Congratulations!! PogChamp PogChamp PogChamp");
+                    break;
+            }
+
+            //Adjust credits
+            user.Stats.Credits -= buyInAmount;
+            user.Stats.Credits += reward;
+
+            context.SaveChanges();
+
+            QueueMessage(strBuilder.ToString());
+        }
+
+        private double EvaluateReward(SlotInternalNames[] slotsChosen, out SlotResults slotResult)
+        {
+            //For this implementation, reward the user only if all of the slots match
+            SlotInternalNames firstSlot = slotsChosen[0];
+
+            for (int i = 1; i < slotsChosen.Length; i++)
+            {
+                //Slots don't match, so no reward
+                if (slotsChosen[i] != firstSlot)
+                {
+                    slotResult = SlotResults.Nothing;
+                    return 0d;
+                }
+            }
+
+            slotResult = (firstSlot == SlotInternalNames.Bar) ? SlotResults.Jackpot : SlotResults.Standard;
+
+            //Get the reward modifier for this slot
+            return SlotRewardModifiers[firstSlot];
+        }
+
+        private SlotInternalNames ChooseSlot(List<ReelWeight> weights)
+        {
+            double maxWeight = 0;
+
+            for (int i = 0; i < weights.Count; i++)
+            {
+                maxWeight += weights[i].WeightVal;
+            }
+
+            WeightCache.Clear();
+            
+            //Get the weights from 0 to 1
+            for (int i = 0; i < weights.Count; i++)
+            {
+                WeightCache.Add(weights[i].WeightVal / maxWeight);
+            }
+
+            int index = Helpers.ChoosePercentage(Rand.NextDouble(), WeightCache);
+
+            return weights[index].Slot;
+        }
+
+        private void BuildWeightTable()
+        {
+            if (WeightTable == null)
+            {
+                WeightTable = new Dictionary<int, List<ReelWeight>>(3);
+            }
+
+            WeightTable.Clear();
+
+            WeightTable.Add(0, GetReel1Weights());
+            WeightTable.Add(1, GetReel2Weights());
+            WeightTable.Add(2, GetReel3Weights());
+        }
+
+        private List<ReelWeight> GetReel1Weights()
+        {
+            List<ReelWeight> reel1 = new List<ReelWeight>(22);
+            reel1.Add(new ReelWeight(SlotInternalNames.Blank, 28));
+            reel1.Add(new ReelWeight(SlotInternalNames.Cherry, 5));
+            reel1.Add(new ReelWeight(SlotInternalNames.Plum, 6));
+            reel1.Add(new ReelWeight(SlotInternalNames.Watermelon, 6));
+            reel1.Add(new ReelWeight(SlotInternalNames.Orange, 7));
+            reel1.Add(new ReelWeight(SlotInternalNames.Lemon, 8));
+            reel1.Add(new ReelWeight(SlotInternalNames.Bar, 4));
+            return reel1;
+        }
+
+        private List<ReelWeight> GetReel2Weights()
+        {
+            List<ReelWeight> reel2 = new List<ReelWeight>(22);
+            reel2.Add(new ReelWeight(SlotInternalNames.Blank, 37));
+            reel2.Add(new ReelWeight(SlotInternalNames.Cherry, 4));
+            reel2.Add(new ReelWeight(SlotInternalNames.Plum, 4));
+            reel2.Add(new ReelWeight(SlotInternalNames.Watermelon, 5));
+            reel2.Add(new ReelWeight(SlotInternalNames.Orange, 5));
+            reel2.Add(new ReelWeight(SlotInternalNames.Lemon, 6));
+            reel2.Add(new ReelWeight(SlotInternalNames.Bar, 3));
+            return reel2;
+        }
+
+        private List<ReelWeight> GetReel3Weights()
+        {
+            List<ReelWeight> reel3 = new List<ReelWeight>(22);
+            reel3.Add(new ReelWeight(SlotInternalNames.Blank, 42));
+            reel3.Add(new ReelWeight(SlotInternalNames.Cherry, 2));
+            reel3.Add(new ReelWeight(SlotInternalNames.Plum, 3));
+            reel3.Add(new ReelWeight(SlotInternalNames.Watermelon, 4));
+            reel3.Add(new ReelWeight(SlotInternalNames.Orange, 6));
+            reel3.Add(new ReelWeight(SlotInternalNames.Lemon, 6));
+            reel3.Add(new ReelWeight(SlotInternalNames.Bar, 1));
+            return reel3;
+        }
+
+        private struct ReelWeight
+        {
+            public SlotInternalNames Slot;
+            public int WeightVal;
+
+            public ReelWeight(in SlotInternalNames slot, in int weightVal)
+            {
+                Slot = slot;
+                WeightVal = weightVal;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj is ReelWeight reelWeight)
+                {
+                    return (this == reelWeight);
+                }
+
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hash = 37;
+                    hash = (hash * 59) + Slot.GetHashCode();
+                    hash = (hash * 59) + WeightVal.GetHashCode();
+                    return hash;
+                } 
+            }
+
+            public static bool operator==(ReelWeight a, ReelWeight b)
+            {
+                return (a.Slot == b.Slot && a.WeightVal == b.WeightVal);
+            }
+
+            public static bool operator!=(ReelWeight a, ReelWeight b)
+            {
+                return !(a == b);
+            }
+        }
+    }
+}

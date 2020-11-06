@@ -173,6 +173,7 @@ namespace TRBot.Data
                 new CommandData("highfive", "TRBot.Commands.HighFiveCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("inspiration", "TRBot.Commands.InspirationCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("exercise", "TRBot.Commands.InputExerciseCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("slots", "TRBot.Commands.SlotsCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
 
@@ -244,6 +245,7 @@ namespace TRBot.Data
                 new PermissionAbility(CHATBOT_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
                 new PermissionAbility(BINGO_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
                 new PermissionAbility(TRANSFER_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(SLOTS_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
 
                 new PermissionAbility(SET_GAME_MESSAGE_ABILITY, PermissionLevels.VIP, PermissionLevels.VIP),
 
