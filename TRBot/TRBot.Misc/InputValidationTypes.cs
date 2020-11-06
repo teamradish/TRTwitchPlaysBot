@@ -33,6 +33,7 @@ namespace TRBot.Misc
         InvalidCombo = 2,
         OverMaxDuration = 3,
         InsufficientAccess = 4,
-        InvalidPort = 5
+        InvalidPort = 5,
+        Other = 6
     }
 }

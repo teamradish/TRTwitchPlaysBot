@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using TRBot.Connection;
+using TRBot.Utilities;
 
 namespace TRBot.Misc
 {
@@ -125,6 +126,25 @@ namespace TRBot.Misc
             if (string.IsNullOrEmpty(message) == false)
             {
                 ClientMessages.Enqueue(message);
+            }
+        }
+
+        public void QueueMessageSplit(string message, in int maxCharCount, string separator)
+        {
+            string sentMessage = Helpers.SplitStringWithinCharCount(message, maxCharCount, separator, out List<string> textList);
+
+            //If the text fits within the character limit, print it all out at once
+            if (textList == null)
+            {
+                QueueMessage(sentMessage);
+            }
+            else
+            {
+                //Otherwise, queue up the text in pieces
+                for (int i = 0; i < textList.Count; i++)
+                {
+                    QueueMessage(textList[i]);
+                }
             }
         }
     }

@@ -25,6 +25,7 @@ using TRBot.Data;
 using TRBot.Misc;
 using TRBot.Utilities;
 using TRBot.Routines;
+using TRBot.Permissions;
 
 namespace TRBot.Commands
 {
@@ -100,7 +101,7 @@ namespace TRBot.Commands
 
                     if (user != null && user.Level < command.Level)
                     {
-                        DataContainer.MessageHandler.QueueMessage("You do not have permission to do that!");
+                        DataContainer.MessageHandler.QueueMessage($"You need at least level {command.Level} ({(PermissionLevels)command.Level}) to perform that command!");
                         return;
                     }
                 }

@@ -75,6 +75,11 @@ namespace TRBot.Misc
         public static InputValidation ValidateInputCombos(in ParsedInputSequence inputSequence, List<InvalidCombo> invalidCombo,
             IVirtualControllerManager vControllerMngr, GameConsole gameConsole)
         {
+            if (vControllerMngr == null)
+            {
+                return new InputValidation(InputValidationTypes.Other, "Virtual controller manager is null; cannot validate combos.");
+            }
+
             List<List<ParsedInput>> inputs = inputSequence.Inputs;
 
             int controllerCount = vControllerMngr.ControllerCount;
@@ -252,6 +257,11 @@ namespace TRBot.Misc
         public static InputValidation ValidateInputLvlPermsAndPorts(in long userLevel, in ParsedInputSequence inputSequence,
             IVirtualControllerManager vControllerMngr, Dictionary<string, InputData> inputPermissionLevels)
         {
+            if (vControllerMngr == null)
+            {
+                return new InputValidation(InputValidationTypes.Other, "Virtual controller manager is null; cannot validate ports.");
+            }
+
             List<List<ParsedInput>> inputs = inputSequence.Inputs;
 
             for (int i = 0; i < inputs.Count; i++)

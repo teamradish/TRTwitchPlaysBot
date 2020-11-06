@@ -190,43 +190,45 @@ namespace TRBot.Main
             //No controller manager - there's a problem
             if (controllerMngr == null)
             {
-                Console.WriteLine($"Virtual controller manager failed to initialize. This indicates an invalid {SettingsConstants.LAST_VCONTROLLER_TYPE} setting in the database or an unimplemented platform. Aborting.");
-                return;
+                Console.WriteLine($"Virtual controller manager failed to initialize. This indicates an invalid {SettingsConstants.LAST_VCONTROLLER_TYPE} setting in the database or an unimplemented platform.");
             }
 
             DataContainer.SetControllerManager(controllerMngr);
 
-            int controllerCount = 0;
+            if (DataContainer.ControllerMngr != null)
+            {
+                int controllerCount = 0;
 
-            //Clamp the controller count to the min and max allowed by the virtual controller manager
-            using (BotDBContext context = DatabaseManager.OpenContext())
-            { 
-                Settings joystickCountSetting = DataHelper.GetSettingNoOpen(SettingsConstants.JOYSTICK_COUNT, context);
+                //Clamp the controller count to the min and max allowed by the virtual controller manager
+                using (BotDBContext context = DatabaseManager.OpenContext())
+                { 
+                    Settings joystickCountSetting = DataHelper.GetSettingNoOpen(SettingsConstants.JOYSTICK_COUNT, context);
 
-                int minCount = DataContainer.ControllerMngr.MinControllers;
-                int maxCount = DataContainer.ControllerMngr.MaxControllers;
+                    int minCount = DataContainer.ControllerMngr.MinControllers;
+                    int maxCount = DataContainer.ControllerMngr.MaxControllers;
 
-                //Validate controller count
-                if (joystickCountSetting.ValueInt < minCount)
-                {
-                    MsgHandler.QueueMessage($"Controller count of {joystickCountSetting.ValueInt} in database is invalid. Clamping to the min of {minCount}.");
-                    joystickCountSetting.ValueInt = minCount;
-                    context.SaveChanges();
+                    //Validate controller count
+                    if (joystickCountSetting.ValueInt < minCount)
+                    {
+                        MsgHandler.QueueMessage($"Controller count of {joystickCountSetting.ValueInt} in database is invalid. Clamping to the min of {minCount}.");
+                        joystickCountSetting.ValueInt = minCount;
+                        context.SaveChanges();
+                    }
+                    else if (joystickCountSetting.ValueInt > maxCount)
+                    {
+                        MsgHandler.QueueMessage($"Controller count of {joystickCountSetting.ValueInt} in database is invalid. Clamping to the max of {maxCount}.");
+                        joystickCountSetting.ValueInt = maxCount;
+                        context.SaveChanges();
+                    }
+
+                    controllerCount = (int)joystickCountSetting.ValueInt;
                 }
-                else if (joystickCountSetting.ValueInt > maxCount)
-                {
-                    MsgHandler.QueueMessage($"Controller count of {joystickCountSetting.ValueInt} in database is invalid. Clamping to the max of {maxCount}.");
-                    joystickCountSetting.ValueInt = maxCount;
-                    context.SaveChanges();
-                }
 
-                controllerCount = (int)joystickCountSetting.ValueInt;
+                DataContainer.ControllerMngr.Initialize();
+                int acquiredCount = DataContainer.ControllerMngr.InitControllers(controllerCount);
+
+                Console.WriteLine($"Setting up virtual controller {curVControllerType} and acquired {acquiredCount} controllers!");
             }
-
-            DataContainer.ControllerMngr.Initialize();
-            int acquiredCount = DataContainer.ControllerMngr.InitControllers(controllerCount);
-
-            Console.WriteLine($"Setting up virtual controller {curVControllerType} and acquired {acquiredCount} controllers!");
 
             CmdHandler = new CommandHandler();
             CmdHandler.Initialize(DataContainer, RoutineHandler);
@@ -814,6 +816,15 @@ namespace TRBot.Main
         {
             MsgHandler.QueueMessage("Found virtual controller manager change in database. Stopping all inputs and reinitializing virtual controllers.");
 
+            //Fetch the new controller manager
+            IVirtualControllerManager controllerMngr = VControllerHelper.GetVControllerMngrForType(DataContainer.CurVControllerType);
+
+            if (controllerMngr == null)
+            {
+                MsgHandler.QueueMessage($"Virtual controller manager of new type {newVControllerType} failed to initialize. This indicates an invalid {SettingsConstants.LAST_VCONTROLLER_TYPE} setting in the database or an unimplemented platform.");
+                return;
+            }
+
             using BotDBContext context = DatabaseManager.OpenContext();
 
             Settings joystickCountSetting = DataHelper.GetSettingNoOpen(SettingsConstants.JOYSTICK_COUNT, context);
@@ -825,9 +836,6 @@ namespace TRBot.Main
             DataContainer.ControllerMngr?.CleanUp();
 
             DataContainer.SetCurVControllerType(newVControllerType);
-
-            //Assign the new controller manager
-            IVirtualControllerManager controllerMngr = VControllerHelper.GetVControllerMngrForType(DataContainer.CurVControllerType);
 
             DataContainer.SetControllerManager(controllerMngr);
 
@@ -860,6 +868,12 @@ namespace TRBot.Main
 
         private void ReinitVControllerCount()
         {
+            if (DataContainer.ControllerMngr == null)
+            {
+                MsgHandler.QueueMessage($"Virtual controller manager is null and failed to change controller count. This indicates an invalid {SettingsConstants.LAST_VCONTROLLER_TYPE} setting in the database or an unimplemented platform.");
+                return;
+            }
+
             int curVControllerCount = DataContainer.ControllerMngr.ControllerCount;
 
             using BotDBContext context = DatabaseManager.OpenContext();

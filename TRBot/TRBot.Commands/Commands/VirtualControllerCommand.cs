@@ -104,7 +104,7 @@ namespace TRBot.Commands
             }
 
             //Same type
-            if (parsedVCType == curVCType)
+            if (parsedVCType == curVCType && DataContainer.ControllerMngr != null && DataContainer.ControllerMngr.Initialized == true)
             {
                 QueueMessage($"The current virtual controller is already {curVCType}!");
                 return;
@@ -128,13 +128,19 @@ namespace TRBot.Commands
             
             try
             {
+                //Assign the new controller manager
+                IVirtualControllerManager controllerMngr = VControllerHelper.GetVControllerMngrForType(parsedVCType);
+
+                if (controllerMngr == null)
+                {
+                    QueueMessage($"Virtual controller manager of new type {parsedVCType} failed to initialize. This indicates an invalid {SettingsConstants.LAST_VCONTROLLER_TYPE} setting in the database or an unimplemented platform.");
+                    return;
+                }
+
                 //Clean up the controller manager
                 DataContainer.ControllerMngr?.CleanUp();
 
                 DataContainer.SetCurVControllerType(parsedVCType);
-
-                //Assign the new controller manager
-                IVirtualControllerManager controllerMngr = VControllerHelper.GetVControllerMngrForType(parsedVCType);
 
                 DataContainer.SetControllerManager(controllerMngr);
 
