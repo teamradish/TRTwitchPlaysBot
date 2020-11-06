@@ -33,6 +33,17 @@ namespace TRBot.VirtualControllers
 
         public int MaxControllers { get; private set; } = 16;
 
+        public UInputControllerManager()
+        {
+
+        }
+
+        ~UInputControllerManager()
+        {
+            Dispose();
+            GC.SuppressFinalize(this);
+        }
+
         public void Initialize()
         {
             if (Initialized == true) return;
@@ -44,11 +55,11 @@ namespace TRBot.VirtualControllers
             Initialized = true;
         }
 
-        public void CleanUp()
+        public void Dispose()
         {
             if (Initialized == false)
             {
-                Console.WriteLine("UInputControllerManager not initialized; cannot clean up");
+                //Console.WriteLine("UInputControllerManager not initialized; cannot clean up");
                 return;
             }
 

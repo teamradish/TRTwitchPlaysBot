@@ -98,7 +98,7 @@ namespace TRBot.Commands
 
             context.SaveChanges();
 
-            QueueMessage($"Changed controller port to {portNum}!");
+            QueueMessage($"{user.Name} changed their controller port to {portNum}!");
         }
     }
 }

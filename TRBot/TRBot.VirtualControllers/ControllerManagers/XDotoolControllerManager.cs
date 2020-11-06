@@ -33,6 +33,17 @@ namespace TRBot.VirtualControllers
 
         public int MaxControllers => 1;
 
+        public XDotoolControllerManager()
+        {
+
+        }
+
+        ~XDotoolControllerManager()
+        {
+            Dispose();
+            GC.SuppressFinalize(this);
+        }
+
         public void Initialize()
         {
             if (Initialized == true) return;
@@ -43,11 +54,11 @@ namespace TRBot.VirtualControllers
             //Console.WriteLine($"Acquired {acquiredCount} controllers!");
         }
 
-        public void CleanUp()
+        public void Dispose()
         {
             if (Initialized == false)
             {
-                Console.WriteLine("XDotoolControllerManager not initialized; cannot clean up");
+                //Console.WriteLine("XDotoolControllerManager not initialized; cannot clean up");
                 return;
             }
 

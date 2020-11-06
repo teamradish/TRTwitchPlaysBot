@@ -127,6 +127,12 @@ namespace TRBot.VirtualControllers
             VJoyInstance = vjoyInstance;
         }
 
+        ~VJoyController()
+        {
+            Dispose();
+            GC.SuppressFinalize(this);
+        }
+
         public void Dispose()
         {
             if (IsAcquired == false)

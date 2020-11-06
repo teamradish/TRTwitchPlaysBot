@@ -46,6 +46,17 @@ namespace TRBot.VirtualControllers
 
         public int MaxControllers => (int)MAX_VJOY_DEVICE_ID;
 
+        public VJoyControllerManager()
+        {
+
+        }
+
+        ~VJoyControllerManager()
+        {
+            Dispose();
+            GC.SuppressFinalize(this);
+        }
+
         public void Initialize()
         {
             if (Initialized == true) return;
@@ -78,11 +89,11 @@ namespace TRBot.VirtualControllers
             //Console.WriteLine($"Acquired {acquiredCount} controllers!");
         }
 
-        public void CleanUp()
+        public void Dispose()
         {
             if (Initialized == false)
             {
-                Console.WriteLine("VJoyControllerManager not initialized; cannot clean up");
+                //Console.WriteLine("VJoyControllerManager not initialized; cannot clean up");
                 return;
             }
 

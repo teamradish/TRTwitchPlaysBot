@@ -44,6 +44,9 @@ namespace TRBot.Commands
 
             using BotDBContext context = DatabaseManager.OpenContext();
 
+            long lastVControllerType = DataHelper.GetSettingIntNoOpen(SettingsConstants.LAST_VCONTROLLER_TYPE, context, 0L);
+            VirtualControllerTypes vcType = (VirtualControllerTypes)lastVControllerType;
+
             Settings joystickCountSetting = DataHelper.GetSettingNoOpen(SettingsConstants.JOYSTICK_COUNT, context);
             int prevJoystickCount = (int)joystickCountSetting.ValueInt;
 
@@ -91,12 +94,12 @@ namespace TRBot.Commands
 
             if (newJoystickCount < minControllers)
             {
-                QueueMessage($"New controller count of {newJoystickCount} is invalid. The minimum number of controllers is {minControllers}.");
+                QueueMessage($"New controller count of {newJoystickCount} is invalid. The minimum number of controllers for {vcType} is {minControllers}.");
                 return;
             }
             else if (newJoystickCount > maxControllers)
             {
-                QueueMessage($"New controller count of {newJoystickCount} is invalid. The maximum number of controllers is {maxControllers}.");
+                QueueMessage($"New controller count of {newJoystickCount} is invalid. The maximum number of controllers for {vcType} is {maxControllers}.");
                 return;
             }
 
@@ -109,8 +112,8 @@ namespace TRBot.Commands
             
             try
             {
-                //Clean up the controller manager
-                DataContainer.ControllerMngr?.CleanUp();
+                //Dispose the controller manager
+                DataContainer.ControllerMngr?.Dispose();
 
                 //Re-initialize and initialize controllers
                 DataContainer.ControllerMngr.Initialize();

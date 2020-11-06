@@ -23,7 +23,7 @@ namespace TRBot.VirtualControllers
     /// <summary>
     /// The interface for all virtual controller managers.
     /// </summary>
-    public interface IVirtualControllerManager
+    public interface IVirtualControllerManager : IDisposable
     {
         /// <summary>
         /// Tells if the virtual controller manager is initialized.
@@ -50,11 +50,6 @@ namespace TRBot.VirtualControllers
         /// Initializes the virtual controller manager.
         /// </summary>
         void Initialize();
-
-        /// <summary>
-        /// Cleans up the virtual controllers.
-        /// </summary>
-        void CleanUp();
 
         /// <summary>
         /// Initializes a certain number of virtual controllers, returning how many were successfully initialized.

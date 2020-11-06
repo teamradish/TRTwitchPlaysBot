@@ -137,8 +137,8 @@ namespace TRBot.Commands
                     return;
                 }
 
-                //Clean up the controller manager
-                DataContainer.ControllerMngr?.CleanUp();
+                //Dispose the controller manager
+                DataContainer.ControllerMngr?.Dispose();
 
                 DataContainer.SetCurVControllerType(parsedVCType);
 

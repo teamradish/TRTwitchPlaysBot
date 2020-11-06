@@ -96,8 +96,8 @@ namespace TRBot.Main
             if (ClientService?.IsConnected == true)
                 ClientService.Disconnect();
 
-            //Clean up and relinquish the virtual controllers when we're done
-            DataContainer?.ControllerMngr?.CleanUp();
+            //Dispose and relinquish the virtual controllers when we're done
+            DataContainer?.ControllerMngr?.Dispose();
         }
 
         public void Initialize()
@@ -832,8 +832,8 @@ namespace TRBot.Main
             //First, stop all inputs
             InputHandler.StopAndHaltAllInputs();
 
-            //Clean up the controller manager
-            DataContainer.ControllerMngr?.CleanUp();
+            //Dispose the controller manager
+            DataContainer.ControllerMngr?.Dispose();
 
             DataContainer.SetCurVControllerType(newVControllerType);
 
@@ -909,7 +909,7 @@ namespace TRBot.Main
             InputHandler.StopAndHaltAllInputs();
 
             //Re-initialize the new number of virtual controllers
-            DataContainer.ControllerMngr.CleanUp();
+            DataContainer.ControllerMngr.Dispose();
             DataContainer.ControllerMngr.Initialize();
             int acquiredCount = DataContainer.ControllerMngr.InitControllers((int)joystickCountSetting.ValueInt);
 

@@ -181,6 +181,12 @@ namespace TRBot.VirtualControllers
             ControllerIndex = controllerIndex;
         }
 
+        ~UInputController()
+        {
+            Dispose();
+            GC.SuppressFinalize(this);
+        }
+
         public void Dispose()
         {
             if (IsAcquired == false)

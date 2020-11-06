@@ -140,6 +140,12 @@ namespace TRBot.VirtualControllers
             ControllerIndex = controllerIndex;
         }
 
+        ~XDotoolController()
+        {
+            Dispose();
+            GC.SuppressFinalize(this);
+        }
+
         public void Dispose()
         {
             if (IsAcquired == false)
