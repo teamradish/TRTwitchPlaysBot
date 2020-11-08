@@ -8,7 +8,7 @@ First, run TRBot at least once to generate a **TRBotData.db** database file. Thi
 Whenever you make a change to the data, whether inside or outside of TRBot, it will be reflected in TRBot immediately (outside a few exceptions: see below). This allows you to change your data without having to restart TRBot. Some uses for this include adding new commands, changing user data, and modifying messages. This is a big improvement from the 1.X versions, which didn't feature such robust data management!
 
 # Viewing data
-It's recommended to use a SQLite database viewer application such as [SQLiteBrowser](https://sqlitebrowser.org/). It's also possible to use the SQLite CLI to view and modify data, but that is out of scope for this tutorial. This tutorial will presume that you are using a database viewer, specifically SQLiteBrowser.
+It's recommended to use a SQLite database viewer such as [SQLiteBrowser](https://sqlitebrowser.org/) or [SQLiteStudio](https://github.com/pawelsalawa/sqlitestudio). It's also possible to use the SQLite CLI to view and modify data, but that is out of scope for this tutorial. This tutorial will presume that you are using a database viewer, specifically SQLiteBrowser.
 
 ## Opening the database
 Open SQLiteBrowser and click File > Open Database, then load in your **TRBotData.db** file. You should see a view similar to this one:
