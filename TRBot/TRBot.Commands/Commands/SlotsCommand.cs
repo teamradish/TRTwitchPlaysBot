@@ -74,13 +74,15 @@ namespace TRBot.Commands
         private readonly Dictionary<SlotInternalNames, double> SlotRewardModifiers = new Dictionary<SlotInternalNames, double>(7)
         {
             { SlotInternalNames.Blank, 0d },
+            { SlotInternalNames.Lemon, 2d },
+            { SlotInternalNames.Orange, 4d },
+            { SlotInternalNames.Watermelon, 10d },
+            { SlotInternalNames.Plum, 25d },
             { SlotInternalNames.Cherry, 100d },
-            { SlotInternalNames.Plum, 2d },
-            { SlotInternalNames.Watermelon, 1d },
-            { SlotInternalNames.Orange, .5d },
-            { SlotInternalNames.Lemon, .25d },
             { SlotInternalNames.Bar, 500d },
         };
+
+        private const string INFO_ARG = "info";
 
         /// <summary>
         /// The weight table specifying the weights of each type of slot for each reel.
@@ -92,13 +94,24 @@ namespace TRBot.Commands
         /// </summary>
         private readonly List<double> WeightCache = new List<double>();
 
+        private double HighestRewardMod = 0d;
         private Random Rand = new Random();
 
-        private string UsageMessage = "Usage: \"buy-in (int)\"";
+        private string UsageMessage = "Usage: \"buy-in (int)\" or \"info\"";
 
         public SlotsCommand()
         {
+            
+        }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+
             BuildWeightTable();
+
+            //Cache so we know which one is the jackpot
+            HighestRewardMod = SlotRewardModifiers.Values.Max();
         }
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
@@ -139,10 +152,16 @@ namespace TRBot.Commands
 
             string buyInStr = arguments[0];
 
+            if (buyInStr == INFO_ARG)
+            {
+                PrintInfoMessage();
+                return;
+            }
+
             //Validate argument
             if (long.TryParse(buyInStr, out long buyInAmount) == false)
             {
-                QueueMessage("Please enter a valid buy-in amount!");
+                QueueMessage(UsageMessage);
                 return;
             }
 
@@ -222,10 +241,26 @@ namespace TRBot.Commands
                 }
             }
 
-            slotResult = (firstSlot == SlotInternalNames.Bar) ? SlotResults.Jackpot : SlotResults.Standard;
-
             //Get the reward modifier for this slot
-            return SlotRewardModifiers[firstSlot];
+            double modifier = SlotRewardModifiers[firstSlot];
+            
+            //If the user didn't actually win anything, show it as a loss
+            if (modifier <= 0d)
+            {
+                slotResult = SlotResults.Nothing;
+            }
+            //If the user got the highest reward modifier, they hit the jackpot!
+            else if (modifier == HighestRewardMod)
+            {
+                slotResult = SlotResults.Jackpot;
+            }
+            //Standard result
+            else
+            {
+                slotResult = SlotResults.Standard;
+            }
+
+            return modifier;
         }
 
         private SlotInternalNames ChooseSlot(List<ReelWeight> weights)
@@ -266,8 +301,8 @@ namespace TRBot.Commands
 
         private List<ReelWeight> GetReel1Weights()
         {
-            List<ReelWeight> reel1 = new List<ReelWeight>(22);
-            reel1.Add(new ReelWeight(SlotInternalNames.Blank, 28));
+            List<ReelWeight> reel1 = new List<ReelWeight>(7);
+            reel1.Add(new ReelWeight(SlotInternalNames.Blank, 8));
             reel1.Add(new ReelWeight(SlotInternalNames.Cherry, 5));
             reel1.Add(new ReelWeight(SlotInternalNames.Plum, 6));
             reel1.Add(new ReelWeight(SlotInternalNames.Watermelon, 6));
@@ -279,8 +314,8 @@ namespace TRBot.Commands
 
         private List<ReelWeight> GetReel2Weights()
         {
-            List<ReelWeight> reel2 = new List<ReelWeight>(22);
-            reel2.Add(new ReelWeight(SlotInternalNames.Blank, 37));
+            List<ReelWeight> reel2 = new List<ReelWeight>(7);
+            reel2.Add(new ReelWeight(SlotInternalNames.Blank, 10));
             reel2.Add(new ReelWeight(SlotInternalNames.Cherry, 4));
             reel2.Add(new ReelWeight(SlotInternalNames.Plum, 4));
             reel2.Add(new ReelWeight(SlotInternalNames.Watermelon, 5));
@@ -292,8 +327,8 @@ namespace TRBot.Commands
 
         private List<ReelWeight> GetReel3Weights()
         {
-            List<ReelWeight> reel3 = new List<ReelWeight>(22);
-            reel3.Add(new ReelWeight(SlotInternalNames.Blank, 42));
+            List<ReelWeight> reel3 = new List<ReelWeight>(7);
+            reel3.Add(new ReelWeight(SlotInternalNames.Blank, 15));
             reel3.Add(new ReelWeight(SlotInternalNames.Cherry, 2));
             reel3.Add(new ReelWeight(SlotInternalNames.Plum, 3));
             reel3.Add(new ReelWeight(SlotInternalNames.Watermelon, 4));
@@ -301,6 +336,25 @@ namespace TRBot.Commands
             reel3.Add(new ReelWeight(SlotInternalNames.Lemon, 6));
             reel3.Add(new ReelWeight(SlotInternalNames.Bar, 1));
             return reel3;
+        }
+
+        private void PrintInfoMessage()
+        {
+            int count = WeightTable.Count;
+
+            StringBuilder stringBuilder = new StringBuilder(128);
+
+            foreach (KeyValuePair<SlotInternalNames, double> kvPair in SlotRewardModifiers)
+            {
+                string emoteName = SlotToEmoteMap[kvPair.Key];
+
+                stringBuilder.Append(emoteName).Append(' ').Append('x').Append(count).Append(" = ");
+                stringBuilder.Append(kvPair.Value).Append('x').Append(" buy-in | ");
+            }
+
+            stringBuilder.Remove(stringBuilder.Length - 3, 3);
+
+            QueueMessage(stringBuilder.ToString());
         }
 
         private struct ReelWeight
