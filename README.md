@@ -1,15 +1,15 @@
 # TRBot
 TRBot is software capable of playing video games through text. It also contains many features to facilitate setting up and managing Twitch Plays games. The goal of TRBot is to lower the barrier of entry for text-based gameplay, such as Twitch Plays, and provide avenues to improve the experience.
 
-TRBot is inspired by TwitchPlays_Everything. The input syntax allows for great precision, making it well-suited for many types of games.
+TRBot is inspired by TwitchPlays_Everything. The input syntax allows for great precision, making it well-suited for many types of games. You can use it for a variety of purposes, including, but not limited to, allowing others to play games remotely and automating tedious/repetitive tasks in your own playthroughs, such as mashing buttons or grinding levels in an RPG.
 
-[Example of an advanced command.](https://tdeeb.github.io/projects/images/TRBot/TRBot_AdvancedCommands.gif)
+[Example of an advanced command.](./Wiki/Images/TRBot_AdvancedCommands.gif)
 
 ## Features
 * [Simple yet expressive input syntax](./Wiki/Syntax-Tutorial.md) - translate your text to game inputs easily. Make your inputs as simple or precise as you want!
-* Game-agnostic; TRBot runs alongside your game and can be configured as you like.
-* Runs on Windows (vJoy) and GNU/Linux (uinput).
-* Emulator support - NES, SNES, N64, GCN, and more. Several [emulator controller config files](https://github.com/teamradish/TRTwitchPlaysBot/tree/master/Emulator%20Controller%20Configs) are available.
+* Game-agnostic - TRBot runs alongside your game and can be configured as you like.
+* Cross-platform - Runs on Windows (vJoy) and GNU/Linux (uinput).
+* Emulator support - NES, SNES, N64, GCN, and more. Several [emulator controller config files](./Emulator%20Controller%20Configs) are available.
 * Highly performant input handling with near frame-perfect inputs.
 * Robust, pluggable virtual controller architecture - add your own custom virtual controller to support additional platforms and types of play.
 * Flexible console infrastructure - change inputs, add new inputs, or even add a new console with an entirely different set of inputs, on the fly.

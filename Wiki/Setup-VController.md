@@ -15,7 +15,7 @@ Your virtual controllers should be set up and good to go right now. Run TRBot an
 
 **IMPORTANT: The default console for TRBot is NES, which has no analog inputs. If you wish to test analog inputs, switch to a console with them, such as Gamecube, with `!console gc`. You will need an access level of admin to switch the console (covered in [Setting up TRBot](#setting-up-trbot)).**
 
-A simple way to test actual inputs is on the [Dolphin](https://dolphin-emu.org/) emulator using the [provided vJoy or uinput controller profiles in this repository](https://github.com/teamradish/TRTwitchPlaysBot/tree/master/Emulator%20Controller%20Configs/Dolphin). Once the mappings are set in the emulator (you can set them using chat inputs as well), you can test it out by typing inputs with the bot (for vJoy, the *"vJoy Feeder (Demo)"* program will also work). You should see buttons being pressed and axes being moved in Dolphin's controller configuration screen if everything was configured correctly.
+A simple way to test actual inputs is on the [Dolphin](https://dolphin-emu.org/) emulator using the [provided vJoy or uinput controller profiles in this repository](../Emulator%20Controller%20Configs/Dolphin). Once the mappings are set in the emulator (you can set them using chat inputs as well), you can test it out by typing inputs with the bot (for vJoy, the *"vJoy Feeder (Demo)"* program will also work). You should see buttons being pressed and axes being moved in Dolphin's controller configuration screen if everything was configured correctly.
 
 Alternatively, you can use another application to test joystick inputs. One such application on GNU/Linux is **jstest-gtk**.
 
