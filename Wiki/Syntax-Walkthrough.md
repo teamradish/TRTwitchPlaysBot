@@ -1,8 +1,8 @@
-Welcome to the syntax walkthrough! This short, but handy, guide will show you all you need to know about TRBot's input syntax.
+Welcome to the syntax walkthrough! This short tutorial will show you all the essentials about TRBot's input syntax.
 
 This walkthrough will be demonstrating the input syntax using a well-known game, Super Mario Bros. 3 for the NES. All the inputs typed in the GIFs can be found at the end of each section.
 
-For reference, here are all the available inputs for the NES, which are used throughout the guide:
+For reference, here are all the available inputs for the NES, which are used throughout the walkthrough:
 - a
 - b
 - start
@@ -80,7 +80,7 @@ What if we want Mario to run for a bit, then walk but not stop moving? We need t
 Inputs typed:
 - _b _right #1s -b #2s
 
-Notice how the Mario slows down and the P Meter decreases after releasing b yet continues to walk for 2 more seconds. 
+Notice how Mario slows down and the P Meter decreases after releasing b yet continues to walk for 2 more seconds. 
 
 ## Simultaneous Inputs
 
