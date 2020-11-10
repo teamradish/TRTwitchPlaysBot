@@ -80,7 +80,7 @@ What if we want Mario to run for a bit, then walk but not stop moving? We need t
 Inputs typed:
 - _b _right #1s -b #2s
 
-Notice how Mario slows down and the P Meter decreases after releasing b yet continues to walk for 2 more seconds. 
+Notice how Mario slows down and the P Meter decreases after releasing b, yet he continues walking for 2 more seconds. 
 
 ## Simultaneous Inputs
 
@@ -97,7 +97,7 @@ In the first input sequence, Mario jumps and moves right at the same time. In th
 
 ## Repeated Inputs
 
-Next let's make Mario to jump many times in succession. This will be useful for getting multiple coins from a block. For this, we'll need to **repeat the input sequence** several times.
+Next, let's make Mario jump many times in succession. This is useful for getting multiple coins from a block. For this, we'll need to **repeat the input sequence** several times.
 
 To repeat an input sequence, enclose it in brackets, followed by "\*" and the number of times to repeat it. A template is "[myinput]\*#", with "myinput" being the input sequence and "#" representing the number of repetitions.  
 
@@ -106,7 +106,7 @@ To repeat an input sequence, enclose it in brackets, followed by "\*" and the nu
 Inputs typed:
 - [a #350ms]*6
 
-In the above, we repeat Mario jumping then waiting 350 milliseconds, 6 times.
+In the above, we repeat Mario jumping for 200 milliseconds then waiting for 350 milliseconds, 6 times.
 
 ## Multi-Controller Inputs
 
