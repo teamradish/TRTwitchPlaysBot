@@ -10,7 +10,8 @@ Welcome to the TRBot wiki! Choose the relevant section for your needs.
 * [Supplementary Info](Setup-Misc.md) - Tools to enhance TRBot and your stream.
 
 ## Players
-* [Syntax Tutorial](./Syntax-Tutorial.md) - A tutorial covering TRBot's robust input syntax.
+* [Syntax Walkthrough](./Syntax-Walkthrough.md) - A beginner-friendly guide to TRBot's input syntax, with visuals.
+* [Syntax Tutorial](./Syntax-Tutorial.md) - A more in-depth tutorial covering TRBot's robust input syntax.
 * [Usage Examples](./Real-Usage-Examples.md) - See TRBot in action on real streams!
 
 ## Developers
