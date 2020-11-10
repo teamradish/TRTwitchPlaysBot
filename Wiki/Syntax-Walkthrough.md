@@ -11,7 +11,7 @@ For reference, here are all the available inputs for the NES, which are used thr
 - down
 - left
 - right
-- # (blank input)
+- &#35; (blank input)
 
 ## Pressing Buttons
 
@@ -43,7 +43,7 @@ That wasn't good enough, so let's make Mario do more! Let's have him run right, 
 
 You can type more than one input in a single line and have them complete in order. Once an input is completed, the next will follow. This is known as an input sequence. Notice how Mario jumps after moving right, then soon afterwards veers to the left.
 
-![TutDuration](./Images/Tutorial/TutSequence.gif)
+![TutSequence](./Images/Tutorial/TutSequence.gif)
 
 Inputs typed:
 - right500ms a left1s
