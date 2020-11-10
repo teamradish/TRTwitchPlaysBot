@@ -140,9 +140,9 @@ Note that **adding**, not using, input macros requires sufficient permissions, w
 
 ## Dynamic Input Macros
 
-Adding on top of input macros is dynamic input macros. Dynamic input macros accept arguments that are substituted for text passed in. Similar to input macros, dynamic input macros also start with "#", but following the name is a series of arguments followed by parenthesis. Substitutions for each argument are numbers enclosed in angled brackets, starting at zero.
+Adding further to input macros is dynamic input macros. Dynamic input macros accept arguments that are substituted for text passed in. Similar to input macros, dynamic input macros also start with "#", but following the name is a series of arguments enclosed in parenthesis. Substitutions for each argument are numbers enclosed in angled brackets, starting at zero.
 
-That's a lot to absorb, so we'll demonstrate it. Using dynamic macros, we can make Mario move left or right depending on which input we pass in. Sounds cool? Let's see it in action!
+That's a lot to absorb, so we'll demonstrate it. Using dynamic macros, we can make Mario move left or right depending on which input we pass in. Sounds cool? Let's see it in action.
 
 ![TutDynamicMacros](./Images/Tutorial/TutDynamicMacros.gif)
 
@@ -152,11 +152,11 @@ Inputs typed:
 
 By passing in "right" or "left", we substituted the "<0>" argument with the input, causing Mario to move in that direction for one second. The generic form for this macro is "#move(*)", with the input being "<0>1s".
 
-Dynamic input macros can support multiple arguments. For instance, a dynamic input macro mashing a button may be "#mash(\*,\*)" and be "[<0>34ms #34ms]*<1>". If you typed out "#mash(a,20)", TRBot will rapidly press the A button 20 times!
+Dynamic input macros can support multiple arguments. For instance, a dynamic input macro mashing a button may be called "#mash(\*,\*)" and translate to "[<0>34ms #34ms]*<1>". If you typed out "#mash(a,20)", TRBot will rapidly press the A button 20 times!
 
 ## Next steps
 
-What comes next? Give TRBot a try and [host your own](/.Setup-Init.md), or play through an instance deployed on a Twitch stream. Players have achieved great feats using TRBot in [past game playthroughs](./Real-Usage-Examples.md)!
+What comes next? Give TRBot a try and [host your own](./Setup-Init.md), or play through an instance deployed on a Twitch stream. Players have achieved great feats using TRBot in [past game playthroughs](./Real-Usage-Examples.md)!
 
 ![TutCulmination](./Images/Tutorial/TutCulmination.gif)
 
