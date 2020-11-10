@@ -26,7 +26,7 @@ Inputs typed:
 
 ## Input Duration
 
-Now let's make Mario walk farther to the right in a single command. You can specify a duration for how long to press an input, in either milliseconds (ms) or seconds (s). Notice how Mario walks farther than before.
+Now let's make Mario walk farther to the right in a single command. You can specify a duration for how long to press an input, in either milliseconds (ms) or seconds (s). Notice how Mario walks farther and jumps higher when we specify longer durations.
 
 ![TutDuration](./Images/Tutorial/TutDuration.gif)
 
@@ -153,3 +153,14 @@ Inputs typed:
 By passing in "right" or "left", we substituted the "<0>" argument with the input, causing Mario to move in that direction for one second. The generic form for this macro is "#move(*)", with the input being "<0>1s".
 
 Dynamic input macros can support multiple arguments. For instance, a dynamic input macro mashing a button may be "#mash(\*,\*)" and be "[<0>34ms #34ms]*<1>". If you typed out "#mash(a,20)", TRBot will rapidly press the A button 20 times!
+
+## Next steps
+
+What comes next? Give TRBot a try and [host your own](/.Setup-Init.md), or play through an instance deployed on a Twitch stream. Players have achieved great feats using TRBot in [past game playthroughs](./Real-Usage-Examples.md)!
+
+![TutCulmination](./Images/Tutorial/TutCulmination.gif)
+
+Inputs typed:
+- _b+right1467ms -right+left #120ms a300ms left50ms #300ms a -b600ms _right100ms a -right #1200ms _right250ms a1s -right #600ms a
+
+For even more details on the input syntax, including how to specify percentages for analog inputs read the more technical [syntax tutorial](./Syntax-Tutorial.md).
