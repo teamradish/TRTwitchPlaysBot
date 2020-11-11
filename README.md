@@ -3,10 +3,8 @@ TRBot is software that enables playing video games through text. It contains a c
 
 TRBot is inspired by TwitchPlays_Everything. The input syntax allows for great precision, making it well-suited for many types of games. You can use it for a variety of purposes, including, but not limited to, allowing others to play games remotely and automating tedious/repetitive tasks in your own playthroughs, such as mashing buttons or grinding levels in an RPG.
 
-[Example of an advanced command.](./Wiki/Images/TRBot_AdvancedCommands.gif)
-
 ## Features
-* [Simple yet expressive input syntax](./Wiki/Syntax-Tutorial.md) - translate your text to game inputs easily. Make your inputs as simple or precise as you want!
+* [Simple yet expressive input syntax](./Wiki/Syntax-Walkthrough.md) - translate your text to game inputs easily. Make your inputs as simple or precise as you want!
 * Game-agnostic - TRBot runs alongside your game and can be configured as you like.
 * Cross-platform - Runs on Windows (vJoy) and GNU/Linux (uinput).
 * Emulator support - NES, SNES, N64, GCN, and more. Several [emulator controller config files](./Emulator%20Controller%20Configs) are available.
@@ -14,7 +12,7 @@ TRBot is inspired by TwitchPlays_Everything. The input syntax allows for great p
 * Robust, pluggable virtual controller architecture - add your own custom virtual controller to support additional platforms and types of play.
 * Flexible console infrastructure - change inputs, add new inputs, or even add a new console with an entirely different set of inputs, on the fly.
 * Modular - TRBot is separated into parts, allowing those parts to be used as a library in an application. The core application, `TRBot.Main`, functions this way.
-* Commands - Modify, interact with, or obtain information from TRBot through commands entered as text. Command can be simple, such as [`SayCommand`](./TRBot/TRBot.Commands/Commands/SayCommand.cs), or more complex, such as [`AddInputCommand`](./TRBot/TRBot.Commands/Commands/AddInputCommand.cs). 
+* Commands - Modify, interact with, and obtain information from TRBot through commands entered as text. Command can be simple, such as [`SayCommand`](./TRBot/TRBot.Commands/Commands/SayCommand.cs), or more complex, such as [`AddInputCommand`](./TRBot/TRBot.Commands/Commands/AddInputCommand.cs). 
 * Twitch Plays quality-of-life enhancements - macros, game logs, user silencing (without timeout/ban), stop all ongoing inputs, and switch consoles on the fly.
 * SQLite database with configurable data and settings, including access levels, commands, virtual controller count, and more. Any data changes are immediately reflected in TRBot.
 * Moderation features - control access to commands, inputs, and other features independent of platform.

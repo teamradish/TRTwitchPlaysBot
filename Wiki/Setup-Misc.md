@@ -4,11 +4,11 @@ Here you'll find supplementary information that can be used to enhance TRBot!
 See the [chatbot guide](./Setup-ChatterBot.md) for setting up a chatbot that your viewers can talk to!
 
 # Game Message
-TRBot has an optional game message that can be set with the `SetMessageCommand`. An example of such a message may be "Beat level 1". Once set, the message is saved into a **GameMessage.txt** file in the **Data** folder. You can display this message on screen using OBS via the following steps:
+TRBot has an optional game message that can be set with the `SetMessageCommand`. An example of such a message may be "Beat level 1". Once set, the message is saved into a file specified by the **game_message_path** setting in the database (the default is a **GameMessage.txt** file in the **Data** folder). You can display this message on screen using OBS via the following steps:
 
 1. Create Text (GDI+, FreeType2, etc.)
 2. Check the box labeled "Read from file"
-3. Browse and select **GameMessage.txt**
+3. Browse and select the text file.
 
 Now the message should be displayed on screen for all your viewers to see. Whenever the message is changed through the bot, it will be updated in the file and subsequently on screen.
 

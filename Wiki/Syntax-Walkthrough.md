@@ -106,7 +106,7 @@ To repeat an input sequence, enclose it in brackets, followed by "\*" and the nu
 Inputs typed:
 - [a #350ms]*6
 
-In the above, we repeat Mario jumping for 200 milliseconds then waiting for 350 milliseconds, 6 times.
+In the above, we repeat Mario jumping for 200 milliseconds then waiting for 350 milliseconds, 6 times. Where'd the 200 milliseconds come from? The "a" input did not have a duration specified, so its duration is the default, 200 milliseconds. The total length for this command is 3300 milliseconds ((200 + 350) * 6).
 
 ## Multi-Controller Inputs
 
@@ -121,7 +121,7 @@ Inputs typed:
 
 Notice how we chose to explicitly make Luigi move right on the second input sequence. On the third input sequence, we chain Mario and Luigi's inputs together so they move at the same time. Pretty cool, huh?
 
-You might be wondering why we don't have to specify player 1's inputs. That's because our default controller port is set to 1. If it was set to 2, we would control Luigi by default and have to type "&1" for Mario's inputs!
+You might be wondering why we don't have to specify player 1's inputs. That's because our default controller port is set to 1. If it was set to 2, we would control Luigi by default and have to type "&1" for Mario's inputs! You can view or change your controller port using the `ControllerPortCommand` (default: "!port").
 
 ## Input Macros
 
@@ -136,7 +136,7 @@ Inputs typed:
 
 Notice how Mario still moved right, showing that the "#moveright" macro was replaced with the "right1s" input it corresponds to. Anyone can use input macros, making them a very powerful asset. After all, input macros can even contain other input macros!
 
-Note that **adding**, not using, input macros requires sufficient permissions, which may vary depending on who is running the TRBot instance you're interacting with.
+Note that **adding**, not using, input macros requires sufficient permissions, which may vary depending on the TRBot instance you're interacting with. By default, you can view macros with the `ListMacrosCommand` (default: "!macros") and add them with the `AddMacroCommand` (default: "!addmacro").
 
 ## Dynamic Input Macros
 

@@ -10,6 +10,9 @@
 # Don't hesitate to change any of this to get your desired chatbot behavior - this is just a sample setup
 # See more information on the official documentation (https://chatterbot.readthedocs.io/en/stable/index.html)
 
+# ChatterBot is licensed under BSD-3 Clause: https://github.com/gunthercox/ChatterBot/blob/master/LICENSE
+# This specific file is licensed under the same terms as ChatterBot itself
+
 from chatterbot import ChatBot
 from chatterbot.trainers import ChatterBotCorpusTrainer, ListTrainer
 import time

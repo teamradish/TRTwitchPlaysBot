@@ -57,6 +57,8 @@ Unless noted otherwise, all of the following settings are under the "Settings" t
 - **last_console** - The game console to use.
 - **message_cooldown** - Indicates how much time, in milliseconds, each message can be sent in max. This acts as a message throttler for platforms with rate-limiting on bots.
 
+For more information, view the [settings documentation](./Settings-Documentation.md).
+
 # Reloading data
 TRBot comes with a ReloadCommand, mapped to "reload" by default, to reload data. Some data cannot be applied to TRBot until it is reloaded for technical reasons. There are two types of reloads: soft and hard. Hard reloads typically destroy then recreate the data from the database, while soft reloads typically only apply the changes.
 

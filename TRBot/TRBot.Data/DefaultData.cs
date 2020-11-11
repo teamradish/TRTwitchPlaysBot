@@ -79,7 +79,7 @@ namespace TRBot.Data
                 SettingsHelper(GAME_MESSAGE_PATH, "GameMessage.txt"),
                 SettingsHelper(GAME_MESSAGE_PATH_IS_RELATIVE, true),
                 SettingsHelper(INFO_MESSAGE, "Welcome to the channel! You can play games by submitting messages in chat. Type !inputs to see all available buttons."),
-                SettingsHelper(TUTORIAL_MESSAGE, "Hi {0}, here's how to play: https://github.com/teamradish/TRTwitchPlaysBot/wiki/Syntax-Tutorial"),
+                SettingsHelper(TUTORIAL_MESSAGE, "Hi {0}, here's how to play: https://github.com/teamradish/TRTwitchPlaysBot/Wiki/Syntax-Walkthrough.md"),
                 SettingsHelper(DEFAULT_INPUT_DURATION, 200L),
                 SettingsHelper(MAX_INPUT_DURATION, 60000L),
                 SettingsHelper(LAST_CONSOLE, 1L),

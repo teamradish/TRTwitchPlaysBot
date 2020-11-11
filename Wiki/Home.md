@@ -5,6 +5,7 @@ Welcome to the TRBot wiki! Choose the relevant section for your needs.
 * [Setting up TRBot](./Setup-Init.md) - Initial steps setting up TRBot.
 * [Virtual Controllers](./Setup-VController.md) - Set up virtual controllers that TRBot presses buttons on for your games.
 * [Migrating Data](./Migrating-Data.md) - A guide to migrating data from previous TRBot releases.
+* [Settings Documentation](./Settings-Documentation.md) - Documentation on the various settings.
 ###Other
 * [Chatbot Guide](./Setup-ChatterBot.md) - A quick guide to setting up your own chatbot for viewers to talk to.
 * [Supplementary Info](Setup-Misc.md) - Tools to enhance TRBot and your stream.
@@ -12,7 +13,7 @@ Welcome to the TRBot wiki! Choose the relevant section for your needs.
 ## Players
 * [Syntax Walkthrough](./Syntax-Walkthrough.md) - A beginner-friendly guide to TRBot's input syntax, with visuals.
 * [Syntax Tutorial](./Syntax-Tutorial.md) - A more in-depth tutorial covering TRBot's robust input syntax.
-* [Usage Examples](./Real-Usage-Examples.md) - See TRBot in action on real streams!
+* [Usage Examples](./Real-Usage-Examples.md) - See what players have done with TRBot on real streams!
 
 ## Developers
 * [Building from source](./Building.md) - How to build TRBot from source.
