@@ -25,7 +25,7 @@ TRBot's syntax takes the following form:
 
 Inputs are *not* case-sensitive and vary by the console in use. The valid input list can be viewed by running the `InputInfoCommand` (default: "!inputs"). A blank input, also known as a wait input, is usually available, with "#" as the default. Sometimes, "." will be a synonym for "#" (more on synonyms later below).
 
-If a duration isn't specified, it defaults to the [default_input_duration](./Settings-Documentation#default_input_duration) setting, which can be viewed with the `DefaultInputDurCommand` (default: "!defaultinputdur"). The default on a clean TRBot installation is 200 milliseconds.
+If a duration isn't specified, it defaults to the [default_input_duration](./Settings-Documentation.md#default_input_duration) setting, which can be viewed with the `DefaultInputDurCommand` (default: "!defaultinputdur"). The default on a clean TRBot installation is 200 milliseconds.
 
 Complete input example:
 * "&1right70%500ms" - this holds "right" 70% for 500 milliseconds on player 1's controller
@@ -40,7 +40,7 @@ It's possible to perform as many inputs as you want in a message. Each string of
 
 Example: "left500ms b500ms right500ms b500ms" ([Demonstration](https://clips.twitch.tv/InterestingBoldKathyEleGiggle))
 
-The maximum duration of an entire input sequence is determined by the [max_input_duration](./Settings-Documentation#max_input_duration) setting. No input sequence can surpass this duration. For example, if the max duration is 60 seconds, typing "a61s" or "a30s b30001ms" will be equal to 60 seconds, so the input will fail.
+The maximum duration of an entire input sequence is determined by the [max_input_duration](./Settings-Documentation.md#max_input_duration) setting. No input sequence can surpass this duration. For example, if the max duration is 60 seconds, typing "a61s" or "a30s b30001ms" will be equal to 60 seconds, so the input will fail.
 
 The max input duration can be viewed with the `MaxInputDurCommand` (default: "!maxinputdur"), and the bot will often tell you when an input sequence exceeds the max duration.
 
