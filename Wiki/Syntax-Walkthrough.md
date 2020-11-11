@@ -163,4 +163,4 @@ What comes next? Give TRBot a try and [host your own](./Setup-Init.md), or play 
 Inputs typed:
 - _b+right1467ms -right+left #120ms a300ms left50ms #300ms a -b600ms _right100ms a -right #1200ms _right250ms a1s -right #600ms a
 
-For even more details on the input syntax, including how to specify percentages for analog inputs read the more technical [syntax tutorial](./Syntax-Tutorial.md).
+For even more details on the input syntax, including how to specify percentages for analog inputs, read the more technical [syntax tutorial](./Syntax-Tutorial.md).
