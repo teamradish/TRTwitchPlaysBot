@@ -1,4 +1,4 @@
-This page serves to document important database settings for TRBot.
+This page serves to document important database settings for TRBot. All these settings are in the Settings table of the database file, **TRBotData.db**.
 
 Table of Contents
 =================

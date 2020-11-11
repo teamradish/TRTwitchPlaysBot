@@ -134,33 +134,19 @@ Input macros to the rescue! Input macros are stored input sequences that can be 
 Inputs typed:
 - #moveright
 
-Notice how Mario still moved right, showing that the "#moveright" macro was replaced with the "right1s" input it corresponds to. Anyone can use input macros, making them a very powerful asset. After all, input macros can even contain other input macros!
+Notice how Mario still moved right, showing that the "#moveright" macro was replaced with the "right1s" input it corresponds to. In games such as Super Mario 64, where the character has moves that are performed through a sequence of inputs, macros can be a very powerful asset and eliminate the tedium involved in remembering and performing these moves. Anyone can use input macros, and they can even contain other input macros!
 
 Note that **adding**, not using, input macros requires sufficient permissions, which may vary depending on the TRBot instance you're interacting with. By default, you can view macros with the `ListMacrosCommand` (default: "!macros") and add them with the `AddMacroCommand` (default: "!addmacro").
 
-## Dynamic Input Macros
+## Closing
 
-Adding further to input macros is dynamic input macros. Dynamic input macros accept arguments that are substituted for text passed in. Similar to input macros, dynamic input macros also start with "#", but following the name is a series of arguments enclosed in parenthesis. Substitutions for each argument are numbers enclosed in angled brackets, starting at zero.
-
-That's a lot to absorb, so we'll demonstrate it. Using dynamic macros, we can make Mario move left or right depending on which input we pass in. Sounds cool? Let's see it in action.
-
-![TutDynamicMacros](./Images/Tutorial/TutDynamicMacros.gif)
-
-Inputs typed:
-- #move(right)
-- #move(left)
-
-By passing in "right" or "left", we substituted the "<0>" argument with the input, causing Mario to move in that direction for one second. The generic form for this macro is "#move(*)", with the input being "<0>1s".
-
-Dynamic input macros can support multiple arguments. For instance, a dynamic input macro mashing a button may be called "#mash(\*,\*)" and translate to "[<0>34ms #34ms]*<1>". If you typed out "#mash(a,20)", TRBot will rapidly press the A button 20 times!
-
-## Next steps
-
-What comes next? Give TRBot a try and [host your own](./Setup-Init.md), or play through an instance deployed on a Twitch stream. Players have achieved great feats using TRBot in [past game playthroughs](./Real-Usage-Examples.md)!
+Here is one final example culminating everything we've learned. Let's have Mario play through some of the level!
 
 ![TutCulmination](./Images/Tutorial/TutCulmination.gif)
 
 Inputs typed:
 - _b+right1467ms -right+left #120ms a300ms left50ms #300ms a -b600ms _right100ms a -right #1200ms _right250ms a1s -right #600ms a
 
-For even more details on the input syntax, including how to specify percentages for analog inputs, read the more technical [syntax tutorial](./Syntax-Tutorial.md).
+What comes next? Give TRBot a try and [set up your own](./Setup-Init.md), or play through an instance deployed on a Twitch stream. Players have achieved great feats using TRBot in [past game playthroughs](./Real-Usage-Examples.md)!
+
+For even more details on the input syntax, including dynamic macros and how to specify percentages for analog inputs, read the more technical [syntax tutorial](./Syntax-Tutorial.md).

@@ -23,9 +23,9 @@ TRBot's syntax takes the following form:
 4. #% - This is the percentage to press the input; this is commonly used on analog sticks. | Optional. Example: "50%" 
 5. #ms or #s - This is how long to hold the input for, in milliseconds or seconds, but not both. | Optional. Examples: "450ms", "2s"
 
-Inputs are *not* case-sensitive and vary by the console in use. The valid input list can be viewed by running the `ValidInputsCommand`. A blank input, also known as a wait input, is usually available, with "#" as the default. Sometimes, "." will be a synonym for "#" (more on synonyms later below).
+Inputs are *not* case-sensitive and vary by the console in use. The valid input list can be viewed by running the `InputInfoCommand` (default: "!inputs"). A blank input, also known as a wait input, is usually available, with "#" as the default. Sometimes, "." will be a synonym for "#" (more on synonyms later below).
 
-If a duration isn't specified, it defaults to the **default_input_duration** in **TRBotData.db**, which can be viewed with the `DefaultInputDurationCommand`. The default on a clean TRBot installation is 200 milliseconds.
+If a duration isn't specified, it defaults to the [default_input_duration](./Settings-Documentation#default_input_duration) setting, which can be viewed with the `DefaultInputDurCommand` (default: "!defaultinputdur"). The default on a clean TRBot installation is 200 milliseconds.
 
 Complete input example:
 * "&1right70%500ms" - this holds "right" 70% for 500 milliseconds on player 1's controller
@@ -40,9 +40,9 @@ It's possible to perform as many inputs as you want in a message. Each string of
 
 Example: "left500ms b500ms right500ms b500ms" ([Demonstration](https://clips.twitch.tv/InterestingBoldKathyEleGiggle))
 
-The maximum duration of an entire input sequence is determined by **max_input_duration** in **TRBotData.db**. No input sequence can surpass this duration. For example, if the max duration is 60 seconds, typing "a61s" or "a30s b30001ms" will be equal to 60 seconds, so the input will fail.
+The maximum duration of an entire input sequence is determined by the [max_input_duration](./Settings-Documentation#max_input_duration) setting. No input sequence can surpass this duration. For example, if the max duration is 60 seconds, typing "a61s" or "a30s b30001ms" will be equal to 60 seconds, so the input will fail.
 
-The max input duration can be viewed with the `MaxInputDurationCommand`, and the bot will often tell you when an input sequence exceeds the max duration.
+The max input duration can be viewed with the `MaxInputDurCommand` (default: "!maxinputdur"), and the bot will often tell you when an input sequence exceeds the max duration.
 
 Inputs may also fail depending on the client service. For instance, messages on Twitch cannot exceed 500 characters.
 
@@ -94,11 +94,11 @@ Example: "start . &2_right &2b500ms+left2s b1s" ([Demonstration](https://clips.t
 
 **Note:** In the example above, the input was performed while the player was on controller port 1, hence the omission of "&1" for player 1 inputs.
 
-Specifying an invalid controller port will cause the input to fail. The number of controllers in use can be viewed with the `ControllerCountCommand`. 
+Specifying an invalid controller port will cause the input to fail. The number of controllers in use can be viewed with the `ControllerCountCommand` (default: "!controllercount"), and a user can view or set their controller port with the `ControllerPortCommand` (default: "!port"). 
 
 ## Macros
 
-Macros are a collection of inputs that can be assigned to the bot with the `AddMacroCommand`. Macros are stored in the **Macros** table in **TRBotData.db** and can be viewed with the `MacrosCommand`.
+Macros are a collection of inputs that can be assigned to the bot with the `AddMacroCommand` (default: "!addmacro"). Macros are stored in the **Macros** table in the database and can be viewed with the `ListMacrosCommand` (default: "!macros").
 
 Macros start with "#" and have a name, which may be used to describe what the macro does. For example, "#masha" can be a macro for "[a34ms #34ms]\*20", which will press "a" many times very rapidly.
 
@@ -120,16 +120,16 @@ Examples: "#mash(y)", "#mash(b)", "mashalternate(left, right)" ([Demonstration](
 
 It's possible to expand the earlier example further with an additional argument: "#mash(\*,\*)". If the new macro was then "[<0>34ms #34ms]\*<1>", calling the macro with "#mash(y,30)" will result in "[y34ms #34ms]\*30".
 
-Dynamic macros are referred to by their generic form when used for other purposes, such as when adding or removing them, or viewing them with the `ShowCommand`. For the example above, the generic form is "#mash(\*,\*)".
+Dynamic macros are referred to by their generic form when used for other purposes, such as when adding or removing them, or viewing them with the `ShowMacroCommand` (default: "!showmacro"). For the example above, the generic form is "#mash(\*,\*)".
 
 **Note that due to the nature of dynamic macros and the liberties with their syntax, the parser cannot validate them upon creation.** It is up to the players to verify that the dynamic macro works. Inputting a dynamic macro that doesn't parse will simply result in the input failing with no special error message. **Watch out for spaces between arguments while calling dynamic macros inside other macros!**
 
 ## Input Synonyms
 
-While not part of TRBot's syntax, input synonyms can be used to define alternatives for existing inputs. They can be added with the `AddInputSynonymCommand` and are stored in the **InputSynonyms** table in **TRBotData.db**. Input synonyms are defined on a per-console basis. A common input synonym is ".", which is a synonym for "#", the default wait input.
+While not part of TRBot's syntax, input synonyms can be used to define alternatives for existing inputs. They can be added with the `AddInputSynonymCommand` (default: "!addsyn") and are stored in the **InputSynonyms** table in the database. Input synonyms are defined on a per-console basis. A common input synonym is ".", which is a synonym for "#", the default wait input.
 
 For example, in a game where the "a" button makes the character jump, one can make "jump" a synonym of "a". As a result, the parser will replace "jump" with "a", and the character will jump.
 
 It's also possible to make more complex synonyms: for example, "slide" can be "_down a". This gives input synonyms a similar quality to macros, but they are not designed for such a purpose; thus, it's recommended to keep input synonyms as simple as possible.
 
-Input synonyms will directly replace any match, which can break inputs. For example, if "triangle" is an input, with "a" being an input synonym "triangle", the final output would be "tritrianglengle", which is likely not a valid input. In these instances, it's recommended to instead add a new input with the same button and/or axis value so it parses correctly.
+Input synonyms will directly replace any match, which can break inputs. For example, if "triangle" is an input, with "a" being an input synonym, the final output would be "tritrianglengle", which is likely not a valid input. In these instances, it's recommended to instead add a new input with the same button and/or axis value so it parses correctly. You can view all input synonyms with the `ListInputSynonymsCommand` (default: "!listsyn").
