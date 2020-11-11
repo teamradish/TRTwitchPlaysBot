@@ -38,7 +38,7 @@ Inputs are parsed from left to right with no delay in between. Ex. "a b" will pr
 
 It's possible to perform as many inputs as you want in a message. Each string of inputs is known as an input sequence. Input sequences can be performed with or without whitespace. For example, "a b" is equivalent to "ab".
 
-Example: "left500ms b500ms right500ms b500ms" ([Demonstration](https://clips.twitch.tv/InterestingBoldKathyEleGiggle))
+**Example:** "left500ms b500ms right500ms b500ms" ([Demonstration](https://clips.twitch.tv/InterestingBoldKathyEleGiggle))
 
 The maximum duration of an entire input sequence is determined by the [max_input_duration](./Settings-Documentation.md#max_input_duration) setting. No input sequence can surpass this duration. For example, if the max duration is 60 seconds, typing "a61s" or "a30s b30001ms" will be equal to 60 seconds, so the input will fail.
 
@@ -50,7 +50,7 @@ Inputs may also fail depending on the client service. For instance, messages on 
 
 Append "+" at the end of an input to chain another input. "a+b" will press both "a" and "b" at the same time. "a+b+c" will press "a", "b", and "c" at the same time. There is no limit to how many inputs can be chained together, and each input can have its own duration. For example, "a200ms+b1s" will press both "a" and "b" at the same time, but "a" will be held for 200 milliseconds while "b" will be held for one second.
 
-Example: "b+right1s down500ms left500ms+b50ms" ([Demonstration](https://clips.twitch.tv/DepressedHonestAntelopeKeyboardCat))
+**Example:** "b+right1s down500ms left500ms+b50ms" ([Demonstration](https://clips.twitch.tv/DepressedHonestAntelopeKeyboardCat))
 
 This can be used for more precise inputs. For example, "_a+right1s" may be used to jump and move a character to the right at the same time in a platformer.
 
@@ -62,7 +62,7 @@ Release inputs by prepending "-" before the input name. If an input is held or o
 
 Hold inputs by prepending "_" before the input name. Inputs held this way stay held until either the end of the input sequence or until it sees a matching release input. "_a1s" will release the "a" input after 1 second, while "_a1s #400ms -a b" will release the "a" input after 1400 milliseconds.
 
-Example: "_down plus . . . _left40% -left+_right #200ms -down _up300ms -right+_left -up" ([Demonstration](https://clips.twitch.tv/ThirstyNimbleDeerYouWHY))
+**Example:** "_down plus . . . _left40% -left+_right #200ms -down _up300ms -right+_left -up" ([Demonstration](https://clips.twitch.tv/ThirstyNimbleDeerYouWHY))
 
 Tip: Combine this with simultaneous inputs to hold or release multiple inputs at the same time.
 
@@ -78,7 +78,7 @@ Example: "#p right+up z #100ms cleft . . cleft #1000ms b z down400ms . a" ([Demo
 
 Inputs can be repeated a number of times in the form of [...]*#, with "#" as the number of repetitions. For example, "[a #100ms]*2" will be equivalent to "a #100ms a #100ms". The max number of repetitions is currently 999, but this may be changed in the future.
 
-Example: "z _a #800ms left550ms _l -a . . [y #800ms]\*2 a . . [a1650ms]\*10" ([Demonstration](https://clips.twitch.tv/ResilientLuckyDurianGOWSkull))
+**Example:** "z _a #800ms left550ms _l -a . . [y #800ms]\*2 a . . [a1650ms]\*10" ([Demonstration](https://clips.twitch.tv/ResilientLuckyDurianGOWSkull))
 
 **Note:** In the example above, "." is a synonym for "#", the wait input.
 
@@ -90,7 +90,7 @@ Repeated inputs can help mitigate the client service's character limit and make 
 
 TRBot's syntax supports passing inputs to different controllers in the same input string. For example, "&1right &2left" will press "right" for player 1 then "left" for player 2. This is useful in co-op or competitive games with multiple controllers in use.
 
-Example: "start . &2_right &2b500ms+left2s b1s" ([Demonstration](https://clips.twitch.tv/ColdbloodedDarkDelicataItsBoshyTime))
+**Example:** "start . &2_right &2b500ms+left2s b1s" ([Demonstration](https://clips.twitch.tv/ColdbloodedDarkDelicataItsBoshyTime))
 
 **Note:** In the example above, the input was performed while the player was on controller port 1, hence the omission of "&1" for player 1 inputs.
 
@@ -102,7 +102,7 @@ Macros are a collection of inputs that can be assigned to the bot with the `AddM
 
 Macros start with "#" and have a name, which may be used to describe what the macro does. For example, "#masha" can be a macro for "[a34ms #34ms]\*20", which will press "a" many times very rapidly.
 
-Example: "#farmstar" ([Demonstration](https://clips.twitch.tv/TenuousEasyOilKevinTurtle))
+**Example:** "#farmstar" ([Demonstration](https://clips.twitch.tv/TenuousEasyOilKevinTurtle))
 
 The example above demonstrates how powerful and complex a macro can be for accomplishing a task.
 
@@ -116,7 +116,7 @@ Further expanding on macros are dynamic macros, which can accept variable inputs
 
 While being defined, the input arguments come in the form of "<#>" with "#" as the argument number, starting from 0. For example, "#mash(\*)" accepts one argument and can be "[<0>34ms #34ms]\*20". If using this macro, you can type "#mash(a)", which will replace "<0>" with "a", resulting in "[a34ms #34ms]\*20". Substituting "a" for "b" or any other input is also valid in this context.
 
-Examples: "#mash(y)", "#mash(b)", "mashalternate(left, right)" ([Demonstration](https://clips.twitch.tv/VainFurtiveCoffeeStoneLightning))
+**Examples:** "#mash(y)", "#mash(b)", "mashalternate(left, right)" ([Demonstration](https://clips.twitch.tv/VainFurtiveCoffeeStoneLightning))
 
 It's possible to expand the earlier example further with an additional argument: "#mash(\*,\*)". If the new macro was then "[<0>34ms #34ms]\*<1>", calling the macro with "#mash(y,30)" will result in "[y34ms #34ms]\*30".
 
