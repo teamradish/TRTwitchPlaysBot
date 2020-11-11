@@ -70,7 +70,7 @@ Tip: Combine this with simultaneous inputs to hold or release multiple inputs at
 
 As mentioned earlier, a blank, or wait input is available, with the default being "#" for pre-configured consoles. Since this input isn't used for anything, it can effectively be used to delay any other input or set of inputs. "right #100ms up" will press "right", wait 100 milliseconds, then press "up". 
 
-Example: "#p right+up z #100ms cleft . . cleft #1000ms b z down400ms . a" ([Demonstration](https://clips.twitch.tv/CuriousPluckyCarrotKappaWealth))
+**Example:** "#p right+up z #100ms cleft . . cleft #1000ms b z down400ms . a" ([Demonstration](https://clips.twitch.tv/CuriousPluckyCarrotKappaWealth))
 
 **Note:** In the example above, "#p" is a macro, which will be covered later.
 
