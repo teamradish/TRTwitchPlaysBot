@@ -60,12 +60,12 @@ Unless noted otherwise, all of the following settings are under the "Settings" t
 For more information, view the [settings documentation](./Settings-Documentation.md).
 
 # Reloading data
-TRBot comes with a ReloadCommand, mapped to "reload" by default, to reload data. Some data cannot be applied to TRBot until it is reloaded for technical reasons. There are two types of reloads: soft and hard. Hard reloads typically destroy then recreate the data from the database, while soft reloads typically only apply the changes.
+TRBot comes with a [`ReloadCommand`](../TRBot/TRBot.Commands/Commands/ReloadCommand.cs), mapped to "reload" by default, to reload data. Some data cannot be applied to TRBot until it is reloaded for technical reasons. There are two types of reloads: soft and hard. Hard reloads typically destroy in-memory objects then recreate them using data from the database, while soft reloads typically only apply the changes. Pass "soft" or "hard" as an argument to this command to choose how to reload (Ex. "!reload hard").
 
 # Data requiring reloads/restarts
 
 ## CommandData
-All commands require code to function and thus use are stored in memory as separate objects using information from the CommandData table. You will need to reload to reflect any changes to the CommandData table.
+All commands require code to function and thus are stored in memory as separate objects using information from the CommandData table. If TRBot is running, you will need to reload to apply any changes made directly to the CommandData table.
 
 ## client_service_type
 The change in the client service used requires a full restart of TRBot to apply. This may be changed in future versions.
