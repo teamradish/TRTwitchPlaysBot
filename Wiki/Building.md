@@ -17,6 +17,17 @@ Command line:
 
 **Note: TRBot runs on all major desktop operating systems, but virtual controller input works only on Windows (vJoy) and GNU/Linux (uinput) since virtual controllers are platform-specific. The virtual controller API is abstracted into an `IVirtualController` interface, making it simple to add new implementations. Please file an issue if your platform isn't supported.**
 
+## Native code
+Some virtual controllers require native code. These will be in the ["Native" folder of `TRBot.VirtualControllers`](../TRBot/TRBot.VirtualControllers/Native). Below are steps on how to compile them. Note that these components are pre-compiled in source and binary releases of TRBot.
+
+### uinput
+To compile the uinput virtual controller implementation, compile `SetupVController.c` with **gcc** as a shared library (`gcc -fPIC -shared SetupVController.c -o SetupVController.so`). Use the newly compiled file in place of the old one.
+
+### vJoy Wrapper
+The vJoy C# wrapper code can be found on the [most up-to-date repository](https://github.com/jshafer817/vJoy/tree/master/apps/common/vJoyInterfaceCS/vJoyInterfaceWrap). While unconfirmed, you should be able to compile it with `make`.
+
+Unfortunately, compiling the vJoy driver itself isn't very clear, but 64-bit versions of Windows will not load the driver unless it is signed. Doing this is out-of-scope for this guide, so in short, it's recommended to use the already-signed drivers provided through the official download.
+
 ## Migrations
 TRBot uses a SQLite database with Entity Framework Core to store and manage its data. If you make code changes to any entities or contexts that affects the database, such as adding/deleting/renaming a column, adding/removing a DbSet, or modifying entity relationships in `OnModelCreating`, you will need to add a new migration:
 
