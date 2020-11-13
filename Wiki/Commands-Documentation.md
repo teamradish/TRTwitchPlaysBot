@@ -16,10 +16,10 @@ This page documents many common commands for TRBot. You will often use these com
   - Example: "!togglecmd tutorial false"
 
 ## Moderation
-- [`AddRestrictedInputCommand](../TRBot/TRBot.Commands/Commands/AddRestrictedInputCommand.cs) (default: "!restrictinput") - Restricts a user from performing a given input on a given game console for a given period of time. "null" indicates an indefinite restriction.
+- [`AddRestrictedInputCommand`](../TRBot/TRBot.Commands/Commands/AddRestrictedInputCommand.cs) (default: "!restrictinput") - Restricts a user from performing a given input on a given game console for a given period of time. "null" indicates an indefinite restriction.
   - Example: "!restrictinput user1 nes a 30m" - user1 is restricted from pressing the "a" button for NES games for 30 minutes.
   - Example: "!restrictinput user2 gc l null" - user2 is restricted from pressng the "l" button and axis for GameCube games indefinitely.
-- [`RemoveRestrictedInputCommand](../TRBot/TRBot.Commands/Commands/RemoveRestrictedInputCommand.cs) (default: "!unrestrictinput") - Removes a restricted input on a user for a given game console.
+- [`RemoveRestrictedInputCommand`](../TRBot/TRBot.Commands/Commands/RemoveRestrictedInputCommand.cs) (default: "!unrestrictinput") - Removes a restricted input on a user for a given game console.
   - Example: "!unrestrictinput user1 nes a"
 - [`ListRestrictedInputsCommand`](../TRBot/TRBot.Commands/Commands/ListRestrictedInputsCommand.cs) (default: "!listresinputs") - Lists all restricted inputs on a given user.
   - Example: "!listresinputs user1"
@@ -68,16 +68,16 @@ This page documents many common commands for TRBot. You will often use these com
 - [`AddMacroCommand`](../TRBot/TRBot.Commands/Commands/AddMacroCommand.cs) (default: "!addmacro") - Adds an input macro for the given input sequence. If the macro already exists, it'll be updated. Input macros must begin with "#".
   - Example: "!addmacro #slide _down34ms a -down34ms"
   - Example: "!addmacro #mash(\*) [<0>34ms #34ms]\*20"
-- [`RemoveMacroCommand](../TRBot/TRBot.Commands/Commands/RemoveMacroCommand.cs) (default: "!removemacro") - Removes an input macro.
+- [`RemoveMacroCommand`](../TRBot/TRBot.Commands/Commands/RemoveMacroCommand.cs) (default: "!removemacro") - Removes an input macro.
   - Example: "!removemacro #slide"
 - [`ShowMacroCommand`](../TRBot/TRBot.Commands/Commands/ShowMacroCommand.cs) (default: "!showmacro") - Shows the input sequence for a given input macro.
   - Example: "!showmacro #slide"
   - Example: "!showmacro #mash(\*)"
-- [`ListMacrosCommand](../TRBot/TRBot.Commands/Commands/ListMacrosCommand.cs) (default: "!macros") - Lists all available input macros.
-- [`DefaultInputDurCommand](../TRBot/TRBot.Commands/Commands/DefaultInputDurCommand.cs) (default: "!defaultinputdur") - Obtains the global default input duration, or sets it if you have sufficient privileges and provide an argument.
+- [`ListMacrosCommand`](../TRBot/TRBot.Commands/Commands/ListMacrosCommand.cs) (default: "!macros") - Lists all available input macros.
+- [`DefaultInputDurCommand`](../TRBot/TRBot.Commands/Commands/DefaultInputDurCommand.cs) (default: "!defaultinputdur") - Obtains the global default input duration, or sets it if you have sufficient privileges and provide an argument.
   - Example: "!defaultinputdur"
   - Example: "!defaultinputdur 500" - Sets the global default input duration to 500 milliseconds.
-- [`MaxInputDurCommand](../TRBot/TRBot.Commands/Commands/MaxInputDurCommand.cs) (default: "!maxinputdur") - Obtains the global max input duration, or sets it if you have sufficient privileges and provide an argument.
+- [`MaxInputDurCommand`](../TRBot/TRBot.Commands/Commands/MaxInputDurCommand.cs) (default: "!maxinputdur") - Obtains the global max input duration, or sets it if you have sufficient privileges and provide an argument.
   - Example: "!maxinputdur"
   - Example: "!maxinputdur 120000" - Sets the global max input duration to 2 minutes.
 - [`ControllerPortCommand`](../TRBot/TRBot.Commands/Commands/ControllerPortCommand.cs) (default: "!port") - Obtains or sets your controller port. Controller ports start at 1 and cannot exceed the number of controllers plugged in.
