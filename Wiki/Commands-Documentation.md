@@ -102,7 +102,7 @@ This page documents many common commands for TRBot. You will often use these com
   - Example: "!addmeme lol Kappa"
 - [`RemoveMemeCommand`](../TRBot/TRBot.Commands/Commands/RemoveMemeCommand.cs) (default: "!removememe") - Removes a meme from the database.
   - Example: "!removememe lol"
-- [`ListMemesCommand](../TRBot/TRBot.Commands/Commands/ListMemesCommand.cs) (default: "!memes") - Lists all memes.
+- [`ListMemesCommand`](../TRBot/TRBot.Commands/Commands/ListMemesCommand.cs) (default: "!memes") - Lists all memes.
 - [`CreditsCommand`](../TRBot/TRBot.Commands/Commands/DuelCommand.cs) (default: "!credits") - Lists the number of credits you have, or optionally the number of credits another user has.
   - Example: "!credits"
   - Example: "!credits user1"
