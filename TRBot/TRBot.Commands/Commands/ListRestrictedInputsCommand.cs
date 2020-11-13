@@ -84,7 +84,7 @@ namespace TRBot.Commands
 
             foreach(RestrictedInput resInp in restrictedInputs)
             {
-                strBuilder.Append(resInp.inputData.Name);
+                strBuilder.Append(resInp.inputData.Name).Append(" (").Append(resInp.inputData.Console.Name).Append(")");
 
                 if (resInp.HasExpiration == true)
                 {

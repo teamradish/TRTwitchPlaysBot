@@ -34,7 +34,7 @@ namespace TRBot.Commands
     /// </summary>
     public sealed class RemoveRestrictedInputCommand : BaseCommand
     {
-        private string UsageMessage = $"Usage - \"username\", \"input name\"";
+        private string UsageMessage = $"Usage - \"username\", \"console name\", \"input name\"";
 
         public RemoveRestrictedInputCommand()
         {
@@ -48,7 +48,7 @@ namespace TRBot.Commands
             int argCount = arguments.Count;
 
             //Ignore with not enough arguments
-            if (argCount != 2)
+            if (argCount != 3)
             {
                 QueueMessage(UsageMessage);
                 return;
@@ -81,15 +81,24 @@ namespace TRBot.Commands
                 return;
             }
 
-            string inputName = arguments[1].ToLowerInvariant();
+            string consoleStr = arguments[1].ToLowerInvariant();
+
+            GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleStr);
+            if (console == null)
+            {
+                QueueMessage($"No console named \"{consoleStr}\" found.");
+                return;
+            }
+
+            string inputName = arguments[2].ToLowerInvariant();
             
-            //Check if the restricted input exists
-            RestrictedInput restrictedInput = restrictedUser.RestrictedInputs.FirstOrDefault(r => r.inputData.Name == inputName);
+            //Check if the restricted input exists for this console
+            RestrictedInput restrictedInput = restrictedUser.RestrictedInputs.FirstOrDefault(r => r.inputData.Name == inputName && r.inputData.ConsoleID == console.ID);
 
             //Not restricted
             if (restrictedInput == null)
             {
-                QueueMessage($"{restrictedUser.Name} already has no restrictions on inputting \"{inputName}\"!");
+                QueueMessage($"{restrictedUser.Name} already has no restrictions on inputting \"{inputName}\" on the \"{consoleStr}\" console!");
                 return;
             }
 
@@ -97,7 +106,7 @@ namespace TRBot.Commands
             restrictedUser.RestrictedInputs.Remove(restrictedInput);
             context.SaveChanges();
 
-            QueueMessage($"Lifted the restriction for {restrictedUser.Name} on inputting \"{inputName}\"!");
+            QueueMessage($"Lifted the restriction for {restrictedUser.Name} on inputting \"{inputName}\" on the \"{consoleStr}\" console!");
         }
     }
 }

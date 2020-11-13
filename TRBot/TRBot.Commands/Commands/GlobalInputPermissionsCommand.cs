@@ -29,7 +29,7 @@ namespace TRBot.Commands
     /// </summary>
     public class GlobalInputPermissionsCommand : BaseCommand
     {
-        private string UsageMessage = "Usage: \"level (string/int)\"";
+        private string UsageMessage = "Usage: \"level (string/int) (optional)\"";
         private string CachedPermsStr = string.Empty;
 
         public GlobalInputPermissionsCommand()

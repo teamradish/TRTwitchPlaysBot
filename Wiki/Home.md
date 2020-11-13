@@ -10,10 +10,11 @@ Welcome to the TRBot wiki! Choose the relevant section for your needs.
 * [Chatbot Guide](./Setup-ChatterBot.md) - A quick guide to setting up your own chatbot for viewers to talk to.
 * [Supplementary Info](Setup-Misc.md) - Tools to enhance TRBot and your stream.
 
-## Players
+## Players/Moderation
 * [Syntax Walkthrough](./Syntax-Walkthrough.md) - A beginner-friendly guide to TRBot's input syntax, with visuals.
 * [Syntax Tutorial](./Syntax-Tutorial.md) - A more in-depth tutorial covering TRBot's robust input syntax.
 * [Usage Examples](./Real-Usage-Examples.md) - See what players have done with TRBot on real streams!
+* [Commands Documentation](./Commands-Documentation.md) - Documentation on various TRBot commands to help manage and interact with the stream.
 
 ## Developers
 * [Building from source](./Building.md) - How to build TRBot from source.
