@@ -118,12 +118,6 @@ namespace TRBot.Data.Migrations
                 table: "UserAbilities",
                 newName: "IX_UserAbilities_UserID_PermabilityID");
 
-            migrationBuilder.RenameIndex(
-                name: "IX_UserAbilities_permability_id",
-                schema: "userabilities",
-                table: "UserAbilities",
-                newName: "IX_UserAbilities_PermabilityID");
-
             migrationBuilder.RenameColumn(
                 name: "key",
                 schema: "settings",
@@ -183,12 +177,6 @@ namespace TRBot.Data.Migrations
                 schema: "restrictedinputs",
                 table: "RestrictedInputs",
                 newName: "IX_RestrictedInputs_UserID_InputID");
-
-            migrationBuilder.RenameIndex(
-                name: "IX_RestrictedInputs_input_id",
-                schema: "restrictedinputs",
-                table: "RestrictedInputs",
-                newName: "IX_RestrictedInputs_InputID");
 
             migrationBuilder.RenameColumn(
                 name: "id",
@@ -618,12 +606,6 @@ namespace TRBot.Data.Migrations
                 schema: "restrictedinputs",
                 table: "RestrictedInputs",
                 newName: "IX_RestrictedInputs_user_id_input_id");
-
-            migrationBuilder.RenameIndex(
-                name: "IX_RestrictedInputs_InputID",
-                schema: "restrictedinputs",
-                table: "RestrictedInputs",
-                newName: "IX_RestrictedInputs_input_id");
 
             migrationBuilder.RenameColumn(
                 name: "ID",
