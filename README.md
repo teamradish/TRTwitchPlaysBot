@@ -1,4 +1,5 @@
-# TRBot
+# <img src="./Logo/TRBotLogo.png" alt="TRBot" height="42" width="45" align="top"/> TRBot
+
 TRBot is software that enables playing video games through text. It contains a comprehensive set of projects to facilitate text-based gameplay, some of which allow for setting up and managing community-oriented remote play, such as Twitch Plays. The goal of TRBot is to lower the barrier of entry for text-based gameplay, such as Twitch Plays, and provide avenues to improve the experience.
 
 TRBot is inspired by TwitchPlays_Everything. The input syntax allows for great precision, making it well-suited for many types of games. You can use it for a variety of purposes, including, but not limited to, allowing others to play games remotely and automating tedious/repetitive tasks in your own playthroughs, such as mashing buttons or grinding levels in an RPG.
@@ -27,12 +28,14 @@ Please see the [wiki home](./Wiki/Home.md) for your use-case(s).
 ## Credits
 The original Python version of the original parser was written by TwitchPlays_Everything and greatly helped jump-start TRBot.
 
+TRBot's logo was designed by the talented [David Revoy](https://www.davidrevoy.com/), well-known for his Pepper & Carrot comic series.
+
 ## License
 [![AGPL](https://www.gnu.org/graphics/agplv3-155x51.png)](https://www.gnu.org/licenses/agpl-3.0.en.html)
 
 TRBot is free software; you are free to run, study, modify, and redistribute it. Specifically, you can modify and/or redistribute TRBot under the terms of the GNU Affero General Public License v3.0 or (at your option) any later version.
 
-See the [LICENSE](https://github.com/teamradish/TRTwitchPlaysBot/blob/master/LICENSE) file for the full terms. See the [Dependency Licenses](https://github.com/teamradish/TRTwitchPlaysBot/blob/master/Dependency%20Licenses) file for the licenses of third party libraries used by TRBot.
+See the [LICENSE](https://github.com/teamradish/TRTwitchPlaysBot/blob/master/LICENSE) file for the full terms. See the [Dependency Licenses](./Dependency%20Licenses) file for the licenses of third party libraries used by TRBot. See the [logo license](./Logo/Logo%20License) file for the license of TRBot's logo.
 
 ## Contributing
 Issues and pull requests are greatly encouraged! Please file an issue for a feature request, such as a new platform or service, or regarding any bugs you encounter.
