@@ -8,14 +8,16 @@ TRBot is inspired by TwitchPlays_Everything. The input syntax allows for great p
 * Game-agnostic - TRBot runs alongside your game and can be configured as you like.
 * Cross-platform - Runs on Windows (vJoy) and GNU/Linux (uinput).
 * Emulator support - NES, SNES, N64, GCN, and more. Several [emulator controller config files](./Emulator%20Controller%20Configs) are available.
+* Multiplayer support - Control [multiple players](./Wiki/Syntax-Walkthrough.md#multi-controller-inputs) separately or simultaneously.
 * Highly performant input handling with near frame-perfect inputs.
 * Robust, pluggable virtual controller architecture - add your own custom virtual controller to support additional platforms and types of play.
-* Run locally or through Twitch - TRBot is set up for easy integration of other services.
+* Run locally or through Twitch - TRBot is set up for easily integrating other services.
 * Flexible console infrastructure - change inputs, add new inputs, or even add a new console with an entirely different set of inputs, on the fly.
 * Modular - TRBot is separated into parts, allowing those parts to be used as a library in an application. The core application, `TRBot.Main`, functions this way.
-* Commands - Modify, interact with, and obtain information from TRBot through commands entered as text. Command can be simple, such as [`SayCommand`](./TRBot/TRBot.Commands/Commands/SayCommand.cs), or more complex, such as [`AddInputCommand`](./TRBot/TRBot.Commands/Commands/AddInputCommand.cs). 
+* Commands - Modify, interact with, and obtain information from TRBot through commands entered as text. Commands can be simple, such as [`SayCommand`](./TRBot/TRBot.Commands/Commands/SayCommand.cs), or more complex, such as [`AddInputCommand`](./TRBot/TRBot.Commands/Commands/AddInputCommand.cs). 
 * Twitch Plays quality-of-life enhancements - macros, game logs, user silencing (without timeout/ban), stop all ongoing inputs, and switch consoles on the fly.
 * SQLite database with configurable data and settings, including access levels, commands, virtual controller count, and more. Any data changes are immediately reflected in TRBot.
+* Sleep prevention - prevent games and consoles from going to sleep with a periodic input, controller port, and interval of your choosing.
 * Moderation features - control access to commands, inputs, and other features independent of platform.
 * Additional goodies and games - duel for credits, create memes, calculate expressions, and talk to a chatbot.
 
