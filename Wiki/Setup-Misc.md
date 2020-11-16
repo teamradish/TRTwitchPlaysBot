@@ -47,6 +47,14 @@ done)
 
 This may not always work for games that have DRM and can only be launched through a client, such as Steam. However, you can find a script that does this for Steam games [here](../Supplementary/RestartSteamGame.sh).
 
+# Sleep Inactivity
+For games and consoles that sleep after a period of inactivity, you can enable periodic inputs to have TRBot automatically perform an input sequence on a virtual controller at a regular interval (Ex. "a" every 5 minutes). Doing so can prevent the game or console from sleeping. Here's how to configure it:
+
+1. Set the `ValueInt` of [periodic_input_enabled](./Settings-Documentation.md#periodic_input_enabled) to 1 in the database.
+2. Provide the input(s) you'd like to press by setting the `ValueStr` of [periodic_input_value](./Settings-Documentation.md#periodic_input_value). These can also be input macros and input synonyms.
+3. Set the controller port you'd like to press this input on through [periodic_input_port](./Settings-Documentation.md#periodic_input_port).
+4. Set the interval to press your input(s) with [periodic_input_time](./Settings-Documentation.md#periodic_input_time).
+
 # Contributing
 If you find any problems with TRBot, please file an [issue](https://github.com/teamradish/TRTwitchPlaysBot/issues). [Pull requests](https://github.com/teamradish/TRTwitchPlaysBot/pulls) are encouraged if you'd like to make contributions.
 

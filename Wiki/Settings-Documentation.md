@@ -162,7 +162,7 @@ The interval to perform a periodic input, in milliseconds. This defaults to 3000
 The controller port to perform the periodic input on. You can avoid interfering with the game if you perform this on another controller port that is otherwise unused. This defaults to 0 (port 1). 
 
 ### periodic_input_value
-The input to perform (Ex. "a"). This can also be a macro or input synonym. This defaults to an empty string, or no input.
+The input sequence to perform (Ex. "a"). This can also be an input macro or an input synonym. This defaults to an empty string, or no input.
 
 ### default_input_duration
 The global default duration of inputs with unspecified durations, in milliseconds. This defaults to 200 milliseconds.
