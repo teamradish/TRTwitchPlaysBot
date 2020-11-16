@@ -10,6 +10,7 @@ TRBot is inspired by TwitchPlays_Everything. The input syntax allows for great p
 * Emulator support - NES, SNES, N64, GCN, and more. Several [emulator controller config files](./Emulator%20Controller%20Configs) are available.
 * Highly performant input handling with near frame-perfect inputs.
 * Robust, pluggable virtual controller architecture - add your own custom virtual controller to support additional platforms and types of play.
+* Run locally or through Twitch - TRBot is set up for easy integration of other services.
 * Flexible console infrastructure - change inputs, add new inputs, or even add a new console with an entirely different set of inputs, on the fly.
 * Modular - TRBot is separated into parts, allowing those parts to be used as a library in an application. The core application, `TRBot.Main`, functions this way.
 * Commands - Modify, interact with, and obtain information from TRBot through commands entered as text. Command can be simple, such as [`SayCommand`](./TRBot/TRBot.Commands/Commands/SayCommand.cs), or more complex, such as [`AddInputCommand`](./TRBot/TRBot.Commands/Commands/AddInputCommand.cs). 
@@ -32,7 +33,7 @@ TRBot is free software; you are free to run, study, modify, and redistribute it.
 See the [LICENSE](https://github.com/teamradish/TRTwitchPlaysBot/blob/master/LICENSE) file for the full terms. See the [Dependency Licenses](https://github.com/teamradish/TRTwitchPlaysBot/blob/master/Dependency%20Licenses) file for the licenses of third party libraries used by TRBot.
 
 ## Contributing
-Issues and pull requests are greatly encouraged! Please file an issue for a feature request or regarding any bugs you encounter.
+Issues and pull requests are greatly encouraged! Please file an issue for a feature request, such as a new platform or service, or regarding any bugs you encounter.
 
 Developing software takes considerable time and effort, and we have poured hundreds of hours into making TRBot as powerful as it is and freely available to everyone in our spare time. Kindly consider donating to us on Liberapay: https://liberapay.com/kimimaru/
 

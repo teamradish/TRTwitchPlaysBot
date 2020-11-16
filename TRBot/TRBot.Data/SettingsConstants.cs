@@ -68,6 +68,11 @@ namespace TRBot.Data
         public const string INFO_MESSAGE = "info_message";
         public const string TUTORIAL_MESSAGE = "tutorial_message";
 
+        public const string PERIODIC_INPUT_ENABLED = "periodic_input_enabled";
+        public const string PERIODIC_INPUT_TIME = "periodic_input_time";
+        public const string PERIODIC_INPUT_PORT = "periodic_input_port";
+        public const string PERIODIC_INPUT_VALUE = "periodic_input_value";
+
         public const string DEFAULT_INPUT_DURATION = "default_input_duration";
         public const string MAX_INPUT_DURATION = "max_input_duration";
         

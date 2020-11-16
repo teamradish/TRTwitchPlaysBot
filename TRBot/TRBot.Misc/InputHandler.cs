@@ -52,7 +52,7 @@ namespace TRBot.Misc
         /// <summary>
         /// The current number of running input sequences.
         /// </summary>
-        public static int CurrentRunningInputs => Interlocked.CompareExchange(ref RunningInputThreads, 0, 0);
+        public static int RunningInputCount => Interlocked.CompareExchange(ref RunningInputThreads, 0, 0);
 
         /// <summary>
         /// The current number of running input threads.
@@ -60,17 +60,17 @@ namespace TRBot.Misc
         private static volatile int RunningInputThreads = 0;
 
         /// <summary>
-        /// Whether inputs are being stopped.
+        /// Whether inputs are currently halted.
         /// </summary>
-        public static bool StopRunningInputs { get; private set; } = false;
+        public static bool InputsHalted { get; private set; } = false;
 
         /// <summary>
         /// Cancels all currently running inputs.
-        /// After calling this, all inputs are officially cancelled when <see cref="CurrentRunningInputs"/> is 0.
+        /// After calling this, all inputs are officially cancelled when <see cref="RunningInputCount"/> is 0.
         /// </summary>
         private static void CancelRunningInputs()
         {
-            StopRunningInputs = true;
+            InputsHalted = true;
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace TRBot.Misc
         /// </summary>
         public static void ResumeRunningInputs()
         {
-            StopRunningInputs = false;
+            InputsHalted = false;
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace TRBot.Misc
         {
             const int delay = 1;
 
-            while (CurrentRunningInputs != 0)
+            while (RunningInputCount != 0)
             {
                 //Console.WriteLine($"Delaying {delay}ms");
                 await Task.Delay(delay);
@@ -232,7 +232,7 @@ namespace TRBot.Misc
                     while (indices.Count > 0)
                     {
                         //End the input prematurely
-                        if (StopRunningInputs == true)
+                        if (InputsHalted == true)
                         {
                             goto End;
                         }

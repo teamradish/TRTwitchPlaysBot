@@ -322,6 +322,13 @@ namespace TRBot.Main
             RoutineHandler.AddRoutine(new CreditsGiveRoutine());
             RoutineHandler.AddRoutine(new PeriodicMessageRoutine());
             RoutineHandler.AddRoutine(new ReconnectRoutine());
+
+            //Add the periodic input routine if it's enabled
+            long periodicInputEnabled = DataHelper.GetSettingInt(SettingsConstants.PERIODIC_INPUT_ENABLED, 0L);
+            if (periodicInputEnabled > 0L)
+            {
+                RoutineHandler.AddRoutine(new PeriodicInputRoutine());
+            }
         }
 
 #region Events
@@ -619,7 +626,7 @@ namespace TRBot.Main
             #endregion
 
             //Make sure inputs aren't stopped
-            if (InputHandler.StopRunningInputs == true)
+            if (InputHandler.InputsHalted == true)
             {
                 //We can't process inputs because they're currently stopped
                 MsgHandler.QueueMessage("New inputs cannot be processed until all other inputs have stopped.");
@@ -751,6 +758,39 @@ namespace TRBot.Main
 
         private void OnSoftReload()
         {
+            HandleReloadBoth();
+        }
+
+        private void OnHardReload()
+        {
+            HandleReloadBoth();
+        }
+
+        private void HandleReloadBoth()
+        {
+            //Check if the periodic input value changed, and enable/disable the routine if we should
+            long periodicEnabled = DataHelper.GetSettingInt(SettingsConstants.PERIODIC_INPUT_ENABLED, 0L);
+            if (periodicEnabled == 0)
+            {
+                RoutineHandler.FindRoutine(RoutineConstants.PERIODIC_INPUT_ROUTINE_ID, out int rIndex);
+
+                //Remove the routine if it exists
+                if (rIndex >= 0)
+                {
+                    RoutineHandler.RemoveRoutine(rIndex);
+                }
+            }
+            else
+            {
+                RoutineHandler.FindRoutine(RoutineConstants.PERIODIC_INPUT_ROUTINE_ID, out int rIndex);
+
+                //Add the routine if it doesn't exist
+                if (rIndex < 0)
+                {
+                    RoutineHandler.AddRoutine(new PeriodicInputRoutine()); 
+                }
+            }
+
             //Check if the virtual controller type was changed
             if (LastVControllerTypeChanged() == true)
             {
@@ -774,34 +814,6 @@ namespace TRBot.Main
                 return; 
             }
         
-            ReinitVControllerCount();
-        }
-
-        private void OnHardReload()
-        {
-            //Check if the virtual controller type was changed
-            if (LastVControllerTypeChanged() == true)
-            {
-                VirtualControllerTypes lastVControllerType = (VirtualControllerTypes)DataHelper.GetSettingInt(SettingsConstants.LAST_VCONTROLLER_TYPE, 0L);
-                VirtualControllerTypes supportedVCType = VControllerHelper.ValidateVirtualControllerType(lastVControllerType, TRBotOSPlatform.CurrentOS);
-
-                //Show a message saying the previous value wasn't supported
-                if (VControllerHelper.IsVControllerSupported(lastVControllerType, TRBotOSPlatform.CurrentOS) == false)
-                {
-                    MsgHandler.QueueMessage($"Current virtual controller {lastVControllerType} is not supported by the {TRBotOSPlatform.CurrentOS} platform. Switched it to the default of {supportedVCType} for this platform.");                
-                    using (BotDBContext context = DatabaseManager.OpenContext())
-                    {
-                        Settings lastVControllerSetting = DataHelper.GetSettingNoOpen(SettingsConstants.LAST_VCONTROLLER_TYPE, context);
-                        lastVControllerSetting.ValueInt = (long)supportedVCType;
-                        context.SaveChanges();
-                    }
-                }
-
-                ChangeVControllerType(supportedVCType);
-
-                return; 
-            }
-
             ReinitVControllerCount();
         }
 

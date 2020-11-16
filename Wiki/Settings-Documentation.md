@@ -37,6 +37,10 @@ Table of Contents
 * [game_message_path_is_relative](#game_message_path_is_relative)
 * [info_message](#info_message)
 * [tutorial_message](#tutorial_message)
+* [periodic_input_enabled](#periodic_input_enabled)
+* [periodic_input_time](#periodic_input_time)
+* [periodic_input_port](#periodic_input_port)
+* [periodic_input_value](#periodic_input_value)
 * [default_input_duration](#default_input_duration)
 * [max_input_duration](#max_input_duration)
 * [last_console](#last_console)
@@ -147,6 +151,18 @@ An informational message about the current game or stream.
 
 ### tutorial_message
 A message linking to the syntax tutorial on how to play.
+
+### periodic_input_enabled
+Whether to enable an automatic periodic input. Periodic inputs are useful for newer game consoles that go to sleep after some time of inactivity. 0 = disabled, 1 = enabled. This defaults to 0, disabled.
+
+### periodic_input_time
+The interval to perform a periodic input, in milliseconds. This defaults to 300000 milliseconds, or 5 minutes.
+
+### periodic_input_port
+The controller port to perform the periodic input on. You can avoid interfering with the game if you perform this on another controller port that is otherwise unused. This defaults to 0 (port 1). 
+
+### periodic_input_value
+The input to perform (Ex. "a"). This can also be a macro or input synonym. This defaults to an empty string, or no input.
 
 ### default_input_duration
 The global default duration of inputs with unspecified durations, in milliseconds. This defaults to 200 milliseconds.

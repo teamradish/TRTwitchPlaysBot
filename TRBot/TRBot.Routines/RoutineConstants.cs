@@ -31,5 +31,6 @@ namespace TRBot.Routines
         public const string GROUP_BET_ROUTINE_ID = "groupbet";
         public const string PERIODIC_MSG_ROUTINE_ID = "periodicmessage";
         public const string RECONNECT_ROUTINE_ID = "reconnect";
+        public const string PERIODIC_INPUT_ROUTINE_ID = "periodicinput";
     }
 }

@@ -38,7 +38,7 @@ namespace TRBot.Commands
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
-            int curInputsRunning = InputHandler.CurrentRunningInputs;
+            int curInputsRunning = InputHandler.RunningInputCount;
 
             string message = string.Empty;
 
