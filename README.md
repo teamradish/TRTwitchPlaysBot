@@ -1,4 +1,4 @@
-# <img src="./Logo/TRBotLogo.png" alt="TRBot" height="42" width="45" align="top"/> TRBot
+# <img src="./Logo/TRBotLogo.png" alt="TRBot" height="43" width="42" align="top"/> TRBot
 
 TRBot is software that enables playing video games through text. It contains a comprehensive set of projects to facilitate text-based gameplay, some of which allow for setting up and managing community-oriented remote play, such as Twitch Plays. The goal of TRBot is to lower the barrier of entry for text-based gameplay, such as Twitch Plays, and provide avenues to improve the experience.
 
