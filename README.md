@@ -15,7 +15,7 @@ TRBot is inspired by TwitchPlays_Everything. The input syntax allows for great p
 * Run locally or through Twitch - TRBot is set up for easily integrating other services.
 * Flexible console infrastructure - change inputs, add new inputs, or even add a new console with an entirely different set of inputs, on the fly.
 * Modular - TRBot is separated into parts, allowing those parts to be used as a library in an application. The core application, `TRBot.Main`, functions this way.
-* Commands - Modify, interact with, and obtain information from TRBot through commands entered as text. Commands can be simple, such as [`SayCommand`](./TRBot/TRBot.Commands/Commands/SayCommand.cs), or more complex, such as [`AddInputCommand`](./TRBot/TRBot.Commands/Commands/AddInputCommand.cs). 
+* Commands - Modify, interact with, and obtain information from TRBot through commands entered as text. Commands can be simple, such as [`SayCommand`](./TRBot/TRBot.Commands/Commands/SayCommand.cs), or more complex, such as [`AddInputCommand`](./TRBot/TRBot.Commands/Commands/AddInputCommand.cs). You can even [add your own commands](./Wiki/Custom-Commands.md). 
 * Twitch Plays quality-of-life enhancements - macros, game logs, user silencing (without timeout/ban), stop all ongoing inputs, and switch consoles on the fly.
 * SQLite database with configurable data and settings, including access levels, commands, virtual controller count, and more. Any data changes are immediately reflected in TRBot.
 * Sleep prevention - prevent games and consoles from going to sleep with a periodic input, controller port, and interval of your choosing.
