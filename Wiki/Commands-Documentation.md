@@ -1,4 +1,16 @@
-This page documents many common commands for TRBot. You will often use these commands either while playing on or managing a TRBot instance.
+This page documents many common commands for TRBot. You will often use these commands either while playing on or managing a TRBot instance. To learn how to add custom commands, see the [custom commands](./Custom-Commands.md) page.
+
+## Database Fields
+In the database, each command in the **CommandData** table has the following fields:
+- `ID` - The ID of the command in the database. This is automatically determined, thus it's not recommended to set or modify it.
+- `Name` - The name of the command. This name is what you type into chat to invoke it (Ex. "tutorial").
+- `ClassName` - The name of the internal class containing the code this command runs when invoked (Ex. "TRBot.Commands.MessageCommand" for "info").
+- `Level` - The access level required to invoke the command.
+- `Enabled` - Determines if the command is enabled and can be invoked (0 = disabled, 1 = enabled).
+- `DisplayInList` - Determines if the command is displayed in the help for `ListCmdsCommand`.
+- `ValueStr` - An additional string value the command may use.
+
+You will need to reload data or restart TRBot to apply any changes in the **CommandData** table.
 
 ## Instructional
 - [`ListCmdsCommand`](../TRBot/TRBot.Commands/Commands/ListCmdsCommand.cs) (default: "!help") - Lists all commands available at your access level in alphabetical order.

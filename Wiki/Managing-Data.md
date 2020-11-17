@@ -47,17 +47,17 @@ If you want to revert the changes you've applied but have not yet saved, click o
 # Notable Settings
 Unless noted otherwise, all of the following settings are under the "Settings" table in the database.
 
-- **main_thread_sleep** - Indicates how much time, in milliseconds, to sleep the main thread. This is used to throttle TRBot's main loop so it doesn't use up as much CPU time on your machine. Values too high may noticeably delay the execution of bot routines and messages.
-- **first_launch** - Indicates the first ever launch of TRBot. This sets up all the default game consoles. Starts at 0 then gets set to 1.
-- **force_init_defaults** - If 1, initializes all default values, including default commands, permissions, and settings, if the don't already exist.
-- **data_version** - The version for TRBot's data. If this is behind the bot version being used, it will automatically set force_init_defaults to 1 and add missing data.
-- **client_service_type** - The type of client service connection to use. 0 = Terminal, 1 = Twitch. **Requires restarting TRBot to apply.**
-- **joystick_count** - The number of virtual controllers to use.
-- **last_vcontroller_type** - The type of virtual controller to use. If the one specified is not available on your platform, it will be switched to the default available one automatically.
-- **last_console** - The game console to use.
-- **message_cooldown** - Indicates how much time, in milliseconds, each message can be sent in max. This acts as a message throttler for platforms with rate-limiting on bots.
+- [`main_thread_sleep`](./Settings-Documentation.md#main_thread_sleep) - Indicates how much time, in milliseconds, to sleep the main thread. This is used to throttle TRBot's main loop so it doesn't use up as much CPU time on your machine. Values too high may noticeably delay the execution of bot routines and messages.
+- [`first_launch`](./Settings-Documentation.md#first_launch) - Indicates the first ever launch of TRBot. This sets up all the default game consoles. Starts at 0 then gets set to 1.
+- [`force_init_defaults`](./Settings-Documentation.md#force_init_defaults) - If 1, initializes all default values, including default commands, permissions, and settings, if the don't already exist.
+- [`data_version`](./Settings-Documentation.md#data_version) - The version for TRBot's data. If this is behind the bot version being used, it will automatically set force_init_defaults to 1 and add missing data.
+- [`client_service_type`](./Settings-Documentation.md#client_service_type) - The type of client service connection to use. 0 = Terminal, 1 = Twitch. **Requires restarting TRBot to apply.**
+- [`joystick_count`](./Settings-Documentation.md#joystick_count) - The number of virtual controllers to use.
+- [`last_vcontroller_type`](./Settings-Documentation.md#last_vcontroller_type) - The type of virtual controller to use. If the one specified is not available on your platform, it will be switched to the default available one automatically.
+- [`last_console`](./Settings-Documentation.md#last_console) - The game console to use.
+- [`message_cooldown`](./Settings-Documentation.md#message_cooldown) - Indicates how much time, in milliseconds, each message can be sent in max. This acts as a message throttler for platforms with rate-limiting on bots.
 
-For more information, view the [settings documentation](./Settings-Documentation.md).
+For more information on settings, view the [settings documentation](./Settings-Documentation.md).
 
 # Reloading data
 TRBot comes with a [`ReloadCommand`](../TRBot/TRBot.Commands/Commands/ReloadCommand.cs), mapped to "reload" by default, to reload data. Some data cannot be applied to TRBot until it is reloaded for technical reasons. There are two types of reloads: soft and hard. Hard reloads typically destroy in-memory objects then recreate them using data from the database, while soft reloads typically only apply the changes. Pass "soft" or "hard" as an argument to this command to choose how to reload (Ex. "!reload hard").
