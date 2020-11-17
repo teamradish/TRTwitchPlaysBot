@@ -7,7 +7,7 @@ Welcome to the TRBot wiki! Choose the relevant section for your needs.
 * [Migrating Data](./Migrating-Data.md) - A guide to migrating data from previous TRBot releases.
 * [Settings Documentation](./Settings-Documentation.md) - Documentation on the various settings.
 
-###Other
+### Other
 * [Chatbot Guide](./Setup-ChatterBot.md) - A quick guide to setting up your own chatbot for viewers to talk to.
 * [Supplementary Info](Setup-Misc.md) - Tools to enhance TRBot and your stream.
 * [Custom commands](./Custom-Commands.md) - Create your own custom commands to tackle tasks and problems on the fly.
