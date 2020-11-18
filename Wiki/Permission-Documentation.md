@@ -43,7 +43,7 @@ Abilities are a large part of the moderation features TRBot provides. These abil
 - `PermissionAbilities` are static and simply define all the available abilities. They are stored in the **PermissionAbilities** table of the database. You can list all available `PermissionAbilities` with the [`ListPermissionAbilitiesCommand`](../TRBot/TRBot.Commands/Commands/ListPermissionAbilitiesCommand.cs) (Default: "!allabilities").
 - `UserAbilities` are specific to each user and can be enabled or disabled either indefinitely or for a period of time. They are stored in the **UserAbilities** table of the database. You can list all abilities on a user with the [`ListUserAbilitiesCommand`](../TRBot/TRBot.Commands/Commands/ListUserAbilitiesCommand.cs) (Default: "!userabilities").
 
-The ability system is robust and flexible. For example, if you want to prevent a troll from making any inputs to chat, you can enable the [`silenced`](./#silenced) ability on them for 30 minutes.
+The ability system is robust and flexible. For example, if you want to prevent a troll from making any inputs to chat, you can enable the [`silenced`](#silenced) ability on them for 30 minutes.
 
 To enable or disable abilities on a user, use the [`UpdateUserAbilityCommand`](../TRBot/TRBot.Commands/Commands/UpdateUserAbilityCommand.cs) (Default: "!toggleability").
 
