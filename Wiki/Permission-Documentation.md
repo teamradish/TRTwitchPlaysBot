@@ -17,9 +17,11 @@ TRBot supports restricting specific users from making specific inputs. Each user
 - You can add a restricted input with the [`AddRestrictedInputCommand`](../TRBot/TRBot.Commands/Commands/AddRestrictedInputCommand.cs) (Default: "!restrictinput").
 - You can lift an input restriction input with the [`RemoveRestrictedInputCommand`](../TRBot/TRBot.Commands/Commands/RemoveRestrictedInputCommand.cs) (Default: "!unrestrictinput").
 
-- **Example:** "!restrictinput user1 gc a 30m" - Prevents user1 from pressing the "a" button on the GameCube console for 30 minutes.
-- **Example:** "!restrictinput user2 ps2 square null" - Prevents user2 from pressing the "square" button on the PlayStation 2 console indefinitely.
-- **Example:** "!unrestrictinput user2 ps2 square" - Lifts the restriction on user2 pressing the "square" button on the PlayStation 2.
+**Example:** "!restrictinput user1 gc a 30m" - Prevents user1 from pressing the "a" button on the GameCube console for 30 minutes.
+
+**Example:** "!restrictinput user2 ps2 square null" - Prevents user2 from pressing the "square" button on the PlayStation 2 console indefinitely.
+
+**Example:** "!unrestrictinput user2 ps2 square" - Lifts the restriction on user2 pressing the "square" button on the PlayStation 2.
 
 ## Access Level Overview
 Each user has an access level. The access levels are as follows:
