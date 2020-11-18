@@ -17,9 +17,9 @@ TRBot supports restricting specific users from making specific inputs. Each user
 - You can add a restricted input with the [`AddRestrictedInputCommand`](../TRBot/TRBot.Commands/Commands/AddRestrictedInputCommand.cs) (Default: "!restrictinput").
 - You can lift an input restriction input with the [`RemoveRestrictedInputCommand`](../TRBot/TRBot.Commands/Commands/RemoveRestrictedInputCommand.cs) (Default: "!unrestrictinput").
 
-**Example:** "!restrictinput user1 gc a 30m" - Prevents user1 from pressing the "a" button on the GameCube console for 30 minutes.
-**Example:** "!restrictinput user2 ps2 square null" - Prevents user2 from pressing the "square" button on the PlayStation 2 console indefinitely.
-**Example:** "!unrestrictinput user2 ps2 square" - Lifts the restriction on user2 pressing the "square" button on the PlayStation 2.
+- **Example:** "!restrictinput user1 gc a 30m" - Prevents user1 from pressing the "a" button on the GameCube console for 30 minutes.
+- **Example:** "!restrictinput user2 ps2 square null" - Prevents user2 from pressing the "square" button on the PlayStation 2 console indefinitely.
+- **Example:** "!unrestrictinput user2 ps2 square" - Lifts the restriction on user2 pressing the "square" button on the PlayStation 2.
 
 ## Access Level Overview
 Each user has an access level. The access levels are as follows:
@@ -43,7 +43,7 @@ Abilities are a large part of the moderation features TRBot provides. These abil
 - `PermissionAbilities` are static and simply define all the available abilities. They are stored in the **PermissionAbilities** table of the database. You can list all available `PermissionAbilities` with the [`ListPermissionAbilitiesCommand`](../TRBot/TRBot.Commands/Commands/ListPermissionAbilitiesCommand.cs) (Default: "!allabilities").
 - `UserAbilities` are specific to each user and can be enabled or disabled either indefinitely or for a period of time. They are stored in the **UserAbilities** table of the database. You can list all abilities on a user with the [`ListUserAbilitiesCommand`](../TRBot/TRBot.Commands/Commands/ListUserAbilitiesCommand.cs) (Default: "!userabilities").
 
-The ability system is robust and flexible. For example, if you want to prevent a troll from making any inputs to chat, you can enable the [`silenced`](./Ability-Documentation.md#silenced) ability on them for 30 minutes.
+The ability system is robust and flexible. For example, if you want to prevent a troll from making any inputs to chat, you can enable the [`silenced`](./#silenced) ability on them for 30 minutes.
 
 To enable or disable abilities on a user, use the [`UpdateUserAbilityCommand`](../TRBot/TRBot.Commands/Commands/UpdateUserAbilityCommand.cs) (Default: "!toggleability").
 
@@ -64,68 +64,85 @@ Determines the user's specific maximum input sequence duration.
 
 ### bet
 **Default level: User (0)**
+
 Determines if the user can bet with the [`BetCreditsCommand`](../TRBot/TRBot.Commands/Commands/BetCreditsCommand.cs).
 
 ### duel
 **Default level: User (0)**
+
 Determines if the user can duel other users with the [`DuelCommand`](../TRBot/TRBot.Commands/Commands/DuelCommand.cs).
 
 ### groupbet
 **Default level: User (0)**
+
 Determines if the user can participate in a group bet through the [`EnterGroupBetCommand`](../TRBot/TRBot.Commands/Commands/EnterGroupBetCommand.cs).
 
 ### inputexercise
 **Default level: User (0)**
+
 Determines if the user can generate and solve input exercises through the [`InputExerciseCommand`](../TRBot/TRBot.Commands/Commands/InputExerciseCommand.cs).
 
 ### calculate
 **Default level: User (0)**
+
 Determines if the user can calculate expressions through the [`CalculateCommand`](../TRBot/TRBot.Commands/Commands/CalculateCommand.cs).
 
 ### chatbot
 **Default level: User (0)**
+
 Determines if the user can speak with a chatbot through the [`ChatbotCommand`](../TRBot/TRBot.Commands/Commands/ChatbotCommand.cs).
 
 ### bingo
 **Default level: User (0)**
+
 Determines if the user can interact with a bingo board through the [`BingoCommand`](../TRBot/TRBot.Commands/Commands/BingoCommand.cs).
 
 ### transfer
 **Default level: User (0)**
+
 Determines if the user can transfer credits to others through the [`TransferCreditsCommand`](../TRBot/TRBot.Commands/Commands/TransferCreditsCommand.cs).
 
 ### slots
 **Default level: User (0)**
+
 Determines if the user can play the slots through the [`SlotsCommand`](../TRBot/TRBot.Commands/Commands/SlotsCommand.cs).
 
 ### setgamemessage
 **Default level: VIP (20)**
+
 Determines if the user can set the game message displayed on screen through the [`SetGameMessageCommand`](../TRBot/TRBot.Commands/Commands/SetGameMessageCommand.cs).
 
 ### setconsole
 **Default level: Moderator (30)**
+
 Determines if the user can set the active game console through the [`GetSetConsoleCommand`](../TRBot/TRBot.Commands/Commands/GetSetConsoleCommand.cs).
 
 ### setdefaultinputdur
 **Default level: Moderator (30)**
+
 Determines if the user can set the global default input duration through the [`DefaultInputDurCommand`](../TRBot/TRBot.Commands/Commands/DefaultInputDurCommand.cs).
 
 ### setmaxinputdur
 **Default level: Moderator (30)**
+
 Determines if the user can set the global maximum input sequence duration through the [`MaxInputDurCommand`](../TRBot/TRBot.Commands/Commands/MaxInputDurCommand.cs).
 
 ### updateotheruserabilities
 **Default level: Admin (40)**
+
 Determines if the user can update other users' abilities through the [`UpdateAllUserAbilitiesCommand`](../TRBot/TRBot.Commands/Commands/UpdateAllUserAbilitiesCommand.cs).
 
 ### setglobalinputlevel
 **Default level: Admin (40)**
+
 Determines if the user can set the global minimum access level to perform inputs through the [`GlobalInputPermissionsCommand`](../TRBot/TRBot.Commands/Commands/GlobalInputPermissionsCommand.cs).
 
 ### setvcontrollertype
 **Default level: Admin (40)**
+
 Determines if the user can set the virtual controller type through the [`VirtualControllerCommand`](../TRBot/TRBot.Commands/Commands/VirtualControllerCommand.cs).
 
 ### setvcontrollercount
 **Default level: Admin(40)**
+
 Determines if the user can set the number of virtual controllers available through the [`ControllerCountCommand`](../TRBot/TRBot.Commands/Commands/ControllerCountCommand.cs).
