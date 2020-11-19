@@ -99,6 +99,12 @@ You will need to reload data or restart TRBot to apply any changes in the **Comm
 - [`ListPressedInputsCommand`](../TRBot/TRBot.Commands/Commands/ListPressedInputsCommand.cs) (default: "!pressedinputs") - Lists all inputs currently pressed on a given virtual controller. By default, this uses your own controller port, but you can supply another port as an argument.
   - Example: "!pressedinputs 1" - Lists all pressed inputs on controller port 1.
   - Example: "!pressedinputs 2" - Lists all pressed inputs on controller port 2
+- [`GetSetTeamsModeCommand`](../TRBot/TRBot.Commands/Commands/GetSetTeamsModeCommand.cs) (default: "!teamsmode") - Obtains the enabled state of teams mode, or sets it if you have sufficient privileges and provide an argument.
+  - Example: "!teamsmode true" - Enables teams mode, causing new users to be assigned a different controller port based on [teams mode settings](./Settings-Documentation.md#teams_mode_enabled).
+  - Example: "!teamsmode false" - Disables teams mode, causing new users to be assigned to controller port 1 (value 0).
+- [`GetSetTeamsModeMaxPortCommand`](../TRBot/TRBot.Commands/Commands/GetSetTeamsModeMaxPortCommand.cs) (default: "!teamsmaxport") - Obtains the zero-based maximum controller port for teams mode, or sets it if you have sufficient privileges and provide an argument. It's recommended to set this below the virtual controller count, otherwise users assigned controller ports equal to or higher than it will need to manually lower their ports to play.
+  - Example: "!teamsmaxport 1" - Sets the max controller port to 2, so each new user will alternate between controller ports 1 and 2.
+  - Example: "!teamsmaxport 2" - Sets the max controller port to 3, causing each new user to be assigned either port 1, 2, or 3 based on the current rotating value.
 
 ## Game Progress/Logging
 - [`AddGameLogCommand`](../TRBot/TRBot.Commands/Commands/AddGameLogCommand.cs) (default: "!addlog") - Adds a time-stamped game log to the database. This log is used to indicate others of game progress.

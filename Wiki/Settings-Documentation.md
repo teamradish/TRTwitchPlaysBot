@@ -172,13 +172,17 @@ If 1 or greater, will enable teams mode, automatically assigning the value of [t
 
 For example, if this is enabled and [teams_mode_max_port](#teams_mode_max_port) is 1, user1 will be assigned controller port 0, user2 will be port 1, user3 will be 0, and so on.
 
+This defaults to 0 (disabled).
+
 ### teams_mode_max_port
-The zero-based maximum controller port number to assign to new users if [teams_mode_enabled](#teams_mode_enabled) is 1 or greater.
+The zero-based maximum controller port number to assign to new users if [teams_mode_enabled](#teams_mode_enabled) is 1 or greater. This defaults to 3 (port 4).
 
 ### teams_mode_next_port
 Contains the zero-based controller port number to assign to new users if [teams_mode_enabled](#teams_mode_enabled) is 1 or greater. For example, 0 = controller port 1, and 1 = controller port 2.
 
 Once this is assigned, its value is incremented and then wrapped to be between 0 and [teams_mode_max_port](#teams_mode_max_port) so the next new user is assigned a different controller port.
+
+This defaults to 0 (port 1).
 
 ### default_input_duration
 The global default duration of inputs with unspecified durations, in milliseconds. This defaults to 200 milliseconds.

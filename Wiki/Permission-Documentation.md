@@ -117,12 +117,12 @@ Determines if the user can set the game message displayed on screen through the 
 ### setteamsmode
 **Default level: Moderator (30)**
 
-Determines if the user can enable or disable [teams mode](./Settings-Documentation.md#teams_mode_enabled).
+Determines if the user can enable or disable [teams mode](./Settings-Documentation.md#teams_mode_enabled) through the [`GetSetTeamsModeCommand`](../TRBot/TRBot.Commands/Commands/GetSetTeamsModeCommand.cs).
 
 ### setteamsmodemaxport
 **Default level: Moderator (30)**
 
-Determines if the user can set the max controller port available for teams mode.
+Determines if the user can set the [max controller port available for teams mode](./Settings-Documentation.md#teams_mode_max_port) through the [`GetSetTeamsModeMaxPortCommand`](../TRBot/TRBot.Commands/Commands/GetSetTeamsModeMaxPortCommand.cs).
 
 ### setconsole
 **Default level: Moderator (30)**

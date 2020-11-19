@@ -195,6 +195,8 @@ namespace TRBot.Data
                 new CommandData("toggleability", "TRBot.Commands.UpdateUserAbilityCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("restrictinput", "TRBot.Commands.AddRestrictedInputCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("unrestrictinput", "TRBot.Commands.RemoveRestrictedInputCommand", (long)PermissionLevels.Moderator, true, true),
+                new CommandData("teamsmode", "TRBot.Commands.GetSetTeamsModeCommand", (long)PermissionLevels.Moderator, true, true),
+                new CommandData("teamsmaxport", "TRBot.Commands.GetSetTeamsModeMaxPortCommand", (long)PermissionLevels.Moderator, true, true),
 
                 new CommandData("addcmd", "TRBot.Commands.AddCmdCommand", (long)PermissionLevels.Admin, true, true),
                 new CommandData("removecmd", "TRBot.Commands.RemoveCmdCommand", (long)PermissionLevels.Admin, true, true),
@@ -209,6 +211,7 @@ namespace TRBot.Data
 
                 new CommandData("exec", "TRBot.Commands.ExecCommand", (long)PermissionLevels.Superadmin, false, false),
                 new CommandData("exportbotdata", "TRBot.Commands.ExportBotDataCommand", (long)PermissionLevels.Superadmin, true, true),
+                new CommandData("forceinitdefaults", "TRBot.Commands.ForceInitDataCommand", (long)PermissionLevels.Superadmin, true, true),
             };
 
             return defaultCommands;
