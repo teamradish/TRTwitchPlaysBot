@@ -114,6 +114,16 @@ Determines if the user can play the slots through the [`SlotsCommand`](../TRBot/
 
 Determines if the user can set the game message displayed on screen through the [`SetGameMessageCommand`](../TRBot/TRBot.Commands/Commands/SetGameMessageCommand.cs).
 
+### setteamsmode
+**Default level: Moderator (30)**
+
+Determines if the user can enable or disable [teams mode](./Settings-Documentation.md#teams_mode_enabled).
+
+### setteamsmodemaxport
+**Default level: Moderator (30)**
+
+Determines if the user can set the max controller port available for teams mode.
+
 ### setconsole
 **Default level: Moderator (30)**
 

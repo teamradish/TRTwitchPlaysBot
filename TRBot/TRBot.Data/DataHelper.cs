@@ -180,8 +180,27 @@ namespace TRBot.Data
             //If the user doesn't exist, add it
             if (user == null)
             {
-                //Give them User permissions
+                long controllerPort = 0L;
+
+                //Check which port to set if teams mode is enabled
+                long teamsModeEnabled = GetSettingIntNoOpen(SettingsConstants.TEAMS_MODE_ENABLED, context, 0L);
+                if (teamsModeEnabled > 0L)
+                {
+                    Settings teamsNextPort = GetSettingNoOpen(SettingsConstants.TEAMS_MODE_NEXT_PORT, context);
+                    
+                    //The player is now on this port
+                    controllerPort = teamsNextPort.ValueInt;
+
+                    long maxPort = GetSettingIntNoOpen(SettingsConstants.TEAMS_MODE_MAX_PORT, context, 3L);
+
+                    //Increment the next port value, keeping it in range
+                    teamsNextPort.ValueInt = Utilities.Helpers.Wrap(teamsNextPort.ValueInt + 1, 0L, maxPort + 1);
+                }
+
+                //Give them User permissions and set their port
                 user = new User(userNameLowered, (long)PermissionLevels.User);
+                user.ControllerPort = controllerPort;
+
                 context.Users.Add(user);
 
                 //Save the changes so the user object is in the database

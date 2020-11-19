@@ -70,5 +70,7 @@ namespace TRBot.Permissions
         public const string BINGO_ABILITY = "bingo";
         public const string TRANSFER_ABILITY = "transfer";
         public const string SLOTS_ABILITY = "slots";
+        public const string SET_TEAMS_MODE_ABILITY = "setteamsmode";
+        public const string SET_TEAMS_MODE_MAX_PORT_ABILITY = "setteamsmodemaxport";
     }
 }

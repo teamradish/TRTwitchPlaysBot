@@ -54,10 +54,18 @@ namespace TRBot.Utilities
         /// <returns>An integer wrapped around <paramref name="min"/> and <paramref name="max"/>.</returns>
         public static int Wrap(int value, in int min, in int max)
         {
+            int diff = max - min;
+
             if (value < min)
-                value = max - (min - value) % (max - min);
+            {
+                if (diff == 0) value = max;
+                else value = max - (min - value) % diff;
+            }
             else
-                value = min + (value - min) % (max - min);
+            {
+                if (diff == 0) value = min;
+                else value = min + (value - min) % diff;
+            }
     
             return value;
         }
@@ -71,10 +79,18 @@ namespace TRBot.Utilities
         /// <returns>An integer wrapped around <paramref name="min"/> and <paramref name="max"/>.</returns>
         public static long Wrap(long value, in long min, in long max)
         {
+            long diff = max - min;
+
             if (value < min)
-                value = max - (min - value) % (max - min);
+            {
+                if (diff == 0L) value = max;
+                else value = max - (min - value) % diff;
+            }
             else
-                value = min + (value - min) % (max - min);
+            {
+                if (diff == 0L) value = min;
+                else value = min + (value - min) % diff;
+            }
     
             return value;
         }

@@ -41,6 +41,9 @@ Table of Contents
 * [periodic_input_time](#periodic_input_time)
 * [periodic_input_port](#periodic_input_port)
 * [periodic_input_value](#periodic_input_value)
+* [teams_mode_enabled](#teams_mode_enabled)
+* [teams_mode_max_port](#teams_mode_max_port)
+* [teams_mode_next_port](#teams_mode_next_port)
 * [default_input_duration](#default_input_duration)
 * [max_input_duration](#max_input_duration)
 * [last_console](#last_console)
@@ -163,6 +166,19 @@ The controller port to perform the periodic input sequence on. You can avoid int
 
 ### periodic_input_value
 The input sequence to perform (Ex. "a"). This can also be an input macro or an input synonym. This defaults to an empty string, or no input.
+
+### teams_mode_enabled
+If 1 or greater, will enable teams mode, automatically assigning the value of [teams_mode_next_port](#teams_mode_next_port) as the controller port to new users, then incrementing it and wrapping it between 0 and [teams_mode_max_port](#teams_mode_max_port).
+
+For example, if this is enabled and [teams_mode_max_port](#teams_mode_max_port) is 1, user1 will be assigned controller port 0, user2 will be port 1, user3 will be 0, and so on.
+
+### teams_mode_max_port
+The zero-based maximum controller port number to assign to new users if [teams_mode_enabled](#teams_mode_enabled) is 1 or greater.
+
+### teams_mode_next_port
+Contains the zero-based controller port number to assign to new users if [teams_mode_enabled](#teams_mode_enabled) is 1 or greater. For example, 0 = controller port 1, and 1 = controller port 2.
+
+Once this is assigned, its value is incremented and then wrapped to be between 0 and [teams_mode_max_port](#teams_mode_max_port) so the next new user is assigned a different controller port.
 
 ### default_input_duration
 The global default duration of inputs with unspecified durations, in milliseconds. This defaults to 200 milliseconds.

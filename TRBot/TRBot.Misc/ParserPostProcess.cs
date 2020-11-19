@@ -136,7 +136,7 @@ namespace TRBot.Misc
 
             //If all these inputs are somehow pressed already, whatever we do now doesn't matter 
             //However, returning false here would prevent any further inputs from working, so
-            //give a chance to check other inputs (such as releasing)
+            //give a chance to check other inputs, such as releasing
             
             for (int i = 0; i < inputs.Count; i++)
             {
@@ -277,7 +277,7 @@ namespace TRBot.Misc
                         IVirtualController controller = vControllerMngr.GetController(input.controllerPort);
                         if (controller.IsAcquired == false)
                         {
-                            return new InputValidation(InputValidationTypes.InvalidPort, $"ERROR: Joystick number {input.controllerPort + 1} with controller ID of {controller.ControllerID} has not been acquired! Ensure you (the streamer) have a virtual device set up at this ID.");
+                            return new InputValidation(InputValidationTypes.InvalidPort, $"ERROR: Joystick number {input.controllerPort + 1} with controller ID of {controller.ControllerID} has not been acquired! Ensure you, the streamer, have a virtual controller set up at this ID (double check permissions).");
                         }
                     }
                     //Invalid port

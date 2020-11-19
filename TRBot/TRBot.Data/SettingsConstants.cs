@@ -73,6 +73,10 @@ namespace TRBot.Data
         public const string PERIODIC_INPUT_PORT = "periodic_input_port";
         public const string PERIODIC_INPUT_VALUE = "periodic_input_value";
 
+        public const string TEAMS_MODE_ENABLED = "teams_mode_enabled";
+        public const string TEAMS_MODE_MAX_PORT = "teams_mode_max_port";
+        public const string TEAMS_MODE_NEXT_PORT = "teams_mode_next_port";
+
         public const string DEFAULT_INPUT_DURATION = "default_input_duration";
         public const string MAX_INPUT_DURATION = "max_input_duration";
         

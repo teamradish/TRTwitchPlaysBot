@@ -84,6 +84,9 @@ namespace TRBot.Data
                 SettingsHelper(PERIODIC_INPUT_TIME, 1000 * 60 * 5),
                 SettingsHelper(PERIODIC_INPUT_PORT, 0L),
                 SettingsHelper(PERIODIC_INPUT_VALUE, string.Empty),
+                SettingsHelper(TEAMS_MODE_ENABLED, 0L),
+                SettingsHelper(TEAMS_MODE_MAX_PORT, 3L),
+                SettingsHelper(TEAMS_MODE_NEXT_PORT, 0L),
                 SettingsHelper(DEFAULT_INPUT_DURATION, 200L),
                 SettingsHelper(MAX_INPUT_DURATION, 60000L),
                 SettingsHelper(LAST_CONSOLE, 1L),
@@ -257,7 +260,9 @@ namespace TRBot.Data
                 new PermissionAbility(SET_CONSOLE_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
                 new PermissionAbility(SET_DEFAULT_INPUT_DUR_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
                 new PermissionAbility(SET_MAX_INPUT_DUR_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
-
+                new PermissionAbility(SET_TEAMS_MODE_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
+                new PermissionAbility(SET_TEAMS_MODE_MAX_PORT_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
+                
                 new PermissionAbility(UPDATE_OTHER_USER_ABILITES, PermissionLevels.Admin, PermissionLevels.Admin),
                 new PermissionAbility(SET_GLOBAL_INPUT_LEVEL_ABILITY, PermissionLevels.Admin, PermissionLevels.Admin),
                 new PermissionAbility(SET_VCONTROLLER_TYPE_ABILITY, PermissionLevels.Admin, PermissionLevels.Admin),
