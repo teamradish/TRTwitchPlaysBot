@@ -13,7 +13,7 @@ In the database, each command in the **CommandData** table has the following fie
 You will need to reload data or restart TRBot to apply any changes in the **CommandData** table.
 
 ## Instructional
-- [`ListCmdsCommand`](../TRBot/TRBot.Commands/Commands/ListCmdsCommand.cs) (default: "!help") - Lists all commands available at your access level in alphabetical order.
+- [`ListCmdsCommand`](../TRBot/TRBot.Commands/Commands/ListCmdsCommand.cs) (default: "!help") - Lists all commands available at your access level in alphabetical order. An optional "disabled" or "all" argument will display either only disabled commands or all commands regardless of enabled state, respectively.
 - [`VersionCommand`](../TRBot/TRBot.Commands/Commands/VersionCommand.cs) (default: "!version") - Displays the application and data version numbers of the TRBot instance you're interacting with.
 - Default: "!tutorial" (internally a [`MessageCommand`](../TRBot/TRBot.Commands/Commands/MessageCommand.cs)) - Displays the tutorial message, including how to play.
 - Default: "!sourcecode" (internally a [`MessageCommand`](../TRBot/TRBot.Commands/Commands/MessageCommand.cs)) - Displays where to obtain the source code for the TRBot instance you're interacting with.

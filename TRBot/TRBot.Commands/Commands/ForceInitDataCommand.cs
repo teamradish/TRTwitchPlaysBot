@@ -63,7 +63,7 @@ namespace TRBot.Commands
 
             if (entriesAdded > 0)
             {
-                QueueMessage($"Added {entriesAdded} additional entries to the database.");
+                QueueMessage($"Added {entriesAdded} additional entries to the database. Make sure to reload data if you're expecting any new commands.");
             }
             else
             {

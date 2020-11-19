@@ -70,7 +70,7 @@ namespace TRBot.Commands
                 }
             }
 
-            string newStateStr = arguments[0];
+            string newStateStr = arguments[0].ToLowerInvariant();
 
             if (bool.TryParse(newStateStr, out bool newState) == false)
             {

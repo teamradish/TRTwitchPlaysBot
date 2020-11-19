@@ -29,6 +29,11 @@ namespace TRBot.Commands
     /// </summary>
     public sealed class ListCmdsCommand : BaseCommand
     {
+        private const string DISABLED_ARG = "disabled";
+        private const string ALL_ARG = "all";
+
+        private string UsageMessage = "Usage: no arguments (all enabled commands), \"disabled (optional)\" (only disabled commands), or \"all (optional)\" (enabled & disabled commands)";
+
         public ListCmdsCommand()
         {
 
@@ -36,18 +41,59 @@ namespace TRBot.Commands
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
+            List<string> arguments = args.Command.ArgumentsAsList;
+
+            if (arguments.Count > 1)
+            {
+                QueueMessage(UsageMessage);
+                return;
+            }
+
+            string arg = string.Empty;
+
+            if (arguments.Count > 0)
+            {
+                arg = arguments[0].ToLowerInvariant();
+
+                //Validate argument
+                if (arg != DISABLED_ARG && arg != ALL_ARG)
+                {
+                    QueueMessage(UsageMessage);
+                    return;
+                }
+            }
+
             using BotDBContext context = DatabaseManager.OpenContext();
 
             //Get the user so we can show only the commands they have access to
             string userName = args.Command.ChatMessage.Username;
             User infoUser = DataHelper.GetUserNoOpen(userName, context);
 
-            //Show all enabled commands that should be displayed, and order them alphabetically
-            IQueryable<CommandData> commandList = context.Commands.Where(c => c.Enabled != 0 && c.DisplayInList != 0 && c.Level <= infoUser.Level).OrderBy(c => c.Name);
+            //Show the commands that should be displayed based on our argument
+            IQueryable<CommandData> commandList = null;
+
+            //All commands
+            if (arg == ALL_ARG)
+            {
+                commandList = context.Commands.Where(c => c.DisplayInList > 0 && c.Level <= infoUser.Level);
+            }
+            //Disabled commands only
+            else if (arg == DISABLED_ARG)
+            {
+                commandList = context.Commands.Where(c => c.Enabled <= 0 && c.DisplayInList > 0 && c.Level <= infoUser.Level);
+            }
+            //Enabled commands only
+            else
+            {
+                commandList = context.Commands.Where(c => c.Enabled > 0 && c.DisplayInList > 0 && c.Level <= infoUser.Level);
+            }
+
+            //Order them alphabetically
+            commandList = commandList.OrderBy(c => c.Name);
 
             if (commandList.Count() == 0)
             {
-                QueueMessage("There are no displayable commands that you have access to! This might be a mistake, considering you got here to begin with.");
+                QueueMessage("There are no displayable commands that you have access to based on your argument!");
                 return;
             }
 
@@ -58,7 +104,15 @@ namespace TRBot.Commands
 
             foreach (CommandData cmd in commandList)
             {
-                stringBuilder.Append(cmd.Name).Append(',').Append(' ');
+                stringBuilder.Append(cmd.Name);
+                
+                //Note if the command is disabled
+                if (cmd.Enabled <= 0)
+                {
+                    stringBuilder.Append(" (disabled)");
+                }
+
+                stringBuilder.Append(',').Append(' ');
             }
 
             stringBuilder.Remove(stringBuilder.Length - 2, 2);

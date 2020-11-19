@@ -271,13 +271,13 @@ namespace TRBot.Commands
                     {
                         //Add this command
                         AddCommand(commandName, cmdData.ClassName, cmdData.ValueStr,
-                            (int)cmdData.Level, cmdData.Enabled != 0, cmdData.DisplayInList != 0 );
+                            (int)cmdData.Level, cmdData.Enabled > 0, cmdData.DisplayInList > 0 );
                     }
                     else
                     {
                         baseCmd.Level = (int)cmdData.Level;
-                        baseCmd.Enabled = cmdData.Enabled != 0;
-                        baseCmd.DisplayInHelp = cmdData.DisplayInList != 0;
+                        baseCmd.Enabled = cmdData.Enabled > 0;
+                        baseCmd.DisplayInHelp = cmdData.DisplayInList > 0;
                         baseCmd.ValueStr = cmdData.ValueStr;
                     }
 
