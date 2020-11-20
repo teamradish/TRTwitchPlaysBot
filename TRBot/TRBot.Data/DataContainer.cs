@@ -39,7 +39,7 @@ namespace TRBot.Data
         //Unsure if this is the best way to track changes
         //The sole purpose of this is to compare this value with the new virtual controller type
         //This allows us to change the virtual controller if the value in the database changed
-        public VirtualControllerTypes CurVControllerType { get; private set; } = VirtualControllerTypes.Invalid;
+        public VirtualControllerTypes CurVControllerType { get; private set; } = VirtualControllerTypes.Dummy;
 
         public DataContainer()
         {

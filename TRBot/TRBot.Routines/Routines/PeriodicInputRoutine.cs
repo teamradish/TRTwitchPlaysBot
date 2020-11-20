@@ -87,7 +87,7 @@ namespace TRBot.Routines
             }
 
             //Don't perform the input if the controller port is out of range
-            if (controllerPort < 0 || controllerPort >= DataContainer.ControllerMngr?.ControllerCount)
+            if (controllerPort < 0 || controllerPort >= DataContainer.ControllerMngr.ControllerCount)
             {
                 DataContainer.MessageHandler.QueueMessage($"Failed periodic input: The controller port is {controllerPort}, which is out of range for this virtual controller");
                 return;

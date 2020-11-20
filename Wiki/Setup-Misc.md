@@ -33,7 +33,7 @@ There are several options for displaying Twitch chat on your stream:
   * [This fork](https://github.com/tdeeb/obs-advanced-timer/tree/CountupStart) adds the ability to start a countup timer from a given time ("CountupStart" branch).
 
 # PC Games
-Inputs should work for PC games that can recognize the virtual controllers. There is experimental keyboard and mouse controls accessible on GNU/Linux if [`xdotool`](https://www.semicomplete.com/projects/xdotool/) is installed.
+Inputs should work for PC games that can recognize the virtual controllers. There is experimental keyboard and mouse controls accessible on GNU/Linux systems running X11 if [`xdotool`](https://www.semicomplete.com/projects/xdotool/) is installed.
 
 **Be very careful when playing PC games!** Make sure that players can't exit the game, access files or perform any other malicious activities, such as shutting down the system. If you're streaming a PC game, highly consider capturing only the window with the game and not the entire display; this way if players manage to exit the game, they won't be able to see anything else on your computer. This is easier to accomplish by playing the game in windowed mode.
 

@@ -21,9 +21,9 @@ using System.Runtime.CompilerServices;
 
 namespace TRBot.VirtualControllers
 {
-    public class UInputControllerManager : IVirtualControllerManager
+    public class DummyControllerManager : IVirtualControllerManager
     {
-        private UInputController[] Joysticks = null;
+        private DummyController[] Joysticks = null;
 
         public bool Initialized { get; private set; } = false;
 
@@ -33,12 +33,12 @@ namespace TRBot.VirtualControllers
 
         public int MaxControllers { get; private set; } = 16;
 
-        public UInputControllerManager()
+        public DummyControllerManager()
         {
 
         }
 
-        ~UInputControllerManager()
+        ~DummyControllerManager()
         {
             Dispose();
             GC.SuppressFinalize(this);
@@ -48,9 +48,8 @@ namespace TRBot.VirtualControllers
         {
             if (Initialized == true) return;
 
-            //Acquire min and max controller counts
-            MinControllers = NativeWrapperUInput.GetMinControllerCount();
-            MaxControllers = NativeWrapperUInput.GetMaxControllerCount();
+            MinControllers = 1;
+            MaxControllers = 4;
 
             Initialized = true;
         }
@@ -59,7 +58,6 @@ namespace TRBot.VirtualControllers
         {
             if (Initialized == false)
             {
-                //Console.WriteLine("UInputControllerManager not initialized; cannot clean up");
                 return;
             }
 
@@ -78,25 +76,25 @@ namespace TRBot.VirtualControllers
 
             int count = controllerCount;
 
-            //Ensure the number isn't lower than the min controllers supported
+            //Ensure count of min controllers
             if (count < MinControllers)
             {
                 count = MinControllers;
-                Console.WriteLine($"Joystick count of {count} is less than {nameof(MinControllers)} of {MinControllers}. Clamping value to this limit.");
+                Console.WriteLine($"Joystick count of {count} is less than {nameof(MinControllers)}. Clamping value to this limit.");
             }
 
-            //Check for max uinput device ID to ensure we don't try to register more devices than it can support
+            //Check for max controller ID
             if (count > MaxControllers)
             {
                 count = MaxControllers;
 
-                Console.WriteLine($"Joystick count of {count} is greater than {nameof(MaxControllers)} of {MaxControllers}. Clamping value to this limit.");
+                Console.WriteLine($"Joystick count of {count} is greater than max {nameof(MaxControllers)} of {MaxControllers}. Clamping value to this limit.");
             }
 
-            Joysticks = new UInputController[count];
+            Joysticks = new DummyController[count];
             for (int i = 0; i < Joysticks.Length; i++)
             {
-                Joysticks[i] = new UInputController(i);
+                Joysticks[i] = new DummyController(i);
             }
 
             int acquiredCount = 0;
@@ -104,17 +102,17 @@ namespace TRBot.VirtualControllers
             //Acquire the device IDs
             for (int i = 0; i < Joysticks.Length; i++)
             {
-                UInputController joystick = Joysticks[i];
+                DummyController joystick = Joysticks[i];
 
                 joystick.Acquire();
                 if (joystick.IsAcquired == false)
                 {
-                    Console.WriteLine($"Unable to acquire uinput device at index {joystick.ControllerIndex}. Make sure you have permissions set with \"sudo chmod a+rw /dev/uinput\"");
+                    Console.WriteLine($"Unable to acquire dummy device at index {joystick.ControllerIndex}...HUH?!?!");
                     continue;
                 }
 
                 acquiredCount++;
-                Console.WriteLine($"Acquired uinput device ID {joystick.ControllerID} at index {joystick.ControllerIndex} with descriptor {joystick.ControllerDescriptor}!");
+                Console.WriteLine($"Acquired dummy device ID {joystick.ControllerID} at index {joystick.ControllerIndex}!");
 
                 //Initialize the joystick
                 joystick.Init();

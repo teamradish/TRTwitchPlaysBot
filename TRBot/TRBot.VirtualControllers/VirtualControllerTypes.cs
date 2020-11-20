@@ -25,9 +25,25 @@ namespace TRBot.VirtualControllers
     /// </summary>
     public enum VirtualControllerTypes
     {
-        Invalid = 0,
+        /// <summary>
+        /// A dummy virtual controller used as a fallback.
+        /// </summary>
+        Dummy = 0,
+
+        /// <summary>
+        /// vJoy virtual controllers. Supported only on Windows platforms.
+        /// </summary>
         vJoy = 1,
+
+        /// <summary>
+        /// uinput virtual controllers. Supported only on GNU/Linux platforms.
+        /// </summary>
         uinput = 2,
+
+        /// <summary>
+        /// A virtual controller utilizing xdotool on GNU/Linux platforms running X11 to
+        /// enable mouse and keyboard controls. EXPERIMENTAL.
+        /// </summary>
         xdotool = 3
     }
 }

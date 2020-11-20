@@ -24,7 +24,7 @@ namespace TRBot.Misc
             {
                 case TRBotOSPlatform.OS.Windows: return VirtualControllerTypes.vJoy;
                 case TRBotOSPlatform.OS.GNULinux: return VirtualControllerTypes.uinput;
-                default: return VirtualControllerTypes.Invalid;
+                default: return VirtualControllerTypes.Dummy;
             }
         }
 
@@ -39,7 +39,7 @@ namespace TRBot.Misc
             {
                 case TRBotOSPlatform.OS.Windows: return new VJoyControllerManager();
                 case TRBotOSPlatform.OS.GNULinux: return new UInputControllerManager();
-                default: return null;
+                default: return new DummyControllerManager();
             }
         }
         
@@ -55,7 +55,7 @@ namespace TRBot.Misc
                 case VirtualControllerTypes.vJoy: return new VJoyControllerManager();
                 case VirtualControllerTypes.uinput: return new UInputControllerManager();
                 case VirtualControllerTypes.xdotool: return new XDotoolControllerManager();
-                default: return null;
+                default: return new DummyControllerManager();
             }
         }
 
@@ -75,6 +75,8 @@ namespace TRBot.Misc
                     return operatingSystem == TRBotOSPlatform.OS.GNULinux;
                 case VirtualControllerTypes.xdotool:
                     return operatingSystem == TRBotOSPlatform.OS.GNULinux;
+                case VirtualControllerTypes.Dummy:
+                    return true;
                 default:
                     return false;
             }

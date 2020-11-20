@@ -77,11 +77,11 @@ namespace TRBot.VirtualControllers
 
             int count = controllerCount;
 
-            //Ensure count of 1
-            if (count < 1)
+            //Ensure the number isn't lower than the min controllers supported
+            if (count < MinControllers)
             {
-                count = 1;
-                Console.WriteLine($"Joystick count of {count} is less than 1. Clamping value to this limit.");
+                count = MinControllers;
+                Console.WriteLine($"Joystick count of {count} is less than {nameof(MinControllers)} of {MinControllers}. Clamping value to this limit.");
             }
 
             //Check for max device count to ensure we don't try to register more devices than it can support
@@ -89,7 +89,7 @@ namespace TRBot.VirtualControllers
             {
                 count = MaxControllers;
 
-                Console.WriteLine($"Joystick count of {count} is greater than max {nameof(MaxControllers)} of {MaxControllers}. Clamping value to this limit.");
+                Console.WriteLine($"Joystick count of {count} is greater than {nameof(MaxControllers)} of {MaxControllers}. Clamping value to this limit.");
             }
 
             Joysticks = new XDotoolController[count];

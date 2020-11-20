@@ -113,7 +113,7 @@ namespace TRBot.Commands
             try
             {
                 //Dispose the controller manager
-                DataContainer.ControllerMngr?.Dispose();
+                DataContainer.ControllerMngr.Dispose();
 
                 //Re-initialize and initialize controllers
                 DataContainer.ControllerMngr.Initialize();

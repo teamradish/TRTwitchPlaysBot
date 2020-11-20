@@ -36,6 +36,8 @@ namespace TRBot.Utilities
         {
             Windows = 1,
             GNULinux = 2,
+            FreeBSD = 3,
+            macOS = 4,
             Other = 10
         }
 
@@ -54,6 +56,14 @@ namespace TRBot.Utilities
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) == true)
             {
                 CurrentOS = OS.GNULinux;
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD) == true)
+            {
+                CurrentOS = OS.FreeBSD;
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) == true)
+            {
+                CurrentOS = OS.macOS;
             }
             else
             {

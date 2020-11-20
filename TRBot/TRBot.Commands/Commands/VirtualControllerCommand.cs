@@ -47,12 +47,6 @@ namespace TRBot.Commands
 
             for (int i = 0; i < names.Length; i++)
             {
-                //Don't add Invalid to the list
-                if (names[i] == VirtualControllerTypes.Invalid.ToString())
-                {
-                    continue;
-                }
-
                 CachedVCTypesStr += names[i];
 
                 if (i < (names.Length - 1))
@@ -104,7 +98,7 @@ namespace TRBot.Commands
             }
 
             //Same type
-            if (parsedVCType == curVCType && DataContainer.ControllerMngr != null && DataContainer.ControllerMngr.Initialized == true)
+            if (parsedVCType == curVCType && DataContainer.ControllerMngr.Initialized == true)
             {
                 QueueMessage($"The current virtual controller is already {curVCType}!");
                 return;
@@ -113,7 +107,7 @@ namespace TRBot.Commands
             //Make sure this virtual controller is supported on this platform
             if (VControllerHelper.IsVControllerSupported(parsedVCType, TRBotOSPlatform.CurrentOS) == false)
             {
-                QueueMessage($"{parsedVCType} virtual controllers are not supported on your operating system.");
+                QueueMessage($"{parsedVCType} virtual controllers are not supported on {TRBotOSPlatform.CurrentOS} platforms.");
                 return;
             }
             
@@ -138,7 +132,7 @@ namespace TRBot.Commands
                 }
 
                 //Dispose the controller manager
-                DataContainer.ControllerMngr?.Dispose();
+                DataContainer.ControllerMngr.Dispose();
 
                 DataContainer.SetCurVControllerType(parsedVCType);
 
