@@ -749,13 +749,11 @@ namespace TRBot.Main
 
         private void OnSoftReload()
         {
-            Console.WriteLine("Reloaded soft");
             HandleReloadBoth();
         }
 
         private void OnHardReload()
         {
-            Console.WriteLine("Reloaded hard");
             HandleReloadBoth();
         }
 
