@@ -36,7 +36,7 @@ Oops! If you noticed, the 3rd argument, the button value, is 0 instead of 1. Let
 
 "!addinput newconsole a 1 0 1 0 0 0"
 
-That's right, the `AddInputCommand` will update an input if it already exists for the given console. You can modify inputs the same way as you add them! Since the axis value for our "a" button isn't used, we didn't need to think about the data we supplied for the axis values.
+That's right, the `AddInputCommand` will update an input if it already exists for the given console. You can modify inputs the same way as you add them! Since the axis value for our "a" button isn't used, since the input type is Button, we don't need to care about the data we supplied for the axis values and simply set them all to 0.
 
 Now let's add a full analog stick to this console. The X axis will be axis value 0, and the Y axis will be axis value 1. This time, we have to specify an input type of **2** to indicate that this input is an axis.
 
@@ -50,7 +50,7 @@ Now let's add a full analog stick to this console. The X axis will be axis value
 
 If you noticed, the only difference between the opposing directions on each axis is the maximum axis value. If a user inputs "up50%", the normalized value will be -0.5 (halfway up), whereas "down75%" will have a normalized value of 0.75 (3/4 down). You don't have to strictly follow this model for defining axes, but it's highly recommended, as most game controllers work this way.
 
-Similarly to the "a" button, we don't need to care about the button value since the input is an axis and won't use it. If the max axis percent was less than 100, we would, since the axis can act as a button above that threshold, and we don't want it to interfere with existing buttons. 
+Similarly to the "a" button, we don't need to care about the button value since the input type is Axis and won't use it. If the max axis percent is less than 100, then we should care since the axis can act as a button above that threshold, and we don't want it to interfere with an existing button with a button value of 0. 
 
 ## Removing inputs
 Our "newconsole" is coming along! It's got an "a" button and a full analog stick with "up", "down", "left", and "right" inputs available. However, what if we no longer want the "a" button so we can replace it with something else?
