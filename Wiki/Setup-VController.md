@@ -1,0 +1,27 @@
+# Setting up virtual controllers for inputs
+## GNU/Linux
+Make sure the `uinput` kernel module is enabled with `sudo modprobe uinput`. Unless TRBot is run as root, you'll also need permissions to read and write in `/dev/uinput` with `sudo chmod a+rw /dev/uinput`. TRBot creates and manages the `uinput` virtual controllers on GNU/Linux automatically, so there is nothing to install.
+
+If the native code fails to run for your distro, head to the `TRBot.VirtualControllers/Native` folder and compile `SetupVController.c` with **gcc** as a shared library (`gcc -fPIC -shared SetupVController.c -o SetupVController.so`). Use the newly compiled .so file in place of the old one and run the bot again.
+
+## Windows
+TRBot uses vJoy on Windows to send inputs to the game. While it has no trouble parsing inputs that come through chat, the inputs won't be able to reach the games you're streaming if you don't have vJoy set up.
+
+1. Install [vJoy](https://sourceforge.net/projects/vjoystick/files/Beta/Configurable/CC290512/). Click on "Download Latest Version" and run the setup file.
+2. After installation, run a newly installed program called "Configure vJoy". Set up the number of devices you want and configure them. **Make sure that at least 32 buttons are mapped on each virtual controller to ensure enough inputs are available**. Both vJoy and TRBot are capable of handling up to 128 buttons, but keep in mind that some emulators may not be able to map button values past 32.
+
+## Testing Virtual Controller Configuration
+Your virtual controllers should be set up and good to go right now. Run TRBot and check the console window to see if it's able to acquire the virtual controllers set up. If everything looks good, you should next test out how the inputs work.
+
+**IMPORTANT: The default console for TRBot is NES, which has no analog inputs. If you wish to test analog inputs, switch to a console with them, such as Gamecube, with `!console gc`. You will need an access level of admin to switch the console (covered in [Setting up TRBot](#setting-up-trbot)).**
+
+A simple way to test actual inputs is on the [Dolphin](https://dolphin-emu.org/) emulator using the [provided vJoy or uinput controller profiles in this repository](../Emulator%20Controller%20Configs/Dolphin). Once the mappings are set in the emulator (you can set them using chat inputs as well), you can test it out by typing inputs with the bot (for vJoy, the *"vJoy Feeder (Demo)"* program will also work). You should see buttons being pressed and axes being moved in Dolphin's controller configuration screen if everything was configured correctly.
+
+Alternatively, you can use another application to test joystick inputs. One such application on GNU/Linux is **jstest-gtk**.
+
+**NOTE: Make sure background input is enabled in the emulator, as this will make things much easier! If you don't see an option in the menus, check any config files. For instance, BizHawk has it in its config file as `AcceptBackgroundInput`.**
+
+If everything looks okay at this point, viewers should now be capable of playing games through your chat!
+
+# Next step - Miscellaneous
+Done with this step? Check the [next section](./Setup-Misc.md) for additional settings, tools for displaying chat on stream, and more!

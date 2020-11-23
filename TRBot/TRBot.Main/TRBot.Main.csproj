@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\TRBot.Connection\TRBot.Connection.csproj" />
+    <ProjectReference Include="..\TRBot.Consoles\TRBot.Consoles.csproj" />
+    <ProjectReference Include="..\TRBot.Parsing\TRBot.Parsing.csproj" />
+    <ProjectReference Include="..\TRBot.Utilities\TRBot.Utilities.csproj" />
+    <ProjectReference Include="..\TRBot.VirtualControllers\TRBot.VirtualControllers.csproj" />
+    <ProjectReference Include="..\TRBot.Misc\TRBot.Misc.csproj" />
+    <ProjectReference Include="..\TRBot.Data\TRBot.Data.csproj" />
+    <ProjectReference Include="..\TRBot.Commands\TRBot.Commands.csproj" />
+    <ProjectReference Include="..\TRBot.Permissions\TRBot.Permissions.csproj" />
+    <ProjectReference Include="..\TRBot.Routines\TRBot.Routines.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <Optimize>false</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefaultItemExcludes>$(DefaultItemExcludes);../TRBotCore/**</DefaultItemExcludes>
+  </PropertyGroup>
+
+</Project>
