@@ -10,7 +10,7 @@ First, we need to set up our custom command in the database. If you don't know h
 
 1. Open the database and navigate to the **CommandData** table.
 2. Create a new record and fill out the following information:
-  - Set the `Name` of the command to be something descriptive that mentions what it does (Ex. "testcmd").
+  - Set the `Name` of the command to be something descriptive that mentions what it does. In our case, the name should be "testcmd".
   - Set the `ClassName` of the command to be `TRBot.Commands.ExecFromFileCommand`.
   - Set the `Level` value of the command to be the access level you want. For this tutorial, we will have this accessible to everyone, so set it to 0 (User level).
   - Set the `Enabled` value of the command to be 1 so we can actually use it.
