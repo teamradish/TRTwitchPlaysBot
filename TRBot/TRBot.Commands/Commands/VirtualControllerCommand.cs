@@ -43,13 +43,23 @@ namespace TRBot.Commands
         {
             base.Initialize();
 
-            string[] names = EnumUtility.GetNames<VirtualControllerTypes>.EnumNames;
+            //Show only the virtual controllers supported on this platform
+            VirtualControllerTypes[] vcTypes = EnumUtility.GetValues<VirtualControllerTypes>.EnumValues;
 
-            for (int i = 0; i < names.Length; i++)
+            for (int i = 0; i < vcTypes.Length; i++)
             {
-                CachedVCTypesStr += names[i];
+                VirtualControllerTypes vControllerType = vcTypes[i];
 
-                if (i < (names.Length - 1))
+                //Continue if not supported
+                if (VControllerHelper.IsVControllerSupported(vControllerType,
+                    TRBotOSPlatform.CurrentOS) == false)
+                {
+                    continue;
+                }
+
+                CachedVCTypesStr += vControllerType.ToString();
+
+                if (i < (vcTypes.Length - 1))
                 {
                     CachedVCTypesStr += ", ";
                 }
