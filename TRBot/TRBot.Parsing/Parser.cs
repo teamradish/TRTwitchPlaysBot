@@ -289,7 +289,6 @@ namespace TRBot.Parsing
                     //Look through the parser macro list for performance
                     //Handle no macro (Ex. "#" alone)
                     if (macro_name_generic.Length > 1)
-                        //&& macroData.ParserMacroLookup.TryGetValue(macro_name_generic[1], out List<InputMacro> macroList) == true)
                     {
                         //Use string comparison for the first two characters
                         //If the IQueryable is from a database such as SQLite, we can't do character comparisons in a Where clause

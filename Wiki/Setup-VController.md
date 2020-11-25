@@ -11,7 +11,7 @@ TRBot uses vJoy on Windows to send inputs to the game. While TRBot has no troubl
 2. After installation, run a newly installed program called "Configure vJoy". Set up the number of devices you want and configure them. **Make sure that at least 32 buttons are mapped on each virtual controller to ensure enough inputs are available**. Both vJoy and TRBot are capable of handling up to 128 buttons, but keep in mind that most games and emulators may not be able to map button values past 32.
 
 ## Testing Virtual Controller Configuration
-Your virtual controllers should be set up and good to go right now. Run TRBot and check the console window to see if it's able to acquire the virtual controllers set up. If everything looks good, you should next test out how the inputs work.
+Your virtual controllers should be set up and good to go right now. Run TRBot and check the console window to see if it's able to acquire those virtual controllers. If everything looks good, you should next test out how the inputs work.
 
 **IMPORTANT: The default console for TRBot is NES, which has no analog inputs. If you wish to test analog inputs, switch to a console with them, such as the GameCube, with the [`GetSetConsoleCommand`](../TRBot/TRBot.Commands/Commands/GetSetConsoleCommand.cs) (default: "!console") via "!console gc". You will need an access level of Moderator (30) by default to switch the console (covered in [Setting up TRBot](#setting-up-trbot)).**
 

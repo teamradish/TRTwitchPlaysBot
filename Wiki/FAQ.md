@@ -1,7 +1,7 @@
 # FAQ
 
 ## ...So, what is this again?
-TRBot is software that lets you play games through text. If you type "right", the character in your game will move right, provided everything is configured correctly. TRBot achieves this through virtual game controllers on your operating system that can simulate real controllers.
+TRBot is software that lets you play games through text. If you type "right", the character in your game will move right if configured to do so. TRBot achieves this through virtual game controllers on your operating system that simulate real controllers.
 
 ## My inputs aren't doing anything in the game!
 Make sure the [virtual controllers are set up properly](./Setup-VController.md).
@@ -16,15 +16,15 @@ If you're using a custom console, check your button values with the [`InputInfoC
 ## Why did my input not go through??
 There may be several reasons an input didn't go through:
 
-1. You're silenced and thus denied from making inputs. Check your abilities with the [`ListUserAbilitiesCommand](../TRBot/TRBot.Commands/Commands/ListUserAbilitiesCommand.cs) (default: "!userabilities") and see if the silenced ability is on the list and not disabled.
+1. You're silenced and thus denied from making inputs. Check your abilities with the [`ListUserAbilitiesCommand`](../TRBot/TRBot.Commands/Commands/ListUserAbilitiesCommand.cs) (default: "!userabilities") and see if the silenced ability is on the list and not disabled.
 2. Inputs are restricted to access levels higher than yours. View the global input access level through the [`GlobalInputPermissionsCommand`](../TRBot/TRBot.Commands/Commands/GlobalInputPermissionsCommand.cs) (default: "!inputperms") and your own access level through the [`LevelCommand`](../TRBot/TRBot.Commands/Commands/LevelCommand.cs) (default: "!level").
 3. You input a dynamic macro that does not parse correctly. Make sure the arguments you entered are valid.
 4. A dynamic macro **inside another** dynamic macro has a space between its arguments. For example, "#mash(a, b)" is invalid while "#mash(a,b)" is correct.
 
-TRBot's error messages are currently limited due to how it parses the syntax through regex: when an input is invalid, the regex will usually not pick it up at all, making it impossible to determine the exact error.
+TRBot will output an error message in certain circumstances, such as when an input goes over the max input duration. The error messages are limited due to how TRBot parses the syntax through regex: when an input is invalid, the regex will often not pick it up at all, making it unable to determine the exact error.
 
 ## How do I hold right and jump?
 See the [syntax walkthrough](./Syntax-Walkthrough.md).
 
 ## How do I press "a" and "b" at the same time? I need to do special combos!
-Again, see the [syntax walkthrough](./Syntax-Walkthrough.md).
+Again, see the [syntax walkthrough](./Syntax-Walkthrough.md) :)
