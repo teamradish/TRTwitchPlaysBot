@@ -182,6 +182,7 @@ namespace TRBot.Data
                 //By default, exclude the common savestate inputs from input exercises
                 new CommandData("exercise", "TRBot.Commands.InputExerciseCommand", (long)PermissionLevels.User, true, true, "ss,incs,decs,ss1,ss2,ss3,ss4,ss5,ss6,ls1,ls2,ls3,ls4,ls5,ls6"),
                 new CommandData("slots", "TRBot.Commands.SlotsCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("inputperms", "TRBot.Commands.GlobalInputPermissionsCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
 
@@ -207,7 +208,6 @@ namespace TRBot.Data
                 new CommandData("removeinput", "TRBot.Commands.RemoveInputCommand", (long)PermissionLevels.Admin, true, true),
                 new CommandData("setinputlevel", "TRBot.Commands.SetInputLevelCommand", (long)PermissionLevels.Admin, true, true),
                 new CommandData("toggleinput", "TRBot.Commands.SetInputEnabledCommand", (long)PermissionLevels.Admin, true, true),
-                new CommandData("inputperms", "TRBot.Commands.GlobalInputPermissionsCommand", (long)PermissionLevels.Admin, true, true),
 
                 new CommandData("exec", "TRBot.Commands.ExecCommand", (long)PermissionLevels.Superadmin, false, false),
                 new CommandData("exportbotdata", "TRBot.Commands.ExportBotDataCommand", (long)PermissionLevels.Superadmin, true, true),

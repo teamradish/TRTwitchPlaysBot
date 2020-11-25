@@ -1,5 +1,8 @@
 Welcome to the TRBot wiki! Choose the relevant section for your needs.
 
+## General
+* [FAQ](./FAQ.md) - Get answers to frequently asked questions.
+
 ## Streamers
 ### Setup
 * [Setting up TRBot](./Setup-Init.md) - Initial steps setting up TRBot.
