@@ -6,7 +6,7 @@ TRBot is software that lets you play games through text. If you type "right", th
 ## My inputs aren't doing anything in the game!
 Make sure the [virtual controllers are set up properly](./Setup-VController.md).
 
-If they still aren't working afterwards, make sure the game is using the virtual controllers as the input device. For emulators you can often choose the input device to use. For PC games this is more complex, as many games aren't flexible about input remapping, but they may recognize your .
+If they still aren't working afterwards, make sure the game is using the virtual controllers as the input device. For emulators you can often choose the input device to use. For PC games this is more complex, as many games aren't flexible about input remapping. See more information on setting up PC games [here](./Setup-Misc.md#pc-games).
 
 ## My inputs are off! I press "a" but the game is pressing "b" instead!
 Each TRBot console has different button values for each button. Make sure you're using the correct console for your game (Ex.  the N64 console for N64 games). You can view the current console and change consoles with the [`GetSetConsoleCommand`](../TRBot/TRBot.Commands/Commands/GetSetConsoleCommand.cs) (default: "!console").
