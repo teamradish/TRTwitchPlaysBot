@@ -20,6 +20,7 @@ There may be several reasons an input didn't go through:
 2. Inputs are restricted to access levels higher than yours. View the global input access level through the [`GlobalInputPermissionsCommand`](../TRBot/TRBot.Commands/Commands/GlobalInputPermissionsCommand.cs) (default: "!inputperms") and your own access level through the [`LevelCommand`](../TRBot/TRBot.Commands/Commands/LevelCommand.cs) (default: "!level").
 3. You input a dynamic macro that does not parse correctly. Make sure the arguments you entered are valid.
 4. A dynamic macro **inside another** dynamic macro has a space between its arguments. For example, "#mash(a, b)" is invalid while "#mash(a,b)" is correct.
+5. You forgot to specify the "*" or the number of repetitions in a repeated input. "[a]\*5" is valid, whereas "[a]5" and "[a]\*" are not!
 
 TRBot will output an error message in certain circumstances, such as when an input goes over the max input duration. The error messages are limited due to how TRBot parses the syntax through regex: when an input is invalid, the regex will often not pick it up at all, making it unable to determine the exact error.
 
