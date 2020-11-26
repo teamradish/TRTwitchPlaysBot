@@ -58,14 +58,14 @@ namespace TRBot.Commands
 
             if (macro == null)
             {
-                QueueMessage($"Macro \"{macroName}\" could not be found.");
+                QueueMessage($"Input macro \"{macroName}\" could not be found.");
                 return;
             }
 
             context.Macros.Remove(macro);
             context.SaveChanges();
 
-            QueueMessage($"Removed macro \"{macroName}\".");
+            QueueMessage($"Removed input macro \"{macroName}\".");
         }
     }
 }

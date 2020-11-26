@@ -60,7 +60,7 @@ namespace TRBot.Commands
 
             if (macro == null)
             {
-                message = $"Macro \"{macroName}\" not found. For dynamic macros, use the generic form (Ex. \"#test(*)\"";
+                message = $"Input macro \"{macroName}\" not found. For dynamic input macros, use the generic form (Ex. \"#test(*)\").";
             }
             else
             {

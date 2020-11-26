@@ -66,27 +66,27 @@ namespace TRBot.Commands
             //Make sure the first argument has at least a minimum number of characters
             if (macroName.Length < MIN_MACRO_NAME_LENGTH)
             {
-                QueueMessage($"Macros need to be at least {MIN_MACRO_NAME_LENGTH} characters long.");
+                QueueMessage($"Input macros need to be at least {MIN_MACRO_NAME_LENGTH} characters long.");
                 return;
             }
 
             if (macroName.StartsWith(Parser.DEFAULT_PARSER_REGEX_MACRO_INPUT) == false)
             {
-                QueueMessage($"Macros must start with \"{Parser.DEFAULT_PARSER_REGEX_MACRO_INPUT}\".");
+                QueueMessage($"Input macros must start with \"{Parser.DEFAULT_PARSER_REGEX_MACRO_INPUT}\".");
                 return;
             }
 
             //For simplicity with wait inputs, force the first character in the macro name to be alphanumeric
             if (char.IsLetterOrDigit(arguments[0][1]) == false)
             {
-                QueueMessage("The first character in macro names must be alphanumeric.");
+                QueueMessage("The first character in input macro names must be alphanumeric.");
                 return;
             }
 
             //Check for max macro name
             if (macroName.Length > MAX_MACRO_NAME_LENGTH)
             {
-                QueueMessage($"Macros may have up to a max of {MAX_MACRO_NAME_LENGTH} characters in their name.");
+                QueueMessage($"Input macros may have up to a max of {MAX_MACRO_NAME_LENGTH} characters in their name.");
                 return;
             }
 
@@ -97,7 +97,7 @@ namespace TRBot.Commands
             GameConsole curConsole = context.Consoles.FirstOrDefault(c => c.ID == lastConsole);
             if (curConsole == null)
             {
-                QueueMessage("Cannot validate macro, as the current console is invalid. Fix this by setting another console.");
+                QueueMessage("Cannot validate input macro, as the current console is invalid. Fix this by setting another console.");
                 return;
             }
 
@@ -107,13 +107,28 @@ namespace TRBot.Commands
 
             //Trim the macro name from the input sequence
             string macroVal = args.Command.ArgumentsAsString.Remove(0, macroName.Length + 1).ToLowerInvariant();
-            Console.WriteLine(macroVal);
+            //Console.WriteLine(macroVal);
 
             bool isDynamic = false;
 
             //Check for a dynamic macro
-            if (macroName.Contains("(*") == true)
+            int openParenIndex = macroName.IndexOf('(', 0);
+            if (openParenIndex >= 0)
             {
+                //If we found the open parenthesis, check for the asterisk
+                //This is not comprehensive, but it should smooth out a few issues
+                if (openParenIndex == (macroName.Length - 1) || macroName[openParenIndex + 1] != '*')
+                {
+                    QueueMessage("Invalid input macro. Dynamic macro arguments must be specified with \"*\".");
+                    return;
+                }
+
+                if (macroName[macroName.Length - 1] != ')')
+                {
+                    QueueMessage("Invalid input macro. Dynamic macros must end with \")\".");
+                    return;
+                }
+
                 isDynamic = true;
             }
 
@@ -144,11 +159,11 @@ namespace TRBot.Commands
                     {
                         if (string.IsNullOrEmpty(inputSequence.Error) == true)
                         {
-                            QueueMessage("Invalid macro.");
+                            QueueMessage("Invalid input macro.");
                         }
                         else
                         {
-                            QueueMessage($"Invalid macro: {inputSequence.Error}");
+                            QueueMessage($"Invalid input macro: {inputSequence.Error}");
                         }
 
                         return;
@@ -156,7 +171,7 @@ namespace TRBot.Commands
                 }
                 catch (Exception e)
                 {
-                    QueueMessage($"Invalid macro: {e.Message}");
+                    QueueMessage($"Invalid input macro: {e.Message}");
                     return;
                 }
             }
@@ -173,8 +188,8 @@ namespace TRBot.Commands
                 context.Macros.Add(newMacro);
 
                 if (isDynamic == false)
-                    message = $"Added macro \"{macroName}\"!";
-                else message = $"Added dynamic macro \"{macroName}\"! Dynamic macros can't be validated beforehand, so verify it works manually.";
+                    message = $"Added input macro \"{macroName}\"!";
+                else message = $"Added dynamic input macro \"{macroName}\"! Dynamic input macros can't be validated beforehand, so verify it works manually.";
             }
             //Update the macro value
             else
@@ -182,8 +197,8 @@ namespace TRBot.Commands
                 inputMacro.MacroValue = macroVal;
 
                 if (isDynamic == false)
-                    message = $"Updated macro \"{macroName}\"!";
-                else message = $"Updated dynamic macro \"{macroName}\"! Dynamic macros can't be validated beforehand, so verify it works manually.";
+                    message = $"Updated input macro \"{macroName}\"!";
+                else message = $"Updated dynamic input macro \"{macroName}\"! Dynamic input macros can't be validated beforehand, so verify it works manually.";
             }
 
             context.SaveChanges();

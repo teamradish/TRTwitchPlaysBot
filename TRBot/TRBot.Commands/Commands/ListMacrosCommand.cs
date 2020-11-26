@@ -33,6 +33,11 @@ namespace TRBot.Commands
     /// </summary>
     public sealed class ListMacrosCommand : BaseCommand
     {
+        private const string NORMAL_ARG = "normal";
+        private const string DYNAMIC_ARG = "dynamic";
+
+        private string UsageMessage = "Usage: no arguments (all macros), \"normal\" (only normal macros), \"dynamic\" (only dynamic macros)";
+
         public ListMacrosCommand()
         {
             
@@ -40,6 +45,28 @@ namespace TRBot.Commands
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
+            List<string> arguments = args.Command.ArgumentsAsList;
+
+            if (arguments.Count > 2)
+            {
+                QueueMessage(UsageMessage);
+                return;
+            }
+
+            string arg = string.Empty;
+            
+            if (arguments.Count > 0)
+            {
+                arg = arguments[0].ToLowerInvariant();
+                
+                //Validate argument
+                if (arg != NORMAL_ARG && arg != DYNAMIC_ARG)
+                {
+                    QueueMessage(UsageMessage);
+                    return;
+                }
+            }
+
             using BotDBContext context = DatabaseManager.OpenContext();
 
             long lastConsole = DataHelper.GetSettingIntNoOpen(SettingsConstants.LAST_CONSOLE, context, 1L);
@@ -49,7 +76,7 @@ namespace TRBot.Commands
 
             if (macroCount == 0)
             {
-                QueueMessage("There are no macros!");
+                QueueMessage("There are no input macros!");
                 return;
             }
 
@@ -58,10 +85,35 @@ namespace TRBot.Commands
 
             //Sort alphabetically
             IOrderedQueryable<InputMacro> macros = context.Macros.OrderBy(m => m.MacroName);
-
+            
             foreach (InputMacro macro in macros)
             {
+                //Skip macros according to the argument
+                switch (arg)
+                {
+                    case NORMAL_ARG:
+                        if (macro.MacroName.Contains('(') == true)
+                        {
+                            continue;
+                        }
+                    break;
+                    case DYNAMIC_ARG:
+                        if (macro.MacroName.Contains('(') == false)
+                        {
+                            continue;
+                        }
+                    break;
+                }
+
+                //Append the macro
                 strBuilder.Append(macro.MacroName).Append(',').Append(' ');
+            }
+
+            //If no macros are available, mention it
+            if (strBuilder.Length == 0)
+            {
+                QueueMessage("No input macros can be found with your argument!");
+                return;
             }
 
             strBuilder.Remove(strBuilder.Length - 2, 2);
