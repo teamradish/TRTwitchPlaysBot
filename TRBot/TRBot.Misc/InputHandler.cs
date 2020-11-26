@@ -141,7 +141,7 @@ namespace TRBot.Misc
             {
                 inputArray[i] = inputList[i].ToArray();
             }
-
+        
             InputWrapper inputWrapper = new InputWrapper(inputArray, currentConsole, vcManager);
             ThreadPool.QueueUserWorkItem(new WaitCallback(ExecuteInput), inputWrapper);
         }
@@ -166,11 +166,15 @@ namespace TRBot.Misc
             IVirtualControllerManager vcMngr = inputWrapper.VCManager;
 
             int controllerCount = vcMngr.ControllerCount;
-            int[] nonWaits = new int[controllerCount];
+
+            //Use Span with stack memory to avoid allocations and improve speed
+            Span<int> nonWaits = stackalloc int[controllerCount];
+            nonWaits.Clear();
 
             //This is used to track which controller ports were used across all inputs
             //This helps prevent updating controllers that weren't used at the end
-            int[] usedControllerPorts = new int[controllerCount];
+            Span<int> usedControllerPorts = stackalloc int[controllerCount];
+            usedControllerPorts.Clear();
 
             GameConsole curConsole = inputWrapper.Console;
 
@@ -219,11 +223,14 @@ namespace TRBot.Misc
                     //Update the controllers if there are non-wait inputs
                     for (int waitIdx = 0; waitIdx < nonWaits.Length; waitIdx++)
                     {
-                        if (nonWaits[waitIdx] > 0)
+                        //Store by ref and change directly to avoid calling the indexer twice
+                        ref int nonWaitVal = ref nonWaits[waitIdx];
+
+                        if (nonWaitVal > 0)
                         {
                             IVirtualController controller = vcMngr.GetController(waitIdx);
                             controller.UpdateController();
-                            nonWaits[waitIdx] = 0;
+                            nonWaitVal = 0;
                         }
                     }
 
@@ -269,12 +276,15 @@ namespace TRBot.Misc
                         //Update the controllers if there are non-wait inputs
                         for (int waitIdx = 0; waitIdx < nonWaits.Length; waitIdx++)
                         {
-                            if (nonWaits[waitIdx] > 0)
+                            //Store by ref and change directly to avoid calling the indexer twice
+                            ref int nonWaitVal = ref nonWaits[waitIdx];
+                            
+                            if (nonWaitVal > 0)
                             {
                                 IVirtualController controller = vcMngr.GetController(waitIdx);
                                 controller.UpdateController();
 
-                                nonWaits[waitIdx] = 0;
+                                nonWaitVal = 0;
                             }
                         }
                     }
