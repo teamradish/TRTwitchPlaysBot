@@ -1,5 +1,5 @@
 # Getting TRBot
-* To get started immediately, download the latest release on the [releases page](https://github.com/teamradish/TRTwitchPlaysBot/releases). Keep in mind that there is no schedule for releases, so they may be far behind the latest on develop.
+* To get started immediately, download the latest release on the [releases page](https://github.com/teamradish/TRTwitchPlaysBot/releases). Keep in mind that there is no schedule for releases, so they may be far behind the latest on the [`develop` branch](https://github.com/teamradish/TRTwitchPlaysBot/tree/develop).
 * To build from source, please follow the [building guide](./Building.md).
 
 # Setting up TRBot
@@ -7,7 +7,7 @@ If you installed a pre-built binary, run `TRBot` (Ex. `TRBot.exe` on Windows, `.
 
 After running TRBot once, it will create a **Data** folder in the same folder you ran it from along with a **TRBotData.db** database file, which holds all your settings. It's highly recommended to first go through the [tutorial on managing TRBot's data](./Managing-Data.md) to learn how to view and modify this data.
 
-By default, TRBot connects to Twitch. If you are connecting through Twitch or another online service, TRBot will also create a template file for the login information in this folder. Open the **LoginInfo.txt** file and fill out the login information for your bot. The settings are described below:
+By default, TRBot connects to Twitch. If you are connecting through Twitch, TRBot will also create a template file for the login information in this folder. Open the **LoginInfo.txt** file and fill out the login information for your bot. The settings are described below:
 
 *BotName* = Username of your bot.<br />
 *Password* = Password for your bot. This may start with "oauth."<br />

@@ -1,7 +1,7 @@
 # Building from source
 * Clone the repo with `git clone https://github.com/teamradish/TRTwitchPlaysBot.git`
   * Alternatively, download the zip.
-* [.NET Core 3.1 SDK and Runtime](https://dotnet.microsoft.com/download/dotnet-core)
+* [.NET 5.0 SDK and Runtime](https://dotnet.microsoft.com/download/dotnet/5.0)
   * Before installing, set the `DOTNET_CLI_TELEMETRY_OPTOUT` environment variable to 1 if you don't want dotnet CLI commands sending telemetry.
 
 You can build TRBot using the provided .sln or through the CLI (instructions below). You can also use any code editor or IDE supporting .NET Core, such as VSCode/VSCodium, Visual Studio, or JetBrains Rider.
@@ -31,7 +31,7 @@ Unfortunately, compiling the vJoy driver itself isn't very clear, but 64-bit ver
 ## Migrations
 TRBot uses a SQLite database with Entity Framework Core to store and manage its data. If you make code changes to any entities or contexts that affects the database, such as adding/deleting/renaming a column, adding/removing a DbSet, or modifying entity relationships in `OnModelCreating`, you will need to add a new migration:
 
-* Go to the **TRBot.Data** project and run `dotnet ef migrations list` to list all migrations. Take note of the furthest one down, which is the most recent.
+* Go to the **TRBot.Data** project and run `dotnet ef migrations list` to list all migrations. Take note of the furthest one down, which is the most recent. If needed, you can verify the date prepended to the name of each migration.
 * Run `dotnet ef migrations add (migrationhere)`, where "(migrationhere)" is the name of the migration.
   * Example: `dotnet ef migrations add NewUserPermissions`
 
