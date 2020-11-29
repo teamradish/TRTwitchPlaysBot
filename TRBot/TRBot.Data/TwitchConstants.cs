@@ -33,6 +33,6 @@ namespace TRBot.Data
         /// <summary>
         /// The file storing Twitch login settings.
         /// </summary>
-        public const string LOGIN_SETTINGS_FILENAME = "LoginSettings.txt";
+        public const string LOGIN_SETTINGS_FILENAME = "TwitchLoginSettings.txt";
     }
 }

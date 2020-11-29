@@ -7,7 +7,7 @@ If you installed a pre-built binary, run `TRBot` (Ex. `TRBot.exe` on Windows, `.
 
 After running TRBot once, it will create a **Data** folder in the same folder you ran it from along with a **TRBotData.db** database file, which holds all your settings. It's highly recommended to first go through the [tutorial on managing TRBot's data](./Managing-Data.md) to learn how to view and modify this data.
 
-By default, TRBot connects to Twitch. If you are connecting through Twitch, TRBot will also create a template file for the login information in this folder. Open the **LoginInfo.txt** file and fill out the login information for your bot. The settings are described below:
+By default, TRBot connects to Twitch. If you are connecting through Twitch, TRBot will also create a template file for the login information in this folder. Open the **TwitchLoginSettings.txt** file and fill out the login information for your bot. The settings are described below:
 
 *BotName* = Username of your bot.<br />
 *Password* = Password for your bot. This may start with "oauth."<br />

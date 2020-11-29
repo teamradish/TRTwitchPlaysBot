@@ -730,7 +730,7 @@ namespace TRBot.Main
                 if (string.IsNullOrEmpty(twitchSettings.ChannelName) || string.IsNullOrEmpty(twitchSettings.Password)
                     || string.IsNullOrEmpty(twitchSettings.BotName))
                 {
-                    Console.WriteLine($"Twitch login settings are invalid. Please modify the data in the {TwitchConstants.LOGIN_SETTINGS_FILENAME} file.");
+                    Console.WriteLine($"Twitch login settings are invalid. Please modify the data in the \"{TwitchConstants.LOGIN_SETTINGS_FILENAME}\" file.");
                 }
 
                 TwitchClient client = new TwitchClient();

@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2026
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TRBot.Parser", "TRBot.Parser\TRBot.Parser.csproj", "{282E0510-C748-400C-B369-564E253C62B0}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TRBot.Commands", "TRBot.Commands\TRBot.Commands.csproj", "{F16BC983-A29E-4FDC-A2EF-F4FA3E51C36C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TRBot.Connection", "TRBot.Connection\TRBot.Connection.csproj", "{5A01251A-04FA-49B5-9951-222D0FB14A3C}"
