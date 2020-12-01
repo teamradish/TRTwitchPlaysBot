@@ -20,3 +20,7 @@ Here are some examples of TRBot in action on actual game playthroughs.
   * https://clips.twitch.tv/BusyPopularSoybeanRalpherZ
 * **9-2 Cross Floors (Super Monkey Ball 2)**
   * https://clips.twitch.tv/PatientTiredPlumberPastaThat
+* **Basement Catch (Ape Escape)**
+  * https://www.twitch.tv/twitchplayspapermario/clip/PopularRealPastaMcaT
+* **Boss of Tricky Ruins Skip (Super Mario Sunshine)**
+  * https://clips.twitch.tv/MotionlessAgreeablePepperoniBCouch

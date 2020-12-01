@@ -42,14 +42,24 @@ namespace TRBot.Permissions
         public const string SET_MAX_INPUT_DUR_ABILITY = "setmaxinputdur";
 
         /// <summary>
+        /// The ability to set the global mid input delay.
+        /// </summary>
+        public const string SET_MID_INPUT_DELAY_ABILITY = "setmidinputdelay";
+
+        /// <summary>
         /// User-specific default input duration.
         /// </summary>
-        public const string USER_DEFAULT_INPUT_DIR_ABILITY = "userdefaultinputdur";
+        public const string USER_DEFAULT_INPUT_DUR_ABILITY = "userdefaultinputdur";
 
         /// <summary>
         /// User-specific max input duration.
         /// </summary>
-        public const string USER_MAX_INPUT_DIR_ABILITY = "usermaxinputdur";
+        public const string USER_MAX_INPUT_DUR_ABILITY = "usermaxinputdur";
+
+        /// <summary>
+        /// User-specific mid input delay.
+        /// </summary>
+        public const string USER_MID_INPUT_DELAY_ABILITY = "usermidinputdelay";
 
         public const string UPDATE_OTHER_USER_ABILITES = "updateotheruserabilities";
         public const string SET_GLOBAL_INPUT_LEVEL_ABILITY = "setglobalinputlevel";

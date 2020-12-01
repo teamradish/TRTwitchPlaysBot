@@ -311,5 +311,104 @@ namespace TRBot.Misc
 
             return false;
         }
+
+        /// <summary>
+        /// Inserts artificial blank inputs after input subsequences if blank inputs do not exist or aren't the longest duration in the subsequence.
+        /// This is used to add artificial delays after each input.
+        /// The given game console must have a blank input defined for this to work.
+        /// <para>
+        /// This is expected to go over the maximum input duration, as the delays are inserted after the input.
+        /// Otherwise, it'll be cumbersome as players will have to account for the delays when writing input sequences.
+        /// That said, aim to keep the <paramref name="midInputDelay"> a low value.
+        /// </para>
+        /// </summary>
+        /// <param name="inputSequence">The parsed input sequence.</param>
+        /// <param name="defaultPort">The default controller port to use for the new inputs.</param>
+        /// <param name="midInputDelay">The duration of the inserted blank inputs, in milliseconds.</param>
+        /// <param name="gameConsole">The game console to check for blank inputs.</param>
+        /// <returns>Data regarding the mid input delays.</returns>
+        public static MidInputDelayData InsertMidInputDelays(in ParsedInputSequence inputSequence,
+            in int defaultPort, in int midInputDelay, GameConsole gameConsole)
+        {
+            //There aren't enough inputs to add delays to
+            if (inputSequence.Inputs == null || inputSequence.Inputs.Count < 2)
+            {
+                return new MidInputDelayData(null, inputSequence.TotalDuration, false, "There aren't enough inputs to insert delays.");
+            }
+
+            //The next thing we do is check if the console has any blank inputs at all
+            //If it doesn't, we can't add a delay
+            InputData firstBlankInput = null;
+
+            foreach (KeyValuePair<string, InputData> consoleInputs in gameConsole.ConsoleInputs)
+            {
+                InputData inpData = consoleInputs.Value;
+                if (inpData != null && inpData.InputType == InputTypes.Blank && inpData.Enabled > 0)
+                {
+                    firstBlankInput = inpData;
+                    break;
+                }
+            }
+
+            //No blank inputs, so return
+            if (firstBlankInput == null)
+            {
+                return new MidInputDelayData(null, inputSequence.TotalDuration, false, $"Console {gameConsole.Name} does not have any blank inputs available.");
+            }
+
+            //Copy the input sequence
+            List<List<ParsedInput>> parsedInputs = new List<List<ParsedInput>>(inputSequence.Inputs.Count);
+            
+            bool lastIndexBlankLongestDur = true;
+            int additionalDelay = 0;
+
+            //Insert sequences in the same loop as copying to improve speed
+            //Check if there are any waits in between two input subsequences
+            //If not, add the delay first then the next subsequence
+            for (int i = 0; i < inputSequence.Inputs.Count; i++)
+            {
+                List<ParsedInput> curList = inputSequence.Inputs[i];
+                List<ParsedInput> newListCopy = new List<ParsedInput>(curList.Count);
+                int longestDur = 0;
+                bool blankHasLongestDur = false;
+
+                for (int j = 0; j < curList.Count; j++)
+                {
+                    ParsedInput curInput = curList[j];
+                    newListCopy.Add(curInput);
+
+                    //Check for the same duration for consistent behavior
+                    //If the blank input lasts as long as another input, it should still add a delay
+                    if (curInput.duration >= longestDur)
+                    {
+                        longestDur = curInput.duration;
+                        blankHasLongestDur = false;
+
+                        if (gameConsole.IsBlankInput(curInput) == true)
+                        {
+                            blankHasLongestDur = true;
+                        }
+                    }
+                }
+
+                //Console.WriteLine($"Index {i} | LastBlankLongest: {lastIndexBlankLongestDur} | CurBlankLongest: {blankHasLongestDur}"); 
+
+                //Add a delay input in between
+                if (blankHasLongestDur == false && lastIndexBlankLongestDur == false)
+                {
+                    ParsedInput newDelayInput = new ParsedInput(firstBlankInput.Name, false, false, 100, midInputDelay, Parser.DEFAULT_PARSE_REGEX_MILLISECONDS_INPUT, defaultPort, string.Empty);
+                    
+                    parsedInputs.Add(new List<ParsedInput>(1) { newDelayInput });
+
+                    additionalDelay += midInputDelay;
+                }
+
+                parsedInputs.Add(newListCopy);
+
+                lastIndexBlankLongestDur = blankHasLongestDur;
+            }
+
+            return new MidInputDelayData(parsedInputs, inputSequence.TotalDuration + additionalDelay, true, string.Empty);
+        }
     }
 }

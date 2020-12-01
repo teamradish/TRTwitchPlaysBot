@@ -64,6 +64,9 @@ Determines the user's specific default input duration.
 ### usermaxinputdur
 Determines the user's specific maximum input sequence duration.
 
+### usermidinputdelay
+Determines the user's specific mid input delay duration.
+
 ### bet
 **Default level: User (0)**
 
@@ -138,6 +141,11 @@ Determines if the user can set the global default input duration through the [`D
 **Default level: Moderator (30)**
 
 Determines if the user can set the global maximum input sequence duration through the [`MaxInputDurCommand`](../TRBot/TRBot.Commands/Commands/MaxInputDurCommand.cs).
+
+### setmidinputdelay
+**Default level: Moderator(30)**
+
+Determines if the user can toggle the global mid input delay and set its duration through the [`MidInputDelayCommand`](../TRBot/TRBot.Commands/Commands/MidInputDelayCommand.cs).
 
 ### updateotheruserabilities
 **Default level: Admin (40)**

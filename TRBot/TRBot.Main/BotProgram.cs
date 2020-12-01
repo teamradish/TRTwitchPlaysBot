@@ -576,6 +576,24 @@ namespace TRBot.Main
                     return;
                 }
 
+                //First, add delays between inputs if we should
+                //We do this first so we can validate the inserted inputs later
+                //The blank inputs can have a different permission level
+                if (DataHelper.GetUserOrGlobalMidInputDelay(user, context, out long midInputDelay) == true)
+                {
+                    MidInputDelayData midInputDelayData = ParserPostProcess.InsertMidInputDelays(inputSequence, (int)user.ControllerPort, (int)midInputDelay, usedConsole);
+
+                    //If it's successful, replace the input list and duration
+                    if (midInputDelayData.Success == true)
+                    {
+                        int oldDur = inputSequence.TotalDuration;
+                        inputSequence.Inputs = midInputDelayData.NewInputs;
+                        inputSequence.TotalDuration = midInputDelayData.NewTotalDuration;
+
+                        //Console.WriteLine($"Mid input delay success. Message: {midInputDelay.Message} | OldDur: {oldDur} | NewDur: {inputSequence.TotalDuration}\n{ReverseParser.ReverseParse(inputSequence, usedConsole, new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.ShowAllPorts, 0))}");
+                    }
+                }
+
                 //Check for restricted inputs on this user
                 InputValidation validation = ParserPostProcess.InputSequenceContainsRestrictedInputs(inputSequence, user.GetRestrictedInputs());
 

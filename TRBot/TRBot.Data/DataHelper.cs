@@ -227,7 +227,7 @@ namespace TRBot.Data
         public static long GetUserOrGlobalDefaultInputDur(User user, BotDBContext context)
         {
             //Check for a user-overridden default input duration
-            if (user != null && user.TryGetAbility(PermissionConstants.USER_DEFAULT_INPUT_DIR_ABILITY, out UserAbility defaultDurAbility) == true
+            if (user != null && user.TryGetAbility(PermissionConstants.USER_DEFAULT_INPUT_DUR_ABILITY, out UserAbility defaultDurAbility) == true
                 && defaultDurAbility.IsEnabled == true)
             {
                 return defaultDurAbility.ValueInt;
@@ -248,7 +248,7 @@ namespace TRBot.Data
         public static long GetUserOrGlobalMaxInputDur(User user, BotDBContext context)
         {
             //Check for a user-overridden max input duration
-            if (user != null && user.TryGetAbility(PermissionConstants.USER_MAX_INPUT_DIR_ABILITY, out UserAbility maxDurAbility) == true
+            if (user != null && user.TryGetAbility(PermissionConstants.USER_MAX_INPUT_DUR_ABILITY, out UserAbility maxDurAbility) == true
                 && maxDurAbility.IsEnabled == true)
             {
                 return maxDurAbility.ValueInt;
@@ -257,6 +257,57 @@ namespace TRBot.Data
             else
             {
                 return DataHelper.GetSettingIntNoOpen(SettingsConstants.MAX_INPUT_DURATION, context, 60000L);
+            }
+        }
+
+        /// <summary>
+        /// Retrieves a user's overridden mid input delay, or if they don't have one, the global mid input delay, if it's enabled.
+        /// If the found mid input delay value is 0 or lower, this returns false and returns 0 as the delay.
+        /// </summary>
+        /// <param name="user">The User object.</param>
+        /// <param name="context">The open database context</param>
+        /// <param name="midInputDelay">The returned mid input delay.</param>
+        /// <returns>true if there is a user-defined or global mid input delay greater than 0, otherwise false.</returns>
+        public static bool GetUserOrGlobalMidInputDelay(User user, BotDBContext context, out long midInputDelay)
+        {
+            //Check for a user-overridden mid input delay
+            if (user != null && user.TryGetAbility(PermissionConstants.USER_MID_INPUT_DELAY_ABILITY, out UserAbility midInputDelayAbility) == true
+                && midInputDelayAbility.IsEnabled == true)
+            {
+                //Get the user's overridden mid input delay
+                midInputDelay = midInputDelayAbility.ValueInt;
+                
+                //If the mid input delay is less than 1, return false and 0 for the delay
+                if (midInputDelay < 1)
+                {
+                    midInputDelay = 0L;
+                    return false;
+                }
+                
+                return true;
+            }
+            //Try to get the global mid input delay
+            else
+            {
+                //Check if the global mid input delay is enabled
+                long midDelayEnabled = DataHelper.GetSettingIntNoOpen(SettingsConstants.GLOBAL_MID_INPUT_DELAY_ENABLED, context, 0L);
+                if (midDelayEnabled <= 0)
+                {
+                    midInputDelay = 0L;
+                    return false;
+                }
+
+                //Get the value
+                midInputDelay = DataHelper.GetSettingIntNoOpen(SettingsConstants.GLOBAL_MID_INPUT_DELAY_TIME, context, 0L);
+
+                //If it's less than 1, return false and 0 for the delay
+                if (midInputDelay < 1)
+                {
+                    midInputDelay = 0L;
+                    return false;
+                }
+
+                return true;
             }
         }
 

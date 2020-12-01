@@ -80,6 +80,9 @@ namespace TRBot.Data
         public const string DEFAULT_INPUT_DURATION = "default_input_duration";
         public const string MAX_INPUT_DURATION = "max_input_duration";
         
+        public const string GLOBAL_MID_INPUT_DELAY_ENABLED = "global_mid_input_delay_enabled";
+        public const string GLOBAL_MID_INPUT_DELAY_TIME = "global_mid_input_delay_time";
+
         public const string LAST_CONSOLE = "last_console";
         public const string LAST_VCONTROLLER_TYPE = "last_vcontroller_type";
         public const string JOYSTICK_COUNT = "joystick_count";

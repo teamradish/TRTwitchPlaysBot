@@ -89,6 +89,8 @@ namespace TRBot.Data
                 SettingsHelper(TEAMS_MODE_NEXT_PORT, 0L),
                 SettingsHelper(DEFAULT_INPUT_DURATION, 200L),
                 SettingsHelper(MAX_INPUT_DURATION, 60000L),
+                SettingsHelper(GLOBAL_MID_INPUT_DELAY_ENABLED, 0L),
+                SettingsHelper(GLOBAL_MID_INPUT_DELAY_TIME, 34L),
                 SettingsHelper(LAST_CONSOLE, 1L),
                 SettingsHelper(LAST_VCONTROLLER_TYPE, (long)VControllerHelper.GetDefaultVControllerTypeForPlatform(TRBotOSPlatform.CurrentOS)),
                 SettingsHelper(JOYSTICK_COUNT, 1L),
@@ -183,6 +185,7 @@ namespace TRBot.Data
                 new CommandData("exercise", "TRBot.Commands.InputExerciseCommand", (long)PermissionLevels.User, true, true, "ss,incs,decs,ss1,ss2,ss3,ss4,ss5,ss6,ls1,ls2,ls3,ls4,ls5,ls6"),
                 new CommandData("slots", "TRBot.Commands.SlotsCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("inputperms", "TRBot.Commands.GlobalInputPermissionsCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("midinputdelay", "TRBot.Commands.MidInputDelayCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
 
@@ -263,6 +266,7 @@ namespace TRBot.Data
                 new PermissionAbility(SET_CONSOLE_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
                 new PermissionAbility(SET_DEFAULT_INPUT_DUR_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
                 new PermissionAbility(SET_MAX_INPUT_DUR_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
+                new PermissionAbility(SET_MID_INPUT_DELAY_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
                 new PermissionAbility(SET_TEAMS_MODE_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
                 new PermissionAbility(SET_TEAMS_MODE_MAX_PORT_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
                 
@@ -272,8 +276,9 @@ namespace TRBot.Data
                 new PermissionAbility(SET_VCONTROLLER_COUNT_ABILITY, PermissionLevels.Admin, PermissionLevels.Admin),
 
                 PermissionAbility.CreateWithMinLvlGrant(SILENCED_ABILITY, PermissionLevels.Moderator),
-                PermissionAbility.CreateWithMinLvlGrant(USER_DEFAULT_INPUT_DIR_ABILITY, PermissionLevels.Moderator),
-                PermissionAbility.CreateWithMinLvlGrant(USER_MAX_INPUT_DIR_ABILITY, PermissionLevels.Moderator),
+                PermissionAbility.CreateWithMinLvlGrant(USER_DEFAULT_INPUT_DUR_ABILITY, PermissionLevels.Moderator),
+                PermissionAbility.CreateWithMinLvlGrant(USER_MAX_INPUT_DUR_ABILITY, PermissionLevels.Moderator),
+                PermissionAbility.CreateWithMinLvlGrant(USER_MID_INPUT_DELAY_ABILITY, PermissionLevels.User),
             };
 
             return defaultPermissions;

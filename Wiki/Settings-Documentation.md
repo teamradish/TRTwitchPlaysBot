@@ -46,6 +46,8 @@ Table of Contents
 * [teams_mode_next_port](#teams_mode_next_port)
 * [default_input_duration](#default_input_duration)
 * [max_input_duration](#max_input_duration)
+* [global_mid_input_delay_enabled](#global_mid_input_delay_enabled)
+* [global_mid_input_delay_time](#global_mid_input_delay_time)
 * [last_console](#last_console)
 * [last_vcontroller_type](#last_vcontroller_type)
 * [joystick_count](#joystick_count)
@@ -189,6 +191,18 @@ The global default duration of inputs with unspecified durations, in millisecond
 
 ### max_input_duration
 The global max duration of any given input sequence, in milliseconds. This defaults to 60000 milliseconds. 
+
+### global_mid_input_delay_enabled
+If 1 or greater, will insert a blank input with a delay, in milliseconds, between each input. This delay is inserted only between inputs that either do not have any blank inputs or the blank input is not the longest in the subsequence. For example, if the delay is 200 milliseconds:
+- "a200ms b200ms" will be modified to "a200ms #200ms b200ms".
+- "a200ms #100ms b200ms" will not be modified because there is already a blank input in between.
+- "a200ms+#100ms b200ms" will be modified to "a200ms+#100ms #200ms b200ms" because the blank input is not the longest in the "a200ms+#100ms" subsequence.
+- "a200ms+#300ms b200ms" will not be modified because the blank input is the longest in the "a200ms+#300ms" subsequence.
+
+This defaults to 0. The delay inserted is determined by [global_mid_input_delay_time](#global_mid_input_delay_time).
+
+### global_mid_input_delay_time
+The global time, in milliseconds, of the blank inputs inserted between each input. This does not apply if [global_mid_input_delay_enabled](#global_mid_input_delay_enabled) is 0 or lower. This defaults to 34 milliseconds.
 
 ### last_console
 The game console to use.

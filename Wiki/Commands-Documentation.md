@@ -92,6 +92,11 @@ You will need to reload data or restart TRBot to apply any changes in the **Comm
 - [`MaxInputDurCommand`](../TRBot/TRBot.Commands/Commands/MaxInputDurCommand.cs) (default: "!maxinputdur") - Obtains the global max input duration, or sets it if you have sufficient privileges and provide an argument.
   - Example: "!maxinputdur"
   - Example: "!maxinputdur 120000" - Sets the global max input duration to 2 minutes.
+- [`MidInputDelayCommand`](../TRBot/TRBot.Commands/Commands/MidInputDelayCommand.cs) (default: "!midinputdelay") - Obtains the global mid input delay enabled state and duration, or sets them if you have sufficient privileges and provide arguments.
+  - Example: "!midinputdelay"
+  - Example: "!midinputdelay true" - Enables the global mid input delay.
+  - Example: "!midinputdelay 500" - Sets the global mid input delay duration to 500 milliseconds.
+  - Example: "!midinputdelay false 300" - Disables the global mid input delay and sets its duration to 300 milliseconds.
 - [`ControllerPortCommand`](../TRBot/TRBot.Commands/Commands/ControllerPortCommand.cs) (default: "!port") - Obtains or sets your controller port. Controller ports start at 1 and cannot exceed the number of controllers plugged in.
   - Example: "!port"
   - Example: "!port 2"
