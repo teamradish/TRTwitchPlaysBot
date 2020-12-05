@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="TwitchLib" Version="3.1.0" />
+    <PackageReference Include="Half-Shot.Matrix" Version="0.1.5" />
   </ItemGroup>
 
   <ItemGroup>

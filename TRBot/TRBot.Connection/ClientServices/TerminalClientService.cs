@@ -17,9 +17,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using TwitchLib.Client;
-using TwitchLib.Client.Events;
-using TwitchLib.Client.Models;
 
 namespace TRBot.Connection
 {
