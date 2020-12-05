@@ -44,12 +44,10 @@ namespace TRBot.Commands
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            string creditsName = DataHelper.GetCreditsNameNoOpen(context);
+            string creditsName = DataHelper.GetCreditsName();
             string userName = args.Command.ChatMessage.Username.ToLowerInvariant();
 
-            User user = DataHelper.GetOrAddUserNoOpen(userName, context, out bool added);
+            User user = DataHelper.GetOrAddUser(userName, out bool added);
             
             if (user == null)
             {
@@ -79,10 +77,15 @@ namespace TRBot.Commands
             //Confirm - clear stats
             if (confirmation == CONFIRM_CLEAR_STR)
             {
-                //Clear stats and save
-                user.Stats.ClearCountedStats();
+                using (BotDBContext context = DatabaseManager.OpenContext())
+                {
+                    user = DataHelper.GetUserNoOpen(userName, context);
 
-                context.SaveChanges();
+                    //Clear stats and save
+                    user.Stats.ClearCountedStats();
+
+                    context.SaveChanges();
+                }
 
                 ConfirmClearedStatsUsers.Remove(userName);
 

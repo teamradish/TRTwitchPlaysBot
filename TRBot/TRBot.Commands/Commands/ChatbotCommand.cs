@@ -46,10 +46,8 @@ namespace TRBot.Commands
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
-            using BotDBContext context = DatabaseManager.OpenContext();
-
             //Check if the chatbot is enabled
-            long chatbotEnabled = DataHelper.GetSettingIntNoOpen(SettingsConstants.CHATBOT_ENABLED, context, 0L);
+            long chatbotEnabled = DataHelper.GetSettingInt(SettingsConstants.CHATBOT_ENABLED, 0L);
 
             if (chatbotEnabled != 1)
             {
@@ -57,13 +55,16 @@ namespace TRBot.Commands
                 return;
             }
             
-            //Check if the user has the ability to chat with the chatbot
-            User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
-
-            if (user != null && user.HasEnabledAbility(PermissionConstants.CHATBOT_ABILITY) == false)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage("You do not have the ability to chat with the chatbot.");
-                return;
+                //Check if the user has the ability to chat with the chatbot
+                User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
+
+                if (user != null && user.HasEnabledAbility(PermissionConstants.CHATBOT_ABILITY) == false)
+                {
+                    QueueMessage("You do not have the ability to chat with the chatbot.");
+                    return;
+                }
             }
 
             string question = args.Command.ArgumentsAsString;
@@ -75,9 +76,9 @@ namespace TRBot.Commands
                 return;
             }
 
-            long chatbotPipePathIsRelative = DataHelper.GetSettingIntNoOpen(SettingsConstants.CHATBOT_SOCKET_PATH_IS_RELATIVE, context, 1L);
+            long chatbotPipePathIsRelative = DataHelper.GetSettingInt(SettingsConstants.CHATBOT_SOCKET_PATH_IS_RELATIVE, 1L);
 
-            string fileName = DataHelper.GetSettingStringNoOpen(SettingsConstants.CHATBOT_SOCKET_PATH, context, string.Empty);
+            string fileName = DataHelper.GetSettingString(SettingsConstants.CHATBOT_SOCKET_PATH, string.Empty);
 
             try
             {

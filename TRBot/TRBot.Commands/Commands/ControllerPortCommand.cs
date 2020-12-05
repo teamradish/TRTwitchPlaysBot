@@ -39,9 +39,9 @@ namespace TRBot.Commands
         {
             List<string> arguments = args.Command.ArgumentsAsList;
 
-            using BotDBContext context = DatabaseManager.OpenContext();
+            string userName = args.Command.ChatMessage.Username;
 
-            User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
+            User user = DataHelper.GetUser(userName);
 
             //Display controller port with no arguments
             if (arguments.Count == 0)
@@ -52,7 +52,7 @@ namespace TRBot.Commands
                 }
                 else
                 {
-                    QueueMessage($"Your controller port is {user.ControllerPort}!");
+                    QueueMessage($"Your controller port is {user.ControllerPort + 1}!");
                 }
 
                 return;
@@ -93,10 +93,15 @@ namespace TRBot.Commands
                 return;
             }
 
-            //Change port and save data
-            user.ControllerPort = controllerNum;
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                user = DataHelper.GetUserNoOpen(userName, context);
 
-            context.SaveChanges();
+                //Change port and save data
+                user.ControllerPort = controllerNum;
+
+                context.SaveChanges();
+            }
 
             QueueMessage($"{user.Name} changed their controller port to {portNum}!");
         }

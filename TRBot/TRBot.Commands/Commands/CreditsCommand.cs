@@ -46,20 +46,25 @@ namespace TRBot.Commands
                 return;
             }
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
             string creditsUsername = (arguments.Count == 1) ? arguments[0].ToLowerInvariant() : args.Command.ChatMessage.Username.ToLowerInvariant();
-            User creditsUser = DataHelper.GetUserNoOpen(creditsUsername, context);
+            long creditsCount = 0L;
 
-            if (creditsUser == null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage($"User does not exist in database!");
-                return;
+                User creditsUser = DataHelper.GetUserNoOpen(creditsUsername, context);
+
+                if (creditsUser == null)
+                {
+                    QueueMessage($"User does not exist in database!");
+                    return;
+                }
+
+                creditsCount = creditsUser.Stats.Credits;
             }
 
-            string creditsName = DataHelper.GetCreditsNameNoOpen(context);
+            string creditsName = DataHelper.GetCreditsName();
 
-            QueueMessage($"{creditsUsername} has {creditsUser.Stats.Credits} {creditsName.Pluralize(false, creditsUser.Stats.Credits)}!");
+            QueueMessage($"{creditsUsername} has {creditsCount} {creditsName.Pluralize(false, creditsCount)}!");
         }
     }
 }

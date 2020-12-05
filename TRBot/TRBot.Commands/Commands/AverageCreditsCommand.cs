@@ -36,15 +36,18 @@ namespace TRBot.Commands
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
-            using BotDBContext context = DatabaseManager.OpenContext();
+            long averageCredits = 0L;
 
-            if (context.Users.Count() == 0)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage("There are no users in the database!");
-                return;
-            }
+                if (context.Users.Count() == 0)
+                {
+                    QueueMessage("There are no users in the database!");
+                    return;
+                }
 
-            long averageCredits = (long)context.Users.Average(u => u.Stats.Credits);
+                averageCredits = (long)context.Users.Average(u => u.Stats.Credits);
+            }
 
             QueueMessage($"The average number of credits is {averageCredits}!");
         }

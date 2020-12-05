@@ -40,20 +40,22 @@ namespace TRBot.Commands
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
-            ClientServiceTypes clientServiceType = ClientServiceTypes.Terminal;
+            ClientServiceTypes clientServiceType = DataHelper.GetClientServiceType();
+
+            string userName = args.Command.ChatMessage.Username;
+
+            User user = DataHelper.GetOrAddUser(userName, out bool added);
 
             //Check if the user has the ability to calculate
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                User user = DataHelper.GetOrAddUserNoOpen(args.Command.ChatMessage.Username, context, out bool added);
+                user = DataHelper.GetUserNoOpen(userName, context);
 
                 if (user.HasEnabledAbility(PermissionConstants.CALCULATE_ABILITY) == false)
                 {
                     QueueMessage("You do not have the ability to make calculations.");
                     return;
                 }
-
-                clientServiceType = DataHelper.GetClientServiceTypeNoOpen(context);
             }
 
             Expression exp = null;

@@ -169,7 +169,7 @@ namespace TRBot.Data
         /// <param name="userName">The name of the user.</param>
         /// <param name="added">Whether a new user was added to the database.</param>
         /// <returns>A user object with the given userName.</returns>
-        public static User GetOrAddUserNoOpen(string userName, out bool added)
+        public static User GetOrAddUser(string userName, out bool added)
         {
             //Add the lowered version of their name to simplify retrieval
             string userNameLowered = userName.ToLowerInvariant();
@@ -187,15 +187,21 @@ namespace TRBot.Data
                 long teamsModeEnabled = GetSettingInt(SettingsConstants.TEAMS_MODE_ENABLED, 0L);
                 if (teamsModeEnabled > 0L)
                 {
-                    Settings teamsNextPort = GetSetting(SettingsConstants.TEAMS_MODE_NEXT_PORT);
-                    
-                    //The player is now on this port
-                    controllerPort = teamsNextPort.ValueInt;
-
                     long maxPort = GetSettingInt(SettingsConstants.TEAMS_MODE_MAX_PORT, 3L);
 
-                    //Increment the next port value, keeping it in range
-                    teamsNextPort.ValueInt = Utilities.Helpers.Wrap(teamsNextPort.ValueInt + 1, 0L, maxPort + 1);
+                    using (BotDBContext context = DatabaseManager.OpenContext())
+                    {
+                        Settings teamsNextPort = GetSettingNoOpen(SettingsConstants.TEAMS_MODE_NEXT_PORT, context);
+
+                        //The player is now on this port
+                        controllerPort = teamsNextPort.ValueInt;
+
+                        //Increment the next port value, keeping it in range
+                        teamsNextPort.ValueInt = Utilities.Helpers.Wrap(teamsNextPort.ValueInt + 1, 0L, maxPort + 1);
+
+                        //Save port value changes
+                        context.SaveChanges();
+                    }
                 }
 
                 //Give them User permissions and set their port

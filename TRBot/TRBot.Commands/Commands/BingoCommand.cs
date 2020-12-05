@@ -46,10 +46,8 @@ namespace TRBot.Commands
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
-            using BotDBContext context = DatabaseManager.OpenContext();
-
             //Check if bingo is enabled
-            long bingoEnabled = DataHelper.GetSettingIntNoOpen(SettingsConstants.BINGO_ENABLED, context, 0L);
+            long bingoEnabled = DataHelper.GetSettingInt(SettingsConstants.BINGO_ENABLED, 0L);
 
             if (bingoEnabled != 1)
             {
@@ -57,13 +55,16 @@ namespace TRBot.Commands
                 return;
             }
 
-            //Check if the user has the ability to play bingo
-            User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
-
-            if (user != null && user.HasEnabledAbility(PermissionConstants.BINGO_ABILITY) == false)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage("You do not have the ability to play bingo.");
-                return;
+                //Check if the user has the ability to play bingo
+                User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
+
+                if (user != null && user.HasEnabledAbility(PermissionConstants.BINGO_ABILITY) == false)
+                {
+                    QueueMessage("You do not have the ability to play bingo.");
+                    return;
+                }
             }
 
             string bingoTile = args.Command.ArgumentsAsString;
@@ -75,9 +76,9 @@ namespace TRBot.Commands
                 return;
             }
 
-            long bingoPipePathIsRelative = DataHelper.GetSettingIntNoOpen(SettingsConstants.BINGO_PIPE_PATH_IS_RELATIVE, context, 1L);
+            long bingoPipePathIsRelative = DataHelper.GetSettingInt(SettingsConstants.BINGO_PIPE_PATH_IS_RELATIVE, 1L);
 
-            string fileName = DataHelper.GetSettingStringNoOpen(SettingsConstants.BINGO_PIPE_PATH, context, string.Empty);
+            string fileName = DataHelper.GetSettingString(SettingsConstants.BINGO_PIPE_PATH, string.Empty);
 
             try
             {

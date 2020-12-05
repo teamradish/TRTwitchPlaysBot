@@ -45,11 +45,7 @@ namespace TRBot.Commands
         {
             List<string> arguments = args.Command.ArgumentsAsList;
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            Settings defaultDurSetting = context.SettingCollection.FirstOrDefault(set => set.Key == SettingsConstants.DEFAULT_INPUT_DURATION);
-
-            int defaultInputDur = (int)defaultDurSetting.ValueInt;
+            int defaultInputDur = (int)DataHelper.GetSettingInt(SettingsConstants.DEFAULT_INPUT_DURATION, 200L);
 
             if (arguments.Count == 0)
             {
@@ -63,19 +59,22 @@ namespace TRBot.Commands
                 return;
             }
 
-            //Check if the user has this ability
-            User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
-
-            if (user == null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage("Somehow, the user calling this is not in the database.");
-                return;
-            }
+                //Check if the user has this ability
+                User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
 
-            if (user.HasEnabledAbility(PermissionConstants.SET_DEFAULT_INPUT_DUR_ABILITY) == false)
-            {
-                QueueMessage("You do not have the ability to set the global default input duration!");
-                return;
+                if (user == null)
+                {
+                    QueueMessage("Somehow, the user calling this is not in the database.");
+                    return;
+                }
+
+                if (user.HasEnabledAbility(PermissionConstants.SET_DEFAULT_INPUT_DUR_ABILITY) == false)
+                {
+                    QueueMessage("You do not have the ability to set the global default input duration!");
+                    return;
+                }
             }
 
             if (int.TryParse(arguments[0], out int newDefaultDur) == false)
@@ -84,9 +83,9 @@ namespace TRBot.Commands
                 return;
             }
 
-            if (newDefaultDur < 0)
+            if (newDefaultDur <= 0)
             {
-                QueueMessage("Cannot set a negative duration!");
+                QueueMessage("Cannot set a duration less than or equal to 0!");
                 return;
             }
 
@@ -96,9 +95,15 @@ namespace TRBot.Commands
                 return;
             }
 
-            defaultDurSetting.ValueInt = newDefaultDur;
-            
-            context.SaveChanges();
+            //Change the setting
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                Settings defaultDurSetting = DataHelper.GetSettingNoOpen(SettingsConstants.DEFAULT_INPUT_DURATION, context);
+
+                defaultDurSetting.ValueInt = newDefaultDur;
+
+                context.SaveChanges();
+            }
 
             QueueMessage($"Set the default input duration to {newDefaultDur} milliseconds!");
         }

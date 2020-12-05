@@ -95,15 +95,12 @@ namespace TRBot.Commands
                 }
 
                 //Check if the user has permission to perform this command
-                using (BotDBContext context = DatabaseManager.OpenContext())
+                User user = DataHelper.GetUser(args.Command.ChatMessage.Username);
+                
+                if (user != null && user.Level < command.Level)
                 {
-                    User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
-
-                    if (user != null && user.Level < command.Level)
-                    {
-                        DataContainer.MessageHandler.QueueMessage($"You need at least level {command.Level} ({(PermissionLevels)command.Level}) to perform that command!");
-                        return;
-                    }
+                    DataContainer.MessageHandler.QueueMessage($"You need at least level {command.Level} ({(PermissionLevels)command.Level}) to perform that command!");
+                    return;
                 }
 
                 //Execute the command

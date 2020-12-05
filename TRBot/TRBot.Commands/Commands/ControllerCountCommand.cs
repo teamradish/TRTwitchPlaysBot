@@ -42,12 +42,10 @@ namespace TRBot.Commands
         {
             List<string> arguments = args.Command.ArgumentsAsList;
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            long lastVControllerType = DataHelper.GetSettingIntNoOpen(SettingsConstants.LAST_VCONTROLLER_TYPE, context, 0L);
+            long lastVControllerType = DataHelper.GetSettingInt(SettingsConstants.LAST_VCONTROLLER_TYPE, 0L);
             VirtualControllerTypes vcType = (VirtualControllerTypes)lastVControllerType;
 
-            Settings joystickCountSetting = DataHelper.GetSettingNoOpen(SettingsConstants.JOYSTICK_COUNT, context);
+            Settings joystickCountSetting = DataHelper.GetSetting(SettingsConstants.JOYSTICK_COUNT);
             int prevJoystickCount = (int)joystickCountSetting.ValueInt;
 
             //See the number of controllers
@@ -64,13 +62,16 @@ namespace TRBot.Commands
                 return;
             }
 
-            //Check if the user has the ability to set the controller count
-            User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
-
-            if (user != null && user.HasEnabledAbility(PermissionConstants.SET_VCONTROLLER_COUNT_ABILITY) == false)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage("You don't have the ability to change the number of controllers!");
-                return;
+                //Check if the user has the ability to set the controller count
+                User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
+
+                if (user != null && user.HasEnabledAbility(PermissionConstants.SET_VCONTROLLER_COUNT_ABILITY) == false)
+                {
+                    QueueMessage("You don't have the ability to change the number of controllers!");
+                    return;
+                }
             }
 
             string countStr = arguments[0];
@@ -103,9 +104,14 @@ namespace TRBot.Commands
                 return;
             }
 
-            //Set the value and save
-            joystickCountSetting.ValueInt = newJoystickCount;
-            context.SaveChanges();
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                joystickCountSetting = DataHelper.GetSetting(SettingsConstants.JOYSTICK_COUNT);
+
+                //Set the value and save
+                joystickCountSetting.ValueInt = newJoystickCount;
+                context.SaveChanges();
+            }
 
             //Stop and halt all inputs
             InputHandler.StopAndHaltAllInputs();

@@ -56,7 +56,7 @@ namespace TRBot.Commands
 
             if (cmd == null)
             {
-                QueueMessage($"Command \"{commandName}\" not found. If you added or removed commands, update with the relaod command.");
+                QueueMessage($"Command \"{commandName}\" not found. If you added or removed commands, update with the reload command.");
                 return;
             }
 

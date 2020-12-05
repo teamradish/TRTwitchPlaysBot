@@ -43,23 +43,25 @@ namespace TRBot.Commands
         {
             List<string> arguments = args.Command.ArgumentsAsList;
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            string creditsName = DataHelper.GetCreditsNameNoOpen(context);
+            string creditsName = DataHelper.GetCreditsName();
 
             string userName = args.Command.ChatMessage.Username;
-            User bettingUser = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
 
-            if (bettingUser.HasEnabledAbility(PermissionConstants.BET_ABILITY) == false)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage("You do not have the ability to bet!");
-                return;
-            }
+                User bettingUser = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
 
-            if (bettingUser.IsOptedOut == true)
-            {
-                QueueMessage("You cannot bet while opted out of stats.");
-                return;
+                if (bettingUser.HasEnabledAbility(PermissionConstants.BET_ABILITY) == false)
+                {
+                    QueueMessage("You do not have the ability to bet!");
+                    return;
+                }
+
+                if (bettingUser.IsOptedOut == true)
+                {
+                    QueueMessage("You cannot bet while opted out of stats.");
+                    return;
+                }
             }
 
             if (arguments.Count != 1)
@@ -80,29 +82,38 @@ namespace TRBot.Commands
                 return;
             }
 
-            if (creditBet > bettingUser.Stats.Credits)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage($"Bet amount is greater than {creditsName.Pluralize(false, 0)}!");
-                return;
+                User bettingUser = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
+                if (creditBet > bettingUser.Stats.Credits)
+                {
+                    QueueMessage($"Bet amount is greater than {creditsName.Pluralize(false, 0)}!");
+                    return;
+                }
             }
 
             //Make it a 50/50 chance
             bool success = (Rand.Next(0, 2) == 0);
             string message = string.Empty;
                 
-            //Add or subtract credits based on the bet result
-            if (success)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                bettingUser.Stats.Credits += creditBet;
-                message = $"{bettingUser.Name} won {creditBet} {creditsName.Pluralize(false, creditBet)} PogChamp";
-            }
-            else
-            {
-                bettingUser.Stats.Credits -= creditBet;
-                message = $"{bettingUser.Name} lost {creditBet} {creditsName.Pluralize(false, creditBet)} BibleThump";
-            }
+                User bettingUser = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
+                
+                //Add or subtract credits based on the bet result
+                if (success)
+                {
+                    bettingUser.Stats.Credits += creditBet;
+                    message = $"{bettingUser.Name} won {creditBet} {creditsName.Pluralize(false, creditBet)} PogChamp";
+                }
+                else
+                {
+                    bettingUser.Stats.Credits -= creditBet;
+                    message = $"{bettingUser.Name} lost {creditBet} {creditsName.Pluralize(false, creditBet)} BibleThump";
+                }
 
-            context.SaveChanges();
+                context.SaveChanges();
+            }
                 
             QueueMessage(message);
         }
