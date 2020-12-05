@@ -162,6 +162,7 @@ namespace TRBot.Data
             {
                 entity.HasKey(e => e.ID);
                 entity.HasOne(e => e.Input).WithOne().HasForeignKey<InvalidCombo>(c => c.InputID).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(e => e.InputID).IsUnique();
             });
 
             modelBuilder.Entity<User>().ToTable("Users", "users");
