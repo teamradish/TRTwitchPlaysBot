@@ -49,8 +49,6 @@ namespace TRBot.Commands
         {
             List<string> arguments = args.Command.ArgumentsAsList;
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
             if (arguments.Count < 2)
             {
                 QueueMessage(UsageMessage);
@@ -86,23 +84,26 @@ namespace TRBot.Commands
 
             string memeToLower = memeName.ToLowerInvariant();
 
-            Meme meme = context.Memes.FirstOrDefault(m => m.MemeName == memeToLower);
-
-            string actualMemeValue = args.Command.ArgumentsAsString.Remove(0, memeName.Length + 1);
-
-            if (meme != null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                meme.MemeValue = actualMemeValue;
+                Meme meme = context.Memes.FirstOrDefault(m => m.MemeName == memeToLower);
 
-                QueueMessage("Meme overwritten!");
-            }
-            else
-            {
-                Meme newMeme = new Meme(memeToLower, actualMemeValue);
-                context.Memes.Add(newMeme);
-            }
+                string actualMemeValue = args.Command.ArgumentsAsString.Remove(0, memeName.Length + 1);
 
-            context.SaveChanges();
+                if (meme != null)
+                {
+                    meme.MemeValue = actualMemeValue;
+
+                    QueueMessage("Meme overwritten!");
+                }
+                else
+                {
+                    Meme newMeme = new Meme(memeToLower, actualMemeValue);
+                    context.Memes.Add(newMeme);
+                }
+
+                context.SaveChanges();
+            }
         }
     }
 }

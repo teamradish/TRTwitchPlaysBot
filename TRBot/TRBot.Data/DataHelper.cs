@@ -148,6 +148,78 @@ namespace TRBot.Data
         }
 
         /// <summary>
+        /// Obtains a user object from the database.
+        /// </summary>
+        /// <param name="userName">The name of the user.</param>
+        /// <returns>A user object with the given userName. null if not found.</returns>
+        public static User GetUser(string userName)
+        {
+            string userNameLowered = userName.ToLowerInvariant();
+
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                return context.Users.FirstOrDefault(u => u.Name == userNameLowered);
+            }
+        }
+
+        /// <summary>
+        /// Obtains a user object from the database.
+        //  If the user isn't found, a new one will be added to the database.
+        /// </summary>        
+        /// <param name="userName">The name of the user.</param>
+        /// <param name="added">Whether a new user was added to the database.</param>
+        /// <returns>A user object with the given userName.</returns>
+        public static User GetOrAddUserNoOpen(string userName, out bool added)
+        {
+            //Add the lowered version of their name to simplify retrieval
+            string userNameLowered = userName.ToLowerInvariant();
+
+            User user = GetUser(userName);
+
+            added = false;
+
+            //If the user doesn't exist, add it
+            if (user == null)
+            {
+                long controllerPort = 0L;
+
+                //Check which port to set if teams mode is enabled
+                long teamsModeEnabled = GetSettingInt(SettingsConstants.TEAMS_MODE_ENABLED, 0L);
+                if (teamsModeEnabled > 0L)
+                {
+                    Settings teamsNextPort = GetSetting(SettingsConstants.TEAMS_MODE_NEXT_PORT);
+                    
+                    //The player is now on this port
+                    controllerPort = teamsNextPort.ValueInt;
+
+                    long maxPort = GetSettingInt(SettingsConstants.TEAMS_MODE_MAX_PORT, 3L);
+
+                    //Increment the next port value, keeping it in range
+                    teamsNextPort.ValueInt = Utilities.Helpers.Wrap(teamsNextPort.ValueInt + 1, 0L, maxPort + 1);
+                }
+
+                //Give them User permissions and set their port
+                user = new User(userNameLowered, (long)PermissionLevels.User);
+                user.ControllerPort = controllerPort;
+
+                using (BotDBContext context = DatabaseManager.OpenContext())
+                {
+                    context.Users.Add(user);
+
+                    //Save the changes so the user object is in the database
+                    context.SaveChanges();
+                }
+
+                //Update this user's abilities off the bat
+                UpdateUserAutoGrantAbilities(userNameLowered);
+
+                added = true;
+            }
+
+            return user;
+        }
+
+        /// <summary>
         /// Obtains a user object from the database with an opened context.
         /// </summary>
         /// <param name="userName">The name of the user.</param>
@@ -207,7 +279,7 @@ namespace TRBot.Data
                 context.SaveChanges();
 
                 //Update this user's abilities off the bat
-                UpdateUserAutoGrantAbilities(user, context);
+                //UpdateUserAutoGrantAbilities(user, context);
 
                 //Save changes again to update the abilities
                 context.SaveChanges();
@@ -216,6 +288,29 @@ namespace TRBot.Data
             }
 
             return user;
+        }
+
+        /// <summary>
+        /// Retrieves a user's overridden default input duration, or if they don't have one, the global default input duration.
+        /// </summary>
+        /// <param name="userName">The name of the user.</param>
+        /// <returns>The user-overridden or global default input duration.</returns>
+        public static long GetUserOrGlobalDefaultInputDur(string userName)
+        {
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                User user = GetUserNoOpen(userName, context);
+
+                //Check for a user-overridden default input duration
+                if (user != null && user.TryGetAbility(PermissionConstants.USER_DEFAULT_INPUT_DUR_ABILITY, out UserAbility defaultDurAbility) == true
+                    && defaultDurAbility.IsEnabled == true)
+                {
+                    return defaultDurAbility.ValueInt;
+                }
+            }
+
+            //Use global max input duration
+            return DataHelper.GetSettingInt(SettingsConstants.DEFAULT_INPUT_DURATION, 200L);
         }
 
         /// <summary>
@@ -242,136 +337,98 @@ namespace TRBot.Data
         /// <summary>
         /// Retrieves a user's overridden max input duration, or if they don't have one, the global max input duration.
         /// </summary>
-        /// <param name="user">The User object.</param>
-        /// <param name="context">The open database context</param>
+        /// <param name="userName">The name of the user.</param>
         /// <returns>The user-overridden or global max input duration.</returns>
-        public static long GetUserOrGlobalMaxInputDur(User user, BotDBContext context)
+        public static long GetUserOrGlobalMaxInputDur(string userName)
         {
-            //Check for a user-overridden max input duration
-            if (user != null && user.TryGetAbility(PermissionConstants.USER_MAX_INPUT_DUR_ABILITY, out UserAbility maxDurAbility) == true
-                && maxDurAbility.IsEnabled == true)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                return maxDurAbility.ValueInt;
+                User user = GetUserNoOpen(userName, context);
+
+                //Check for a user-overridden max input duration
+                if (user != null && user.TryGetAbility(PermissionConstants.USER_MAX_INPUT_DUR_ABILITY, out UserAbility maxDurAbility) == true
+                    && maxDurAbility.IsEnabled == true)
+                {
+                    return maxDurAbility.ValueInt;
+                }
             }
+
             //Use global max input duration
-            else
-            {
-                return DataHelper.GetSettingIntNoOpen(SettingsConstants.MAX_INPUT_DURATION, context, 60000L);
-            }
+            return DataHelper.GetSettingInt(SettingsConstants.MAX_INPUT_DURATION, 60000L);
         }
 
         /// <summary>
         /// Retrieves a user's overridden mid input delay, or if they don't have one, the global mid input delay, if it's enabled.
         /// If the found mid input delay value is 0 or lower, this returns false and returns 0 as the delay.
         /// </summary>
-        /// <param name="user">The User object.</param>
-        /// <param name="context">The open database context</param>
+        /// <param name="userName">The name of the user.</param>
         /// <param name="midInputDelay">The returned mid input delay.</param>
         /// <returns>true if there is a user-defined or global mid input delay greater than 0, otherwise false.</returns>
-        public static bool GetUserOrGlobalMidInputDelay(User user, BotDBContext context, out long midInputDelay)
+        public static bool GetUserOrGlobalMidInputDelay(string userName, out long midInputDelay)
         {
-            //Check for a user-overridden mid input delay
-            if (user != null && user.TryGetAbility(PermissionConstants.USER_MID_INPUT_DELAY_ABILITY, out UserAbility midInputDelayAbility) == true
-                && midInputDelayAbility.IsEnabled == true)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                //Get the user's overridden mid input delay
-                midInputDelay = midInputDelayAbility.ValueInt;
+                User user = GetUserNoOpen(userName, context);
                 
-                //If the mid input delay is less than 1, return false and 0 for the delay
-                if (midInputDelay < 1)
+                //Check for a user-overridden mid input delay
+                if (user != null && user.TryGetAbility(PermissionConstants.USER_MID_INPUT_DELAY_ABILITY, out UserAbility midInputDelayAbility) == true
+                    && midInputDelayAbility.IsEnabled == true)
                 {
-                    midInputDelay = 0L;
-                    return false;
+                    //Get the user's overridden mid input delay
+                    midInputDelay = midInputDelayAbility.ValueInt;
+
+                    //If the mid input delay is less than 1, return false and 0 for the delay
+                    if (midInputDelay < 1)
+                    {
+                        midInputDelay = 0L;
+                        return false;
+                    }
+
+                    return true;
                 }
-                
-                return true;
             }
+
             //Try to get the global mid input delay
-            else
+            //Check if the global mid input delay is enabled
+            long midDelayEnabled = DataHelper.GetSettingInt(SettingsConstants.GLOBAL_MID_INPUT_DELAY_ENABLED, 0L);
+            if (midDelayEnabled <= 0)
             {
-                //Check if the global mid input delay is enabled
-                long midDelayEnabled = DataHelper.GetSettingIntNoOpen(SettingsConstants.GLOBAL_MID_INPUT_DELAY_ENABLED, context, 0L);
-                if (midDelayEnabled <= 0)
-                {
-                    midInputDelay = 0L;
-                    return false;
-                }
-
-                //Get the value
-                midInputDelay = DataHelper.GetSettingIntNoOpen(SettingsConstants.GLOBAL_MID_INPUT_DELAY_TIME, context, 0L);
-
-                //If it's less than 1, return false and 0 for the delay
-                if (midInputDelay < 1)
-                {
-                    midInputDelay = 0L;
-                    return false;
-                }
-
-                return true;
+                midInputDelay = 0L;
+                return false;
             }
+
+            //Get the value
+            midInputDelay = DataHelper.GetSettingInt(SettingsConstants.GLOBAL_MID_INPUT_DELAY_TIME, 0L);
+
+            //If it's less than 1, return false and 0 for the delay
+            if (midInputDelay < 1)
+            {
+                midInputDelay = 0L;
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
         /// Fully updates a user's available abilities based on their current level.
         /// </summary>
-        /// <param name="user">The User object to update the abilities on.</param>
+        /// <param name="userName">The name of the user to fetch.</param>
         /// <param name="newLevel">The new level the user will be set to.</param>
         /// <param name="context">The open database context.</param>
-        public static void UpdateUserAutoGrantAbilities(User user, BotDBContext context)
+        public static void UpdateUserAutoGrantAbilities(string userName)
         {
-            long originalLevel = user.Level;
-
-            //First, disable all auto grant abilities the user has
-            //Don't disable abilities that were given by a higher level
-            //This prevents users from removing constraints imposed by moderators and such
-            IEnumerable<UserAbility> abilities = user.UserAbilities.Where(p => (long)p.PermAbility.AutoGrantOnLevel >= 0
-                    && p.GrantedByLevel <= originalLevel);
-
-            foreach (UserAbility ability in abilities)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                ability.SetEnabledState(false);
-                ability.Expiration = null;
-                ability.GrantedByLevel = -1;
-            }
+                User user = DataHelper.GetUserNoOpen(userName, context);
 
-            //Get all auto grant abilities up to the user's level
-            IEnumerable<PermissionAbility> permAbilities =
-                context.PermAbilities.Where(p => (long)p.AutoGrantOnLevel >= 0
-                    && (long)p.AutoGrantOnLevel <= originalLevel);
+                long originalLevel = user.Level;
 
-            Console.WriteLine($"Found {permAbilities.Count()} autogrant up to level {originalLevel}");
-
-            //Enable all of those abilities
-            foreach (PermissionAbility permAbility in permAbilities)
-            {
-                user.EnableAbility(permAbility);
-            }
-        }
-
-        /// <summary>
-        /// Updates user abilities upon changing the user's level.
-        /// </summary>
-        /// <param name="user">The User object to adjust the abilities on.</param>
-        /// <param name="newLevel">The new level the user will be set to.</param>
-        /// <param name="context">The open database context.</param>
-        public static void AdjustUserAbilitiesOnLevel(User user, long newLevel, BotDBContext context)
-        {
-            long originalLevel = user.Level;
-
-            //Nothing to do here if the levels are the same
-            if (originalLevel == newLevel)
-            {
-                return;
-            }
-
-            //Disable all abilities down to the new level
-            if (originalLevel > newLevel)
-            {
-                //Look for all auto grant abilities that are less than or equal to the original level
-                //and greater than the new level, and disable them
-                IEnumerable<UserAbility> abilities = user.UserAbilities.Where(p => p.PermAbility.AutoGrantOnLevel >= 0
-                    && (long)p.PermAbility.AutoGrantOnLevel <= originalLevel
-                    && (long)p.PermAbility.AutoGrantOnLevel > newLevel);
+                //First, disable all auto grant abilities the user has
+                //Don't disable abilities that were given by a higher level
+                //This prevents users from removing constraints imposed by moderators and such
+                IEnumerable<UserAbility> abilities = user.UserAbilities.Where(p => (long)p.PermAbility.AutoGrantOnLevel >= 0
+                        && p.GrantedByLevel <= originalLevel);
 
                 foreach (UserAbility ability in abilities)
                 {
@@ -379,21 +436,81 @@ namespace TRBot.Data
                     ability.Expiration = null;
                     ability.GrantedByLevel = -1;
                 }
-            }
-            //Enable all abilities up to the new level
-            else if (originalLevel < newLevel)
-            {
-                //Look for all auto grant abilities that are greater than the original level
-                //and less than or equal to the new level
+
+                //Get all auto grant abilities up to the user's level
                 IEnumerable<PermissionAbility> permAbilities =
                     context.PermAbilities.Where(p => (long)p.AutoGrantOnLevel >= 0
-                        && (long)p.AutoGrantOnLevel > originalLevel && (long)p.AutoGrantOnLevel <= newLevel);
+                        && (long)p.AutoGrantOnLevel <= originalLevel);
 
-                //Add all these abilities
-                foreach (PermissionAbility pAbility in permAbilities)
+                Console.WriteLine($"Found {permAbilities.Count()} autogrant up to level {originalLevel}");
+
+                //Enable all of those abilities
+                foreach (PermissionAbility permAbility in permAbilities)
                 {
-                    user.EnableAbility(pAbility);
+                    user.EnableAbility(permAbility);
                 }
+
+                context.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// Updates user abilities upon changing the user's level.
+        /// This also changes the user's level to the new level.
+        /// </summary>
+        /// <param name="userName">The name of the user.</param>
+        /// <param name="newLevel">The new level the user will be set to.</param>
+        public static void AdjustUserLvlAndAbilitiesOnLevel(string userName, long newLevel)
+        {
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                User user = GetUserNoOpen(userName, context);
+
+                long originalLevel = user.Level;
+
+                //Nothing to do here if the levels are the same
+                if (originalLevel == newLevel)
+                {
+                    return;
+                }
+
+                //Disable all abilities down to the new level
+                if (originalLevel > newLevel)
+                {
+                    //Look for all auto grant abilities that are less than or equal to the original level
+                    //and greater than the new level, and disable them
+                    IEnumerable<UserAbility> abilities = user.UserAbilities.Where(p => p.PermAbility.AutoGrantOnLevel >= 0
+                        && (long)p.PermAbility.AutoGrantOnLevel <= originalLevel
+                        && (long)p.PermAbility.AutoGrantOnLevel > newLevel);
+
+                    foreach (UserAbility ability in abilities)
+                    {
+                        ability.SetEnabledState(false);
+                        ability.Expiration = null;
+                        ability.GrantedByLevel = -1;
+                    }
+                }
+                //Enable all abilities up to the new level
+                else if (originalLevel < newLevel)
+                {
+                    //Look for all auto grant abilities that are greater than the original level
+                    //and less than or equal to the new level
+                    IEnumerable<PermissionAbility> permAbilities =
+                        context.PermAbilities.Where(p => (long)p.AutoGrantOnLevel >= 0
+                            && (long)p.AutoGrantOnLevel > originalLevel && (long)p.AutoGrantOnLevel <= newLevel);
+
+                    //Add all these abilities
+                    foreach (PermissionAbility pAbility in permAbilities)
+                    {
+                        user.EnableAbility(pAbility);
+                    }
+                }
+
+                //Set to the new level
+                user.Level = newLevel;
+
+                //Save changes
+                context.SaveChanges();
             }
         }
 

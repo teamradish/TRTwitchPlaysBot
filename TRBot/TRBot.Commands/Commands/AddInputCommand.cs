@@ -61,13 +61,15 @@ namespace TRBot.Commands
 
             string consoleStr = arguments[0].ToLowerInvariant();
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleStr);
-            if (console == null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage($"No console named \"{consoleStr}\" found.");
-                return;
+                GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleStr);
+
+                if (console == null)
+                {
+                    QueueMessage($"No console named \"{consoleStr}\" found.");
+                    return;
+                }
             }
 
             string inputName = arguments[1].ToLowerInvariant();
@@ -126,23 +128,30 @@ namespace TRBot.Commands
             InputData inputData = new InputData(inputName, buttonVal, axisVal, (InputTypes)inputType,
                 minAxisVal, maxAxisVal, maxAxisPercent, (long)PermissionLevels.User);
 
-            //Check if the input exists
-            InputData existingInput = console.InputList.FirstOrDefault((inpData) => inpData.Name == inputName);
+            InputData existingInput = null;
 
-            //Update if found
-            if (existingInput != null)
-            {    
-                existingInput.UpdateData(inputData);
-            }
-            //Otherwise add it
-            else
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                //Add the input to the console
-                console.InputList.Add(inputData);
+                GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleStr);
+
+                //Check if the input exists
+                existingInput = console.InputList.FirstOrDefault((inpData) => inpData.Name == inputName);
+
+                //Update if found
+                if (existingInput != null)
+                {    
+                    existingInput.UpdateData(inputData);
+                }
+                //Otherwise add it
+                else
+                {
+                    //Add the input to the console
+                    console.InputList.Add(inputData);
+                }
+
+                //Save database changes
+                context.SaveChanges();
             }
-            
-            //Save database changes
-            context.SaveChanges();
 
             string message = string.Empty;
             if (existingInput == null)

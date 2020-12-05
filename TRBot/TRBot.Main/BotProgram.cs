@@ -493,6 +493,7 @@ namespace TRBot.Main
             }
 
             ParsedInputSequence inputSequence = default;
+            string userName = e.UsrMessage.Username;
 
             try
             {
@@ -503,20 +504,21 @@ namespace TRBot.Main
                 string regexStr = usedConsole.InputRegex;
 
                 string readyMessage = string.Empty;
+                
+                //Get default and max input durations
+                //Use user overrides if they exist, otherwise use the global values
+                User user = DataHelper.GetUser(userName);
+
+                //Get default controller port
+                defaultPort = (int)user.ControllerPort;
+
+                defaultDur = (int)DataHelper.GetUserOrGlobalDefaultInputDur(userName);
+                maxDur = (int)DataHelper.GetUserOrGlobalMaxInputDur(userName);
+
+                //Console.WriteLine($"Default dur: {defaultDur} | Max dur: {maxDur}");
+
                 using (BotDBContext context = DatabaseManager.OpenContext())
                 {
-                    //Get default and max input durations
-                    //Use user overrides if they exist, otherwise use the global values
-                    User user = DataHelper.GetUserNoOpen(e.UsrMessage.Username, context);
-
-                    //Get default controller port
-                    defaultPort = (int)user.ControllerPort;
-
-                    defaultDur = (int)DataHelper.GetUserOrGlobalDefaultInputDur(user, context);
-                    maxDur = (int)DataHelper.GetUserOrGlobalMaxInputDur(user, context);
-
-                    //Console.WriteLine($"Default dur: {defaultDur} | Max dur: {maxDur}");
-
                     //Get input synonyms for this console
                     IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.ConsoleID == lastConsoleID);
 
@@ -557,18 +559,20 @@ namespace TRBot.Main
              * Find a way to speed it up.
              */
 
+            long globalInputPermLevel = DataHelper.GetSettingInt(SettingsConstants.GLOBAL_INPUT_LEVEL, 0L);
+            int userControllerPort = 0;
+            long userLevel = 0;
+
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
                 User user = DataHelper.GetOrAddUserNoOpen(e.UsrMessage.Username, context, out bool added);
-                
+
                 //Check if the user is silenced and ignore the message if so
                 if (user.HasEnabledAbility(PermissionConstants.SILENCED_ABILITY) == true)
                 {
                     return;
                 }
-
-                long globalInputPermLevel = DataHelper.GetSettingIntNoOpen(SettingsConstants.GLOBAL_INPUT_LEVEL, context, 0L);
-
+            
                 //Ignore based on user level and permissions
                 if (user.Level < globalInputPermLevel)
                 {
@@ -576,26 +580,36 @@ namespace TRBot.Main
                     return;
                 }
 
-                //First, add delays between inputs if we should
-                //We do this first so we can validate the inserted inputs later
-                //The blank inputs can have a different permission level
-                if (DataHelper.GetUserOrGlobalMidInputDelay(user, context, out long midInputDelay) == true)
+                userControllerPort = (int)user.ControllerPort;
+                userLevel = user.Level;
+            }
+
+            //First, add delays between inputs if we should
+            //We do this first so we can validate the inserted inputs later
+            //The blank inputs can have a different permission level
+            if (DataHelper.GetUserOrGlobalMidInputDelay(e.UsrMessage.Username, out long midInputDelay) == true)
+            {
+                MidInputDelayData midInputDelayData = ParserPostProcess.InsertMidInputDelays(inputSequence, userControllerPort, (int)midInputDelay, usedConsole);
+
+                //If it's successful, replace the input list and duration
+                if (midInputDelayData.Success == true)
                 {
-                    MidInputDelayData midInputDelayData = ParserPostProcess.InsertMidInputDelays(inputSequence, (int)user.ControllerPort, (int)midInputDelay, usedConsole);
+                    int oldDur = inputSequence.TotalDuration;
+                    inputSequence.Inputs = midInputDelayData.NewInputs;
+                    inputSequence.TotalDuration = midInputDelayData.NewTotalDuration;
 
-                    //If it's successful, replace the input list and duration
-                    if (midInputDelayData.Success == true)
-                    {
-                        int oldDur = inputSequence.TotalDuration;
-                        inputSequence.Inputs = midInputDelayData.NewInputs;
-                        inputSequence.TotalDuration = midInputDelayData.NewTotalDuration;
-
-                        //Console.WriteLine($"Mid input delay success. Message: {midInputDelay.Message} | OldDur: {oldDur} | NewDur: {inputSequence.TotalDuration}\n{ReverseParser.ReverseParse(inputSequence, usedConsole, new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.ShowAllPorts, 0))}");
-                    }
+                    //Console.WriteLine($"Mid input delay success. Message: {midInputDelay.Message} | OldDur: {oldDur} | NewDur: {inputSequence.TotalDuration}\n{ReverseParser.ReverseParse(inputSequence, usedConsole, new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.ShowAllPorts, 0))}");
                 }
+            }
+
+            InputValidation validation = default;
+
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                User user = DataHelper.GetUserNoOpen(userName, context);
 
                 //Check for restricted inputs on this user
-                InputValidation validation = ParserPostProcess.InputSequenceContainsRestrictedInputs(inputSequence, user.GetRestrictedInputs());
+                validation = ParserPostProcess.InputSequenceContainsRestrictedInputs(inputSequence, user.GetRestrictedInputs());
 
                 if (validation.InputValidationType != InputValidationTypes.Valid)
                 {
@@ -607,8 +621,12 @@ namespace TRBot.Main
                 }
 
                 //Check for invalid input combinations
-                validation = ParserPostProcess.ValidateInputCombos(inputSequence, usedConsole.InvalidCombos, DataContainer.ControllerMngr, usedConsole);
-
+                //Invalid combos are lazily loaded from the database and won't be available in the instance we instantiated
+                GameConsole console = context.Consoles.FirstOrDefault(c => c.ID == lastConsoleID);
+                
+                validation = ParserPostProcess.ValidateInputCombos(inputSequence, console.InvalidCombos,
+                    DataContainer.ControllerMngr, usedConsole);
+                
                 if (validation.InputValidationType != InputValidationTypes.Valid)
                 {
                     if (string.IsNullOrEmpty(validation.Message) == false)
@@ -617,19 +635,18 @@ namespace TRBot.Main
                     }
                     return;
                 }
+            }
 
-                //Check for level permissions and ports
-                validation = ParserPostProcess.ValidateInputLvlPermsAndPorts(user.Level, inputSequence,
-                    DataContainer.ControllerMngr, usedConsole.ConsoleInputs);
-
-                if (validation.InputValidationType != InputValidationTypes.Valid)
+            //Check for level permissions and ports
+            validation = ParserPostProcess.ValidateInputLvlPermsAndPorts(userLevel, inputSequence,
+                DataContainer.ControllerMngr, usedConsole.ConsoleInputs);
+            if (validation.InputValidationType != InputValidationTypes.Valid)
+            {
+                if (string.IsNullOrEmpty(validation.Message) == false)
                 {
-                    if (string.IsNullOrEmpty(validation.Message) == false)
-                    {
-                        MsgHandler.QueueMessage(validation.Message);
-                    }
-                    return;
+                    MsgHandler.QueueMessage(validation.Message);
                 }
+                return;
             }
 
             #endregion
@@ -641,67 +658,74 @@ namespace TRBot.Main
                 MsgHandler.QueueMessage("New inputs cannot be processed until all other inputs have stopped.");
                 return;
             }
-                
+
+            //Fetch these values ahead of time to avoid passing the database context through so many methods    
+            long autoPromoteEnabled = DataHelper.GetSettingInt(SettingsConstants.AUTO_PROMOTE_ENABLED, 0L);
+            long autoPromoteInputReq = DataHelper.GetSettingInt(SettingsConstants.AUTO_PROMOTE_INPUT_REQ, long.MaxValue);
+            long autoPromoteLevel = DataHelper.GetSettingInt(SettingsConstants.AUTO_PROMOTE_LEVEL, -1L);
+            string autoPromoteMsg = DataHelper.GetSettingString(SettingsConstants.AUTOPROMOTE_MESSAGE, string.Empty);
+
+            bool addedInputCount = false;
+
             //It's a valid input - save it in the user's stats
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
                 User user = DataHelper.GetOrAddUserNoOpen(e.UsrMessage.Username, context, out bool added);
-                
+
                 //Ignore if the user is opted out
                 if (user.IsOptedOut == false)
                 {
                     user.Stats.ValidInputCount++;
+                    addedInputCount = true;
+
+                    context.SaveChanges();
+                }
+            }
+
+            bool autoPromoted = false;
+
+            //Check if auto promote is enabled and auto promote the user if applicable
+            if (addedInputCount == true)
+            {
+                using (BotDBContext context = DatabaseManager.OpenContext())
+                {
+                    User user = DataHelper.GetOrAddUserNoOpen(e.UsrMessage.Username, context, out bool added);
                     
-                    //Check for auto promote is enabled and auto promote if applicable
-                    if (user.Stats.AutoPromoted == 0)
+                    //Check if the user was already autopromoted, autopromote is enabled,
+                    //and if the user reached the autopromote input count requirement
+                    if (user.Stats.AutoPromoted == 0 && autoPromoteEnabled > 0
+                        && user.Stats.ValidInputCount >= autoPromoteInputReq)
                     {
-                        long autoPromoteEnabled = DataHelper.GetSettingIntNoOpen(SettingsConstants.AUTO_PROMOTE_ENABLED, context, 0L);
-                        
-                        //Check if autopromote is enabled
-                        if (autoPromoteEnabled > 0)
+                        //Only autopromote if this is a valid permission level
+                        //We may not want to log or send a message for this, as it has potential to be very spammy,
+                        //and it's not something the users can control
+                        if (PermissionHelpers.IsValidPermissionValue(autoPromoteLevel) == true)
                         {
-                            long autoPromoteInputReq = DataHelper.GetSettingIntNoOpen(SettingsConstants.AUTO_PROMOTE_INPUT_REQ, context, long.MaxValue);
-                            
-                            //Check if the user reached the autopromote input count requirement
-                            if (user.Stats.ValidInputCount >= autoPromoteInputReq)
-                            {
-                                long autoPromoteLevel = DataHelper.GetSettingIntNoOpen(SettingsConstants.AUTO_PROMOTE_LEVEL, context, -1L);
-                                
-                                //Only autopromote if this is a valid permission level
-                                //We may not want to log or send a message for this, as it has potential to be very spammy,
-                                //and it's not something the users can control
-                                if (PermissionHelpers.IsValidPermissionValue(autoPromoteLevel) == true)
-                                {
-                                    long prevLevel = user.Level;
+                            //Mark the user as autopromoted and save
+                            user.Stats.AutoPromoted = 1;
+                            autoPromoted = true;
 
-                                    //Mention that the user was autopromoted
-                                    user.Stats.AutoPromoted = 1;   
-
-                                    //If the user is already at or above this level, don't set them to it
-                                    //Only set if the user is below
-                                    if (user.Level < autoPromoteLevel)
-                                    {
-                                        //Adjust abilities and promote to the new level
-                                        DataHelper.AdjustUserAbilitiesOnLevel(user, autoPromoteLevel, context);
-
-                                        user.Level = autoPromoteLevel;
-
-                                        string autoPromoteMsg = DataHelper.GetSettingStringNoOpen(SettingsConstants.AUTOPROMOTE_MESSAGE, context, string.Empty);
-                                        if (string.IsNullOrEmpty(autoPromoteMsg) == false)
-                                        {
-                                            PermissionLevels permLvl = (PermissionLevels)autoPromoteLevel;
-
-                                            string finalMsg = autoPromoteMsg.Replace("{0}", user.Name).Replace("{1}", permLvl.ToString());
-                                            MsgHandler.QueueMessage(finalMsg);
-                                        } 
-                                    }
-                                }
-                            }
+                            context.SaveChanges();
                         }
                     }
-                    
-                    //Save changes
-                    context.SaveChanges();
+                }
+            }
+
+            if (autoPromoted == true)
+            {
+                //If the user is already at or above this level, don't set them to it
+                //Only set if the user is below
+                if (userLevel < autoPromoteLevel)
+                {
+                    //Adjust abilities and promote to the new level
+                    DataHelper.AdjustUserLvlAndAbilitiesOnLevel(userName, autoPromoteLevel);
+
+                    if (string.IsNullOrEmpty(autoPromoteMsg) == false)
+                    {
+                        PermissionLevels permLvl = (PermissionLevels)autoPromoteLevel;
+                        string finalMsg = autoPromoteMsg.Replace("{0}", userName).Replace("{1}", permLvl.ToString());
+                        MsgHandler.QueueMessage(finalMsg);
+                    } 
                 }
             }
 

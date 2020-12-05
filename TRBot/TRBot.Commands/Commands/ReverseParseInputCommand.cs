@@ -51,19 +51,19 @@ namespace TRBot.Commands
                 return;
             }
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
             GameConsole usedConsole = null;
 
-            int lastConsoleID = 1;
+            int lastConsoleID = (int)DataHelper.GetSettingInt(SettingsConstants.LAST_CONSOLE, 1L);
 
-            lastConsoleID = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.LAST_CONSOLE, context, 1L);
-            GameConsole lastConsole = context.Consoles.FirstOrDefault(c => c.ID == lastConsoleID);
-
-            if (lastConsole != null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                //Create a new console using data from the database
-                usedConsole = new GameConsole(lastConsole.Name, lastConsole.InputList, lastConsole.InvalidCombos);
+                GameConsole lastConsole = context.Consoles.FirstOrDefault(c => c.ID == lastConsoleID);
+
+                if (lastConsole != null)
+                {
+                    //Create a new console using data from the database
+                    usedConsole = new GameConsole(lastConsole.Name, lastConsole.InputList, lastConsole.InvalidCombos);
+                }
             }
 
             //If there are no valid inputs, don't attempt to parse
@@ -84,26 +84,31 @@ namespace TRBot.Commands
 
             try
             {
+                string userName = args.Command.ChatMessage.Username;
+
+                //Get default and max input durations
+                //Use user overrides if they exist, otherwise use the global values
+                User user = DataHelper.GetUser(userName);
+                
+                defaultPort = (int)user.ControllerPort;
+
+                int defaultDur = (int)DataHelper.GetUserOrGlobalDefaultInputDur(userName);
+                int maxDur = (int)DataHelper.GetUserOrGlobalMaxInputDur(userName);
+                
                 string regexStr = usedConsole.InputRegex;
 
                 string readyMessage = string.Empty;
 
-                //Get default and max input durations
-                //Use user overrides if they exist, otherwise use the global values
-                User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
-                
-                defaultPort = (int)user.ControllerPort;
-
-                int defaultDur = (int)DataHelper.GetUserOrGlobalDefaultInputDur(user, context);
-                int maxDur = (int)DataHelper.GetUserOrGlobalMaxInputDur(user, context);
-                
-                //Get input synonyms for this console
-                IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.ConsoleID == lastConsoleID);
-                
                 Parser parser = new Parser();
 
-                //Prepare the message for parsing
-                readyMessage = parser.PrepParse(input, context.Macros, synonyms);
+                using (BotDBContext context = DatabaseManager.OpenContext())
+                {
+                    //Get input synonyms for this console
+                    IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.ConsoleID == lastConsoleID);
+
+                    //Prepare the message for parsing
+                    readyMessage = parser.PrepParse(input, context.Macros, synonyms);
+                }
 
                 //Parse inputs to get our parsed input sequence
                 inputSequence = parser.ParseInputs(readyMessage, regexStr, new ParserOptions(defaultPort, defaultDur, true, maxDur));
@@ -139,7 +144,7 @@ namespace TRBot.Commands
             string reverseParsed = ReverseParser.ReverseParseNatural(inputSequence, usedConsole,
                 new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.ShowNonDefaultPorts, defaultPort));
 
-            int botCharLimit = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.BOT_MSG_CHAR_LIMIT, context, 500L);
+            int botCharLimit = (int)DataHelper.GetSettingInt(SettingsConstants.BOT_MSG_CHAR_LIMIT, 500L);
 
             QueueMessageSplit(reverseParsed, botCharLimit, ", ");
         }

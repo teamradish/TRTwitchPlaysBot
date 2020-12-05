@@ -90,18 +90,20 @@ namespace TRBot.Commands
                 return;
             }
 
-            using BotDBContext context = DatabaseManager.OpenContext();
+            int curConsoleID = (int)DataHelper.GetSettingInt(SettingsConstants.LAST_CONSOLE, 1L);
 
-            int lastConsole = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.LAST_CONSOLE, context, 1L);
-
-            GameConsole curConsole = context.Consoles.FirstOrDefault(c => c.ID == lastConsole);
-            if (curConsole == null)
+            GameConsole consoleInstance = null;
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage("Cannot validate input macro, as the current console is invalid. Fix this by setting another console.");
-                return;
-            }
+                GameConsole curConsole = context.Consoles.FirstOrDefault(c => c.ID == curConsoleID);
+                if (curConsole == null)
+                {
+                    QueueMessage("Cannot validate input macro, as the current console is invalid. Fix this by setting another console.");
+                    return;
+                }
 
-            GameConsole consoleInstance = new GameConsole(curConsole.Name, curConsole.InputList);
+                consoleInstance = new GameConsole(curConsole.Name, curConsole.InputList);
+            }
 
             Parser parser = new Parser();
 
@@ -139,18 +141,23 @@ namespace TRBot.Commands
 
                 try
                 {
+                    string userName = args.Command.ChatMessage.Username;
+
                     //Get default and max input durations
                     //Use user overrides if they exist, otherwise use the global values
-                    User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
-
-                    int defaultDur = (int)DataHelper.GetUserOrGlobalDefaultInputDur(user, context);
-                    int maxDur = (int)DataHelper.GetUserOrGlobalMaxInputDur(user, context);
+                    int defaultDur = (int)DataHelper.GetUserOrGlobalDefaultInputDur(userName);
+                    int maxDur = (int)DataHelper.GetUserOrGlobalMaxInputDur(userName);
 
                     string regexStr = consoleInstance.InputRegex;
 
-                    IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.ConsoleID == curConsole.ID);
+                    string readyMessage = string.Empty;
 
-                    string readyMessage = readyMessage = parser.PrepParse(macroVal, context.Macros, synonyms);
+                    using (BotDBContext context = DatabaseManager.OpenContext())
+                    {
+                        IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.ConsoleID == curConsoleID);
+    
+                        readyMessage = parser.PrepParse(macroVal, context.Macros, synonyms);
+                    }
 
                     inputSequence = parser.ParseInputs(readyMessage, regexStr, new ParserOptions(0, defaultDur, true, maxDur));
                     //Console.WriteLine(inputSequence.ToString());
@@ -178,30 +185,33 @@ namespace TRBot.Commands
 
             string message = string.Empty;
 
-            InputMacro inputMacro = context.Macros.FirstOrDefault(m => m.MacroName == macroName);
-
-            //Not an existing macro, so add it
-            if (inputMacro == null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                InputMacro newMacro = new InputMacro(macroName, macroVal);
+                InputMacro inputMacro = context.Macros.FirstOrDefault(m => m.MacroName == macroName);
 
-                context.Macros.Add(newMacro);
+                //Not an existing macro, so add it
+                if (inputMacro == null)
+                {
+                    InputMacro newMacro = new InputMacro(macroName, macroVal);
 
-                if (isDynamic == false)
-                    message = $"Added input macro \"{macroName}\"!";
-                else message = $"Added dynamic input macro \"{macroName}\"! Dynamic input macros can't be validated beforehand, so verify it works manually.";
+                    context.Macros.Add(newMacro);
+
+                    if (isDynamic == false)
+                        message = $"Added input macro \"{macroName}\"!";
+                    else message = $"Added dynamic input macro \"{macroName}\"! Dynamic input macros can't be validated beforehand, so verify it works manually.";
+                }
+                //Update the macro value
+                else
+                {
+                    inputMacro.MacroValue = macroVal;
+
+                    if (isDynamic == false)
+                        message = $"Updated input macro \"{macroName}\"!";
+                    else message = $"Updated dynamic input macro \"{macroName}\"! Dynamic input macros can't be validated beforehand, so verify it works manually.";
+                }
+
+                context.SaveChanges();
             }
-            //Update the macro value
-            else
-            {
-                inputMacro.MacroValue = macroVal;
-
-                if (isDynamic == false)
-                    message = $"Updated input macro \"{macroName}\"!";
-                else message = $"Updated dynamic input macro \"{macroName}\"! Dynamic input macros can't be validated beforehand, so verify it works manually.";
-            }
-
-            context.SaveChanges();
             
             QueueMessage(message);
         }

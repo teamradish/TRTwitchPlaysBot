@@ -54,59 +54,53 @@ namespace TRBot.Commands
                 return;
             }
 
-            using BotDBContext context = DatabaseManager.OpenContext();
+            string usedName = string.Empty;
 
-            //context.ChangeTracker.StateChanged -= OnEntityChanged;
-            //context.ChangeTracker.StateChanged += OnEntityChanged;
-
-            //Get the user calling this
-            string thisUserName = args.Command.ChatMessage.Username.ToLowerInvariant();
-
-            User thisUser = DataHelper.GetUserNoOpen(thisUserName, context);
-            User changedUser = thisUser;
-
-            //Check to update another user's abilities
-            if (arguments.Count == 1)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                //Check if this user has permission to do this
-                if (thisUser.HasEnabledAbility(PermissionConstants.UPDATE_OTHER_USER_ABILITES) == false)
+
+                //Get the user calling this
+                string thisUserName = args.Command.ChatMessage.Username.ToLowerInvariant();
+                usedName = thisUserName;
+
+                User thisUser = DataHelper.GetUserNoOpen(thisUserName, context);
+                User changedUser = thisUser;
+
+                //Check to update another user's abilities
+                if (arguments.Count == 1)
                 {
-                    QueueMessage("You do not have permission to update another user's abilities!");
-                    return;
-                }
+                    //Check if this user has permission to do this
+                    if (thisUser.HasEnabledAbility(PermissionConstants.UPDATE_OTHER_USER_ABILITES) == false)
+                    {
+                        QueueMessage("You do not have permission to update another user's abilities!");
+                        return;
+                    }
 
-                string otherUserName = arguments[0].ToLowerInvariant();
+                    string otherUserName = arguments[0].ToLowerInvariant();
 
-                changedUser = DataHelper.GetUserNoOpen(otherUserName, context);
+                    changedUser = DataHelper.GetUserNoOpen(otherUserName, context);
 
-                if (changedUser == null)
-                {
-                    QueueMessage("A user with this name does not exist in the database!");
-                    return;
-                }
+                    if (changedUser == null)
+                    {
+                       QueueMessage("A user with this name does not exist in the database!");
+                       return;
+                    }
 
-                //Prohibit updating abilities for higher levels
-                if (thisUser.Level < changedUser.Level)
-                {
-                    QueueMessage("You cannot update the abilities for someone higher in level than you!");
-                    return;
+                    //Prohibit updating abilities for higher levels
+                    if (thisUser.Level < changedUser.Level)
+                    {
+                       QueueMessage("You cannot update the abilities for someone higher in level than you!");
+                        return;
+                    }
+
+                    usedName = otherUserName;
                 }
             }
 
             //Fully update the abilities
-            DataHelper.UpdateUserAutoGrantAbilities(changedUser, context);
+            DataHelper.UpdateUserAutoGrantAbilities(usedName);
 
-            //Save the changes
-            context.SaveChanges();
-
-            //context.ChangeTracker.StateChanged -= OnEntityChanged;
-
-            QueueMessage($"Updated {changedUser.Name}'s abilities!");
+            QueueMessage($"Updated {usedName}'s abilities!");
         }
-
-        //private void OnEntityChanged(object sender, Microsoft.EntityFrameworkCore.ChangeTracking.EntityStateChangedEventArgs e)
-        //{
-        //    Console.WriteLine($"Entity {e.Entry} Old: {e.OldState} | New: {e.NewState}");
-        //}
     }
 }

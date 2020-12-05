@@ -50,15 +50,16 @@ namespace TRBot.Commands
 
             string consoleName = arguments[0].ToLowerInvariant();
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleName);
-
-            //Check if a valid console is specified
-            if (console == null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage($"\"{consoleName}\" is not a valid console.");
-                return;
+                GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleName);
+
+                //Check if a valid console is specified
+                if (console == null)
+                {
+                    QueueMessage($"\"{consoleName}\" is not a valid console.");
+                    return;
+                }
             }
 
             string synonymName = arguments[1].ToLowerInvariant();
@@ -66,24 +67,28 @@ namespace TRBot.Commands
             //Get the actual synonym from the remaining arguments
             string synonymValue = args.Command.ArgumentsAsString.Remove(0, arguments[0].Length + 1).Remove(0, synonymName.Length + 1);
 
-            InputSynonym inputSynonym = context.InputSynonyms.FirstOrDefault(syn => syn.ConsoleID == console.ID && syn.SynonymName == synonymName);
-
-            //Add if it doesn't exist
-            if (inputSynonym == null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                InputSynonym newSynonym = new InputSynonym(console.ID, synonymName, synonymValue);
+                GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleName);
+                InputSynonym inputSynonym = context.InputSynonyms.FirstOrDefault(syn => syn.ConsoleID == console.ID && syn.SynonymName == synonymName);
 
-                context.InputSynonyms.Add(newSynonym);
-                QueueMessage($"Added input synonym \"{synonymName}\" for \"{synonymValue}\"!");
-            }
-            //Otherwise update it
-            else
-            {
-                inputSynonym.SynonymValue = synonymValue;
-                QueueMessage($"Updated input synonym \"{synonymName}\" for \"{synonymValue}\"!");
-            }
+                //Add if it doesn't exist
+                if (inputSynonym == null)
+                {
+                    InputSynonym newSynonym = new InputSynonym(console.ID, synonymName, synonymValue);
 
-            context.SaveChanges();
+                    context.InputSynonyms.Add(newSynonym);
+                    QueueMessage($"Added input synonym \"{synonymName}\" for \"{synonymValue}\"!");
+                }
+                //Otherwise update it
+                else
+                {
+                    inputSynonym.SynonymValue = synonymValue;
+                    QueueMessage($"Updated input synonym \"{synonymName}\" for \"{synonymValue}\"!");
+                }
+
+                context.SaveChanges();
+            }
         }
     }
 }

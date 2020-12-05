@@ -56,9 +56,7 @@ namespace TRBot.Routines
         {
             TimeSpan timeDiff = currentTimeUTC - CurInputTime;
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            long inputTimeMS = DataHelper.GetSettingIntNoOpen(SettingsConstants.PERIODIC_INPUT_TIME, context, -1L);
+            long inputTimeMS = DataHelper.GetSettingInt(SettingsConstants.PERIODIC_INPUT_TIME, -1L);
 
             //Don't do anything if the input time is less than 0 to prevent spam
             if (inputTimeMS < 0L)
@@ -76,8 +74,8 @@ namespace TRBot.Routines
             //Refresh time
             CurInputTime = currentTimeUTC;
 
-            string periodicInputValue = DataHelper.GetSettingStringNoOpen(SettingsConstants.PERIODIC_INPUT_VALUE, context, string.Empty);
-            int controllerPort = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.PERIODIC_INPUT_PORT, context, 0L);
+            string periodicInputValue = DataHelper.GetSettingString(SettingsConstants.PERIODIC_INPUT_VALUE, string.Empty);
+            int controllerPort = (int)DataHelper.GetSettingInt(SettingsConstants.PERIODIC_INPUT_PORT, 0L);
 
             //Don't perform the input if it's empty
             if (string.IsNullOrEmpty(periodicInputValue) == true)
@@ -96,15 +94,17 @@ namespace TRBot.Routines
             //Set up the console
             GameConsole usedConsole = null;
 
-            int lastConsoleID = 1;
+            int lastConsoleID = (int)DataHelper.GetSettingInt(SettingsConstants.LAST_CONSOLE, 1L);
 
-            lastConsoleID = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.LAST_CONSOLE, context, 1L);
-            GameConsole lastConsole = context.Consoles.FirstOrDefault(c => c.ID == lastConsoleID);
-
-            if (lastConsole != null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                //Create a new console using data from the database
-                usedConsole = new GameConsole(lastConsole.Name, lastConsole.InputList, lastConsole.InvalidCombos);
+                GameConsole lastConsole = context.Consoles.FirstOrDefault(c => c.ID == lastConsoleID);
+
+                if (lastConsole != null)
+                {
+                    //Create a new console using data from the database
+                    usedConsole = new GameConsole(lastConsole.Name, lastConsole.InputList, lastConsole.InvalidCombos);
+                }
             }
 
             //If there are no valid inputs, don't attempt to parse
@@ -124,20 +124,23 @@ namespace TRBot.Routines
 
             try
             {
+                int defaultDur = (int)DataHelper.GetUserOrGlobalDefaultInputDur(string.Empty);
+                int maxDur = (int)DataHelper.GetUserOrGlobalMaxInputDur(string.Empty);
+                
                 string regexStr = usedConsole.InputRegex;
 
                 string readyMessage = string.Empty;
 
-                int defaultDur = (int)DataHelper.GetUserOrGlobalDefaultInputDur(null, context);
-                int maxDur = (int)DataHelper.GetUserOrGlobalMaxInputDur(null, context);
-                
-                //Get input synonyms for this console
-                IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.ConsoleID == lastConsoleID);
-                
                 Parser parser = new Parser();
 
-                //Prepare the message for parsing
-                readyMessage = parser.PrepParse(periodicInputValue, context.Macros, synonyms);
+                using (BotDBContext context = DatabaseManager.OpenContext())
+                {
+                    //Get input synonyms for this console
+                    IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.ConsoleID == lastConsoleID);
+    
+                    //Prepare the message for parsing
+                    readyMessage = parser.PrepParse(periodicInputValue, context.Macros, synonyms);
+                }
 
                 //Parse inputs to get our parsed input sequence
                 inputSequence = parser.ParseInputs(readyMessage, regexStr, new ParserOptions(0, defaultDur, true, maxDur));

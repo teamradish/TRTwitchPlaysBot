@@ -55,11 +55,9 @@ namespace TRBot.Commands
                 return;
             }
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
             string username = arguments[0];
 
-            User restrictedUser = DataHelper.GetUserNoOpen(username, context);
+            User restrictedUser = DataHelper.GetUser(username);
 
             //Check for the user
             if (restrictedUser == null)
@@ -69,27 +67,35 @@ namespace TRBot.Commands
             }
 
             string consoleStr = arguments[1].ToLowerInvariant();
-
-            GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleStr);
-            if (console == null)
-            {
-                QueueMessage($"No console named \"{consoleStr}\" found.");
-                return;
-            }
-
             string inputName = arguments[2].ToLowerInvariant();
-            
-            //Check if the input exists
-            InputData inputData = console.InputList.FirstOrDefault((inpData) => inpData.Name == inputName);
 
-            if (inputData == null)
+            int consoleID = -1;
+
+            InputData inputData = null;
+
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage($"Input \"{inputName}\" does not exist in console \"{consoleStr}\".");
-                return;
+                GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleStr);
+                if (console == null)
+                {
+                    QueueMessage($"No console named \"{consoleStr}\" found.");
+                    return;
+                }
+
+                consoleID = console.ID;
+
+                //Check if the input exists
+                inputData = console.InputList.FirstOrDefault((inpData) => inpData.Name == inputName);
+
+                if (inputData == null)
+                {
+                    QueueMessage($"Input \"{inputName}\" does not exist in console \"{consoleStr}\".");
+                    return;
+                }
             }
 
             //Compare this user's level with the user they're trying to restrict
-            User thisUser = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username.ToLowerInvariant(), context);
+            User thisUser = DataHelper.GetUser(args.Command.ChatMessage.Username);
 
             if (thisUser == null)
             {
@@ -121,28 +127,34 @@ namespace TRBot.Commands
                 expiration = nowUTC + timeFromNow;
             }
 
-            //See if a restricted input already exists
-            RestrictedInput restInput = restrictedUser.RestrictedInputs.FirstOrDefault(r => r.inputData.Name == inputName && r.inputData.ConsoleID == console.ID);
-
-            //Already restricted - update the expiration
-            if (restInput != null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                restInput.Expiration = expiration;
+                restrictedUser = DataHelper.GetUserNoOpen(username, context);
 
-                QueueMessage($"Updated \"{inputName}\" restriction for the \"{consoleStr}\" console on {restrictedUser.Name}! Expires in {expirationArg}!");
+                //See if a restricted input already exists
+                RestrictedInput restInput = restrictedUser.RestrictedInputs.FirstOrDefault(r => r.inputData.Name == inputName
+                    && r.inputData.ConsoleID == consoleID);
+
+                //Already restricted - update the expiration
+                if (restInput != null)
+                {
+                    restInput.Expiration = expiration;
+
+                    QueueMessage($"Updated \"{inputName}\" restriction for the \"{consoleStr}\" console on {restrictedUser.Name}! Expires in {expirationArg}!");
+                }
+                //Add a new restricted input
+                else
+                {
+                    //Add the restricted input
+                    RestrictedInput newRestrictedInput = new RestrictedInput(restrictedUser.ID, inputData.ID, expiration);
+                    restrictedUser.RestrictedInputs.Add(newRestrictedInput);
+
+                    QueueMessage($"Restricted {restrictedUser.Name} from inputting \"{inputName}\" for the \"{consoleStr}\" console! Expires in {expirationArg}!");
+                }
+
+                //Save            
+                context.SaveChanges();
             }
-            //Add a new restricted input
-            else
-            {
-                //Add the restricted input
-                RestrictedInput newRestrictedInput = new RestrictedInput(restrictedUser.ID, inputData.ID, expiration);
-                restrictedUser.RestrictedInputs.Add(newRestrictedInput);
-
-                QueueMessage($"Restricted {restrictedUser.Name} from inputting \"{inputName}\" for the \"{consoleStr}\" console! Expires in {expirationArg}!");
-            }
-
-            //Save            
-            context.SaveChanges();
         }
     }
 }

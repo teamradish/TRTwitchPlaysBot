@@ -55,32 +55,33 @@ namespace TRBot.Commands
 
             string consoleStr = arguments[0].ToLowerInvariant();
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleStr);
-            if (console == null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage($"No console named \"{consoleStr}\" found.");
-                return;
-            }
+                GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleStr);
+                if (console == null)
+                {
+                    QueueMessage($"No console named \"{consoleStr}\" found.");
+                    return;
+                }
 
-            string inputName = arguments[1].ToLowerInvariant();
-            
-            //Check if the input exists
-            int index = console.InputList.FindIndex((inpData) => inpData.Name == inputName);
-
-            if (index >= 0)
-            {
-                console.InputList.RemoveAt(index);
-
-                //Save changes since it's removed
-                context.SaveChanges();
-
-                QueueMessage($"Removed input \"{inputName}\" from console \"{consoleStr}\"!");
-            }
-            else
-            {
-                QueueMessage($"Input \"{inputName}\" does not exist in console \"{consoleStr}\".");
+                string inputName = arguments[1].ToLowerInvariant();
+                
+                //Check if the input exists
+                int index = console.InputList.FindIndex((inpData) => inpData.Name == inputName);
+    
+                if (index >= 0)
+                {
+                    console.InputList.RemoveAt(index);
+    
+                    //Save changes since it's removed
+                    context.SaveChanges();
+    
+                    QueueMessage($"Removed input \"{inputName}\" from console \"{consoleStr}\"!");
+                }
+                else
+                {
+                    QueueMessage($"Input \"{inputName}\" does not exist in console \"{consoleStr}\".");
+                }
             }
         }
 

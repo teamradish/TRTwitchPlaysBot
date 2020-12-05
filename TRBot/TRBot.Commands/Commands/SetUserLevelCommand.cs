@@ -50,8 +50,6 @@ namespace TRBot.Commands
                 return;
             }
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
             string levelUsername = arguments[0].ToLowerInvariant();
             string levelStr = arguments[1].ToLowerInvariant();
 
@@ -62,7 +60,7 @@ namespace TRBot.Commands
                 return;
             }
 
-            User levelUser = DataHelper.GetUserNoOpen(levelUsername, context);
+            User levelUser = DataHelper.GetUser(levelUsername);
 
             if (levelUser == null)
             {
@@ -70,7 +68,7 @@ namespace TRBot.Commands
                 return;
             }
 
-            User curUser = DataHelper.GetUserNoOpen(curUserName, context);
+            User curUser = DataHelper.GetUser(curUserName);
 
             if (curUser == null)
             {
@@ -101,11 +99,7 @@ namespace TRBot.Commands
             }
 
             //Set level, adjust abilities, and save
-            DataHelper.AdjustUserAbilitiesOnLevel(levelUser, levelNum, context);
-            
-            levelUser.Level = levelNum;
-
-            context.SaveChanges();
+            DataHelper.AdjustUserLvlAndAbilitiesOnLevel(levelUsername, levelNum);
 
             QueueMessage($"Set {levelUsername}'s level to {levelNum}, {permLvl}!");
         }
