@@ -239,64 +239,6 @@ namespace TRBot.Data
         }
 
         /// <summary>
-        /// Obtains a user object from the database with an opened context.
-        //  If it doesn't exist, a new one will be added to the database.
-        /// </summary>        
-        /// <param name="userName">The name of the user.</param>
-        /// <param name="context">The open database context.</param>
-        /// <param name="added">Whether a new user was added to the database.</param>
-        /// <returns>A user object with the given userName.</returns>
-        public static User GetOrAddUserNoOpen(string userName, BotDBContext context, out bool added)
-        {
-            //Add the lowered version of their name to simplify retrieval
-            string userNameLowered = userName.ToLowerInvariant();
-
-            User user = context.Users.FirstOrDefault(u => u.Name == userNameLowered);
-            
-            added = false;
-
-            //If the user doesn't exist, add it
-            if (user == null)
-            {
-                long controllerPort = 0L;
-
-                //Check which port to set if teams mode is enabled
-                long teamsModeEnabled = GetSettingIntNoOpen(SettingsConstants.TEAMS_MODE_ENABLED, context, 0L);
-                if (teamsModeEnabled > 0L)
-                {
-                    Settings teamsNextPort = GetSettingNoOpen(SettingsConstants.TEAMS_MODE_NEXT_PORT, context);
-                    
-                    //The player is now on this port
-                    controllerPort = teamsNextPort.ValueInt;
-
-                    long maxPort = GetSettingIntNoOpen(SettingsConstants.TEAMS_MODE_MAX_PORT, context, 3L);
-
-                    //Increment the next port value, keeping it in range
-                    teamsNextPort.ValueInt = Utilities.Helpers.Wrap(teamsNextPort.ValueInt + 1, 0L, maxPort + 1);
-                }
-
-                //Give them User permissions and set their port
-                user = new User(userNameLowered, (long)PermissionLevels.User);
-                user.ControllerPort = controllerPort;
-
-                context.Users.Add(user);
-
-                //Save the changes so the user object is in the database
-                context.SaveChanges();
-
-                //Update this user's abilities off the bat
-                //UpdateUserAutoGrantAbilities(user, context);
-
-                //Save changes again to update the abilities
-                context.SaveChanges();
-
-                added = true;
-            }
-
-            return user;
-        }
-
-        /// <summary>
         /// Retrieves a user's overridden default input duration, or if they don't have one, the global default input duration.
         /// </summary>
         /// <param name="userName">The name of the user.</param>
@@ -448,7 +390,7 @@ namespace TRBot.Data
                     context.PermAbilities.Where(p => (long)p.AutoGrantOnLevel >= 0
                         && (long)p.AutoGrantOnLevel <= originalLevel);
 
-                Console.WriteLine($"Found {permAbilities.Count()} autogrant up to level {originalLevel}");
+                //Console.WriteLine($"Found {permAbilities.Count()} autogrant up to level {originalLevel}");
 
                 //Enable all of those abilities
                 foreach (PermissionAbility permAbility in permAbilities)

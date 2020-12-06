@@ -101,6 +101,11 @@ namespace TRBot.Consoles
         /// </summary>
         public virtual GameConsole Console { get; set; } = null;
 
+        /// <summary>
+        /// A helper property to get the input's enabled state.
+        /// </summary>
+        public bool IsEnabled => (Enabled > 0);
+
         public InputData()
         {
 
@@ -138,7 +143,7 @@ namespace TRBot.Consoles
 
         public override string ToString()
         {
-            return $"Name: \"{Name}\" | {nameof(ConsoleID)}: {ConsoleID} | BtnVal: {ButtonValue} | AxisVal: {AxisValue} | InputType: {(int)InputType} ({InputType}) | MinAxis: {MinAxisVal} | MaxAxis: {MaxAxisVal} | MaxAxisPercent: {MaxAxisPercent} | Level: {Level} | Enabled: {Enabled}";
+            return $"Name: \"{Name}\" | {nameof(ConsoleID)}: {ConsoleID} | BtnVal: {ButtonValue} | AxisVal: {AxisValue} | InputType: {(int)InputType} ({InputType}) | MinAxis: {MinAxisVal} | MaxAxis: {MaxAxisVal} | MaxAxisPercent: {MaxAxisPercent} | Level: {Level} | Enabled: {IsEnabled}";
         }
 
         public static InputData CreateBlank(string name)

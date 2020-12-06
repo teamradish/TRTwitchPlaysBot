@@ -19,6 +19,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace TRBot.Utilities
@@ -467,6 +468,23 @@ namespace TRBot.Utilities
 
             //Return the last one if it goes through
             return percentages.Count - 1;
+        }
+
+        /// <summary>
+        /// Removes all whitespace from a string, including tabs and spaces.
+        /// </summary>
+        /// <param name="originalStr">The string to remove whitespace from.</param>
+        /// <returns>A string with all whitespace removed. If <paramref name="originalStr"> is null or empty, it is returned instead.</returns>
+        public static string RemoveAllWhitespace(string originalStr)
+        {
+            //Return the original string if null or empty
+            if (string.IsNullOrEmpty(originalStr) == true)
+            {
+                return originalStr;
+            }
+
+            //Replace all whitespace with regex
+            return Regex.Replace(originalStr, @"\s+", string.Empty, RegexOptions.Compiled);
         }
     }
 }

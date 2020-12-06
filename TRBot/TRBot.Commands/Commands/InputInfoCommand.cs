@@ -107,6 +107,13 @@ namespace TRBot.Commands
                         }
                     }
                 }
+                
+                //No valid inputs
+                if (console.InputList.Count() == 0)
+                {
+                    QueueMessage($"Console \"{console.Name}\" has no valid inputs!");
+                    return;
+                }
 
                 //List all inputs for this console
                 strBuilder = new StringBuilder(300);

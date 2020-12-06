@@ -563,7 +563,7 @@ namespace TRBot.Main
 
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                User user = DataHelper.GetOrAddUserNoOpen(e.UsrMessage.Username, context, out bool added);
+                User user = DataHelper.GetUserNoOpen(e.UsrMessage.Username, context);
 
                 //Check if the user is silenced and ignore the message if so
                 if (user.HasEnabledAbility(PermissionConstants.SILENCED_ABILITY) == true)
@@ -668,7 +668,7 @@ namespace TRBot.Main
             //It's a valid input - save it in the user's stats
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                User user = DataHelper.GetOrAddUserNoOpen(e.UsrMessage.Username, context, out bool added);
+                User user = DataHelper.GetUserNoOpen(e.UsrMessage.Username, context);
 
                 //Ignore if the user is opted out
                 if (user.IsOptedOut == false)
@@ -687,7 +687,7 @@ namespace TRBot.Main
             {
                 using (BotDBContext context = DatabaseManager.OpenContext())
                 {
-                    User user = DataHelper.GetOrAddUserNoOpen(e.UsrMessage.Username, context, out bool added);
+                    User user = DataHelper.GetUserNoOpen(e.UsrMessage.Username, context);
                     
                     //Check if the user was already autopromoted, autopromote is enabled,
                     //and if the user reached the autopromote input count requirement

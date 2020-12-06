@@ -51,20 +51,20 @@ namespace TRBot.Commands
             }
 
             string macroName = arguments[0].ToLowerInvariant();
-
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            InputMacro macro = context.Macros.FirstOrDefault(m => m.MacroName == macroName);
-
             string message = string.Empty;
 
-            if (macro == null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                message = $"Input macro \"{macroName}\" not found. For dynamic input macros, use the generic form (Ex. \"#test(*)\").";
-            }
-            else
-            {
-                message = $"{macro.MacroName} = {macro.MacroValue}";
+                InputMacro macro = context.Macros.FirstOrDefault(m => m.MacroName == macroName);
+
+                if (macro == null)
+                {
+                    message = $"Input macro \"{macroName}\" not found. For dynamic input macros, use the generic form (Ex. \"#test(*)\").";
+                }
+                else
+                {
+                    message = $"{macro.MacroName} = {macro.MacroValue}";
+                }
             }
 
             QueueMessage(message);

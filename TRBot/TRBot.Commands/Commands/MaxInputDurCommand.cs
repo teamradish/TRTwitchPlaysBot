@@ -45,11 +45,7 @@ namespace TRBot.Commands
         {
             List<string> arguments = args.Command.ArgumentsAsList;
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            Settings maxDurSetting = context.SettingCollection.FirstOrDefault(set => set.Key == SettingsConstants.MAX_INPUT_DURATION);
-
-            int maxInputDur = (int)maxDurSetting.ValueInt;
+            int maxInputDur = (int)DataHelper.GetSettingInt(SettingsConstants.MAX_INPUT_DURATION, 60000L);
 
             if (arguments.Count == 0)
             {
@@ -63,19 +59,22 @@ namespace TRBot.Commands
                 return;
             }
 
-            //Check if the user has this ability
-            User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
-
-            if (user == null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage("Somehow, the user calling this is not in the database.");
-                return;
-            }
+                //Check if the user has this ability
+                User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
 
-            if (user.HasEnabledAbility(PermissionConstants.SET_MAX_INPUT_DUR_ABILITY) == false)
-            {
-                QueueMessage("You do not have the ability to set the global max input duration!");
-                return;
+                if (user == null)
+                {
+                    QueueMessage("Somehow, the user calling this is not in the database.");
+                    return;
+                }
+
+                if (user.HasEnabledAbility(PermissionConstants.SET_MAX_INPUT_DUR_ABILITY) == false)
+                {
+                    QueueMessage("You do not have the ability to set the global max input duration!");
+                    return;
+                }
             }
 
             if (int.TryParse(arguments[0], out int newMaxDur) == false)
@@ -96,9 +95,13 @@ namespace TRBot.Commands
                 return;
             }
 
-            maxDurSetting.ValueInt = newMaxDur;
-            
-            context.SaveChanges();
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                Settings maxDurSetting = DataHelper.GetSettingNoOpen(SettingsConstants.MAX_INPUT_DURATION, context);
+                maxDurSetting.ValueInt = newMaxDur;
+
+                context.SaveChanges();
+            }
 
             QueueMessage($"Set the maximum input sequence duration to {newMaxDur} milliseconds!");
         }

@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using TRBot.Utilities;
 using static TRBot.Connection.EventDelegates;
 
 namespace TRBot.Connection
@@ -27,11 +28,12 @@ namespace TRBot.Connection
     /// </summary>
     public class TerminalEventHandler : IEventHandler
     {
-        public const string TERMINAL_USER_NAME = "terminalUser";
+        /// <summary>
+        /// The default name for the terminal user.
+        /// </summary>
+        public const string DEFAULT_TERMINAL_USERNAME = "terminaluser";
 
         public event UserSentMessage UserSentMessageEvent = null;
-
-        //public event UserMadeInput UserMadeInputEvent = null;
 
         public event UserNewlySubscribed UserNewlySubscribedEvent = null;
 
@@ -56,6 +58,7 @@ namespace TRBot.Connection
         private volatile bool StopConsoleThread = false;
 
         private char CommandIdentifier = '!';
+        private string TerminalUsername = DEFAULT_TERMINAL_USERNAME;
 
         public TerminalEventHandler(char commandIdentifier)
         {
@@ -96,9 +99,28 @@ namespace TRBot.Connection
 
         private void SetupStart()
         {
+            Console.WriteLine($"\nPlease enter a name to use (no spaces)! This can be an existing name in the database. Skip to use \"{DEFAULT_TERMINAL_USERNAME}\" as the name.");
+
+            string newName = Console.ReadLine();
+
+            Console.WriteLine();
+
+            if (string.IsNullOrEmpty(newName) == true)
+            {
+                newName = DEFAULT_TERMINAL_USERNAME;
+            }
+            else
+            {
+                //Remove all spaces
+                newName = Helpers.RemoveAllWhitespace(newName);
+            }
+
+            //Set the name
+            TerminalUsername = newName;
+
             EvtConnectedArgs conArgs = new EvtConnectedArgs
             {
-                BotUsername = "terminalBot",
+                BotUsername = TerminalUsername,
                 AutoJoinChannel = string.Empty
             };
 
@@ -106,7 +128,7 @@ namespace TRBot.Connection
 
             EvtJoinedChannelArgs joinedChannelArgs = new EvtJoinedChannelArgs
             {
-                BotUsername = "terminalBot",
+                BotUsername = TerminalUsername,
                 Channel = string.Empty
             };
 
@@ -127,7 +149,7 @@ namespace TRBot.Connection
                 //Send message event
                 EvtUserMessageArgs umArgs = new EvtUserMessageArgs()
                 {
-                    UsrMessage = new EvtUserMsgData(TERMINAL_USER_NAME, TERMINAL_USER_NAME, TERMINAL_USER_NAME,
+                    UsrMessage = new EvtUserMsgData(TerminalUsername, TerminalUsername, TerminalUsername,
                         string.Empty, line)
                 };
 
@@ -153,7 +175,8 @@ namespace TRBot.Connection
                     argsList.RemoveAt(0);
 
                     EvtChatCommandArgs chatcmdArgs = new EvtChatCommandArgs();
-                    EvtUserMsgData msgData = new EvtUserMsgData(TERMINAL_USER_NAME, TERMINAL_USER_NAME, TERMINAL_USER_NAME, string.Empty, line);
+                    EvtUserMsgData msgData = new EvtUserMsgData(TerminalUsername, TerminalUsername, TerminalUsername,
+                        string.Empty, line);
 
                     chatcmdArgs.Command = new EvtChatCommandData(argsList, argsAsStr, msgData, CommandIdentifier, cmdText);
 

@@ -49,30 +49,37 @@ namespace TRBot.Commands
             }
 
             string consoleName = arguments[0].ToLowerInvariant();
+            long consoleID = 0L;
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleName);
-
-            //Check if a valid console is specified
-            if (console == null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage($"\"{consoleName}\" is not a valid console.");
-                return;
+                GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleName);
+
+                //Check if a valid console is specified
+                if (console == null)
+                {
+                    QueueMessage($"\"{consoleName}\" is not a valid console.");
+                    return;
+                }
+
+                consoleID = console.ID;
             }
 
             string synonymName = arguments[1].ToLowerInvariant();
 
-            InputSynonym inputSynonym = context.InputSynonyms.FirstOrDefault(syn => syn.ConsoleID == console.ID && syn.SynonymName == synonymName);
-
-            if (inputSynonym == null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage($"No input synonym \"{synonymName}\" exists for console {consoleName}.");
-                return;
-            }
+                InputSynonym inputSynonym = context.InputSynonyms.FirstOrDefault(syn => syn.ConsoleID == consoleID && syn.SynonymName == synonymName);
 
-            context.InputSynonyms.Remove(inputSynonym);
-            context.SaveChanges();
+                if (inputSynonym == null)
+                {
+                    QueueMessage($"No input synonym \"{synonymName}\" exists for console {consoleName}.");
+                    return;
+                }
+
+                context.InputSynonyms.Remove(inputSynonym);
+                context.SaveChanges();
+            }
 
             QueueMessage($"Successfully removed input synonym \"{synonymName}\"!");
         }

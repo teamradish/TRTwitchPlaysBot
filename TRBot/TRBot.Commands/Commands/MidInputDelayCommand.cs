@@ -47,16 +47,14 @@ namespace TRBot.Commands
         {
             List<string> arguments = args.Command.ArgumentsAsList;
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            Settings midDelayEnabledSetting = DataHelper.GetSettingNoOpen(SettingsConstants.GLOBAL_MID_INPUT_DELAY_ENABLED, context);
-            Settings midDelayTimeSetting = DataHelper.GetSettingNoOpen(SettingsConstants.GLOBAL_MID_INPUT_DELAY_TIME, context);
+            long midDelayEnabled = DataHelper.GetSettingInt(SettingsConstants.GLOBAL_MID_INPUT_DELAY_ENABLED, 0L);
+            long midDelayTime = DataHelper.GetSettingInt(SettingsConstants.GLOBAL_MID_INPUT_DELAY_TIME, 34L);
 
             if (arguments.Count == 0)
             {
-                string enabledStateStr = (midDelayEnabledSetting.ValueInt > 0L) ? "enabled" : "disabled";
+                string enabledStateStr = (midDelayEnabled > 0L) ? "enabled" : "disabled";
 
-                QueueMessage($"The global mid input delay is {enabledStateStr} with a duration of {midDelayTimeSetting.ValueInt} milliseconds!");
+                QueueMessage($"The global mid input delay is {enabledStateStr} with a duration of {midDelayTime} milliseconds!");
                 return;
             }
 
@@ -66,19 +64,22 @@ namespace TRBot.Commands
                 return;
             }
 
-            //Check if the user has this ability
-            User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
-
-            if (user == null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage("Somehow, the user calling this is not in the database.");
-                return;
-            }
+                //Check if the user has this ability
+                User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
 
-            if (user.HasEnabledAbility(PermissionConstants.SET_MID_INPUT_DELAY_ABILITY) == false)
-            {
-                QueueMessage("You do not have the ability to set the global mid input delay!");
-                return;
+                if (user == null)
+                {
+                    QueueMessage("Somehow, the user calling this is not in the database.");
+                    return;
+                }
+
+                if (user.HasEnabledAbility(PermissionConstants.SET_MID_INPUT_DELAY_ABILITY) == false)
+                {
+                    QueueMessage("You do not have the ability to set the global mid input delay!");
+                    return;
+                }
             }
 
             string enabledStr = arguments[0];
@@ -128,30 +129,36 @@ namespace TRBot.Commands
 
             string message = "Set the global mid input delay";
 
-            //Modify the message based on the successful parses
-            if (parsedEnabled == true)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                midDelayEnabledSetting.ValueInt = (enabledState == true) ? 1L : 0L;
+                Settings midDelayEnabledSetting = DataHelper.GetSettingNoOpen(SettingsConstants.GLOBAL_MID_INPUT_DELAY_ENABLED, context);
+                Settings midDelayTimeSetting = DataHelper.GetSettingNoOpen(SettingsConstants.GLOBAL_MID_INPUT_DELAY_TIME, context);
 
-                message += " enabled state to " + enabledState;
-            }
-
-            if (parsedDuration == true)
-            {
-                midDelayTimeSetting.ValueInt = newMidInputDelay;
-
-                //The enabled state was also parsed
+                //Modify the message based on what was successfully parsed
                 if (parsedEnabled == true)
                 {
-                    message += " and duration to " + newMidInputDelay;
+                    midDelayEnabledSetting.ValueInt = (enabledState == true) ? 1L : 0L;
+
+                    message += " enabled state to " + enabledState;
                 }
-                else
+
+                if (parsedDuration == true)
                 {
-                    message += " duration to " + newMidInputDelay + " milliseconds";
+                    midDelayTimeSetting.ValueInt = newMidInputDelay;
+
+                    //The enabled state was also parsed
+                    if (parsedEnabled == true)
+                    {
+                        message += " and duration to " + newMidInputDelay;
+                    }
+                    else
+                    {
+                        message += " duration to " + newMidInputDelay + " milliseconds";
+                    }
                 }
+
+                context.SaveChanges();
             }
-            
-            context.SaveChanges();
 
             QueueMessage($"{message}!");
         }

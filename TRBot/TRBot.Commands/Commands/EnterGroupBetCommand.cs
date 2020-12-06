@@ -70,7 +70,7 @@ namespace TRBot.Commands
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
                 //Check if the user exists
-                User user = DataHelper.GetOrAddUserNoOpen(userName, context, out bool addedUser);
+                User user = DataHelper.GetUserNoOpen(userName, context);
                 if (user == null)
                 {
                     QueueMessage("The user calling this does not exist in the database!");

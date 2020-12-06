@@ -100,7 +100,7 @@ namespace TRBot.Commands
 
                     if (ability.IsEnabled == false)
                     {
-                        strBuilder.Append(" (disabled) ");
+                        strBuilder.Append(" (disabled)");
                     }
 
                     if (ability.HasExpired == false && ability.HasExpiration == true)

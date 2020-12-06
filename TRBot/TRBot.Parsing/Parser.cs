@@ -402,7 +402,7 @@ namespace TRBot.Parsing
             //Console.WriteLine("Message: " + message);
 
             //Replace whitespace, populate macros, then expand the string
-            string noWhiteSpace = message.Replace(" ", string.Empty);
+            string noWhiteSpace = Regex.Replace(message, @"\s+", string.Empty);
 
             string macros = PopulateMacros(noWhiteSpace, macroData);
             //Console.WriteLine("Macros: " + macros);
@@ -414,7 +414,7 @@ namespace TRBot.Parsing
             //Console.WriteLine("Expanded: " + expanded);
 
             //Replace whitespace after populating everything and convert to lowercase
-            string readyLowered = expanded.Replace(" ", string.Empty).ToLowerInvariant();
+            string readyLowered = Regex.Replace(expanded, @"\s+", string.Empty).ToLowerInvariant();
             //Console.WriteLine("Ready lowered: " + readyLowered);
 
             return readyLowered;

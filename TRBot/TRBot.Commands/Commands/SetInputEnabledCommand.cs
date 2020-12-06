@@ -55,25 +55,28 @@ namespace TRBot.Commands
             }
 
             string consoleStr = arguments[0].ToLowerInvariant();
-
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleStr);
-            if (console == null)
-            {
-                QueueMessage($"No console named \"{consoleStr}\" found.");
-                return;
-            }
-
             string inputName = arguments[1].ToLowerInvariant();
-            
-            //Check if the input exists
-            InputData inputData = console.InputList.FirstOrDefault((inpData) => inpData.Name == inputName);
+            long inputLevel = 0;
 
-            if (inputData == null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage($"Input \"{inputName}\" does not exist in console \"{consoleStr}\".");
-                return;
+                GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleStr);
+                if (console == null)
+                {
+                    QueueMessage($"No console named \"{consoleStr}\" found.");
+                    return;
+                }
+
+                //Check if the input exists
+                InputData inputData = console.InputList.FirstOrDefault((inpData) => inpData.Name == inputName);
+
+                if (inputData == null)
+                {
+                    QueueMessage($"Input \"{inputName}\" does not exist in console \"{consoleStr}\".");
+                    return;
+                }
+
+                inputLevel = inputData.Level;
             }
 
             string enabledStr = arguments[2].ToLowerInvariant();
@@ -86,11 +89,11 @@ namespace TRBot.Commands
             }
 
             //Compare this user's level with the input's current level
-            User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username.ToLowerInvariant(), context);
+            User user = DataHelper.GetUser(args.Command.ChatMessage.Username);
 
             if (user != null)
             {
-                long curInputLvl = inputData.Level;
+                long curInputLvl = inputLevel;
 
                 //Your level is less than the current input's level - cannot change state
                 if (user.Level < curInputLvl)
@@ -100,9 +103,16 @@ namespace TRBot.Commands
                 }
             }
 
-            inputData.Enabled = (inputEnabled == false) ? 0L : 1L;
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                //Grab the console and input again
+                GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleStr);
 
-            context.SaveChanges();
+                InputData inputData = console.InputList.FirstOrDefault((inpData) => inpData.Name == inputName);
+                inputData.Enabled = (inputEnabled == false) ? 0L : 1L;
+
+                context.SaveChanges();
+            }
 
             QueueMessage($"Set the enabled state of input \"{inputName}\" on \"{consoleStr}\" to {inputEnabled}!");
         }

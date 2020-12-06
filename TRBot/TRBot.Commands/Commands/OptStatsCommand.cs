@@ -40,45 +40,46 @@ namespace TRBot.Commands
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
-            string name = args.Command.ChatMessage.Username;
-
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            User user = DataHelper.GetUserNoOpen(name, context);
-            
-            if (user == null)
-            {
-                return;
-            }
-
             List<string> arguments = args.Command.ArgumentsAsList;
-
-            //Display opt status
-            if (arguments.Count == 0)
-            {
-                string message = "You are opted ";
-                
-                if (user.IsOptedOut == true)
-                {
-                    message += "out of ";
-                }
-                else
-                {
-                    message += "into ";
-                }
-
-                message += "bot stats. Enter \"true\" or \"false\" as an argument to change your opt status.";
-                
-                QueueMessage(message);
-
-                return;
-            }
 
             //Invalid number of arguments
             if (arguments.Count > 1)
             {
                 QueueMessage(UsageMessage);
                 return;
+            }
+
+            string name = args.Command.ChatMessage.Username;
+
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                User user = DataHelper.GetUserNoOpen(name, context);
+
+                if (user == null)
+                {
+                    return;
+                }
+
+                //Display opt status
+                if (arguments.Count == 0)
+                {
+                    string message = "You are opted ";
+
+                    if (user.IsOptedOut == true)
+                    {
+                        message += "out of ";
+                    }
+                    else
+                    {
+                        message += "into ";
+                    }
+
+                    message += "bot stats. Enter \"true\" or \"false\" as an argument to change your opt status.";
+
+                    QueueMessage(message);
+
+                    return;
+                }
             }
 
             string optStr = arguments[0];
@@ -89,31 +90,36 @@ namespace TRBot.Commands
                 return;
             }
 
-            //Opt back into stats
-            if (optStatus == true)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                if (user.IsOptedOut == false)
+                User user = DataHelper.GetUserNoOpen(name, context);
+
+                //Opt back into stats
+                if (optStatus == true)
                 {
-                    QueueMessage("You are already opted into bot stats!");
-                    return;
+                    if (user.IsOptedOut == false)
+                    {
+                        QueueMessage("You are already opted into bot stats!");
+                        return;
+                    }
+
+                    QueueMessage("Opted back into bot stats!");
+                }
+                else
+                {
+                    if (user.IsOptedOut == true)
+                    {
+                        QueueMessage("You are already opted out of bot stats!");
+                        return;
+                    }
+
+                    QueueMessage("Opted out of bot stats!");
                 }
 
-                QueueMessage("Opted back into bot stats!");
+                //Set status and save
+                user.SetOptStatus(optStatus);
+                context.SaveChanges();
             }
-            else
-            {
-                if (user.IsOptedOut == true)
-                {
-                    QueueMessage("You are already opted out of bot stats!");
-                    return;
-                }
-
-                QueueMessage("Opted out of bot stats!");
-            }
-
-            //Set status and save
-            user.SetOptStatus(optStatus);
-            context.SaveChanges();
         }
     }
 }

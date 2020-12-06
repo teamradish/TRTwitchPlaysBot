@@ -37,15 +37,16 @@ namespace TRBot.Commands
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            //Check if the user has the ability to set the message
-            User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
-
-            if (user != null && user.HasEnabledAbility(PermissionConstants.SET_GAME_MESSAGE_ABILITY) == false)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage("You don't have the ability to set the game message!");
-                return;
+                //Check if the user has the ability to set the message
+                User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
+
+                if (user != null && user.HasEnabledAbility(PermissionConstants.SET_GAME_MESSAGE_ABILITY) == false)
+                {
+                    QueueMessage("You don't have the ability to set the game message!");
+                    return;
+                }
             }
 
             string gameMsgText = args.Command.ArgumentsAsString;
@@ -56,16 +57,19 @@ namespace TRBot.Commands
                 gameMsgText = string.Empty;
             }
 
-            //Save the new message into our data
-            Settings gameMsgSetting = DataHelper.GetSettingNoOpen(SettingsConstants.GAME_MESSAGE, context);
-            gameMsgSetting.ValueStr = gameMsgText;
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                //Save the new message into our data
+                Settings gameMsgSetting = DataHelper.GetSettingNoOpen(SettingsConstants.GAME_MESSAGE, context);
+                gameMsgSetting.ValueStr = gameMsgText;
 
-            context.SaveChanges();
+                context.SaveChanges();
+            }
 
             //Get settings for the name and location of the game message
-            long msgPathRelative = DataHelper.GetSettingIntNoOpen(SettingsConstants.GAME_MESSAGE_PATH_IS_RELATIVE, context, 1L);
+            long msgPathRelative = DataHelper.GetSettingInt(SettingsConstants.GAME_MESSAGE_PATH_IS_RELATIVE, 1L);
 
-            string msgFileName = DataHelper.GetSettingStringNoOpen(SettingsConstants.GAME_MESSAGE_PATH, context, string.Empty);
+            string msgFileName = DataHelper.GetSettingString(SettingsConstants.GAME_MESSAGE_PATH, string.Empty);
 
             string fullMsgPath = msgFileName;
 

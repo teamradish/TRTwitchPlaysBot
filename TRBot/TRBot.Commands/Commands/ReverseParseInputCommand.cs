@@ -124,7 +124,7 @@ namespace TRBot.Commands
                 return;
             }
 
-            //Check for non-valid messages
+            //Check for invalid inputs
             if (inputSequence.ParsedInputResult != ParsedInputResults.Valid)
             {
                 if (inputSequence.ParsedInputResult == ParsedInputResults.NormalMsg

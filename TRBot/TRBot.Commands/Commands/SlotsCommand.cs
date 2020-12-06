@@ -30,7 +30,7 @@ namespace TRBot.Commands
     /// <summary>
     /// Plays a game of slots.
     /// </summary>
-    /// <remarks>This uses an implementation similar to real slots, based on data from here: https://wizardofodds.com/games/slots/appendix/2/ </remarks>
+    /// <remarks>This uses an implementation loosely similar to real slots, based on data from here: https://wizardofodds.com/games/slots/appendix/2/ </remarks>
     public sealed class SlotsCommand : BaseCommand
     {
         /// <summary>
@@ -98,6 +98,7 @@ namespace TRBot.Commands
         private Random Rand = new Random();
 
         private string UsageMessage = "Usage: \"buy-in (int)\" or \"info\"";
+        private string CachedInfoMessage = string.Empty;
 
         public SlotsCommand()
         {
@@ -124,34 +125,42 @@ namespace TRBot.Commands
                 return;
             }
 
-            using BotDBContext context = DatabaseManager.OpenContext();
+            //Start off getting the credits name
+            string creditsName = DataHelper.GetCreditsName();
+            string userName = args.Command.ChatMessage.Username;
+            long curUserCredits = 0;
 
-            //Start off getting the credits name and user, as usual
-            string creditsName = DataHelper.GetCreditsNameNoOpen(context);
-            User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
-
-            if (user == null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage("You're somehow not in the database!");
-                return;
-            }
+                //Get the user
+                User user = DataHelper.GetUserNoOpen(userName, context);
 
-            //Can't play without the ability
-            if (user.HasEnabledAbility(PermissionConstants.SLOTS_ABILITY) == false)
-            {
-                QueueMessage("You don't have the ability to play the slots!");
-                return;
-            }
+                if (user == null)
+                {
+                    QueueMessage("You're somehow not in the database!");
+                    return;
+                }
 
-            //Check for opt-out
-            if (user.IsOptedOut == true)
-            {
-                QueueMessage("You cannot play the slots while opted out of stats.");
-                return;
+                //Can't play without the ability
+                if (user.HasEnabledAbility(PermissionConstants.SLOTS_ABILITY) == false)
+                {
+                    QueueMessage("You don't have the ability to play the slots!");
+                    return;
+                }
+
+                //Check for opt-out
+                if (user.IsOptedOut == true)
+                {
+                    QueueMessage("You cannot play the slots while opted out of stats.");
+                    return;
+                }
+
+                curUserCredits = user.Stats.Credits;
             }
 
             string buyInStr = arguments[0];
 
+            //If the user asks for info, print the infom essage
             if (buyInStr == INFO_ARG)
             {
                 PrintInfoMessage();
@@ -171,7 +180,7 @@ namespace TRBot.Commands
                 return;
             }
 
-            if (buyInAmount > user.Stats.Credits)
+            if (buyInAmount > curUserCredits)
             {
                 QueueMessage($"Buy-in amount is greater than {creditsName.Pluralize(false, 0)}!");
                 return;
@@ -207,21 +216,27 @@ namespace TRBot.Commands
             switch (slotResult)
             {
                 case SlotResults.Nothing:
-                    strBuilder.Append(user.Name).Append(" didn't win BibleThump Better luck next time!");
+                    strBuilder.Append(userName).Append(" didn't win BibleThump Better luck next time!");
                     break;
                 case SlotResults.Standard:
-                    strBuilder.Append(user.Name).Append(" won ").Append(reward).Append(' ').Append(creditsName.Pluralize(false, reward)).Append(", nice! SeemsGood");
+                    strBuilder.Append(userName).Append(" won ").Append(reward).Append(' ').Append(creditsName.Pluralize(false, reward)).Append(", nice! SeemsGood");
                     break;
                 case SlotResults.Jackpot:
-                    strBuilder.Append(user.Name).Append(" hit the JACKPOT and won ").Append(reward).Append(' ').Append(creditsName.Pluralize(false, reward)).Append("!! Congratulations!! PogChamp PogChamp PogChamp");
+                    strBuilder.Append(userName).Append(" hit the JACKPOT and won ").Append(reward).Append(' ').Append(creditsName.Pluralize(false, reward)).Append("!! Congratulations!! PogChamp PogChamp PogChamp");
                     break;
             }
 
-            //Adjust credits
-            user.Stats.Credits -= buyInAmount;
-            user.Stats.Credits += reward;
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                //Modify credits
+                User user = DataHelper.GetUserNoOpen(userName, context);
 
-            context.SaveChanges();
+                //Adjust credits and save
+                user.Stats.Credits -= buyInAmount;
+                user.Stats.Credits += reward;
+
+                context.SaveChanges();
+            }
 
             QueueMessage(strBuilder.ToString());
         }
@@ -328,7 +343,7 @@ namespace TRBot.Commands
         private List<ReelWeight> GetReel3Weights()
         {
             List<ReelWeight> reel3 = new List<ReelWeight>(7);
-            reel3.Add(new ReelWeight(SlotInternalNames.Blank, 15));
+            reel3.Add(new ReelWeight(SlotInternalNames.Blank, 12));
             reel3.Add(new ReelWeight(SlotInternalNames.Cherry, 2));
             reel3.Add(new ReelWeight(SlotInternalNames.Plum, 3));
             reel3.Add(new ReelWeight(SlotInternalNames.Watermelon, 4));
@@ -340,21 +355,27 @@ namespace TRBot.Commands
 
         private void PrintInfoMessage()
         {
-            int count = WeightTable.Count;
-
-            StringBuilder stringBuilder = new StringBuilder(128);
-
-            foreach (KeyValuePair<SlotInternalNames, double> kvPair in SlotRewardModifiers)
+            //Cache the info message if it's empty
+            if (string.IsNullOrEmpty(CachedInfoMessage) == true)
             {
-                string emoteName = SlotToEmoteMap[kvPair.Key];
+                int count = WeightTable.Count;
 
-                stringBuilder.Append(emoteName).Append(' ').Append('x').Append(count).Append(" = ");
-                stringBuilder.Append(kvPair.Value).Append('x').Append(" buy-in | ");
+                StringBuilder stringBuilder = new StringBuilder(128);
+
+                foreach (KeyValuePair<SlotInternalNames, double> kvPair in SlotRewardModifiers)
+                {
+                    string emoteName = SlotToEmoteMap[kvPair.Key];
+
+                    stringBuilder.Append(emoteName).Append(' ').Append('x').Append(count).Append(" = ");
+                    stringBuilder.Append(kvPair.Value).Append('x').Append(" buy-in | ");
+                }
+
+                stringBuilder.Remove(stringBuilder.Length - 3, 3);
+
+                CachedInfoMessage = stringBuilder.ToString();
             }
 
-            stringBuilder.Remove(stringBuilder.Length - 3, 3);
-
-            QueueMessage(stringBuilder.ToString());
+            QueueMessage(CachedInfoMessage);
         }
 
         private struct ReelWeight

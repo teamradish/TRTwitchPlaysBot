@@ -84,10 +84,5 @@ namespace TRBot.Commands
                 }
             }
         }
-
-        private bool GetInt(string value, out int num)
-        {
-            return int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out num);
-        }
     }
 }

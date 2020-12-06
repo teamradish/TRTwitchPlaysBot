@@ -52,18 +52,19 @@ namespace TRBot.Commands
 
             string macroName = arguments[0].ToLowerInvariant();
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-            
-            InputMacro macro = context.Macros.FirstOrDefault(m => m.MacroName == macroName);
-
-            if (macro == null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage($"Input macro \"{macroName}\" could not be found.");
-                return;
-            }
+                InputMacro macro = context.Macros.FirstOrDefault(m => m.MacroName == macroName);
 
-            context.Macros.Remove(macro);
-            context.SaveChanges();
+                if (macro == null)
+                {
+                    QueueMessage($"Input macro \"{macroName}\" could not be found.");
+                    return;
+                }
+
+                context.Macros.Remove(macro);
+                context.SaveChanges();
+            }
 
             QueueMessage($"Removed input macro \"{macroName}\".");
         }

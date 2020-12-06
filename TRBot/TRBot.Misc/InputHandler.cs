@@ -83,6 +83,7 @@ namespace TRBot.Misc
 
         /// <summary>
         /// Stops all ongoing inputs, waiting until all inputs are completely stopped, then keeps inputs halted.
+        /// The caller is responsible for calling <see cref="ResumeRunningInputs" /> to resume inputs.
         /// </summary>
         public static async void StopAndHaltAllInputs()
         {

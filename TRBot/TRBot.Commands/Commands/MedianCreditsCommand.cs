@@ -37,28 +37,32 @@ namespace TRBot.Commands
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
-            using BotDBContext context = DatabaseManager.OpenContext();
+            string creditsName = DataHelper.GetCreditsName();
 
-            if (context.Users.Count() == 0)
+            long median = 0;
+
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage("There are no users in the database!");
-                return;
+                if (context.Users.Count() == 0)
+                {
+                    QueueMessage("There are no users in the database!");
+                    return;
+                }
+
+                List<User> orderedCredits = context.Users.OrderByDescending(u => u.Stats.Credits).ToList();
+
+                int medianIndex = orderedCredits.Count / 2;
+
+                if (medianIndex >= orderedCredits.Count)
+                {
+                    QueueMessage("Sorry, there's not enough data available in the database!");
+                    return;
+                }
+
+                median = orderedCredits[medianIndex].Stats.Credits;
             }
 
-            string creditsName = DataHelper.GetCreditsNameNoOpen(context);
-            List<User> orderedCredits = context.Users.OrderByDescending(u => u.Stats.Credits).ToList();
-    
-            int medianIndex = orderedCredits.Count / 2;
-
-            if (medianIndex >= orderedCredits.Count)
-            {
-                QueueMessage("Sorry, there's not enough data available in the database!");
-                return;
-            }
-
-            User userWithMedian = orderedCredits[medianIndex];
-
-            QueueMessage($"The median number of {creditsName.Pluralize(false, 0)} in the database is {userWithMedian.Stats.Credits}!");
+            QueueMessage($"The median number of {creditsName.Pluralize(false, 0)} in the database is {median}!");
         }
     }
 }

@@ -52,25 +52,43 @@ namespace TRBot.Commands
 
             string consoleName = arguments[0].ToLowerInvariant();
 
+            long curConsoleID = DataHelper.GetSettingInt(SettingsConstants.LAST_CONSOLE, 1L);
+            long removedConsoleID = 0L;
+            bool removed = false;
+
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
                 GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleName);
 
                 if (console != null)
                 {
+                    removedConsoleID = console.ID;
+                    removed = true;
+
                     context.Consoles.Remove(console);
-
-                    QueueMessage($"Successfully removed console \"{consoleName}\"!");
-
-                    Settings lastConsoleSetting = context.SettingCollection.FirstOrDefault(set => set.Key == SettingsConstants.LAST_CONSOLE);
+                    context.SaveChanges();
+                }
+            }
                     
-                    //After removing the console, set the last console ID to the first console in the list
-                    if (lastConsoleSetting.ValueInt == console.ID)
+            if (removed == true)
+            {
+                QueueMessage($"Successfully removed console \"{consoleName}\"!");
+
+                //After removing the console, check if that console was the current one
+                //If so, set the last console ID to the first console in the list
+                if (curConsoleID == removedConsoleID)
+                {
+                    using (BotDBContext context = DatabaseManager.OpenContext())
                     {
                         GameConsole firstConsole = context.Consoles.FirstOrDefault();
                         if (firstConsole != null)
                         {
+                            //Change the setting and save
+                            Settings lastConsoleSetting = DataHelper.GetSettingNoOpen(SettingsConstants.LAST_CONSOLE, context);
                             lastConsoleSetting.ValueInt = firstConsole.ID;
+
+                            context.SaveChanges();
+
                             QueueMessage($"\"{consoleName}\" used to be the current console, so the current console has been set to \"{firstConsole.Name}\"!");
                         }
                         else
@@ -78,11 +96,9 @@ namespace TRBot.Commands
                             QueueMessage($"\"{consoleName}\" used to be the current console, but there are no other consoles available. Please add a new console in order to play.");
                         }
                     }
-
-                    context.SaveChanges();
-
-                    return;
                 }
+
+                return;
             }
 
             QueueMessage($"No console named \"{consoleName}\" exists.");

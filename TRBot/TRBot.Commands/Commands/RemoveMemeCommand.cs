@@ -44,8 +44,6 @@ namespace TRBot.Commands
         {
             List<string> arguments = args.Command.ArgumentsAsList;
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
             if (arguments.Count != 1)
             {
                 QueueMessage(UsageMessage);
@@ -54,13 +52,16 @@ namespace TRBot.Commands
 
             string memeName = arguments[0].ToLowerInvariant();
             
-            Meme meme = context.Memes.FirstOrDefault(m => m.MemeName == memeName);
-            
-            //Remove the meme if found
-            if (meme != null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                context.Memes.Remove(meme);
-                context.SaveChanges();
+                Meme meme = context.Memes.FirstOrDefault(m => m.MemeName == memeName);
+                
+                //Remove the meme if found
+                if (meme != null)
+                {
+                    context.Memes.Remove(meme);
+                    context.SaveChanges();
+                }
             }
         }
     }

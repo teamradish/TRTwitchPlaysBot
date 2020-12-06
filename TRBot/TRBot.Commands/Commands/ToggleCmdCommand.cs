@@ -54,27 +54,29 @@ namespace TRBot.Commands
 
             string commandName = arguments[0].ToLowerInvariant();
             string enabledStr = arguments[1];
-            
-            using BotDBContext context = DatabaseManager.OpenContext();
+            bool cmdEnabled = false;
 
-            //Find the command
-            CommandData cmdData = context.Commands.FirstOrDefault(c => c.Name == commandName);
-
-            if (cmdData == null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage($"Cannot find a command named \"{commandName}\".");
-                return;
+                //Find the command
+                CommandData cmdData = context.Commands.FirstOrDefault(c => c.Name == commandName);
+
+                if (cmdData == null)
+                {
+                    QueueMessage($"Cannot find a command named \"{commandName}\".");
+                    return;
+                }
+
+                if (bool.TryParse(enabledStr, out cmdEnabled) == false)
+                {
+                    QueueMessage("Incorrect command enabled state specified.");
+                    return;
+                }
+
+                cmdData.Enabled = (cmdEnabled == true) ? 1 : 0;
+
+                context.SaveChanges();
             }
-
-            if (bool.TryParse(enabledStr, out bool cmdEnabled) == false)
-            {
-                QueueMessage("Incorrect command enabled state specified.");
-                return;
-            }
-
-            cmdData.Enabled = (cmdEnabled == true) ? 1 : 0;
-
-            context.SaveChanges();
 
             BaseCommand baseCmd = CmdHandler.GetCommand(commandName);
             baseCmd.Enabled = cmdEnabled;

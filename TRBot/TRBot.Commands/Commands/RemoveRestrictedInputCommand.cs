@@ -54,10 +54,9 @@ namespace TRBot.Commands
                 return;
             }
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
             string username = arguments[0];
-            User restrictedUser = DataHelper.GetUserNoOpen(username, context);
+
+            User restrictedUser = DataHelper.GetUser(username);
 
             //Check for the user
             if (restrictedUser == null)
@@ -67,7 +66,7 @@ namespace TRBot.Commands
             }
 
             //Compare this user's level with the user they're trying to restrict
-            User thisUser = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
+            User thisUser = DataHelper.GetUser(args.Command.ChatMessage.Username);
 
             if (thisUser == null)
             {
@@ -82,29 +81,40 @@ namespace TRBot.Commands
             }
 
             string consoleStr = arguments[1].ToLowerInvariant();
+            long consoleID = 0L;
 
-            GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleStr);
-            if (console == null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage($"No console named \"{consoleStr}\" found.");
-                return;
+                GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleStr);
+                if (console == null)
+                {
+                    QueueMessage($"No console named \"{consoleStr}\" found.");
+                    return;
+                }
+
+                consoleID = console.ID;
             }
 
             string inputName = arguments[2].ToLowerInvariant();
             
-            //Check if the restricted input exists for this console
-            RestrictedInput restrictedInput = restrictedUser.RestrictedInputs.FirstOrDefault(r => r.inputData.Name == inputName && r.inputData.ConsoleID == console.ID);
-
-            //Not restricted
-            if (restrictedInput == null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage($"{restrictedUser.Name} already has no restrictions on inputting \"{inputName}\" on the \"{consoleStr}\" console!");
-                return;
-            }
+                restrictedUser = DataHelper.GetUserNoOpen(username, context);
 
-            //Remove the restricted input and save
-            restrictedUser.RestrictedInputs.Remove(restrictedInput);
-            context.SaveChanges();
+                //Check if the restricted input exists for this console
+                RestrictedInput restrictedInput = restrictedUser.RestrictedInputs.FirstOrDefault(r => r.inputData.Name == inputName && r.inputData.ConsoleID == consoleID);
+
+                //Not restricted
+                if (restrictedInput == null)
+                {
+                    QueueMessage($"{restrictedUser.Name} already has no restrictions on inputting \"{inputName}\" on the \"{consoleStr}\" console!");
+                    return;
+                }
+
+                //Remove the restricted input and save
+                restrictedUser.RestrictedInputs.Remove(restrictedInput);
+                context.SaveChanges();
+            }
 
             QueueMessage($"Lifted the restriction for {restrictedUser.Name} on inputting \"{inputName}\" on the \"{consoleStr}\" console!");
         }
