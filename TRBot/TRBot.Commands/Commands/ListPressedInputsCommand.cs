@@ -51,10 +51,8 @@ namespace TRBot.Commands
 
             int controllerIndex = 0;
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
             //Default to the user's controller port
-            User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.DisplayName, context);
+            User user = DataHelper.GetUser(args.Command.ChatMessage.DisplayName);
             if (user != null)
             {
                 controllerIndex = (int)user.ControllerPort;
@@ -106,25 +104,28 @@ namespace TRBot.Commands
             stringBuilder.Append(startString);
 
             //Get the console
-            long lastConsoleID = DataHelper.GetSettingIntNoOpen(SettingsConstants.LAST_CONSOLE, context, 1L);
+            long lastConsoleID = DataHelper.GetSettingInt(SettingsConstants.LAST_CONSOLE, 1L);
 
-            GameConsole lastConsole = context.Consoles.FirstOrDefault(c => c.ID == lastConsoleID);
-
-            if (lastConsole == null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage("The current console is invalid!? No data is available.");
-                return;
-            }
+                GameConsole lastConsole = context.Consoles.FirstOrDefault(c => c.ID == lastConsoleID);
 
-            //Check which inputs are pressed
-            List<InputData> validInputs = lastConsole.InputList;
-            for (int i = 0; i < validInputs.Count; i++)
-            {
-                string inputName = validInputs[i].Name;
-                ButtonStates btnState = controller.GetInputState(inputName);
-                if (btnState == ButtonStates.Pressed)
+                if (lastConsole == null)
                 {
-                    stringBuilder.Append(inputName).Append(',').Append(' ');
+                    QueueMessage("The current console is invalid!? No data is available.");
+                    return;
+                }
+
+                //Check which inputs are pressed
+                List<InputData> validInputs = lastConsole.InputList;
+                for (int i = 0; i < validInputs.Count; i++)
+                {
+                    string inputName = validInputs[i].Name;
+                    ButtonStates btnState = controller.GetInputState(inputName);
+                    if (btnState == ButtonStates.Pressed)
+                    {
+                        stringBuilder.Append(inputName).Append(',').Append(' ');
+                    }
                 }
             }
 
@@ -140,7 +141,7 @@ namespace TRBot.Commands
 
             string finalStr = stringBuilder.ToString();
 
-            int maxCharLength = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.BOT_MSG_CHAR_LIMIT, context, 500L);
+            int maxCharLength = (int)DataHelper.GetSettingInt(SettingsConstants.BOT_MSG_CHAR_LIMIT, 500L);
 
             QueueMessageSplit(finalStr, maxCharLength, ", ");
         }

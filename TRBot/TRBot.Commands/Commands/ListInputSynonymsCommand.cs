@@ -49,42 +49,52 @@ namespace TRBot.Commands
             }
 
             string consoleName = arguments[0].ToLowerInvariant();
+            int consoleID = 1;
+            string actualConsoleName = string.Empty;
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleName);
-
-            //Check if a valid console is specified
-            if (console == null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage($"\"{consoleName}\" is not a valid console.");
-                return;
-            }
+                GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleName);
 
-            IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.ConsoleID == console.ID);
-
-            int count = synonyms.Count();
+                //Check if a valid console is specified
+                if (console == null)
+                {
+                    QueueMessage($"\"{consoleName}\" is not a valid console.");
+                    return;
+                }
             
-            if (count == 0)
-            {
-                QueueMessage($"The {consoleName} console does not have any input synonyms.");
-                return;
+                consoleID = console.ID;
             }
 
-            StringBuilder stringBuilder = new StringBuilder(count * 15);
+            StringBuilder stringBuilder = null;
 
-            stringBuilder.Append("Synonyms for ").Append(console.Name).Append(':').Append(' ');
-
-            //Show all input synonyms for this console
-            foreach (InputSynonym synonym in synonyms)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                stringBuilder.Append('{').Append(' ').Append(synonym.SynonymName).Append(',').Append(' ');
-                stringBuilder.Append(synonym.SynonymValue).Append(' ').Append('}').Append(',').Append(' ');
+                IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.ConsoleID == consoleID);
+
+                int count = synonyms.Count();
+            
+                if (count == 0)
+                {
+                    QueueMessage($"The {consoleName} console does not have any input synonyms.");
+                    return;
+                }
+
+                stringBuilder = new StringBuilder(count * 15);
+
+                stringBuilder.Append("Synonyms for ").Append(consoleName).Append(':').Append(' ');
+
+                //Show all input synonyms for this console
+                foreach (InputSynonym synonym in synonyms)
+                {
+                    stringBuilder.Append('{').Append(' ').Append(synonym.SynonymName).Append(',').Append(' ');
+                    stringBuilder.Append(synonym.SynonymValue).Append(' ').Append('}').Append(',').Append(' ');
+                }
             }
 
             stringBuilder.Remove(stringBuilder.Length - 2, 2);
 
-            int maxCharCount = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.BOT_MSG_CHAR_LIMIT, context, 500L);
+            int maxCharCount = (int)DataHelper.GetSettingInt(SettingsConstants.BOT_MSG_CHAR_LIMIT, 500L);
 
             QueueMessageSplit(stringBuilder.ToString(), maxCharCount, ", ");
         }

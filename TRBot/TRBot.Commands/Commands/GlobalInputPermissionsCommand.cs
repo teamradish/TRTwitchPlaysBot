@@ -58,30 +58,31 @@ namespace TRBot.Commands
         {
             List<string> arguments = args.Command.ArgumentsAsList;
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            Settings inputPermsSetting = DataHelper.GetSettingNoOpen(SettingsConstants.GLOBAL_INPUT_LEVEL, context);
-
             if (arguments.Count > 1)
             {
                 QueueMessage(UsageMessage);
                 return;
             }
 
+            long curInputPerms = DataHelper.GetSettingInt(SettingsConstants.GLOBAL_INPUT_LEVEL, 0L);
+
             //See the permissions
             if (arguments.Count == 0)
             {
-                QueueMessage($"Inputs are allowed for {(PermissionLevels)inputPermsSetting.ValueInt} and above. To set the permissions, add one as an argument: {CachedPermsStr}");
+                QueueMessage($"Inputs are allowed for {(PermissionLevels)curInputPerms} and above. To set the permissions, add one as an argument: {CachedPermsStr}");
                 return;
             }
 
-            User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
-
-            //Check if this user has the ability to set this level
-            if (user != null && user.HasEnabledAbility(PermissionConstants.SET_GLOBAL_INPUT_LEVEL_ABILITY) == false)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage("You do not have the ability to set the global input level!");
-                return;
+                User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
+
+                //Check if this user has the ability to set this level
+                if (user != null && user.HasEnabledAbility(PermissionConstants.SET_GLOBAL_INPUT_LEVEL_ABILITY) == false)
+                {
+                    QueueMessage("You do not have the ability to set the global input level!");
+                    return;
+                }
             }
 
             string permsStr = arguments[0];
@@ -94,25 +95,32 @@ namespace TRBot.Commands
             }
 
             //The permissions are already this value
-            if (inputPermsSetting.ValueInt == (long)permLevel)
+            if (curInputPerms == (long)permLevel)
             {
                 QueueMessage($"The permissions are already {permLevel}!");
                 return;
             }
 
-            //Check if this user is lower than this level and deny it if so
-            if (user.Level < (long)permLevel)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage("You cannot set the global input level greater than your own level!");
-                return;
+                User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
+            
+                //Check if this user is lower than this level and deny it if so
+                if (user.Level < (long)permLevel)
+                {
+                    QueueMessage("You cannot set the global input level greater than your own level!");
+                    return;
+                }
+
+                Settings inputPermsSetting = DataHelper.GetSettingNoOpen(SettingsConstants.GLOBAL_INPUT_LEVEL, context);
+
+                //Set new value and save
+                inputPermsSetting.ValueInt = (long)permLevel;
+
+                context.SaveChanges();
             }
 
-            //Set new value and save
-            inputPermsSetting.ValueInt = (long)permLevel;
-
-            context.SaveChanges();
-
-            QueueMessage($"Set input permissions to {(PermissionLevels)inputPermsSetting.ValueInt} and above!");
+            QueueMessage($"Set input permissions to {permLevel} and above!");
         }
     }
 }

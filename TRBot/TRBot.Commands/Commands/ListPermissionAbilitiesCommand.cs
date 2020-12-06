@@ -41,31 +41,34 @@ namespace TRBot.Commands
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
-            using BotDBContext context = DatabaseManager.OpenContext();
+            StringBuilder strBuilder = null;
 
-            //No abilities
-            if (context.PermAbilities.Count() == 0)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage("There are no permission abilities!");
-                return;
-            }
+                //No abilities
+                if (context.PermAbilities.Count() == 0)
+                {
+                    QueueMessage("There are no permission abilities!");
+                    return;
+                }
 
-            //Order alphabetically
-            IOrderedQueryable<PermissionAbility> permAbilities = context.PermAbilities.OrderBy(p => p.Name);
+                //Order alphabetically
+                IOrderedQueryable<PermissionAbility> permAbilities = context.PermAbilities.OrderBy(p => p.Name);
 
-            StringBuilder strBuilder = new StringBuilder(250);
-            strBuilder.Append("Hi, ").Append(args.Command.ChatMessage.Username);
-            strBuilder.Append(", here's a list of all permission abilities: ");
+                strBuilder = new StringBuilder(250);
+                strBuilder.Append("Hi, ").Append(args.Command.ChatMessage.Username);
+                strBuilder.Append(", here's a list of all permission abilities: ");
 
-            foreach (PermissionAbility pAbility in permAbilities)
-            {
-                strBuilder.Append(pAbility.Name);
-                strBuilder.Append(',').Append(' ');
+                foreach (PermissionAbility pAbility in permAbilities)
+                {
+                    strBuilder.Append(pAbility.Name);
+                    strBuilder.Append(',').Append(' ');
+                }
             }
 
             strBuilder.Remove(strBuilder.Length - 2, 2);
 
-            int maxCharCount = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.BOT_MSG_CHAR_LIMIT, context, 500L);
+            int maxCharCount = (int)DataHelper.GetSettingInt(SettingsConstants.BOT_MSG_CHAR_LIMIT, 500L);
 
             QueueMessageSplit(strBuilder.ToString(), maxCharCount, ", ");
         }

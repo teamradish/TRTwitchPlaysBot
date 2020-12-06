@@ -138,7 +138,7 @@ namespace TRBot.Consoles
 
         public override string ToString()
         {
-            return $"Name: \"{Name}\" | console_id: {ConsoleID} | BtnVal: {ButtonValue} | AxisVal: {AxisValue} | InputType: {(int)InputType} ({InputType}) | MinAxis: {MinAxisVal} | MaxAxis: {MaxAxisVal} | MaxAxisPercent: {MaxAxisPercent} | Level: {Level} | Enabled: {Enabled}";
+            return $"Name: \"{Name}\" | {nameof(ConsoleID)}: {ConsoleID} | BtnVal: {ButtonValue} | AxisVal: {AxisValue} | InputType: {(int)InputType} ({InputType}) | MinAxis: {MinAxisVal} | MaxAxis: {MaxAxisVal} | MaxAxisPercent: {MaxAxisPercent} | Level: {Level} | Enabled: {Enabled}";
         }
 
         public static InputData CreateBlank(string name)

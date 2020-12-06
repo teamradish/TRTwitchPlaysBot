@@ -74,7 +74,7 @@ namespace TRBot.Commands
             context.InputSynonyms.Remove(inputSynonym);
             context.SaveChanges();
 
-            QueueMessage("Successfully removed input synonym \"{synonymName}\"!");
+            QueueMessage($"Successfully removed input synonym \"{synonymName}\"!");
         }
     }
 }

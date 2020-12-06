@@ -47,17 +47,15 @@ namespace TRBot.Commands
 
             string levelUsername = (arguments.Count == 1) ? arguments[0].ToLowerInvariant() : args.Command.ChatMessage.Username.ToLowerInvariant();
 
-            using (BotDBContext context = DatabaseManager.OpenContext())
-            {
-                User levelUser = DataHelper.GetUserNoOpen(levelUsername, context);
-                if (levelUser == null)
-                {
-                    QueueMessage($"User does not exist in database!");
-                    return;
-                }
+            User levelUser = DataHelper.GetUser(levelUsername);
 
-                QueueMessage($"{levelUsername} is level {levelUser.Level}, {((PermissionLevels)levelUser.Level)}!");
+            if (levelUser == null)
+            {
+                QueueMessage($"User does not exist in database!");
+                return;
             }
+
+            QueueMessage($"{levelUsername} is level {levelUser.Level}, {((PermissionLevels)levelUser.Level)}!");
         }
     }
 }

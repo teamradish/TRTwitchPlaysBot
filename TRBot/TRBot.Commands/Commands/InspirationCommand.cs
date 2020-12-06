@@ -66,13 +66,10 @@ namespace TRBot.Commands
             if (arguments.Count == 1)
             {
                 //Check if the name is in the database
-                using (BotDBContext context = DatabaseManager.OpenContext())
+                User user = DataHelper.GetUser(arguments[0]);
+                if (user != null)
                 {
-                    User user = DataHelper.GetUserNoOpen(arguments[0], context);
-                    if (user != null)
-                    {
-                        userName = user.Name;
-                    }
+                    userName = user.Name;
                 }
             }
 

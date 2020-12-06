@@ -63,61 +63,64 @@ namespace TRBot.Commands
                 }
             }
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
             //Get the user so we can show only the commands they have access to
             string userName = args.Command.ChatMessage.Username;
-            User infoUser = DataHelper.GetUserNoOpen(userName, context);
+            User infoUser = DataHelper.GetUser(userName);
+            StringBuilder stringBuilder = null;
 
-            //Show the commands that should be displayed based on our argument
-            IQueryable<CommandData> commandList = null;
-
-            //All commands
-            if (arg == ALL_ARG)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                commandList = context.Commands.Where(c => c.DisplayInList > 0 && c.Level <= infoUser.Level);
-            }
-            //Disabled commands only
-            else if (arg == DISABLED_ARG)
-            {
-                commandList = context.Commands.Where(c => c.Enabled <= 0 && c.DisplayInList > 0 && c.Level <= infoUser.Level);
-            }
-            //Enabled commands only
-            else
-            {
-                commandList = context.Commands.Where(c => c.Enabled > 0 && c.DisplayInList > 0 && c.Level <= infoUser.Level);
-            }
+                //Show the commands that should be displayed based on our argument
+                IQueryable<CommandData> commandList = null;
 
-            //Order them alphabetically
-            commandList = commandList.OrderBy(c => c.Name);
-
-            if (commandList.Count() == 0)
-            {
-                QueueMessage("There are no displayable commands that you have access to based on your argument!");
-                return;
-            }
-
-            //The capacity is estimated by the number of commands times the average string length of each one
-            StringBuilder stringBuilder = new StringBuilder(commandList.Count() * 12);
-
-            stringBuilder.Append("Hi ").Append(args.Command.ChatMessage.Username).Append(", here's the list of commands: ");
-
-            foreach (CommandData cmd in commandList)
-            {
-                stringBuilder.Append(cmd.Name);
-                
-                //Note if the command is disabled
-                if (cmd.Enabled <= 0)
+                //All commands
+                if (arg == ALL_ARG)
                 {
-                    stringBuilder.Append(" (disabled)");
+                    commandList = context.Commands.Where(c => c.DisplayInList > 0 && c.Level <= infoUser.Level);
+                }
+                //Disabled commands only
+                else if (arg == DISABLED_ARG)
+                {
+                    commandList = context.Commands.Where(c => c.Enabled <= 0 && c.DisplayInList > 0 && c.Level <= infoUser.Level);
+                }
+                //Enabled commands only
+                else
+                {
+                    commandList = context.Commands.Where(c => c.Enabled > 0 && c.DisplayInList > 0 && c.Level <= infoUser.Level);
+                }
+            
+                //Order them alphabetically
+                commandList = commandList.OrderBy(c => c.Name);
+                int cmdCount = commandList.Count();
+
+                if (cmdCount == 0)
+                {
+                    QueueMessage("There are no displayable commands that you have access to based on your argument!");
+                    return;
                 }
 
-                stringBuilder.Append(',').Append(' ');
+                //The capacity is estimated by the number of commands times the average string length of each one
+                stringBuilder = new StringBuilder(cmdCount * 12);
+
+                stringBuilder.Append("Hi ").Append(args.Command.ChatMessage.Username).Append(", here's the list of commands: ");
+
+                foreach (CommandData cmd in commandList)
+                {
+                    stringBuilder.Append(cmd.Name);
+
+                    //Note if the command is disabled
+                    if (cmd.Enabled <= 0)
+                    {
+                        stringBuilder.Append(" (disabled)");
+                    }
+
+                    stringBuilder.Append(',').Append(' ');
+                }
             }
 
             stringBuilder.Remove(stringBuilder.Length - 2, 2);
 
-            int msgCharLimit = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.BOT_MSG_CHAR_LIMIT, context, 500L);
+            int msgCharLimit = (int)DataHelper.GetSettingInt(SettingsConstants.BOT_MSG_CHAR_LIMIT, 500L);
 
             QueueMessageSplit(stringBuilder.ToString(), msgCharLimit, ", ");
         }

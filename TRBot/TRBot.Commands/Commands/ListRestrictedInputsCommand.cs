@@ -54,49 +54,54 @@ namespace TRBot.Commands
                 return;
             }
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
             //Get this user if an argument wasn't given, otherwise get the user specified
             string username = (argCount > 0) ? arguments[0] : args.Command.ChatMessage.Username;
-            User restrictedUser = DataHelper.GetUserNoOpen(username, context);
 
-            //Check for the user
-            if (restrictedUser == null)
+            StringBuilder strBuilder = null;
+
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage("A user with this name does not exist in the database!");
-                return;
-            }
+                
+                User restrictedUser = DataHelper.GetUserNoOpen(username, context);
 
-            //Find all unexpired restricted inputs
-            IEnumerable<RestrictedInput> restrictedInputs = restrictedUser.RestrictedInputs.Where(r => r.HasExpired == false);
-
-            int restrictedInputCount = restrictedInputs.Count();
-
-            //Check for no restricted inputs
-            if (restrictedInputCount == 0)
-            {
-                QueueMessage($"{restrictedUser.Name} has no restricted inputs!");
-                return;
-            }
-
-            StringBuilder strBuilder = new StringBuilder(restrictedInputCount * 8);
-            strBuilder.Append("Restricted inputs for ").Append(restrictedUser.Name).Append(':').Append(' ');
-
-            foreach(RestrictedInput resInp in restrictedInputs)
-            {
-                strBuilder.Append(resInp.inputData.Name).Append(" (").Append(resInp.inputData.Console.Name).Append(")");
-
-                if (resInp.HasExpiration == true)
+                //Check for the user
+                if (restrictedUser == null)
                 {
-                    strBuilder.Append(" (exp: ").Append(resInp.Expiration.Value.ToString()).Append(" UTC)");
+                    QueueMessage("A user with this name does not exist in the database!");
+                    return;
                 }
 
-                strBuilder.Append(',').Append(' ');
+                //Find all unexpired restricted inputs
+                IEnumerable<RestrictedInput> restrictedInputs = restrictedUser.RestrictedInputs.Where(r => r.HasExpired == false);
+
+                int restrictedInputCount = restrictedInputs.Count();
+
+                //Check for no restricted inputs
+                if (restrictedInputCount == 0)
+                {
+                    QueueMessage($"{restrictedUser.Name} has no restricted inputs!");
+                    return;
+                }
+
+                strBuilder = new StringBuilder(restrictedInputCount * 8);
+                strBuilder.Append("Restricted inputs for ").Append(restrictedUser.Name).Append(':').Append(' ');
+
+                foreach(RestrictedInput resInp in restrictedInputs)
+                {
+                    strBuilder.Append(resInp.inputData.Name).Append(" (").Append(resInp.inputData.Console.Name).Append(")");
+
+                    if (resInp.HasExpiration == true)
+                    {
+                        strBuilder.Append(" (exp: ").Append(resInp.Expiration.Value.ToString()).Append(" UTC)");
+                    }
+
+                    strBuilder.Append(',').Append(' ');
+                }
             }
 
             strBuilder.Remove(strBuilder.Length - 2, 2);
 
-            int maxCharCount = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.BOT_MSG_CHAR_LIMIT, context, 500L);
+            int maxCharCount = (int)DataHelper.GetSettingInt(SettingsConstants.BOT_MSG_CHAR_LIMIT, 500L);
 
             QueueMessageSplit(strBuilder.ToString(), maxCharCount, ", ");
         }

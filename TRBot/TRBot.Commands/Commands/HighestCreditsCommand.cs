@@ -29,7 +29,7 @@ namespace TRBot.Commands
     /// </summary>
     public sealed class HighestCreditsCommand : BaseCommand
     {
-        private const int MAX_TOP_USERS = 10;
+        private const int MAX_TOP_USERS = 20;
         private string UsageMessage = $"Usage: \"# of top users (int - up to {MAX_TOP_USERS}, optional)\"";
 
         public HighestCreditsCommand()
@@ -49,14 +49,6 @@ namespace TRBot.Commands
 
             int numTop = 1;
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            if (context.Users.Count() == 0)
-            {
-                QueueMessage("There are no users in the database!");
-                return;
-            }
-
             if (arguments.Count > 0)
             {
                 string numTopStr = arguments[0];
@@ -73,27 +65,38 @@ namespace TRBot.Commands
                 }
             }
 
-            IOrderedQueryable<User> orderedCredits = context.Users.OrderByDescending(u => u.Stats.Credits);
-    
-            StringBuilder strBuilder = new StringBuilder(numTop * 8);
+            StringBuilder strBuilder = null;
 
-            int curCount = 0;
-            foreach (User user in orderedCredits)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                strBuilder.Append(curCount + 1).Append('.').Append(' ');
-
-                strBuilder.Append(user.Name).Append(' ').Append('(').Append(user.Stats.Credits).Append(')');
-
-                curCount++;
-                if (curCount >= numTop)
+                if (context.Users.Count() == 0)
                 {
-                    break;
+                    QueueMessage("There are no users in the database!");
+                    return;
                 }
 
-                strBuilder.Append(' ');
+                IOrderedQueryable<User> orderedCredits = context.Users.OrderByDescending(u => u.Stats.Credits);
+
+                strBuilder = new StringBuilder(numTop * 8);
+
+                int curCount = 0;
+                foreach (User user in orderedCredits)
+                {
+                    strBuilder.Append(curCount + 1).Append('.').Append(' ');
+
+                    strBuilder.Append(user.Name).Append(' ').Append('(').Append(user.Stats.Credits).Append(')');
+
+                    curCount++;
+                    if (curCount >= numTop)
+                    {
+                        break;
+                    }
+
+                    strBuilder.Append(' ');
+                }
             }
 
-            int botCharLimit = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.BOT_MSG_CHAR_LIMIT, context, 500L);
+            int botCharLimit = (int)DataHelper.GetSettingInt(SettingsConstants.BOT_MSG_CHAR_LIMIT, 500L);
 
             QueueMessageSplit(strBuilder.ToString(), botCharLimit, ") ");
         }

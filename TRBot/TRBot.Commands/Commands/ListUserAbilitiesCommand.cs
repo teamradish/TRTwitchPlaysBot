@@ -52,67 +52,69 @@ namespace TRBot.Commands
                 return;
             }
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
             //Get the user calling this
             string thisUserName = args.Command.ChatMessage.Username.ToLowerInvariant();
-
-            User user = DataHelper.GetUserNoOpen(thisUserName, context);
+            string listedName = thisUserName;
 
             //Check to list another user's abilities
             if (arguments.Count == 1)
             {
-                string otherUserName = arguments[0].ToLowerInvariant();
-
-                user = DataHelper.GetUserNoOpen(otherUserName, context);
+                listedName = arguments[0].ToLowerInvariant();
             }
 
-            if (user == null)
+            StringBuilder strBuilder = null;
+
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage("A user with this name does not exist in the database!");
-                return;
-            }
+                User user = DataHelper.GetUserNoOpen(listedName, context);
 
-            //No abilities
-            if (user.UserAbilities.Count == 0)
-            {
-                QueueMessage($"{user.Name} has no abilities!");
-                return;
-            }
-
-            DateTime now = DateTime.UtcNow;
-
-            StringBuilder strBuilder = new StringBuilder(250);
-
-            strBuilder.Append(user.Name).Append("'s abilities: ");
-
-            for (int i = 0; i < user.UserAbilities.Count; i++)
-            {
-                UserAbility ability = user.UserAbilities[i];
-
-                if (ability.IsEnabled == false && ability.HasExpiration == false)
+                if (user == null)
                 {
-                    continue;
+                    QueueMessage("A user with this name does not exist in the database!");
+                    return;
                 }
 
-                strBuilder.Append(ability.PermAbility.Name);
-
-                if (ability.IsEnabled == false)
+                //No abilities
+                if (user.UserAbilities.Count == 0)
                 {
-                    strBuilder.Append(" (disabled) ");
+                    QueueMessage($"{user.Name} has no abilities!");
+                    return;
                 }
 
-                if (ability.HasExpired == false && ability.HasExpiration == true)
-                {
-                    strBuilder.Append(" (exp: ").Append(ability.Expiration.Value.ToString()).Append(" UTC)");
-                }
+                DateTime now = DateTime.UtcNow;
 
-                strBuilder.Append(',').Append(' ');
+                strBuilder = new StringBuilder(250);
+
+                strBuilder.Append(user.Name).Append("'s abilities: ");
+
+                for (int i = 0; i < user.UserAbilities.Count; i++)
+                {
+                    UserAbility ability = user.UserAbilities[i];
+
+                    if (ability.IsEnabled == false && ability.HasExpiration == false)
+                    {
+                        continue;
+                    }
+
+                    strBuilder.Append(ability.PermAbility.Name);
+
+                    if (ability.IsEnabled == false)
+                    {
+                        strBuilder.Append(" (disabled) ");
+                    }
+
+                    if (ability.HasExpired == false && ability.HasExpiration == true)
+                    {
+                        strBuilder.Append(" (exp: ").Append(ability.Expiration.Value.ToString()).Append(" UTC)");
+                    }
+
+                    strBuilder.Append(',').Append(' ');
+                }
             }
 
             strBuilder.Remove(strBuilder.Length - 2, 2);
 
-            int maxCharCount = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.BOT_MSG_CHAR_LIMIT, context, 500L);
+            int maxCharCount = (int)DataHelper.GetSettingInt(SettingsConstants.BOT_MSG_CHAR_LIMIT, 500L);
 
             QueueMessageSplit(strBuilder.ToString(), maxCharCount, ", ");
         }

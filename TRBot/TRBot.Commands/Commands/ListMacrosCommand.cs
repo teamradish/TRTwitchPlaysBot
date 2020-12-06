@@ -67,46 +67,49 @@ namespace TRBot.Commands
                 }
             }
 
-            using BotDBContext context = DatabaseManager.OpenContext();
+            long lastConsole = DataHelper.GetSettingInt(SettingsConstants.LAST_CONSOLE, 1L);
+            int maxCharCount = (int)DataHelper.GetSettingInt(SettingsConstants.BOT_MSG_CHAR_LIMIT, 500L);
 
-            long lastConsole = DataHelper.GetSettingIntNoOpen(SettingsConstants.LAST_CONSOLE, context, 1L);
-            int maxCharCount = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.BOT_MSG_CHAR_LIMIT, context, 500L);
+            StringBuilder strBuilder = null;
 
-            int macroCount = context.Macros.Count();
-
-            if (macroCount == 0)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage("There are no input macros!");
-                return;
-            }
+                int macroCount = context.Macros.Count();
 
-            //The capacity is the estimated average number of characters for each macro multiplied by the number of macros
-            StringBuilder strBuilder = new StringBuilder(macroCount * 15);
-
-            //Sort alphabetically
-            IOrderedQueryable<InputMacro> macros = context.Macros.OrderBy(m => m.MacroName);
-            
-            foreach (InputMacro macro in macros)
-            {
-                //Skip macros according to the argument
-                switch (arg)
+                if (macroCount == 0)
                 {
-                    case NORMAL_ARG:
-                        if (macro.MacroName.Contains('(') == true)
-                        {
-                            continue;
-                        }
-                    break;
-                    case DYNAMIC_ARG:
-                        if (macro.MacroName.Contains('(') == false)
-                        {
-                            continue;
-                        }
-                    break;
+                    QueueMessage("There are no input macros!");
+                    return;
                 }
 
-                //Append the macro
-                strBuilder.Append(macro.MacroName).Append(',').Append(' ');
+                //The capacity is the estimated average number of characters for each macro multiplied by the number of macros
+                strBuilder = new StringBuilder(macroCount * 15);
+
+                //Sort alphabetically
+                IOrderedQueryable<InputMacro> macros = context.Macros.OrderBy(m => m.MacroName);
+            
+                foreach (InputMacro macro in macros)
+                {
+                    //Skip macros according to the argument
+                    switch (arg)
+                    {
+                        case NORMAL_ARG:
+                            if (macro.MacroName.Contains('(') == true)
+                            {
+                                continue;
+                            }
+                        break;
+                        case DYNAMIC_ARG:
+                            if (macro.MacroName.Contains('(') == false)
+                            {
+                                continue;
+                            }
+                        break;
+                    }
+
+                    //Append the macro
+                    strBuilder.Append(macro.MacroName).Append(',').Append(' ');
+                }
             }
 
             //If no macros are available, mention it

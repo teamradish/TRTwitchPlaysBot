@@ -58,6 +58,8 @@ namespace TRBot.Commands
 
         private const string NO_EXERCISE_FOUND_MSG = "No input exercise found. Generate a new one with \"" + GENERATE_NEW_ARG + "\" as an argument to this command, optionally with a difficulty level: \"" + EASY_DIFFICULTY_ARG + "\" or \"" + HARD_DIFFICULTY_ARG + "\".";
 
+        private const string COMMON_BLANK_INPUT = "#";
+
         private const char SPLIT_CHAR = ',';
 
         private ConcurrentDictionary<string, InputExercise> UserExercises = null;
@@ -68,7 +70,7 @@ namespace TRBot.Commands
 
         public InputExerciseCommand()
         {
-
+            
         }
 
         public override void Initialize()
@@ -108,31 +110,42 @@ namespace TRBot.Commands
         {
             List<string> arguments = args.Command.ArgumentsAsList;
             string userName = args.Command.ChatMessage.Username.ToLowerInvariant();
+            long userControllerPort = 0;
+            long userLevel = 0;
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            User user = DataHelper.GetUserNoOpen(userName, context);
-            if (user == null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage("Huh, looks like you're not in the database!");
-                return;
-            }
+                User user = DataHelper.GetUserNoOpen(userName, context);
+                if (user == null)
+                {
+                    QueueMessage("Huh, looks like you're not in the database!");
+                    return;
+                }
 
-            if (user.HasEnabledAbility(PermissionConstants.INPUT_EXERCISE_ABILITY) == false)
-            {
-                QueueMessage("You do not have the ability to use input exercises!");
-                return;
+                if (user.HasEnabledAbility(PermissionConstants.INPUT_EXERCISE_ABILITY) == false)
+                {
+                    QueueMessage("You do not have the ability to use input exercises!");
+                    return;
+                }
+
+                userControllerPort = user.ControllerPort;
+                userLevel = user.Level;
             }
 
             //Get the last console used
-            int lastConsoleID = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.LAST_CONSOLE, context, 1L);
-            GameConsole lastConsole = context.Consoles.FirstOrDefault(c => c.ID == lastConsoleID);
+            int lastConsoleID = (int)DataHelper.GetSettingInt(SettingsConstants.LAST_CONSOLE, 1L);
+
             GameConsole usedConsole = null;
 
-            if (lastConsole != null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                //Create a new console using data from the database
-                usedConsole = new GameConsole(lastConsole.Name, lastConsole.InputList, lastConsole.InvalidCombos);
+                GameConsole lastConsole = context.Consoles.FirstOrDefault(c => c.ID == lastConsoleID);
+
+                if (lastConsole != null)
+                {
+                    //Create a new console using data from the database
+                    usedConsole = new GameConsole(lastConsole.Name, lastConsole.InputList, lastConsole.InvalidCombos);
+                }
             }
 
             //If there are no valid inputs, don't attempt to generate or solve
@@ -148,17 +161,15 @@ namespace TRBot.Commands
                 return;
             }
 
-            string creditsName = DataHelper.GetCreditsNameNoOpen(context);
-            int botCharLimit = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.BOT_MSG_CHAR_LIMIT, context, 500L);
-            int defaultInputDur = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.DEFAULT_INPUT_DURATION, context, 200L);
-            IQueryable<InputMacro> macros = context.Macros;
+            string creditsName = DataHelper.GetCreditsName();
+            int botCharLimit = (int)DataHelper.GetSettingInt(SettingsConstants.BOT_MSG_CHAR_LIMIT, 500L);
 
-            ReverseParser.ReverseParserOptions parseOptions = new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.None, (int)user.ControllerPort);
+            ReverseParser.ReverseParserOptions parseOptions = new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.None, (int)userControllerPort);
 
             //Handle no arguments
             if (arguments.Count == 0)
             {
-                if (UserExercises.TryGetValue(user.Name, out InputExercise inputExercise) == true)
+                if (UserExercises.TryGetValue(userName, out InputExercise inputExercise) == true)
                 {
                     OutputInputExercise(inputExercise, usedConsole, botCharLimit, creditsName, inputExercise.ParseOptions);
                 }
@@ -193,27 +204,30 @@ namespace TRBot.Commands
                     }
                 }
 
+                //Use the global default input duration for consistency
+                int defaultInputDur = (int)DataHelper.GetSettingInt(SettingsConstants.DEFAULT_INPUT_DURATION, 200L);
+
                 //Generate the exercise 
-                ParsedInputSequence newSequence = GenerateExercise(user.Level, defaultInputDur, usedConsole, parseOptions);
+                ParsedInputSequence newSequence = GenerateExercise(userLevel, defaultInputDur, usedConsole, parseOptions);
 
                 //Give greater credit rewards for longer input sequences
                 long creditReward = (newSequence.Inputs.Count * BASE_CREDIT_REWARD) * CREDIT_REWARD_MULTIPLIER;
 
-                //This parser setting is set when performing a hard exercise 
+                //This parser option is set when performing a hard exercise 
                 if (parseOptions.ShowPortType == ReverseParser.ShowPortTypes.ShowNonDefaultPorts)
                 {
                     creditReward = (long)Math.Ceiling(creditReward * HARD_EXERCISE_MULTIPLIER);
                 }
 
                 InputExercise inputExercise = new InputExercise(newSequence, parseOptions, creditReward);
-                UserExercises[user.Name] = inputExercise;
+                UserExercises[userName] = inputExercise;
 
                 OutputInputExercise(inputExercise, usedConsole, botCharLimit, creditsName, parseOptions);      
                 return;
             }
 
             //Make sure the user has an exercise - if not, output the same message
-            if (UserExercises.TryGetValue(user.Name, out InputExercise exercise) == false)
+            if (UserExercises.TryGetValue(userName, out InputExercise exercise) == false)
             {
                 QueueMessage(NO_EXERCISE_FOUND_MSG);
                 return;
@@ -221,25 +235,29 @@ namespace TRBot.Commands
 
             //There's more than one argument and the user has an exercise; so it has to be the input
             //Let's validate it!
-            if (ExecuteValidateInput(user, args.Command.ArgumentsAsString, usedConsole,
-                creditsName, defaultInputDur, macros, parseOptions) == true)
+            if (ExecuteValidateInput(userName, args.Command.ArgumentsAsString, usedConsole, parseOptions) == true)
             {
-                //Grant credits if the user isn't opted out
-                if (user.IsOptedOut == false)
+                using (BotDBContext context = DatabaseManager.OpenContext())
                 {
-                    long creditReward = exercise.CreditReward;
-                    user.Stats.Credits += creditReward;
-                    context.SaveChanges();
+                    User user = DataHelper.GetUserNoOpen(userName, context);
 
-                    QueueMessage($"Correct input! Awesome job! You've earned your {creditReward} {creditsName.Pluralize(false, creditReward)}!");
-                }
-                else
-                {
-                    QueueMessage("Correct input! Awesome job!");
+                    //Grant credits if the user isn't opted out
+                    if (user.IsOptedOut == false)
+                    {
+                        long creditReward = exercise.CreditReward;
+                        user.Stats.Credits += creditReward;
+                        context.SaveChanges();
+
+                        QueueMessage($"Correct input! Awesome job! You've earned your {creditReward} {creditsName.Pluralize(false, creditReward)}!");
+                    }
+                    else
+                    {
+                        QueueMessage("Correct input! Awesome job!");
+                    }
                 }
 
                 //Remove the entry
-                UserExercises.TryRemove(user.Name, out InputExercise value);
+                UserExercises.TryRemove(userName, out InputExercise value);
             }
         }
 
@@ -257,11 +275,14 @@ namespace TRBot.Commands
             QueueMessage($"Put your input as an argument to this command. To generate a new exercise, pass \"{GENERATE_NEW_ARG}\" as an argument.");
         }
 
-        private bool ExecuteValidateInput(User user, string userInput, GameConsole console, string creditsName,
-            in int defaultInputDur, IQueryable<InputMacro> macros, in ReverseParser.ReverseParserOptions options)
+        private bool ExecuteValidateInput(string userName, string userInput, GameConsole console,
+            in ReverseParser.ReverseParserOptions options)
         {
             /* We don't need any parser post processing done here, as these inputs don't affect the game itself */
-            
+
+            //Use the global default input duration for consistency
+            int defaultInputDur = (int)DataHelper.GetSettingInt(SettingsConstants.DEFAULT_INPUT_DURATION, 200L);
+
             //Console.WriteLine("USER COMMAND: " + userCommand);
 
             ParsedInputSequence inputSequence = default;
@@ -274,9 +295,12 @@ namespace TRBot.Commands
 
                 Parser parser = new Parser();
 
-                //Prepare the message for parsing
-                //Ignore input synonyms and max duration
-                readyMessage = parser.PrepParse(userInput, macros, null);
+                using (BotDBContext context = DatabaseManager.OpenContext())
+                {
+                    //Prepare the message for parsing
+                    //Ignore input synonyms and max duration
+                    readyMessage = parser.PrepParse(userInput, context.Macros, null);
+                }
 
                 //Parse inputs to get our parsed input sequence
                 inputSequence = parser.ParseInputs(readyMessage, regexStr, new ParserOptions(0, defaultInputDur, false, 0));
@@ -304,7 +328,7 @@ namespace TRBot.Commands
                 return false;
             }
 
-            InputExercise currentExercise = UserExercises[user.Name];
+            InputExercise currentExercise = UserExercises[userName];
             //Console.WriteLine("Correct: " + ReverseParser.ReverseParse(currentExercise.Sequence));
             List<List<ParsedInput>> exerciseInputs = currentExercise.Sequence.Inputs;
 
@@ -338,10 +362,10 @@ namespace TRBot.Commands
                     ParsedInput excInp = exerciseSubInputs[j];
                     ParsedInput userInp = userSubInputs[j];
 
-                    //For simplicity for comparing, if the user put a blank input, use the same one all the time
+                    //For simplicity when comparing, if the user put a blank input, use the same one all the time
                     if (console.IsBlankInput(userInp) == true)
                     {
-                        userInp.name = "#";
+                        userInp.name = COMMON_BLANK_INPUT;
                     }
 
                     if (excInp != userInp)

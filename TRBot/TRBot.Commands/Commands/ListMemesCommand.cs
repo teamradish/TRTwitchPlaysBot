@@ -40,27 +40,30 @@ namespace TRBot.Commands
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
-            using BotDBContext context = DatabaseManager.OpenContext();
+            StringBuilder strBuilder = null;
 
-            int memeCount = context.Memes.Count();
-
-            if (memeCount == 0)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage("There are no memes!");
-                return;
-            }
+                int memeCount = context.Memes.Count();
 
-            //The capacity is the estimated average number of characters for each meme multiplied by the number of memes
-            StringBuilder strBuilder = new StringBuilder(memeCount * 20);
+                if (memeCount == 0)
+                {
+                    QueueMessage("There are no memes!");
+                    return;
+                }
 
-            foreach (Meme meme in context.Memes)
-            {
-                strBuilder.Append(meme.MemeName).Append(',').Append(' ');
+                //The capacity is the estimated average number of characters for each meme multiplied by the number of memes
+                strBuilder = new StringBuilder(memeCount * 20);
+
+                foreach (Meme meme in context.Memes)
+                {
+                    strBuilder.Append(meme.MemeName).Append(',').Append(' ');
+                }
             }
 
             strBuilder.Remove(strBuilder.Length - 2, 2);
 
-            int maxCharCount = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.BOT_MSG_CHAR_LIMIT, context, 500L);
+            int maxCharCount = (int)DataHelper.GetSettingInt(SettingsConstants.BOT_MSG_CHAR_LIMIT, 500L);
             
             QueueMessageSplit(strBuilder.ToString(), maxCharCount, ", ");
         }
