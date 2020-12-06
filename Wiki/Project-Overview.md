@@ -1,4 +1,4 @@
-TRBot contains several different projects with the purpose of isolating functionality. This approach allows TRBot to scale more elegantly over time, and it allows each project to use only the parts it needs instead of requiring the entire package.
+TRBot contains several different projects with the purpose of isolating functionality for a more modular approach. This approach allows TRBot to scale more elegantly over time, and it allows each project to use only the parts it needs instead of requiring the entire package.
 
 # Project Structure
 ## Core Components
@@ -10,11 +10,11 @@ TRBot contains several different projects with the purpose of isolating function
 * **TRBot.Parsing** - Strictly handles TRBot's parser, which transforms text into inputs that TRBot can read.
 * **TRBot.Permissions** - Code for the access levels and other moderation features.
 * **TRBot.Routines** - Deals with bot routines, or pieces of code that run each tick.
-* **TRBot.Utilities** - Contains various utilities, including operating system detection, methods for reading/writing files, algorithms and other mathematical operations. Relies on no other projects.
+* **TRBot.Utilities** - Contains various utilities, including operating system detection, methods for reading/writing files, algorithms, and other mathematical operations. Relies on no other projects.
 * **TRBot.VirtualControllers** - Handles everything related to virtual controllers, including the implementations for each platform and pressing/releasing buttons on them. This also contains the native code required to manage a given virtual controller implementation.
 
 ## Applications
-* **TRBot.Main** - The main application that connects the components together. This is the what you are running.
+* **TRBot.Main** - The main application that connects the components together. This is what you are running (unless you built your own).
 * **TRBot.Tests** - Unit tests for TRBot.
 * **TRBotDataMigrationTool** - The 1.8 to 2.0+ data migration tool. Converts data from the text files in 1.8 into the SQLite database that versions 2.0 and above use.
 

@@ -174,10 +174,7 @@ namespace TRBot.Routines
                 return;
             }
 
-            //Open database context
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            string creditsName = DataHelper.GetCreditsNameNoOpen(context);
+            string creditsName = DataHelper.GetCreditsName();
 
             //Get all participants
             List<KeyValuePair<string, long>> participants = Participants.ToList();
@@ -193,34 +190,40 @@ namespace TRBot.Routines
             //Default win is the winner's bet
             long total = winnerKVPair.Value;
 
-            //Go through the list; make sure they still have enough credits
-            for (int i = 0; i < participants.Count; i++)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                KeyValuePair<string, long> curKVPair = participants[i];
-                
-                string curUserName = curKVPair.Key;
-                long curUserBet = curKVPair.Value;
-
-                //Skip over the winner
-                if (curUserName == winnerName)
+                //Go through the list; make sure they still have enough credits
+                for (int i = 0; i < participants.Count; i++)
                 {
-                    continue;
-                }
+                    KeyValuePair<string, long> curKVPair = participants[i];
 
-                User betUser = DataHelper.GetUserNoOpen(curUserName, context);
+                    string curUserName = curKVPair.Key;
+                    long curUserBet = curKVPair.Value;
 
-                //If they're no longer in the database or don't have enough credits, disqualify them
-                if (betUser == null || betUser.Stats.Credits < curUserBet)
-                {
-                    invalid += curUserName + ", ";
-                    participants.RemoveAt(i);
-                    i--;
-                }
-                else
-                {
-                    //Subtract credits for those who do have enough, and add their bet to the total the winner earns
-                    betUser.Stats.Credits -= curUserBet;
-                    total += curUserBet;
+                    //Skip over the winner
+                    if (curUserName == winnerName)
+                    {
+                        continue;
+                    }
+
+                    User betUser = DataHelper.GetUserNoOpen(curUserName, context);
+
+                    //If they're no longer in the database or don't have enough credits, disqualify them
+                    if (betUser == null || betUser.Stats.Credits < curUserBet)
+                    {
+                        invalid += curUserName + ", ";
+                        participants.RemoveAt(i);
+                        i--;
+                    }
+                    else
+                    {
+                        //Subtract credits for those who do have enough, and add their bet to the total the winner earns
+                        betUser.Stats.Credits -= curUserBet;
+                        total += curUserBet;
+
+                        //Save their loss
+                        context.SaveChanges();
+                    }
                 }
             }
 
@@ -235,12 +238,15 @@ namespace TRBot.Routines
 
             if (total > 0)
             {
-                //Add credits to the winner and save
-                User winnerUser = DataHelper.GetUserNoOpen(winnerName, context);
+                using (BotDBContext context = DatabaseManager.OpenContext())
+                {
+                    //Add credits to the winner and save
+                    User winnerUser = DataHelper.GetUserNoOpen(winnerName, context);
 
-                winnerUser.Stats.Credits += total;
-                
-                context.SaveChanges();
+                    winnerUser.Stats.Credits += total;
+
+                    context.SaveChanges();
+                }
                 
                 DataContainer.MessageHandler.QueueMessage($"{winnerName} won the group bet and {total} {creditsName.Pluralize(false, total)} PogChamp! Nice!");
 
@@ -285,6 +291,37 @@ namespace TRBot.Routines
             {
                 ParticipantName = participantName;
                 ParticipantBet = participantBet;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj is ParticipantData pData)
+                {
+                    return (this == pData);
+                }
+
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hash = 3;
+                    hash = (hash * 37) + ((ParticipantName == null) ? 0 : ParticipantName.GetHashCode());
+                    hash = (hash * 37) + ParticipantBet.GetHashCode();
+                    return hash;
+                } 
+            }
+
+            public static bool operator==(ParticipantData a, ParticipantData b)
+            {
+                return (a.ParticipantName == b.ParticipantName && a.ParticipantBet == b.ParticipantBet);
+            }
+
+            public static bool operator!=(ParticipantData a, ParticipantData b)
+            {
+                return !(a == b);
             }
         }
     }

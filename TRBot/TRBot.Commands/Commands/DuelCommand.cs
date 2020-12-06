@@ -81,26 +81,27 @@ namespace TRBot.Commands
                 return;
             }
 
-            string user = args.Command.ChatMessage.Username.ToLowerInvariant();
+            string userName = args.Command.ChatMessage.Username.ToLowerInvariant();
             string opponentArg = arguments[0].ToLowerInvariant();
 
             //Get the users
-            using BotDBContext context = DatabaseManager.OpenContext();
-            
-            User thisUser = DataHelper.GetUserNoOpen(user, context);
-
-            //Confirm this user is in the database
-            if (thisUser == null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage("You cannot duel because you are not in the database!");
-                return;
-            }
+                User thisUser = DataHelper.GetUserNoOpen(userName, context);
 
-            //Confirm the user has the ability to duel
-            if (thisUser.HasEnabledAbility(PermissionConstants.DUEL_ABILITY) == false)
-            {
-                QueueMessage("You do not have the ability to duel!");
-                return;
+                //Confirm this user is in the database
+                if (thisUser == null)
+                {
+                    QueueMessage("You cannot duel because you are not in the database!");
+                    return;
+                }
+
+                //Confirm the user has the ability to duel
+                if (thisUser.HasEnabledAbility(PermissionConstants.DUEL_ABILITY) == false)
+                {
+                    QueueMessage("You do not have the ability to duel!");
+                    return;
+                }
             }
 
             //Handle accepting or denying a duel with only one argument
@@ -108,7 +109,7 @@ namespace TRBot.Commands
             {
                 if (opponentArg == ACCEPT_DUEL_ARG || opponentArg == DENY_DUEL_ARG)
                 {
-                    AcceptDenyDuel(thisUser, opponentArg, context);
+                    AcceptDenyDuel(userName, opponentArg);
                 }
                 else
                 {
@@ -119,51 +120,56 @@ namespace TRBot.Commands
             }
 
             //Prevent dueling yourself
-            if (user == opponentArg)
+            if (userName == opponentArg)
             {
                 QueueMessage("You cannot duel yourself!");
                 return;
             }
 
-            //Get the opponent
-            User opponentUser = DataHelper.GetUserNoOpen(opponentArg, context);
-
-            if (opponentUser == null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage($"{opponentArg} is not in the database!");
-                return;
+                User thisUser = DataHelper.GetUserNoOpen(userName, context);
+                
+                //Get the opponent
+                User opponentUser = DataHelper.GetUserNoOpen(opponentArg, context);
+
+                if (opponentUser == null)
+                {
+                    QueueMessage($"{opponentArg} is not in the database!");
+                    return;
+                }
+
+                if (thisUser.IsOptedOut == true)
+                {
+                    QueueMessage("You can't duel if you're opted out of bot stats!");
+                    return;
+                }
+
+                //Confirm the opponent has the ability to duel
+                if (opponentUser.HasEnabledAbility(PermissionConstants.DUEL_ABILITY) == false)
+                {
+                    QueueMessage("The one you're attempting to duel does not have the ability to duel!");
+                    return;
+                }
+
+                if (opponentUser.IsOptedOut == true)
+                {
+                    QueueMessage("The one you're attempting to duel is opted out of bot stats, so you can't duel them!");
+                    return;
+                }
             }
 
-            if (thisUser.IsOptedOut == true)
-            {
-                QueueMessage("You can't duel if you're opted out of bot stats!");
-                return;
-            }
-
-            //Confirm the opponent has the ability to duel
-            if (opponentUser.HasEnabledAbility(PermissionConstants.DUEL_ABILITY) == false)
-            {
-                QueueMessage("The one you're attempting to duel does not have the ability to duel!");
-                return;
-            }
-
-            if (opponentUser.IsOptedOut == true)
-            {
-                QueueMessage("The one you're attempting to duel is opted out of bot stats, so you can't duel them!");
-                return;
-            }
-
-            long duelTimeout = DataHelper.GetSettingIntNoOpen(SettingsConstants.DUEL_TIMEOUT, context, 60000L);
-            string creditsName = DataHelper.GetCreditsNameNoOpen(context);
+            long duelTimeout = DataHelper.GetSettingInt(SettingsConstants.DUEL_TIMEOUT, 60000L);
+            string creditsName = DataHelper.GetCreditsName();
 
             //Check if the duel expired and replace it with this one if so
-            if (DuelRequests.ContainsKey(user) == true)
+            if (DuelRequests.ContainsKey(userName) == true)
             {
-                DuelData data = DuelRequests[user];
+                DuelData data = DuelRequests[userName];
                 TimeSpan diff = DateTime.Now - data.DuelStartTimeUTC;
                 if (diff.TotalMilliseconds >= duelTimeout)
                 {
-                    DuelRequests.Remove(user);
+                    DuelRequests.Remove(userName);
                 }
                 else
                 {
@@ -182,34 +188,40 @@ namespace TRBot.Commands
                 return;
             }
 
-            //Validate credit amounts
-            if (thisUser.Stats.Credits < betAmount || opponentUser.Stats.Credits < betAmount)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage($"Either you or the one you're dueling does not have enough {creditsName.Pluralize(false, 0)} for this duel!");
-                return;
+                User thisUser = DataHelper.GetUserNoOpen(userName, context);
+                User opponentUser = DataHelper.GetUserNoOpen(opponentArg, context);
+
+                //Validate credit amounts
+                if (thisUser.Stats.Credits < betAmount || opponentUser.Stats.Credits < betAmount)
+                {
+                    QueueMessage($"Either you or the one you're dueling does not have enough {creditsName.Pluralize(false, 0)} for this duel!");
+                    return;
+                }
             }
 
             //Add to the duel requests
-            DuelRequests.Add(opponentArg, new DuelData(user, betAmount, DateTime.UtcNow));
+            DuelRequests.Add(opponentArg, new DuelData(userName, betAmount, DateTime.UtcNow));
 
             TimeSpan totalTime = TimeSpan.FromMilliseconds(duelTimeout);
 
-            QueueMessage($"{user} has requested to duel {opponentArg} for {betAmount} {creditsName.Pluralize(false, betAmount)}! Pass \"{ACCEPT_DUEL_ARG}\" as an argument to duel or \"{DENY_DUEL_ARG}\" as an argument to refuse. The duel expires in {totalTime.TotalMinutes} minute(s), {totalTime.Seconds} second(s)!");
+            QueueMessage($"{userName} has requested to duel {opponentArg} for {betAmount} {creditsName.Pluralize(false, betAmount)}! Pass \"{ACCEPT_DUEL_ARG}\" as an argument to duel or \"{DENY_DUEL_ARG}\" as an argument to refuse. The duel expires in {totalTime.TotalMinutes} minute(s), {totalTime.Seconds} second(s)!");
         }
 
-        private void AcceptDenyDuel(User thisUser, string argument, BotDBContext context)
+        private void AcceptDenyDuel(string thisUserName, string argument)
         {
-            long duelTimeout = DataHelper.GetSettingIntNoOpen(SettingsConstants.DUEL_TIMEOUT, context, 60000L);
-            string creditsName = DataHelper.GetCreditsNameNoOpen(context);
+            long duelTimeout = DataHelper.GetSettingInt(SettingsConstants.DUEL_TIMEOUT, 60000L);
+            string creditsName = DataHelper.GetCreditsName();
 
-            if (DuelRequests.ContainsKey(thisUser.Name) == false)
+            if (DuelRequests.ContainsKey(thisUserName) == false)
             {
                 QueueMessage("You are not in a duel or your duel has expired!");
                 return;
             }
 
-            DuelData data = DuelRequests[thisUser.Name];
-            DuelRequests.Remove(thisUser.Name);
+            DuelData data = DuelRequests[thisUserName];
+            DuelRequests.Remove(thisUserName);
 
             TimeSpan diff = DateTime.UtcNow - data.DuelStartTimeUTC;
             
@@ -226,52 +238,60 @@ namespace TRBot.Commands
             //If the duel is denied, exit early
             if (argument == DENY_DUEL_ARG)
             {
-                QueueMessage($"{thisUser.Name} has denied to duel with {data.UserDueling} and miss out on a potential {data.BetAmount} {creditsName.Pluralize(false, data.BetAmount)}!");
+                QueueMessage($"{thisUserName} has denied to duel with {data.UserDueling} and miss out on a potential {data.BetAmount} {creditsName.Pluralize(false, data.BetAmount)}!");
                 return;
             }
 
-            User opponentUser = DataHelper.GetUserNoOpen(data.UserDueling, context);
-
-            if (opponentUser == null)
-            {
-                QueueMessage($"Your opponent, {data.UserDueling}, is no longer in the database!");
-                return;
-            }
-
-            //First confirm both users have enough credits for the duel, as they could've lost some in that time
-            if (thisUser.Stats.Credits < betAmount || opponentUser.Stats.Credits < betAmount)
-            {
-                QueueMessage($"At least one user involved in the duel no longer has enough {creditsName.Pluralize(false, 0)} for the duel. The duel is off!");
-                return;
-            }
-
-            //Check if either user is now opted out
-            if (thisUser.IsOptedOut == true || opponentUser.IsOptedOut == true)
-            {
-                QueueMessage("At least one user involved in the duel is now opted out of bot stats. The duel is off!");
-                return;
-            }
-
-            //50/50 chance of either user winning
-            int val = Rand.Next(0, 2);
             string message = string.Empty;
 
-            if (val == 0)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                thisUser.Stats.Credits += betAmount;
-                opponentUser.Stats.Credits -= betAmount;
-                
-                message = $"{thisUser.Name} won the bet against {dueled} for {betAmount} {creditsName.Pluralize(false, betAmount)}!";
-            }
-            else
-            {
-                thisUser.Stats.Credits -= betAmount;
-                opponentUser.Stats.Credits += betAmount;
+                User thisUser = DataHelper.GetUserNoOpen(thisUserName, context);
+                User opponentUser = DataHelper.GetUserNoOpen(data.UserDueling, context);
 
-                message = $"{dueled} won the bet against {thisUser.Name} for {betAmount} {creditsName.Pluralize(false, betAmount)}!";
-            }
+                if (opponentUser == null)
+                {
+                    QueueMessage($"Your opponent, {data.UserDueling}, is no longer in the database!");
+                    return;
+                }
 
-            context.SaveChanges();
+                //First confirm both users have enough credits for the duel, as they could've lost some in that time
+                if (thisUser.Stats.Credits < betAmount || opponentUser.Stats.Credits < betAmount)
+                {
+                    QueueMessage($"At least one user involved in the duel no longer has enough {creditsName.Pluralize(false, 0)} for the duel. The duel is off!");
+                    return;
+                }
+
+                //Check if either user is now opted out
+                if (thisUser.IsOptedOut == true || opponentUser.IsOptedOut == true)
+                {
+                    QueueMessage("At least one user involved in the duel is now opted out of bot stats. The duel is off!");
+                    return;
+                }
+
+                //50/50 chance of either user winning
+                int val = Rand.Next(0, 2);
+
+                //This user won
+                if (val == 0)
+                {
+                    thisUser.Stats.Credits += betAmount;
+                    opponentUser.Stats.Credits -= betAmount;
+
+                    message = $"{thisUser.Name} won the bet against {dueled} for {betAmount} {creditsName.Pluralize(false, betAmount)}!";
+                }
+                //The opponent won
+                else
+                {
+                    thisUser.Stats.Credits -= betAmount;
+                    opponentUser.Stats.Credits += betAmount;
+
+                    message = $"{dueled} won the bet against {thisUser.Name} for {betAmount} {creditsName.Pluralize(false, betAmount)}!";
+                }
+
+                //Save the outcome of the duel
+                context.SaveChanges();
+            }
             
             QueueMessage(message);
         }

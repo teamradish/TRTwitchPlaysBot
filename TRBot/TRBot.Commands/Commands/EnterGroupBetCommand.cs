@@ -55,25 +55,8 @@ namespace TRBot.Commands
                 return;
             }
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            string creditsName = DataHelper.GetCreditsNameNoOpen(context);
-            string username = args.Command.ChatMessage.Username;
-
-            //Check if the user exists
-            User user = DataHelper.GetOrAddUserNoOpen(username, context, out bool addedUser);
-            if (user == null)
-            {
-                QueueMessage("The user calling this does not exist in the database!");
-                return;
-            }
-
-            //No ability to enter group bets
-            if (user.HasEnabledAbility(PermissionConstants.GROUP_BET_ABILITY) == false)
-            {
-                QueueMessage("You do not have the ability to participate in a group bet!");
-                return;
-            }
+            string creditsName = DataHelper.GetCreditsName();
+            string userName = args.Command.ChatMessage.Username;
 
             //Check if we can parse the bet amount
             long betAmount = -1L;
@@ -84,22 +67,40 @@ namespace TRBot.Commands
                 return;
             }
 
-            //Validate credit amount
-            if (user.Stats.Credits < betAmount)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage($"You don't have enough {creditsName.Pluralize(false, 0)} to bet this much!");
-                return;
-            }
+                //Check if the user exists
+                User user = DataHelper.GetOrAddUserNoOpen(userName, context, out bool addedUser);
+                if (user == null)
+                {
+                    QueueMessage("The user calling this does not exist in the database!");
+                    return;
+                }
 
-            if (user.IsOptedOut == true)
-            {
-                QueueMessage("You can't participate in the group bet since you opted out of bot stats.");
-                return;
+                //No ability to enter group bets
+                if (user.HasEnabledAbility(PermissionConstants.GROUP_BET_ABILITY) == false)
+                {
+                    QueueMessage("You do not have the ability to participate in a group bet!");
+                    return;
+                }
+
+                //Validate credit amount
+                if (user.Stats.Credits < betAmount)
+                {
+                    QueueMessage($"You don't have enough {creditsName.Pluralize(false, 0)} to bet this much!");
+                    return;
+                }
+
+                if (user.IsOptedOut == true)
+                {
+                    QueueMessage("You can't participate in the group bet since you opted out of bot stats.");
+                    return;
+                }
             }
 
             //Get total time and minimum participants required
-            long groupBetTime = DataHelper.GetSettingIntNoOpen(SettingsConstants.GROUP_BET_TOTAL_TIME, context, 120000L);
-            int groupBetMinUsers = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.GROUP_BET_MIN_PARTICIPANTS, context, 3L);
+            long groupBetTime = DataHelper.GetSettingInt(SettingsConstants.GROUP_BET_TOTAL_TIME, 120000L);
+            int groupBetMinUsers = (int)DataHelper.GetSettingInt(SettingsConstants.GROUP_BET_MIN_PARTICIPANTS, 3L);
 
             //Get the routine
             GroupBetRoutine groupBetRoutine = RoutineHandler.FindRoutine<GroupBetRoutine>();
@@ -116,17 +117,17 @@ namespace TRBot.Commands
             //and thus wouldn't be applicable to the group bet created for the first participant
 
             //See if the user is already in the group bet
-            bool prevParticipant = groupBetRoutine.TryGetParticipant(user.Name,
+            bool prevParticipant = groupBetRoutine.TryGetParticipant(userName,
                 out GroupBetRoutine.ParticipantData participantData);
 
-            groupBetRoutine.AddOrUpdateParticipant(user.Name, betAmount);
+            groupBetRoutine.AddOrUpdateParticipant(userName, betAmount);
 
             string message = string.Empty;
 
             //Newly added since they were not previously there
             if (prevParticipant == false)
             {
-                message = $"{username} entered the group bet with {betAmount} {creditsName.Pluralize(false, betAmount)}!";
+                message = $"{userName} entered the group bet with {betAmount} {creditsName.Pluralize(false, betAmount)}!";
                 
                 int participantCount = groupBetRoutine.ParticipantCount;
                 
@@ -148,7 +149,7 @@ namespace TRBot.Commands
             }
             else
             {
-                QueueMessage($"{username} adjusted their group bet from {participantData.ParticipantBet} to {betAmount} {creditsName.Pluralize(false, betAmount)}!");
+                QueueMessage($"{userName} adjusted their group bet from {participantData.ParticipantBet} to {betAmount} {creditsName.Pluralize(false, betAmount)}!");
             }
         }
     }

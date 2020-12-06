@@ -45,13 +45,14 @@ namespace TRBot.Commands
             long lastVControllerType = DataHelper.GetSettingInt(SettingsConstants.LAST_VCONTROLLER_TYPE, 0L);
             VirtualControllerTypes vcType = (VirtualControllerTypes)lastVControllerType;
 
-            Settings joystickCountSetting = DataHelper.GetSetting(SettingsConstants.JOYSTICK_COUNT);
-            int prevJoystickCount = (int)joystickCountSetting.ValueInt;
+            //Use the controller manager's count here
+            //The setting can be changed in the database, but it won't reflect the actual number of controllers in use until a reload
+            int curJoystickCount = DataContainer.ControllerMngr.ControllerCount;
 
             //See the number of controllers
             if (arguments.Count == 0)
             {
-                QueueMessage($"There are {joystickCountSetting.ValueInt} controller(s) plugged in! To set the controller count, please provide a number as an argument.");
+                QueueMessage($"There are {curJoystickCount} controller(s) plugged in! To set the controller count, please provide a number as an argument.");
                 return;
             }
 
@@ -83,10 +84,10 @@ namespace TRBot.Commands
                 return;
             }
 
-            //Same type
-            if (newJoystickCount == joystickCountSetting.ValueInt)
+            //Same count
+            if (newJoystickCount == curJoystickCount)
             {
-                QueueMessage($"There are already {newJoystickCount} controllers plugged in.");
+                QueueMessage($"There are already {newJoystickCount} controller(s) plugged in.");
                 return;
             }
             
@@ -106,7 +107,7 @@ namespace TRBot.Commands
 
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                joystickCountSetting = DataHelper.GetSetting(SettingsConstants.JOYSTICK_COUNT);
+                Settings joystickCountSetting = DataHelper.GetSetting(SettingsConstants.JOYSTICK_COUNT);
 
                 //Set the value and save
                 joystickCountSetting.ValueInt = newJoystickCount;
@@ -125,7 +126,7 @@ namespace TRBot.Commands
                 DataContainer.ControllerMngr.Initialize();
                 int acquiredCount = DataContainer.ControllerMngr.InitControllers(newJoystickCount);
 
-                QueueMessage($"Changed controller count from {prevJoystickCount} to {newJoystickCount}, acquired {acquiredCount} controllers, and reset all running inputs!");
+                QueueMessage($"Changed controller count from {curJoystickCount} to {newJoystickCount}, acquired {acquiredCount} controllers, and reset all running inputs!");
             }
             catch (Exception e)
             {

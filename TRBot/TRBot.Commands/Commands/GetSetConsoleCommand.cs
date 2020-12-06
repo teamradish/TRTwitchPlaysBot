@@ -50,14 +50,14 @@ namespace TRBot.Commands
                 StringBuilder strBuilder = new StringBuilder(300);
                 strBuilder.Append("The current console is: ");
 
-                int maxCharCount = 500;
+                int maxCharCount = (int)DataHelper.GetSettingInt(SettingsConstants.BOT_MSG_CHAR_LIMIT, 500L);
+
+                long lastConsole = DataHelper.GetSettingInt(SettingsConstants.LAST_CONSOLE, 1L);
 
                 //List the current console and available consoles
                 using (BotDBContext context = DatabaseManager.OpenContext())
                 {
-                    Settings lastSetting = context.SettingCollection.FirstOrDefault(set => set.Key == SettingsConstants.LAST_CONSOLE);
-
-                    GameConsole curConsole = context.Consoles.FirstOrDefault(console => console.ID == lastSetting.ValueInt);
+                    GameConsole curConsole = context.Consoles.FirstOrDefault(console => console.ID == lastConsole);
                     if (curConsole == null)
                     {
                         strBuilder.Append("Invalid!? Set a different console to fix this. ");
@@ -72,9 +72,6 @@ namespace TRBot.Commands
                     {
                         strBuilder.Append(gameConsole.Name).Append(", ");
                     }
-
-                    Settings charCount = context.SettingCollection.FirstOrDefault(set => set.Key == SettingsConstants.BOT_MSG_CHAR_LIMIT);
-                    maxCharCount = (int)charCount.ValueInt;
                 }
 
                 strBuilder.Remove(strBuilder.Length - 2, 2);
@@ -91,8 +88,6 @@ namespace TRBot.Commands
                 return;
             }
 
-            string consoleName = string.Empty;
-
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
                 //Check if this user has the ability to set the console
@@ -102,10 +97,13 @@ namespace TRBot.Commands
                 {
                     QueueMessage("You do not have permission to change the console!");
                     return;
-                } 
+                }
+            }
+            
+            string consoleName = arguments[0].ToLowerInvariant();
 
-                consoleName = arguments[0].ToLowerInvariant();
-                
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {    
                 GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleName);
 
                 if (console != null)

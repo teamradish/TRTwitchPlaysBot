@@ -52,7 +52,10 @@ namespace TRBot.Commands
                     forceInitSetting.ValueInt = 1;
                     context.SaveChanges();
                 }
+            }
 
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
                 entriesAdded = DataHelper.InitDefaultData(context);
 
                 if (entriesAdded > 0)

@@ -277,7 +277,6 @@ namespace TRBot.Main
         private void UnsubscribeEvents()
         {
             ClientService.EventHandler.UserSentMessageEvent -= OnUserSentMessage;
-            //ClientService.EventHandler.UserMadeInputEvent -= OnUserMadeInput;
             ClientService.EventHandler.UserNewlySubscribedEvent -= OnNewSubscriber;
             ClientService.EventHandler.UserReSubscribedEvent -= OnReSubscriber;
             ClientService.EventHandler.WhisperReceivedEvent -= OnWhisperReceived;
@@ -293,7 +292,6 @@ namespace TRBot.Main
         private void SubscribeEvents()
         {
             ClientService.EventHandler.UserSentMessageEvent += OnUserSentMessage;
-            //ClientService.EventHandler.UserMadeInputEvent += OnUserMadeInput;
             ClientService.EventHandler.UserNewlySubscribedEvent += OnNewSubscriber;
             ClientService.EventHandler.UserReSubscribedEvent += OnReSubscriber;
             ClientService.EventHandler.WhisperReceivedEvent += OnWhisperReceived;
@@ -360,42 +358,42 @@ namespace TRBot.Main
 
         private void OnUserSentMessage(EvtUserMessageArgs e)
         {
-            using (BotDBContext context = DatabaseManager.OpenContext())
+            //Look for a user with this name
+            string userName = e.UsrMessage.Username;
+
+            if (string.IsNullOrEmpty(userName) == false)
             {
-                //Look for a user with this name
-                User user = null;
-                string username = e.UsrMessage.Username;
-
-                if (string.IsNullOrEmpty(username) == false)
+                User user = DataHelper.GetOrAddUser(userName, out bool added);
+                
+                if (added == true)
                 {
-                    user = DataHelper.GetOrAddUserNoOpen(username, context, out bool added);
-
-                    if (added == true)
-                    {
-                        //Get the new user message and replace the variable with their name
-                        string newUserMessage = DataHelper.GetSettingStringNoOpen(SettingsConstants.NEW_USER_MESSAGE, context, $"Welcome to the stream, {username}!");
-                        newUserMessage = newUserMessage.Replace("{0}", username);
-                        
-                        MsgHandler.QueueMessage(newUserMessage);
-                    }
-
-                    //Increment message count
+                    //Get the new user message and replace the variable with their name
+                    string newUserMessage = DataHelper.GetSettingString(SettingsConstants.NEW_USER_MESSAGE, $"Welcome to the stream, {userName}!");
+                    newUserMessage = newUserMessage.Replace("{0}", userName);
+                    
+                    MsgHandler.QueueMessage(newUserMessage);
+                }
+                
+                using (BotDBContext context = DatabaseManager.OpenContext())
+                {
+                    user = DataHelper.GetUserNoOpen(userName, context);
+                    
+                    //Increment message count and save
                     if (user.IsOptedOut == false)
                     {
                         user.Stats.TotalMessageCount++;
-
                         context.SaveChanges();
                     }
-                }
 
-                //Check for memes if the user isn't ignoring them
-                if (user.Stats.IgnoreMemes == 0)
-                {
-                    string possibleMeme = e.UsrMessage.Message.ToLower();
-                    Meme meme = context.Memes.FirstOrDefault((m) => m.MemeName == possibleMeme);
-                    if (meme != null)
+                    //Check for memes if the user isn't ignoring them
+                    if (user.Stats.IgnoreMemes == 0)
                     {
-                        MsgHandler.QueueMessage(meme.MemeValue);
+                        string possibleMeme = e.UsrMessage.Message.ToLower();
+                        Meme meme = context.Memes.FirstOrDefault((m) => m.MemeName == possibleMeme);
+                        if (meme != null)
+                        {
+                            MsgHandler.QueueMessage(meme.MemeValue);
+                        }
                     }
                 }
             }
@@ -864,9 +862,8 @@ namespace TRBot.Main
             //Fetch the new controller manager
             IVirtualControllerManager controllerMngr = VControllerHelper.GetVControllerMngrForType(newVControllerType);
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            Settings joystickCountSetting = DataHelper.GetSettingNoOpen(SettingsConstants.JOYSTICK_COUNT, context);
+            int prevJoystickCount = (int)DataHelper.GetSettingInt(SettingsConstants.JOYSTICK_COUNT, 1L);
+            int newJoystickCount = prevJoystickCount;
 
             //First, stop all inputs
             InputHandler.StopAndHaltAllInputs();
@@ -883,20 +880,30 @@ namespace TRBot.Main
             int minCount = DataContainer.ControllerMngr.MinControllers;
             int maxCount = DataContainer.ControllerMngr.MaxControllers;
 
-            if (joystickCountSetting.ValueInt < minCount)
+            if (prevJoystickCount < minCount)
             {
-                MsgHandler.QueueMessage($"New controller count of {joystickCountSetting.ValueInt} in database is invalid. Clamping to the min of {minCount}.");
-                joystickCountSetting.ValueInt = minCount;
-                context.SaveChanges();
+                MsgHandler.QueueMessage($"New controller count of {prevJoystickCount} in database is invalid. Clamping to the min of {minCount}.");
+                newJoystickCount = minCount;
             }
-            else if (joystickCountSetting.ValueInt > maxCount)
+            else if (prevJoystickCount > maxCount)
             {
-                MsgHandler.QueueMessage($"New controller count of {joystickCountSetting.ValueInt} in database is invalid. Clamping to the max of {maxCount}.");
-                joystickCountSetting.ValueInt = maxCount;
-                context.SaveChanges();
+                MsgHandler.QueueMessage($"New controller count of {prevJoystickCount} in database is invalid. Clamping to the max of {maxCount}.");
+                newJoystickCount = maxCount;
             }
 
-            int acquiredCount = DataContainer.ControllerMngr.InitControllers((int)joystickCountSetting.ValueInt);
+            if (prevJoystickCount != newJoystickCount)
+            {
+                using (BotDBContext context = DatabaseManager.OpenContext())
+                {
+                    //Adjust the value and save
+                    Settings joystickCountSetting = DataHelper.GetSettingNoOpen(SettingsConstants.JOYSTICK_COUNT, context);
+                    joystickCountSetting.ValueInt = newJoystickCount;
+                    
+                    context.SaveChanges();
+                }
+            }
+
+            int acquiredCount = DataContainer.ControllerMngr.InitControllers(newJoystickCount);
 
             //Resume inputs
             InputHandler.ResumeRunningInputs();
@@ -908,29 +915,38 @@ namespace TRBot.Main
         {
             int curVControllerCount = DataContainer.ControllerMngr.ControllerCount;
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            Settings joystickCountSetting = DataHelper.GetSettingNoOpen(SettingsConstants.JOYSTICK_COUNT, context);
+            int prevJoystickCount = (int)DataHelper.GetSettingInt(SettingsConstants.JOYSTICK_COUNT, 1L);
+            int newJoystickCount = prevJoystickCount;
 
             int minCount = DataContainer.ControllerMngr.MinControllers;
             int maxCount = DataContainer.ControllerMngr.MaxControllers;
 
             //Validate controller count
-            if (joystickCountSetting.ValueInt < minCount)
+            if (prevJoystickCount < minCount)
             {
-                MsgHandler.QueueMessage($"New controller count of {joystickCountSetting.ValueInt} in database is invalid. Clamping to the min of {minCount}.");
-                joystickCountSetting.ValueInt = minCount;
-                context.SaveChanges();
+                MsgHandler.QueueMessage($"New controller count of {prevJoystickCount} in database is invalid. Clamping to the min of {minCount}.");
+                newJoystickCount = minCount;
             }
-            else if (joystickCountSetting.ValueInt > maxCount)
+            else if (prevJoystickCount > maxCount)
             {
-                MsgHandler.QueueMessage($"New controller count of {joystickCountSetting.ValueInt} in database is invalid. Clamping to the max of {maxCount}.");
-                joystickCountSetting.ValueInt = maxCount;
-                context.SaveChanges();
+                MsgHandler.QueueMessage($"New controller count of {prevJoystickCount} in database is invalid. Clamping to the max of {maxCount}.");
+                newJoystickCount = maxCount;
+            }
+
+            if (prevJoystickCount != newJoystickCount)
+            {
+                using (BotDBContext context = DatabaseManager.OpenContext())
+                {
+                    //Adjust the value and save
+                    Settings joystickCountSetting = DataHelper.GetSettingNoOpen(SettingsConstants.JOYSTICK_COUNT, context);
+                    joystickCountSetting.ValueInt = newJoystickCount;
+
+                    context.SaveChanges();
+                }
             }
 
             //Same count, so ignore
-            if (curVControllerCount == joystickCountSetting.ValueInt)
+            if (curVControllerCount == newJoystickCount)
             {
                 return;
             }
@@ -943,7 +959,7 @@ namespace TRBot.Main
             //Re-initialize the new number of virtual controllers
             DataContainer.ControllerMngr.Dispose();
             DataContainer.ControllerMngr.Initialize();
-            int acquiredCount = DataContainer.ControllerMngr.InitControllers((int)joystickCountSetting.ValueInt);
+            int acquiredCount = DataContainer.ControllerMngr.InitControllers(newJoystickCount);
 
             //Resume inputs
             InputHandler.ResumeRunningInputs();

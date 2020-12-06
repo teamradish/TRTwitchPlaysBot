@@ -30,6 +30,15 @@ See the [syntax walkthrough](./Syntax-Walkthrough.md).
 ## How do I press "a" and "b" at the same time? I need to do special combos!
 Again, see the [syntax walkthrough](./Syntax-Walkthrough.md) :)
 
+## When I type "a a", it holds "a" instead of pressing it twice! What gives?
+This is intentional. When TRBot processes the input sequence, it does so without any delay in between. What you're seeing here is TRBot releasing the first "a" then pressing the second **immediately** after in the same code block.
+
+If you want TRBot to automatically insert artificial delays between your inputs, grant yourself the [usermidinputdelay](./Permission-Documentation.md#usermidinputdelay) ability and set the integer value to the desired delay, in milliseconds. You can do so using the [`UpdateUserAbilityCommand`](../TRBot/TRBot.Commands/Commands/UpdateUserAbilityCommand.cs) (default: "!toggleability"):
+
+- "!toggleability myusername usermidinputdelay true null 50 null" - Will add a 50 millisecond delay between non-blank inputs.
+
+You can remove the delay by changing the "true" argument to "false" to disable the ability.
+
 ## Help! I was modifying the database manually, and now my bot froze!
 Make sure you write or revert your changes to the database.
 
