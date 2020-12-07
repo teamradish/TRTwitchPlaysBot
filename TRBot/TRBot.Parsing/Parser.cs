@@ -26,14 +26,6 @@ using System.Diagnostics;
 namespace TRBot.Parsing
 {
     /// <summary>
-    /// The possible results for parsed input sequences.
-    /// </summary>
-    public enum ParsedInputResults
-    {
-        NormalMsg, Valid, Invalid
-    }
-
-    /// <summary>
     /// The parser for input.
     /// </summary>
     /// <remarks>
@@ -402,7 +394,7 @@ namespace TRBot.Parsing
             //Console.WriteLine("Message: " + message);
 
             //Replace whitespace, populate macros, then expand the string
-            string noWhiteSpace = Regex.Replace(message, @"\s+", string.Empty);
+            string noWhiteSpace = ParserUtilities.RemoveAllWhitespace(message);
 
             string macros = PopulateMacros(noWhiteSpace, macroData);
             //Console.WriteLine("Macros: " + macros);
@@ -414,7 +406,7 @@ namespace TRBot.Parsing
             //Console.WriteLine("Expanded: " + expanded);
 
             //Replace whitespace after populating everything and convert to lowercase
-            string readyLowered = Regex.Replace(expanded, @"\s+", string.Empty).ToLowerInvariant();
+            string readyLowered = ParserUtilities.RemoveAllWhitespace(expanded).ToLowerInvariant();
             //Console.WriteLine("Ready lowered: " + readyLowered);
 
             return readyLowered;
@@ -735,265 +727,6 @@ namespace TRBot.Parsing
         private static int SubComparison(DynamicMacroSub val1, DynamicMacroSub val2)
         {
             return val1.StartIndex.CompareTo(val2.StartIndex);
-        }
-    }
-
-    /// <summary>
-    /// Represents a parsed input.
-    /// </summary>
-    public struct ParsedInput
-    {
-        public string name;
-        public bool hold;
-        public bool release;
-        public int percent;
-        public int duration;
-        public string duration_type;
-        public int controllerPort;
-        public string error;
-
-        /// <summary>
-        /// Returns a default Input.
-        /// </summary>
-        public static ParsedInput Default(in int defaultInputDur) => new ParsedInput(string.Empty, false, false, Parser.PARSER_DEFAULT_PERCENT, defaultInputDur, Parser.PARSER_DEFAULT_DUR_TYPE, 0, string.Empty);
-        
-        public ParsedInput(string nme, in bool hld, in bool relse, in int percnt, in int dur, string durType, in int contPort, in string err)
-        {
-            this.name = nme;
-            this.hold = hld;
-            this.release = relse;
-            this.percent = percnt;
-            this.duration = dur;
-            this.duration_type = durType;
-            this.controllerPort = contPort;
-            this.error = string.Empty;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is ParsedInput inp)
-            {
-                return (this == inp);
-            }
-
-            return false;
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hash = 19;
-                hash = (hash * 37) + ((name == null) ? 0 : name.GetHashCode());
-                hash = (hash * 37) + hold.GetHashCode();
-                hash = (hash * 37) + release.GetHashCode();
-                hash = (hash * 37) + percent.GetHashCode();
-                hash = (hash * 37) + duration.GetHashCode();
-                hash = (hash * 37) + ((duration_type == null) ? 0 : duration_type.GetHashCode());
-                hash = (hash * 37) + controllerPort.GetHashCode();
-                hash = (hash * 37) + ((error == null) ? 0 : error.GetHashCode());
-                return hash;
-            }
-        }
-
-        public static bool operator ==(ParsedInput a, ParsedInput b)
-        {
-            return (a.hold == b.hold && a.release == b.release && a.percent == b.percent
-                    && a.duration_type == b.duration_type && a.duration_type == b.duration_type
-                    && a.name == b.name && a.controllerPort == b.controllerPort && a.error == b.error);
-        }
-
-        public static bool operator !=(ParsedInput a, ParsedInput b)
-        {
-            return !(a == b);
-        }
-
-        public override string ToString()
-        {
-            return $"\"{name}\" {duration}{duration_type} | H:{hold} | R:{release} | P:{percent} | CPort:{controllerPort} | Err:{error}";
-        }
-    }
-
-    /// <summary>
-    /// Represents a fully parsed input sequence.
-    /// </summary>
-    public struct ParsedInputSequence
-    {
-        public ParsedInputResults ParsedInputResult;
-        public List<List<ParsedInput>> Inputs;
-        public int TotalDuration;
-        public string Error;
-
-        public ParsedInputSequence(in ParsedInputResults parsedInputResult, List<List<ParsedInput>> inputs, in int totalDuration, string error)
-        {
-            ParsedInputResult = parsedInputResult;
-            Inputs = inputs;
-            TotalDuration = totalDuration;
-            Error = error;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is ParsedInputSequence inpSeq)
-            {
-                return (this == inpSeq);
-            }
-            return false;
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hash = 17;
-                hash = (hash * 37) + ParsedInputResult.GetHashCode();
-                hash = (hash * 37) + ((Inputs == null) ? 0 : Inputs.GetHashCode());
-                hash = (hash * 37) + TotalDuration.GetHashCode();
-                hash = (hash * 37) + ((Error == null) ? 0 : Error.GetHashCode());
-                return hash;
-            }
-        }
-
-        public static bool operator ==(ParsedInputSequence a, ParsedInputSequence b)
-        {
-            return (a.ParsedInputResult == b.ParsedInputResult
-                    && a.Inputs == b.Inputs && a.TotalDuration == b.TotalDuration && a.Error == b.Error);
-        }
-
-        public static bool operator !=(ParsedInputSequence a, ParsedInputSequence b)
-        {
-            return !(a == b);
-        }
-
-        public override string ToString()
-        {
-            int inputCount = (Inputs == null) ? 0 : Inputs.Count;
-            return $"VType:{ParsedInputResult} | SubInputs:{inputCount} | Duration:{TotalDuration} | Err:{Error}";
-        }
-    }
-
-    /// <summary>
-    /// Options for the parser.
-    /// </summary>
-    public struct ParserOptions
-    {
-        /// <summary>
-        /// The default controller port to use for each parsed input.
-        /// </summary>
-        public int DefaultControllerPort;
-
-        /// <summary>
-        /// The default input duration to use for each parsed input.
-        /// </summary>
-        public int DefaultInputDur;
-
-        /// <summary>
-        /// Whether to cancel parsing early if a given maximum input duration has been exceeded.
-        /// </summary>
-        public bool CheckMaxDur;
-        
-        /// <summary>
-        /// The maximum total input duration the parser will parse.
-        /// </summary>
-        public int MaxInputDur;
-
-        public ParserOptions(in int defControllerPort, in int defaultInputDur, in bool checkMaxDur)
-            : this(defControllerPort, defaultInputDur, checkMaxDur, 0)
-        {
-        }
-
-        public ParserOptions(in int defControllerPort, in int defaultInputDur,
-            in bool checkMaxDur, in int maxInputDur)
-        {
-            DefaultControllerPort = defControllerPort;
-            DefaultInputDur = defaultInputDur;
-            CheckMaxDur = checkMaxDur;
-            MaxInputDur = maxInputDur;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is ParserOptions inpSeq)
-            {
-                return (this == inpSeq);
-            }
-            return false;
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hash = 19;
-                hash = (hash * 37) + DefaultControllerPort.GetHashCode();
-                hash = (hash * 37) + DefaultInputDur.GetHashCode();
-                hash = (hash * 37) + CheckMaxDur.GetHashCode();
-                hash = (hash * 37) + MaxInputDur.GetHashCode();
-                return hash;
-            }
-        }
-
-        public static bool operator ==(ParserOptions a, ParserOptions b)
-        {
-            return (a.DefaultControllerPort == b.DefaultControllerPort && a.DefaultInputDur == b.DefaultInputDur
-                    && a.CheckMaxDur == b.CheckMaxDur && a.MaxInputDur == b.MaxInputDur);
-        }
-        
-        public static bool operator !=(ParserOptions a, ParserOptions b)
-        {
-            return !(a == b);
-        }
-    }
-
-    /// <summary>
-    /// Represents a dynamic macro substitution.
-    /// </summary>
-    public struct DynamicMacroSub
-    {
-        public string MacroName;
-        public int StartIndex;
-        public int EndIndex;
-        public List<string> Variables;
-        
-        public DynamicMacroSub(string macroName, in int startIndex, in int endIndex, List<string> variables)
-        {
-            MacroName = macroName;
-            StartIndex = startIndex;
-            EndIndex = endIndex;
-            Variables = variables;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is DynamicMacroSub dynamicMacroSub)
-            {
-                return (this == dynamicMacroSub);
-            }
-            return false;
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hash = 13;
-                hash = (hash * 37) + ((MacroName == null) ? 0 : MacroName.GetHashCode());
-                hash = (hash * 37) + StartIndex.GetHashCode();
-                hash = (hash * 37) + EndIndex.GetHashCode();
-                hash = (hash * 37) + ((Variables == null) ? 0 : Variables.GetHashCode());
-                return hash;
-            }
-        }
-
-        public static bool operator ==(DynamicMacroSub a, DynamicMacroSub b)
-        {
-            return (a.MacroName == b.MacroName && a.StartIndex == b.StartIndex
-                    && a.EndIndex == b.EndIndex && a.Variables == b.Variables);
-        }
-        
-        public static bool operator !=(DynamicMacroSub a, DynamicMacroSub b)
-        {
-            return !(a == b);
         }
     }
 }
