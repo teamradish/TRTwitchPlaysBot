@@ -68,6 +68,11 @@ namespace TRBot.Permissions
 
         public const string SET_GAME_MESSAGE_ABILITY = "setgamemessage";
 
+        public const string SET_PERIODIC_INPUT_ABILITY = "setperiodicinput";
+        public const string SET_PERIODIC_INPUT_PORT_ABILITY = "setperiodicinputport";
+        public const string SET_PERIODIC_INPUT_TIME_ABILITY = "setperiodicinputtime";
+        public const string SET_PERIODIC_INPUT_SEQUENCE_ABILITY = "setperiodicinputsequence";
+
         //Abilities for games/extras
         public const string BET_ABILITY = "bet";
         public const string DUEL_ABILITY = "duel";

@@ -474,7 +474,7 @@ namespace TRBot.Utilities
         /// Removes all whitespace from a string, including tabs and spaces.
         /// </summary>
         /// <param name="originalStr">The string to remove whitespace from.</param>
-        /// <returns>A string with all whitespace removed. If <paramref name="originalStr"> is null or empty, it is returned instead.</returns>
+        /// <returns>A string with all whitespace removed. If <paramref name="originalStr" /> is null or empty, it is returned instead.</returns>
         public static string RemoveAllWhitespace(string originalStr)
         {
             //Return the original string if null or empty
@@ -485,6 +485,23 @@ namespace TRBot.Utilities
 
             //Replace all whitespace with regex
             return Regex.Replace(originalStr, @"\s+", string.Empty, RegexOptions.Compiled);
+        }
+
+        /// <summary>
+        /// Replaces all whitespace, including tabs, in a string with the space character.
+        /// </summary>
+        /// <param name="originalStr">The string to replace the whitespace in.</param>
+        /// <returns>A string with all whitespace replaced with a space. If <paramref name="originalStr" /> is null or empty, it is returned instead.</returns>
+        public static string ReplaceAllWhitespaceWithSpace(string originalStr)
+        {
+            //Return the original string if null or empty
+            if (string.IsNullOrEmpty(originalStr) == true)
+            {
+                return originalStr;
+            }
+
+            //Replace all whitespace with a simple space to remove tabs and such
+            return Regex.Replace(originalStr, @"\s+", " ", RegexOptions.Compiled);
         }
     }
 }

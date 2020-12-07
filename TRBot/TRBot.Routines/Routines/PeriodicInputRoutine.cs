@@ -24,6 +24,7 @@ using TRBot.Consoles;
 using TRBot.Parsing;
 using TRBot.Misc;
 using TRBot.Data;
+using TRBot.Permissions;
 
 namespace TRBot.Routines
 {
@@ -80,14 +81,14 @@ namespace TRBot.Routines
             //Don't perform the input if it's empty
             if (string.IsNullOrEmpty(periodicInputValue) == true)
             {
-                DataContainer.MessageHandler.QueueMessage($"Failed periodic input: {SettingsConstants.PERIODIC_INPUT_VALUE} is null or empty"); 
+                DataContainer.MessageHandler.QueueMessage($"Failed periodic input: {SettingsConstants.PERIODIC_INPUT_VALUE} is null or empty."); 
                 return;
             }
 
             //Don't perform the input if the controller port is out of range
             if (controllerPort < 0 || controllerPort >= DataContainer.ControllerMngr.ControllerCount)
             {
-                DataContainer.MessageHandler.QueueMessage($"Failed periodic input: The controller port is {controllerPort}, which is out of range for this virtual controller");
+                DataContainer.MessageHandler.QueueMessage($"Failed periodic input: The controller port is {controllerPort}, which is out of range for this virtual controller. Change the \"{SettingsConstants.PERIODIC_INPUT_PORT}\" setting to a valid number.");
                 return;
             }
 
@@ -116,7 +117,7 @@ namespace TRBot.Routines
 
             if (usedConsole.ConsoleInputs.Count == 0)
             {
-                DataContainer.MessageHandler.QueueMessage($"Failed periodic input: The current console, \"{usedConsole.Name}\", does not have any available inputs. Cannot determine length.");
+                DataContainer.MessageHandler.QueueMessage($"Failed periodic input: The current console, \"{usedConsole.Name}\", does not have any available inputs.");
                 return;
             }
 
@@ -169,10 +170,39 @@ namespace TRBot.Routines
                 return;
             }
 
+            /* Perform post-processing */
+            
+            //Validate controller ports
+            InputValidation validation = ParserPostProcess.ValidateInputPorts( inputSequence,
+                DataContainer.ControllerMngr);
+            if (validation.InputValidationType != InputValidationTypes.Valid)
+            {
+                if (string.IsNullOrEmpty(validation.Message) == false)
+                {
+                    DataContainer.MessageHandler.QueueMessage($"Failed periodic input: {validation.Message}");
+                }
+
+                return;
+            }
+
+            //Check for invalid input combinations
+            validation = ParserPostProcess.ValidateInputCombos(inputSequence, usedConsole.InvalidCombos,
+                DataContainer.ControllerMngr, usedConsole);
+            
+            if (validation.InputValidationType != InputValidationTypes.Valid)
+            {
+                if (string.IsNullOrEmpty(validation.Message) == false)
+                {
+                    DataContainer.MessageHandler.QueueMessage($"Failed periodic input: {validation.Message}");
+                }
+
+                return;
+            }
+
             //Now, perform the input
             if (InputHandler.InputsHalted == true)
             {
-                DataContainer.MessageHandler.QueueMessage("Inputs are halted! Unable to perform periodic input.");
+                DataContainer.MessageHandler.QueueMessage("Inputs are currently halted! Unable to perform periodic input.");
             }
             else
             {

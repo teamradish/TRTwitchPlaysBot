@@ -615,10 +615,7 @@ namespace TRBot.Main
                 }
 
                 //Check for invalid input combinations
-                //Invalid combos are lazily loaded from the database and won't be available in the instance we instantiated
-                GameConsole console = context.Consoles.FirstOrDefault(c => c.ID == lastConsoleID);
-                
-                validation = ParserPostProcess.ValidateInputCombos(inputSequence, console.InvalidCombos,
+                validation = ParserPostProcess.ValidateInputCombos(inputSequence, usedConsole.InvalidCombos,
                     DataContainer.ControllerMngr, usedConsole);
                 
                 if (validation.InputValidationType != InputValidationTypes.Valid)

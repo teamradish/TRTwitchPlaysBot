@@ -186,21 +186,25 @@ namespace TRBot.Data
                 new CommandData("slots", "TRBot.Commands.SlotsCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("inputperms", "TRBot.Commands.GlobalInputPermissionsCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("midinputdelay", "TRBot.Commands.MidInputDelayCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("listsyn", "TRBot.Commands.ListInputSynonymsCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("teamsmode", "TRBot.Commands.GetSetTeamsModeCommand", (long)PermissionLevels.Moderator, true, true),
+                new CommandData("teamsmaxport", "TRBot.Commands.GetSetTeamsModeMaxPortCommand", (long)PermissionLevels.Moderator, true, true),
+                new CommandData("periodicinput", "TRBot.Commands.TogglePeriodicInputCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("periodicinputport", "TRBot.Commands.GetSetPeriodicInputPortCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("periodicinputseq", "TRBot.Commands.GetSetPeriodicInputSequenceCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("periodicinputtime", "TRBot.Commands.GetSetPeriodicInputTimeCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
 
                 new CommandData("setmessage", "TRBot.Commands.SetGameMessageCommand", (long)PermissionLevels.VIP, true, true),
-
-                new CommandData("reload", "TRBot.Commands.ReloadCommand", (long)PermissionLevels.Moderator, true, true),
-                new CommandData("listsyn", "TRBot.Commands.ListInputSynonymsCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("addsyn", "TRBot.Commands.AddInputSynonymCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("removesyn", "TRBot.Commands.RemoveInputSynonymCommand", (long)PermissionLevels.Moderator, true, true),
+
+                new CommandData("reload", "TRBot.Commands.ReloadCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("setlevel", "TRBot.Commands.SetUserLevelCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("toggleability", "TRBot.Commands.UpdateUserAbilityCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("restrictinput", "TRBot.Commands.AddRestrictedInputCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("unrestrictinput", "TRBot.Commands.RemoveRestrictedInputCommand", (long)PermissionLevels.Moderator, true, true),
-                new CommandData("teamsmode", "TRBot.Commands.GetSetTeamsModeCommand", (long)PermissionLevels.Moderator, true, true),
-                new CommandData("teamsmaxport", "TRBot.Commands.GetSetTeamsModeMaxPortCommand", (long)PermissionLevels.Moderator, true, true),
 
                 new CommandData("addcmd", "TRBot.Commands.AddCmdCommand", (long)PermissionLevels.Admin, true, true),
                 new CommandData("removecmd", "TRBot.Commands.RemoveCmdCommand", (long)PermissionLevels.Admin, true, true),
@@ -269,7 +273,11 @@ namespace TRBot.Data
                 new PermissionAbility(SET_MID_INPUT_DELAY_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
                 new PermissionAbility(SET_TEAMS_MODE_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
                 new PermissionAbility(SET_TEAMS_MODE_MAX_PORT_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
-                
+                new PermissionAbility(SET_PERIODIC_INPUT_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
+                new PermissionAbility(SET_PERIODIC_INPUT_PORT_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
+                new PermissionAbility(SET_PERIODIC_INPUT_TIME_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
+                new PermissionAbility(SET_PERIODIC_INPUT_SEQUENCE_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
+
                 new PermissionAbility(UPDATE_OTHER_USER_ABILITES, PermissionLevels.Admin, PermissionLevels.Admin),
                 new PermissionAbility(SET_GLOBAL_INPUT_LEVEL_ABILITY, PermissionLevels.Admin, PermissionLevels.Admin),
                 new PermissionAbility(SET_VCONTROLLER_TYPE_ABILITY, PermissionLevels.Admin, PermissionLevels.Admin),

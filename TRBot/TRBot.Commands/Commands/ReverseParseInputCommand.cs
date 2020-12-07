@@ -75,7 +75,7 @@ namespace TRBot.Commands
 
             if (usedConsole.ConsoleInputs.Count == 0)
             {
-                QueueMessage($"The current console, \"{usedConsole.Name}\", does not have any available inputs. Cannot determine length.");
+                QueueMessage($"The current console, \"{usedConsole.Name}\", does not have any available inputs.");
                 return;
             }
 

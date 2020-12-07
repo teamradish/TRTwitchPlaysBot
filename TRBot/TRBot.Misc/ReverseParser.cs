@@ -43,6 +43,15 @@ namespace TRBot.Misc
         }
 
         /// <summary>
+        /// The ways to show durations in the reverse parser.
+        /// </summary>
+        public enum ShowDurationTypes
+        {
+            ShowAllDurations = 0,
+            ShowNonDefaultDurations = 1
+        }
+
+        /// <summary>
         /// Generates an input string given an <see cref="ParsedInputSequence"/>.
         /// </summary>
         /// <param name="inputSequence">The input sequence.</param>
@@ -106,15 +115,25 @@ namespace TRBot.Misc
                         strBuilder.Append(input.percent).Append(Parser.DEFAULT_PARSE_REGEX_PERCENT_INPUT);
                     }
                     
-                    //Divide by 1000 to display seconds properly
                     int duration = input.duration;
-                    if (input.duration_type == Parser.DEFAULT_PARSE_REGEX_SECONDS_INPUT)
-                    {
-                        duration /= 1000;
-                    }
 
-                    strBuilder.Append(duration);
-                    strBuilder.Append(input.duration_type);
+                    //Skip displaying the duration if we should show only non-default durations
+                    //and the duration isn't the default
+                    //Always show durations for blank inputs
+                    if (options.ShowDurationType == ShowDurationTypes.ShowAllDurations
+                       || gameConsole.IsBlankInput(input) == true
+                       || (options.ShowDurationType == ShowDurationTypes.ShowNonDefaultDurations
+                        && options.DefaultDuration != duration))
+                    {
+                        //Divide by 1000 to display seconds properly
+                        if (input.duration_type == Parser.DEFAULT_PARSE_REGEX_SECONDS_INPUT)
+                        {
+                            duration /= 1000;
+                        }
+
+                        strBuilder.Append(duration);
+                        strBuilder.Append(input.duration_type);
+                    }
 
                     //Add plus string if there are more in the subsequence
                     if (j < (inputList.Count - 1))
@@ -267,10 +286,24 @@ namespace TRBot.Misc
             public ShowPortTypes ShowPortType;
             public int DefaultPortNum;
             
+            public ShowDurationTypes ShowDurationType;
+            public int DefaultDuration;
+
             public ReverseParserOptions(in ShowPortTypes showPortType, in int defaultPortNum)
             {
                 ShowPortType = showPortType;
                 DefaultPortNum = defaultPortNum;
+
+                ShowDurationType = ShowDurationTypes.ShowAllDurations;
+                DefaultDuration = 200;
+            }
+
+            public ReverseParserOptions(in ShowPortTypes showPortType, in int defaultPortNum,
+                in ShowDurationTypes showDurType, in int defaultDuration)
+                : this(showPortType, defaultPortNum)
+            {
+                ShowDurationType = showDurType;
+                DefaultDuration = defaultDuration;
             }
 
             public override bool Equals(object obj)
@@ -289,13 +322,16 @@ namespace TRBot.Misc
                     int hash = 59;
                     hash = (hash * 37) + ShowPortType.GetHashCode();
                     hash = (hash * 37) + DefaultPortNum.GetHashCode();
+                    hash = (hash * 37) + ShowDurationType.GetHashCode();
+                    hash = (hash * 37) + DefaultDuration.GetHashCode();
                     return hash;
                 }
             }
 
             public static bool operator ==(ReverseParserOptions a, ReverseParserOptions b)
             {
-                return (a.ShowPortType == b.ShowPortType && a.DefaultPortNum == b.DefaultPortNum);
+                return (a.ShowPortType == b.ShowPortType && a.DefaultPortNum == b.DefaultPortNum
+                    && a.ShowDurationType == b.ShowDurationType && a.DefaultDuration == b.DefaultDuration);
             }
 
             public static bool operator !=(ReverseParserOptions a, ReverseParserOptions b)

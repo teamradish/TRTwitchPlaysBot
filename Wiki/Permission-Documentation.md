@@ -143,9 +143,31 @@ Determines if the user can set the global default input duration through the [`D
 Determines if the user can set the global maximum input sequence duration through the [`MaxInputDurCommand`](../TRBot/TRBot.Commands/Commands/MaxInputDurCommand.cs).
 
 ### setmidinputdelay
-**Default level: Moderator(30)**
+**Default level: Moderator (30)**
 
 Determines if the user can toggle the global mid input delay and set its duration through the [`MidInputDelayCommand`](../TRBot/TRBot.Commands/Commands/MidInputDelayCommand.cs).
+
+### setperiodicinput
+**Default level: Moderator (30)**
+
+Determines if the user can enable or disable the periodic input through the ['TogglePeriodicInputCommand'](../TRBot/TRBot.Commands/Commands/TogglePeriodicInputCommand.cs).
+
+### setperiodicinputport
+**Default level: Moderator (30)**
+
+Determines if the user can set the default periodic input controller port through the ['GetSetPeriodicInputPortCommand'](../TRBot/TRBot.Commands/Commands/GetSetPeriodicInputPortCommand.cs).
+
+### setperiodicinputtime
+**Default level: Moderator (30)**
+
+Determines if the user can set the periodic input interval through the ['GetSetPeriodicInputTimeCommand'](../TRBot/TRBot.Commands/Commands/GetSetPeriodicInputTimeCommand.cs).
+
+### setperiodicinputsequence
+**Default level: Moderator (30)**
+
+Determines if the user can set the periodic input sequence through the ['GetSetPeriodicInputSequenceCommand'](../TRBot/TRBot.Commands/Commands/GetSetPeriodicInputSequenceCommand.cs).
+
+Attempting to set this causes the command to undergo steps to validate that the user setting this value cannot bypass their normal input restrictions. This includes comparing the user's level to the global input permission level and the permission level of each input in the input sequence, checking the user's restricted inputs, and verifying the controller port for each input.
 
 ### updateotheruserabilities
 **Default level: Admin (40)**

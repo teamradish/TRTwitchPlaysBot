@@ -84,6 +84,7 @@ namespace TRBot.Commands
                 if (teamsMode == null)
                 {
                     teamsMode = new Settings(SettingsConstants.TEAMS_MODE_ENABLED, string.Empty, 0L);
+                    context.SettingCollection.Add(teamsMode);
                 }
 
                 teamsMode.ValueInt = (newState == true) ? 1L : 0L;
