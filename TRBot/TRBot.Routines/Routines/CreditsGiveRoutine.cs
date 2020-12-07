@@ -59,9 +59,7 @@ namespace TRBot.Routines
         {
             TimeSpan creditsDiff = currentTimeUTC - CurCreditsTime;
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            long creditsTimeMS = DataHelper.GetSettingIntNoOpen(SettingsConstants.CREDITS_GIVE_TIME, context, -1L);
+            long creditsTimeMS = DataHelper.GetSettingInt(SettingsConstants.CREDITS_GIVE_TIME, -1L);
 
             //Don't do anything if the credits time is less than 0
             if (creditsTimeMS < 0L)
@@ -70,7 +68,7 @@ namespace TRBot.Routines
                 return;
             }
 
-            long creditsGiveAmount = DataHelper.GetSettingIntNoOpen(SettingsConstants.CREDITS_GIVE_AMOUNT, context, 100L);
+            long creditsGiveAmount = DataHelper.GetSettingInt(SettingsConstants.CREDITS_GIVE_AMOUNT, 100L);
 
             //Check if we surpassed the time
             if (creditsDiff.TotalMilliseconds >= creditsTimeMS)
@@ -78,12 +76,16 @@ namespace TRBot.Routines
                 string[] talkedNames = UsersTalked.Keys.ToArray();
                 for (int i = 0; i < talkedNames.Length; i++)
                 {
-                    User user = DataHelper.GetUserNoOpen(talkedNames[i], context);
-                    user.Stats.Credits += creditsGiveAmount;
+                    using (BotDBContext context = DatabaseManager.OpenContext())
+                    {
+                        //Add to each user's credits and save
+                        User user = DataHelper.GetUserNoOpen(talkedNames[i], context);
+                        user.Stats.Credits += creditsGiveAmount;
+
+                        context.SaveChanges();
+                    }
                 }
 
-                context.SaveChanges();
-                
                 UsersTalked.Clear();
 
                 CurCreditsTime = currentTimeUTC;
@@ -97,17 +99,17 @@ namespace TRBot.Routines
             //Check if the user talked before
             if (UsersTalked.ContainsKey(nameToLower) == false)
             {
+                long creditsTimeMS = DataHelper.GetSettingInt(SettingsConstants.CREDITS_GIVE_TIME, -1L);
+
+                //Don't do anything if the credits time is less than 0
+                if (creditsTimeMS < 0L)
+                {
+                    return;
+                }
+
                 //If so, check if they're in the database and not opted out, then add them for gaining credits
                 using (BotDBContext context = DatabaseManager.OpenContext())
                 {
-                    long creditsTimeMS = DataHelper.GetSettingIntNoOpen(SettingsConstants.CREDITS_GIVE_TIME, context, -1L);
-
-                    //Don't do anything if the credits time is less than 0
-                    if (creditsTimeMS < 0L)
-                    {
-                        return;
-                    }
-
                     User user = DataHelper.GetUserNoOpen(nameToLower, context);
                     if (user != null && user.IsOptedOut == false)
                     {

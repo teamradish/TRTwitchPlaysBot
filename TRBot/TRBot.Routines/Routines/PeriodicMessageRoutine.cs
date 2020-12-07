@@ -47,10 +47,8 @@ namespace TRBot.Routines
         {
             TimeSpan msgDiff = currentTimeUTC - CurMsgTime;
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            long periodicMessageTime = DataHelper.GetSettingIntNoOpen(SettingsConstants.PERIODIC_MSG_TIME, context, 1800000L);
-            string periodicMessage = DataHelper.GetSettingStringNoOpen(SettingsConstants.PERIODIC_MESSAGE, context, "This is your friendly Twitch Plays bot :D ! I hope you're enjoying the stream!");
+            long periodicMessageTime = DataHelper.GetSettingInt(SettingsConstants.PERIODIC_MSG_TIME, 1800000L);
+            string periodicMessage = DataHelper.GetSettingString(SettingsConstants.PERIODIC_MESSAGE, "This is your friendly Twitch Plays bot :D ! I hope you're enjoying the stream!");
 
             if (msgDiff.TotalMilliseconds >= periodicMessageTime)
             {

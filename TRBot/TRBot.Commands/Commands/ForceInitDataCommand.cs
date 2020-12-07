@@ -54,19 +54,11 @@ namespace TRBot.Commands
                 }
             }
 
-            using (BotDBContext context = DatabaseManager.OpenContext())
-            {
-                entriesAdded = DataHelper.InitDefaultData(context);
-
-                if (entriesAdded > 0)
-                {
-                    context.SaveChanges();
-                }
-            }
+            entriesAdded = DataHelper.InitDefaultData();
 
             if (entriesAdded > 0)
             {
-                QueueMessage($"Added {entriesAdded} additional entries to the database. Make sure to reload data if you're expecting any new commands.");
+                QueueMessage($"Added {entriesAdded} additional entries to the database. Make sure to reload data if you're expecting new commands.");
             }
             else
             {

@@ -190,22 +190,22 @@ namespace TRBot.Routines
             //Default win is the winner's bet
             long total = winnerKVPair.Value;
 
-            using (BotDBContext context = DatabaseManager.OpenContext())
+            //Go through the list; make sure they still have enough credits
+            for (int i = 0; i < participants.Count; i++)
             {
-                //Go through the list; make sure they still have enough credits
-                for (int i = 0; i < participants.Count; i++)
+                KeyValuePair<string, long> curKVPair = participants[i];
+
+                string curUserName = curKVPair.Key;
+                long curUserBet = curKVPair.Value;
+
+                //Skip over the winner
+                if (curUserName == winnerName)
                 {
-                    KeyValuePair<string, long> curKVPair = participants[i];
+                    continue;
+                }
 
-                    string curUserName = curKVPair.Key;
-                    long curUserBet = curKVPair.Value;
-
-                    //Skip over the winner
-                    if (curUserName == winnerName)
-                    {
-                        continue;
-                    }
-
+                using (BotDBContext context = DatabaseManager.OpenContext())
+                {
                     User betUser = DataHelper.GetUserNoOpen(curUserName, context);
 
                     //If they're no longer in the database or don't have enough credits, disqualify them

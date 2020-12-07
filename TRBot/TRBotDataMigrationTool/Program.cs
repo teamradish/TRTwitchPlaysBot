@@ -190,11 +190,10 @@ namespace TRBotDataMigrationTool
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
                 //Check for and initialize default values if the database was newly created or needs updating
-                int addedDefaultEntries = DataHelper.InitDefaultData(context);
+                int addedDefaultEntries = DataHelper.InitDefaultData();
 
                 if (addedDefaultEntries > 0)
                 {
-                    context.SaveChanges();
                     Console.WriteLine($"Added {addedDefaultEntries} additional entries to the database.");
                 }
             }
@@ -202,8 +201,6 @@ namespace TRBotDataMigrationTool
 
         private static void AddOldBotDataToNewDB(BotData oldBotData)
         {
-            using BotDBContext context = DatabaseManager.OpenContext();
-
             /* Macros */
             Console.WriteLine("Begin importing macros...");
             int macroCount = 0;
@@ -212,43 +209,54 @@ namespace TRBotDataMigrationTool
             {
                 Console.WriteLine($"Importing macro \"{macros.Key}\" to new data.");
 
-                InputMacro newMacro = context.Macros.FirstOrDefault(m => m.MacroName == macros.Key);
-                if (newMacro == null)
+                using (BotDBContext context = DatabaseManager.OpenContext())
                 {
-                    newMacro = new InputMacro();
-                    context.Macros.Add(newMacro);
-                }
+                    InputMacro newMacro = context.Macros.FirstOrDefault(m => m.MacroName == macros.Key);
+                    if (newMacro == null)
+                    {
+                        newMacro = new InputMacro();
+                        context.Macros.Add(newMacro);
+                    }
 
-                newMacro.MacroName = macros.Key;
-                newMacro.MacroValue = macros.Value;
+                    newMacro.MacroName = macros.Key;
+                    newMacro.MacroValue = macros.Value;
+
+                    context.SaveChanges();
+                }
+                
                 macroCount++;
             }
 
             Console.WriteLine($"Completed importing {macroCount} macros!");
-            context.SaveChanges();
 
             /* Memes */
             Console.WriteLine("Begin importing memes...");
             int memeCount = 0;
 
+            
             foreach (KeyValuePair<string, string> memes in oldBotData.Memes)
             {
                 Console.WriteLine($"Importing meme \"{memes.Key}\" to new data.");
 
-                Meme newMeme = context.Memes.FirstOrDefault(m => m.MemeName == memes.Key);
-                if (newMeme == null)
+                using (BotDBContext context = DatabaseManager.OpenContext())
                 {
-                    newMeme = new Meme();
-                    context.Memes.Add(newMeme);
+                    Meme newMeme = context.Memes.FirstOrDefault(m => m.MemeName == memes.Key);
+                    if (newMeme == null)
+                    {
+                        newMeme = new Meme();
+                        context.Memes.Add(newMeme);
+                    }
+
+                    newMeme.MemeName = memes.Key;
+                    newMeme.MemeValue = memes.Value;
+
+                    context.SaveChanges();
                 }
 
-                newMeme.MemeName = memes.Key;
-                newMeme.MemeValue = memes.Value;
                 memeCount++;
             }
 
             Console.WriteLine($"Completed importing {memeCount} memes!");
-            context.SaveChanges();
 
             /* Users */
             Console.WriteLine("Begin importing user data...");
@@ -262,29 +270,31 @@ namespace TRBotDataMigrationTool
 
                 Console.WriteLine($"Importing user \"{oldUserName}\" to new data.");
 
-                TRBot.Data.User newUser = DataHelper.GetUserNoOpen(oldUserName, context);
-                if (newUser == null)
+                using (BotDBContext context = DatabaseManager.OpenContext())
                 {
-                    newUser = new TRBot.Data.User(oldUserName);
-                    context.Users.Add(newUser);
+                    TRBot.Data.User newUser = DataHelper.GetUserNoOpen(oldUserName, context);
+                    if (newUser == null)
+                    {
+                        newUser = new TRBot.Data.User(oldUserName);
+                        context.Users.Add(newUser);
 
-                    //Save changes here so the navigation properties are applied
+                        //Save changes here so the navigation properties are applied
+                        context.SaveChanges();
+                    }
+
+                    //Migrate the user data
+                    MigrateUserFromOldToNew(oldUserObj, newUser);
+
                     context.SaveChanges();
                 }
 
-                //Migrate the user data
-                MigrateUserFromOldToNew(oldUserObj, newUser);
-
                 //Update user abilities
-                DataHelper.UpdateUserAutoGrantAbilities(newUser, context);
+                DataHelper.UpdateUserAutoGrantAbilities(oldUserName);
 
                 userCount++;
             }
 
             Console.WriteLine($"Completed importing {userCount} users!");
-
-            //Save after migrating all users
-            context.SaveChanges();
 
             /* Game Logs */
             Console.WriteLine("Begin importing game logs...");
@@ -328,19 +338,22 @@ namespace TRBotDataMigrationTool
                 newLog.LogMessage = log.LogMessage;
                 newLog.User = log.User;
 
-                context.GameLogs.Add(newLog);
+                using (BotDBContext context = DatabaseManager.OpenContext())
+                {
+                    context.GameLogs.Add(newLog);
+                    context.SaveChanges();
+                }
+                
                 logCount++;
             }
 
             Console.WriteLine($"Completed importing {logCount} game logs!");
 
-            context.SaveChanges();
-
             /* Savestate Logs */
             Console.WriteLine("Skipping importing savestate logs, as they don't exist in TRBot 2.0+.");
 
             /* Silenced Users */
-            Console.WriteLine("Skipping importing silenced users, as TRBot 2.0+ has a new ability system.");
+            Console.WriteLine($"Skipping importing silenced users, as TRBot 2.0+ has a new ability system (see the \"{TRBot.Permissions.PermissionConstants.SILENCED_ABILITY}\" ability).");
 
             /* Input Callbacks */
             Console.WriteLine("Skipping importing input callbacks, as they don't exist in TRBot 2.0+.");
@@ -362,44 +375,48 @@ namespace TRBotDataMigrationTool
                     //Find a console with this name
                     string consoleName = inputConsole.ToString().ToLowerInvariant();
 
-                    GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleName);
-
-                    //Couldn't find the console
-                    if (console == null)
+                    using (BotDBContext context = DatabaseManager.OpenContext())
                     {
-                        continue;
-                    }
+                        GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleName);
 
-                    List<InvalidCombo> newInvalidCombo = new List<InvalidCombo>();
-
-                    for (int i = 0; i < invalidCombos.Count; i++)
-                    {
-                        string inputName = invalidCombos[i];
-
-                        //Try to find a valid input containing this name
-                        InputData inpData = console.InputList.FirstOrDefault(inp => inp.Name == inputName);
-                        if (inpData == null)
+                        //Couldn't find the console
+                        if (console == null)
                         {
                             continue;
                         }
 
-                        //Check if this button is already in an invalid combo and ignore if so
-                        InvalidCombo existing = console.InvalidCombos.FirstOrDefault(ivc => ivc.input_id == inpData.id);
-                        if (existing != null)
-                        {
-                            continue;
-                        }
+                        List<InvalidCombo> newInvalidCombo = new List<InvalidCombo>();
 
-                        //Add the invalid combo
-                        console.InvalidCombos.Add(new InvalidCombo(inpData));
-                        invalidButtonCombos++;
+                        for (int i = 0; i < invalidCombos.Count; i++)
+                        {
+                            string inputName = invalidCombos[i];
+
+                            //Try to find a valid input containing this name
+                            InputData inpData = console.InputList.FirstOrDefault(inp => inp.Name == inputName);
+                            if (inpData == null)
+                            {
+                                continue;
+                            }
+
+                            //Check if this button is already in an invalid combo and ignore if so
+                            InvalidCombo existing = console.InvalidCombos.FirstOrDefault(ivc => ivc.InputID == inpData.ID);
+                            if (existing != null)
+                            {
+                                continue;
+                            }
+
+                            //Add the invalid combo
+                            console.InvalidCombos.Add(new InvalidCombo(inpData));
+
+                            context.SaveChanges();
+
+                            invalidButtonCombos++;
+                        }
                     }
                 }
             }
 
             Console.WriteLine($"Completed importing {invalidButtonCombos} invalid button combos!");
-
-            context.SaveChanges();
 
             /* Input Synonyms */
             Console.WriteLine("Begin importing input synonyms...");
@@ -416,27 +433,32 @@ namespace TRBotDataMigrationTool
                 string consoleName = kvPair.Key.ToString();
                 Dictionary<string, string> synonyms = kvPair.Value;
 
-                GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleName);
-
-                //Couldn't find the console
-                if (console == null)
+                using (BotDBContext context = DatabaseManager.OpenContext())
                 {
-                    continue;
-                }
+                    GameConsole console = context.Consoles.FirstOrDefault(c => c.Name == consoleName);
 
-                //Add all synonyms if they don't exist
-                foreach (KeyValuePair<string, string> synonymKV in synonyms)
-                {
-                    string synonymName = synonymKV.Key;
-                    InputSynonym synonym = context.InputSynonyms.FirstOrDefault(s => s.SynonymName == synonymName);
-
-                    if (synonym != null)
+                    //Couldn't find the console
+                    if (console == null)
                     {
                         continue;
                     }
 
-                    InputSynonym newSyn = new InputSynonym(console.id, synonymName, synonymKV.Value);
-                    context.InputSynonyms.Add(newSyn);
+                    //Add all synonyms if they don't exist
+                    foreach (KeyValuePair<string, string> synonymKV in synonyms)
+                    {
+                        string synonymName = synonymKV.Key;
+                        InputSynonym synonym = context.InputSynonyms.FirstOrDefault(s => s.SynonymName == synonymName);
+
+                        if (synonym != null)
+                        {
+                            continue;
+                        }
+
+                        InputSynonym newSyn = new InputSynonym(console.ID, synonymName, synonymKV.Value);
+                        context.InputSynonyms.Add(newSyn);
+                        
+                        context.SaveChanges();
+                    }
                 }
 
                 importedSynonyms++;
@@ -444,18 +466,16 @@ namespace TRBotDataMigrationTool
 
             Console.WriteLine($"Completed importing {importedSynonyms} input synonyms!");
 
-            context.SaveChanges();
-
             /* Other changes */
             Console.WriteLine("Now importing remaining bot data...");
 
-            AddSettingStrHelper(SettingsConstants.GAME_MESSAGE, oldBotData.GameMessage, context);
-            AddSettingStrHelper(SettingsConstants.INFO_MESSAGE, oldBotData.InfoMessage, context);
-            AddSettingIntHelper(SettingsConstants.LAST_CONSOLE, oldBotData.LastConsole, context);
-            AddSettingIntHelper(SettingsConstants.DEFAULT_INPUT_DURATION, oldBotData.DefaultInputDuration, context);
-            AddSettingIntHelper(SettingsConstants.MAX_INPUT_DURATION, oldBotData.MaxInputDuration, context);
-            AddSettingIntHelper(SettingsConstants.JOYSTICK_COUNT, oldBotData.JoystickCount, context);
-            AddSettingIntHelper(SettingsConstants.LAST_VCONTROLLER_TYPE, oldBotData.LastVControllerType, context);
+            AddSettingStrHelper(SettingsConstants.GAME_MESSAGE, oldBotData.GameMessage);
+            AddSettingStrHelper(SettingsConstants.INFO_MESSAGE, oldBotData.InfoMessage);
+            AddSettingIntHelper(SettingsConstants.LAST_CONSOLE, oldBotData.LastConsole);
+            AddSettingIntHelper(SettingsConstants.DEFAULT_INPUT_DURATION, oldBotData.DefaultInputDuration);
+            AddSettingIntHelper(SettingsConstants.MAX_INPUT_DURATION, oldBotData.MaxInputDuration);
+            AddSettingIntHelper(SettingsConstants.JOYSTICK_COUNT, oldBotData.JoystickCount);
+            AddSettingIntHelper(SettingsConstants.LAST_VCONTROLLER_TYPE, oldBotData.LastVControllerType);
 
             AccessLevels.Levels inputPermLvl = (AccessLevels.Levels)oldBotData.InputPermissions;
             long finalPermVal = oldBotData.InputPermissions;
@@ -464,85 +484,93 @@ namespace TRBotDataMigrationTool
                 finalPermVal = (long)permLvl;
             }
 
-            AddSettingIntHelper(SettingsConstants.GLOBAL_INPUT_LEVEL, finalPermVal, context);
-
-            context.SaveChanges();
+            AddSettingIntHelper(SettingsConstants.GLOBAL_INPUT_LEVEL, finalPermVal);
 
             Console.WriteLine("Finished importing all bot data!");
         }
 
         private static void AddOldBotSettingsToNewDB(TRBotDataMigrationTool.Settings oldBotSettings)
         {
-            using BotDBContext context = DatabaseManager.OpenContext();
-
             /* Client Settings */
             Console.WriteLine("Beginning import of various bot settings...");
 
-            AddSettingIntHelper(SettingsConstants.CLIENT_SERVICE_TYPE, (long)oldBotSettings.ClientSettings.ClientType, context);
+            AddSettingIntHelper(SettingsConstants.CLIENT_SERVICE_TYPE, (long)oldBotSettings.ClientSettings.ClientType);
             
             /* Message Settings */
             //The original periodic message time is in minutes, so convert it to milliseconds
-            AddSettingIntHelper(SettingsConstants.PERIODIC_MSG_TIME, oldBotSettings.MsgSettings.MessageTime * 60L * 1000L, context);
-            AddSettingIntHelper(SettingsConstants.MESSAGE_COOLDOWN, (long)oldBotSettings.MsgSettings.MessageCooldown, context);
-            AddSettingStrHelper(SettingsConstants.CONNECT_MESSAGE, oldBotSettings.MsgSettings.ConnectMessage, context);
-            AddSettingStrHelper(SettingsConstants.RECONNECTED_MESSAGE, oldBotSettings.MsgSettings.ReconnectedMsg, context);
-            AddSettingStrHelper(SettingsConstants.PERIODIC_MESSAGE, oldBotSettings.MsgSettings.PeriodicMessage, context);
-            AddSettingStrHelper(SettingsConstants.AUTOPROMOTE_MESSAGE, oldBotSettings.MsgSettings.AutoWhitelistMsg, context);
-            AddSettingStrHelper(SettingsConstants.NEW_USER_MESSAGE, oldBotSettings.MsgSettings.NewUserMsg, context);
-            AddSettingStrHelper(SettingsConstants.BEING_HOSTED_MESSAGE, oldBotSettings.MsgSettings.BeingHostedMsg, context);
-            AddSettingStrHelper(SettingsConstants.NEW_SUBSCRIBER_MESSAGE, oldBotSettings.MsgSettings.NewSubscriberMsg, context);
-            AddSettingStrHelper(SettingsConstants.RESUBSCRIBER_MESSAGE, oldBotSettings.MsgSettings.ReSubscriberMsg, context);
+            AddSettingIntHelper(SettingsConstants.PERIODIC_MSG_TIME, oldBotSettings.MsgSettings.MessageTime * 60L * 1000L);
+            AddSettingIntHelper(SettingsConstants.MESSAGE_COOLDOWN, (long)oldBotSettings.MsgSettings.MessageCooldown);
+            AddSettingStrHelper(SettingsConstants.CONNECT_MESSAGE, oldBotSettings.MsgSettings.ConnectMessage);
+            AddSettingStrHelper(SettingsConstants.RECONNECTED_MESSAGE, oldBotSettings.MsgSettings.ReconnectedMsg);
+            AddSettingStrHelper(SettingsConstants.PERIODIC_MESSAGE, oldBotSettings.MsgSettings.PeriodicMessage);
+            AddSettingStrHelper(SettingsConstants.AUTOPROMOTE_MESSAGE, oldBotSettings.MsgSettings.AutoWhitelistMsg);
+            AddSettingStrHelper(SettingsConstants.NEW_USER_MESSAGE, oldBotSettings.MsgSettings.NewUserMsg);
+            AddSettingStrHelper(SettingsConstants.BEING_HOSTED_MESSAGE, oldBotSettings.MsgSettings.BeingHostedMsg);
+            AddSettingStrHelper(SettingsConstants.NEW_SUBSCRIBER_MESSAGE, oldBotSettings.MsgSettings.NewSubscriberMsg);
+            AddSettingStrHelper(SettingsConstants.RESUBSCRIBER_MESSAGE, oldBotSettings.MsgSettings.ReSubscriberMsg);
 
             /* Bingo Settings */
-            AddSettingIntHelper(SettingsConstants.BINGO_ENABLED, (oldBotSettings.BingoSettings.UseBingo == true) ? 1L : 0L, context);
-            AddSettingIntHelper(SettingsConstants.BINGO_PIPE_PATH_IS_RELATIVE, 0L, context);
-            AddSettingStrHelper(SettingsConstants.BINGO_PIPE_PATH, oldBotSettings.BingoSettings.BingoPipeFilePath, context);
+            AddSettingIntHelper(SettingsConstants.BINGO_ENABLED, (oldBotSettings.BingoSettings.UseBingo == true) ? 1L : 0L);
+            AddSettingIntHelper(SettingsConstants.BINGO_PIPE_PATH_IS_RELATIVE, 0L);
+            AddSettingStrHelper(SettingsConstants.BINGO_PIPE_PATH, oldBotSettings.BingoSettings.BingoPipeFilePath);
 
             /* Credits Settings */
             //The original credits time is in minutes, so convert it to milliseconds
-            AddSettingIntHelper(SettingsConstants.CREDITS_GIVE_TIME, (long)oldBotSettings.CreditsTime * 60L * 1000L, context);
-            AddSettingIntHelper(SettingsConstants.CREDITS_GIVE_AMOUNT, oldBotSettings.CreditsAmount, context);
-            AddSettingIntHelper(SettingsConstants.BOT_MSG_CHAR_LIMIT, oldBotSettings.BotMessageCharLimit, context);
-            AddSettingIntHelper(SettingsConstants.MAIN_THREAD_SLEEP,  oldBotSettings.MainThreadSleep, context);
+            AddSettingIntHelper(SettingsConstants.CREDITS_GIVE_TIME, (long)oldBotSettings.CreditsTime * 60L * 1000L);
+            AddSettingIntHelper(SettingsConstants.CREDITS_GIVE_AMOUNT, oldBotSettings.CreditsAmount);
+            AddSettingIntHelper(SettingsConstants.BOT_MSG_CHAR_LIMIT, oldBotSettings.BotMessageCharLimit);
+            AddSettingIntHelper(SettingsConstants.MAIN_THREAD_SLEEP,  oldBotSettings.MainThreadSleep);
 
             /* Autopromote Settings */
-            AddSettingIntHelper(SettingsConstants.AUTO_PROMOTE_ENABLED, (oldBotSettings.AutoWhitelistEnabled == true) ? 1L : 0L, context);
-            AddSettingIntHelper(SettingsConstants.AUTO_PROMOTE_INPUT_REQ, oldBotSettings.AutoWhitelistInputCount, context);
+            AddSettingIntHelper(SettingsConstants.AUTO_PROMOTE_ENABLED, (oldBotSettings.AutoWhitelistEnabled == true) ? 1L : 0L);
+            AddSettingIntHelper(SettingsConstants.AUTO_PROMOTE_INPUT_REQ, oldBotSettings.AutoWhitelistInputCount);
 
             /* Chatbot Settings */
-            AddSettingIntHelper(SettingsConstants.CHATBOT_ENABLED, (oldBotSettings.UseChatBot == true) ? 1L : 0L, context);
-            AddSettingIntHelper(SettingsConstants.CHATBOT_SOCKET_PATH_IS_RELATIVE, 1L, context);
-            AddSettingStrHelper(SettingsConstants.CHATBOT_SOCKET_PATH, oldBotSettings.ChatBotSocketFilename, context);
-
-            context.SaveChanges();
+            AddSettingIntHelper(SettingsConstants.CHATBOT_ENABLED, (oldBotSettings.UseChatBot == true) ? 1L : 0L);
+            AddSettingIntHelper(SettingsConstants.CHATBOT_SOCKET_PATH_IS_RELATIVE, 1L);
+            AddSettingStrHelper(SettingsConstants.CHATBOT_SOCKET_PATH, oldBotSettings.ChatBotSocketFilename);
 
             Console.WriteLine("Finished importing all bot settings!");
         }
 
-        private static void AddSettingIntHelper(string settingKey, long oldVal, BotDBContext context)
+        private static void AddSettingIntHelper(string settingKey, long oldVal)
         {
-            TRBot.Data.Settings setting = DataHelper.GetSettingNoOpen(settingKey, context);
-            if (setting == null)
-            {
-                setting = new TRBot.Data.Settings();
-                setting.key = settingKey;
-                context.SettingCollection.Add(setting);
-            }
+            Console.WriteLine($"Importing int data into new setting \"{settingKey}\".");
 
-            setting.value_int = oldVal;
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                TRBot.Data.Settings setting = DataHelper.GetSettingNoOpen(settingKey, context);
+                if (setting == null)
+                {
+                    setting = new TRBot.Data.Settings();
+                    setting.Key = settingKey;
+                    context.SettingCollection.Add(setting);
+                }
+
+                setting.ValueInt = oldVal;
+
+                context.SaveChanges();
+            }
         }
 
-        private static void AddSettingStrHelper(string settingKey, string oldVal, BotDBContext context)
+        private static void AddSettingStrHelper(string settingKey, string oldVal)
         {
-            TRBot.Data.Settings setting = DataHelper.GetSettingNoOpen(settingKey, context);
-            if (setting == null)
-            {
-                setting = new TRBot.Data.Settings();
-                setting.key = settingKey;
-                context.SettingCollection.Add(setting);
-            }
+            Console.WriteLine($"Importing string data into new setting \"{settingKey}\".");
 
-            setting.value_str = oldVal;
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                TRBot.Data.Settings setting = DataHelper.GetSettingNoOpen(settingKey, context);
+                if (setting == null)
+                {
+                    setting = new TRBot.Data.Settings();
+                    setting.Key = settingKey;
+                    context.SettingCollection.Add(setting);
+                }
+
+                setting.ValueStr = oldVal;
+
+                context.SaveChanges();
+            }
         }
 
         private static void MigrateUserFromOldToNew(TRBotDataMigrationTool.User oldUserObj, TRBot.Data.User newUser)

@@ -127,16 +127,12 @@ namespace TRBot.Main
             
             Console.WriteLine("Checking to initialize default values for missing database entries.");
 
-            using (BotDBContext context = DatabaseManager.OpenContext())
-            {
-                //Check for and initialize default values if the database was newly created or needs updating
-                int addedDefaultEntries = DataHelper.InitDefaultData(context);
+            //Check for and initialize default values if the database was newly created or needs updating
+            int addedDefaultEntries = DataHelper.InitDefaultData();
 
-                if (addedDefaultEntries > 0)
-                {
-                    context.SaveChanges();
-                    Console.WriteLine($"Added {addedDefaultEntries} additional entries to the database.");
-                }
+            if (addedDefaultEntries > 0)
+            {
+                Console.WriteLine($"Added {addedDefaultEntries} additional entries to the database.");
             }
 
             Console.WriteLine("Initializing client service");
