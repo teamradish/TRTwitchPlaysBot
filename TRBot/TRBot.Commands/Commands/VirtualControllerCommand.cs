@@ -70,9 +70,7 @@ namespace TRBot.Commands
         {
             List<string> arguments = args.Command.ArgumentsAsList;
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
-            long lastVControllerType = DataHelper.GetSettingIntNoOpen(SettingsConstants.LAST_VCONTROLLER_TYPE, context, 0L);
+            long lastVControllerType = DataHelper.GetSettingInt(SettingsConstants.LAST_VCONTROLLER_TYPE, 0L);
             VirtualControllerTypes curVCType = (VirtualControllerTypes)lastVControllerType;
 
             //See the virtual controller
@@ -89,13 +87,16 @@ namespace TRBot.Commands
                 return;
             }
 
-            //Check if the user has the ability to set the type
-            User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
-
-            if (user != null && user.HasEnabledAbility(PermissionConstants.SET_VCONTROLLER_TYPE_ABILITY) == false)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage("You don't have the ability to set the virtual controller type!");
-                return;
+                //Check if the user has the ability to set the type
+                User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
+
+                if (user != null && user.HasEnabledAbility(PermissionConstants.SET_VCONTROLLER_TYPE_ABILITY) == false)
+                {
+                    QueueMessage("You don't have the ability to set the virtual controller type!");
+                    return;
+                }
             }
 
             string vControllerStr = arguments[0];
@@ -121,11 +122,14 @@ namespace TRBot.Commands
                 return;
             }
             
-            //Set the value and save
-            Settings lastVControllerSetting = DataHelper.GetSettingNoOpen(SettingsConstants.LAST_VCONTROLLER_TYPE, context);
-            lastVControllerSetting.ValueInt = (long)parsedVCType;
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                //Set the value and save
+                Settings lastVControllerSetting = DataHelper.GetSettingNoOpen(SettingsConstants.LAST_VCONTROLLER_TYPE, context);
+                lastVControllerSetting.ValueInt = (long)parsedVCType;
 
-            context.SaveChanges();
+                context.SaveChanges();
+            }
 
             //Stop and halt all inputs
             InputHandler.StopAndHaltAllInputs();
@@ -154,23 +158,35 @@ namespace TRBot.Commands
                 int minControllerCount = DataContainer.ControllerMngr.MinControllers;
                 int maxControllerCount = DataContainer.ControllerMngr.MaxControllers;
 
-                Settings joystickCountSetting = DataHelper.GetSettingNoOpen(SettingsConstants.JOYSTICK_COUNT, context);
-                if (joystickCountSetting.ValueInt < minControllerCount)
+                int joystickCount = (int)DataHelper.GetSettingInt(SettingsConstants.JOYSTICK_COUNT, 0L);
+                int newJoystickCount = joystickCount;
+
+                if (joystickCount < minControllerCount)
                 {
-                   QueueMessage($"Controller count of {joystickCountSetting.ValueInt} is invalid. Clamping to the min of {minControllerCount}.");
-                   joystickCountSetting.ValueInt = minControllerCount;
-                   context.SaveChanges();
+                   QueueMessage($"Controller count of {joystickCount} is invalid. Clamping to the min of {minControllerCount}.");
+                   newJoystickCount = minControllerCount;
                 }
-                else if (joystickCountSetting.ValueInt > maxControllerCount)
+                else if (joystickCount > maxControllerCount)
                 {
-                   QueueMessage($"Controller count of {joystickCountSetting.ValueInt} is invalid. Clamping to the max of {maxControllerCount}.");
-                   joystickCountSetting.ValueInt = maxControllerCount;
-                   context.SaveChanges();
+                   QueueMessage($"Controller count of {joystickCount} is invalid. Clamping to the max of {maxControllerCount}.");
+                   newJoystickCount = maxControllerCount;
                 }
 
-                int acquiredCount = DataContainer.ControllerMngr.InitControllers((int)joystickCountSetting.ValueInt);
+                if (joystickCount != newJoystickCount)
+                {
+                    using (BotDBContext context = DatabaseManager.OpenContext())
+                    {
+                        //Adjust the joystick count setting
+                        Settings joystickCountSetting = DataHelper.GetSettingNoOpen(SettingsConstants.JOYSTICK_COUNT, context);
+                        joystickCountSetting.ValueInt = newJoystickCount;
+                        
+                        context.SaveChanges();
+                    }
+                }
 
-                QueueMessage($"Set virtual controller to {parsedVCType} with {acquiredCount} controllers and reset all running inputs!");
+                int acquiredCount = DataContainer.ControllerMngr.InitControllers(newJoystickCount);
+
+                QueueMessage($"Set virtual controller to {parsedVCType} with {acquiredCount} controller(s) and reset all running inputs!");
             }
             catch (Exception e)
             {

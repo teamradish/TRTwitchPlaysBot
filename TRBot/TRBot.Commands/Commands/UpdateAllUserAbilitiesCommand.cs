@@ -58,13 +58,11 @@ namespace TRBot.Commands
 
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
-
                 //Get the user calling this
                 string thisUserName = args.Command.ChatMessage.Username.ToLowerInvariant();
                 usedName = thisUserName;
 
                 User thisUser = DataHelper.GetUserNoOpen(thisUserName, context);
-                User changedUser = thisUser;
 
                 //Check to update another user's abilities
                 if (arguments.Count == 1)
@@ -78,7 +76,7 @@ namespace TRBot.Commands
 
                     string otherUserName = arguments[0].ToLowerInvariant();
 
-                    changedUser = DataHelper.GetUserNoOpen(otherUserName, context);
+                    User changedUser = DataHelper.GetUserNoOpen(otherUserName, context);
 
                     if (changedUser == null)
                     {

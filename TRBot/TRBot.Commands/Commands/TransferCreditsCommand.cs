@@ -48,38 +48,51 @@ namespace TRBot.Commands
                 return;
             }
 
-            using BotDBContext context = DatabaseManager.OpenContext();
+            string creditsName = DataHelper.GetCreditsName();
+            string giverName = args.Command.ChatMessage.Username.ToLowerInvariant();
+            long giverCredits = 0L;
 
-            string creditsName = DataHelper.GetCreditsNameNoOpen(context);
-
-            string giverName = args.Command.ChatMessage.Username;
-            User giverUser = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
-
-            if (giverUser.HasEnabledAbility(PermissionConstants.TRANSFER_ABILITY) == false)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage($"You do not have the ability to transfer !");
+                User giverUser = DataHelper.GetUserNoOpen(giverName, context);
+    
+                if (giverUser.HasEnabledAbility(PermissionConstants.TRANSFER_ABILITY) == false)
+                {
+                    QueueMessage($"You do not have the ability to transfer !");
+                    return;
+                }
+    
+                if (giverUser.IsOptedOut == true)
+                {
+                    QueueMessage("You cannot transfer while opted out of stats.");
+                    return;
+                }
+
+                giverCredits = giverUser.Stats.Credits;
+            }
+
+            string receiverName = arguments[0].ToLowerInvariant();
+            if (giverName == receiverName)
+            {
+                QueueMessage($"You cannot transfer {creditsName.Pluralize(false, 0)} to yourself!");
                 return;
             }
 
-            if (giverUser.IsOptedOut == true)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage("You cannot transfer while opted out of stats.");
-                return;
-            }
+                User receiverUser = DataHelper.GetUserNoOpen(receiverName, context);
 
-            string receiverName = arguments[0];
-            User receiverUser = DataHelper.GetUserNoOpen(receiverName, context);
+                if (receiverUser == null)
+                {
+                    QueueMessage("This user does not exist in the database!");
+                    return;
+                }
 
-            if (receiverUser == null)
-            {
-                QueueMessage("This user does not exist in the database!");
-                return;
-            }
-
-            if (receiverUser.IsOptedOut == true)
-            {
-                QueueMessage("This user is opted out of stats, so you can't transfer to them!");
-                return;
+                if (receiverUser.IsOptedOut == true)
+                {
+                    QueueMessage("This user is opted out of stats, so you can't transfer to them!");
+                    return;
+                }
             }
 
             string transferAmountStr = arguments[1];
@@ -96,18 +109,25 @@ namespace TRBot.Commands
                 return;
             }
 
-            if (transferAmount > giverUser.Stats.Credits)
+            if (transferAmount > giverCredits)
             {
                 QueueMessage($"Transfer amount is greater than {creditsName.Pluralize(false, 0)}!");
                 return;
             }
 
-            giverUser.Stats.Credits -= transferAmount;
-            receiverUser.Stats.Credits += transferAmount;
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                User giverUser = DataHelper.GetUserNoOpen(giverName, context);
+                User receiverUser = DataHelper.GetUserNoOpen(receiverName, context);
 
-            context.SaveChanges();
-                
-            QueueMessage($"{giverUser.Name} has transferred {transferAmount} {creditsName.Pluralize(false, transferAmount)} to {receiverUser.Name} :D !");
+                //Transfer credits and save
+                giverUser.Stats.Credits -= transferAmount;
+                receiverUser.Stats.Credits += transferAmount;
+
+                context.SaveChanges();
+            }
+
+            QueueMessage($"{giverName} has transferred {transferAmount} {creditsName.Pluralize(false, transferAmount)} to {receiverName} :D !");
         }
     }
 }

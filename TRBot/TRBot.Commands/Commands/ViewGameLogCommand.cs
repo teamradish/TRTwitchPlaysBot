@@ -46,10 +46,13 @@ namespace TRBot.Commands
 
             int logNum = 0;
 
-            using BotDBContext context = DatabaseManager.OpenContext();
+            List<GameLog> gameLogs = null;
 
-            //Order by ascending for most recent
-            List<GameLog> gameLogs = context.GameLogs.OrderBy(log => log.LogDateTime).ToList();
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                //Order by ascending for most recent
+                gameLogs = context.GameLogs.OrderBy(log => log.LogDateTime).ToList();
+            }
 
             //If no log number was specified, use the most recent one
             if (arguments.Count == 0)
@@ -82,16 +85,21 @@ namespace TRBot.Commands
 
             GameLog gameLog = gameLogs[logNum];
 
-            User user = DataHelper.GetUserNoOpen(gameLog.User, context);
+            string userName = string.Empty;
 
-            //Don't display username if they opted out
-            if (user != null && user.IsOptedOut == false)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage($"{gameLog.LogDateTime} (UTC) --> {gameLog.User} : {gameLog.LogMessage}");
-            }
-            else
-            {
-                QueueMessage($"{gameLog.LogDateTime} (UTC) --> {gameLog.LogMessage}");
+                User logUser = DataHelper.GetUserNoOpen(gameLog.User, context);
+
+                //Don't display username if they opted out
+                if (logUser != null && logUser.IsOptedOut == false)
+                {
+                    QueueMessage($"{gameLog.LogDateTime} (UTC) --> {gameLog.User} : {gameLog.LogMessage}");
+                }
+                else
+                {
+                    QueueMessage($"{gameLog.LogDateTime} (UTC) --> {gameLog.LogMessage}");
+                }
             }
         }
     }

@@ -45,25 +45,27 @@ namespace TRBot.Commands
                 return;
             }
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
             string infoUsername = (arguments.Count == 1) ? arguments[0].ToLowerInvariant() : args.Command.ChatMessage.Username.ToLowerInvariant();
-            User infoUser = DataHelper.GetUserNoOpen(infoUsername, context);
 
-            if (infoUser == null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                QueueMessage($"User does not exist in database!");
-                return;
-            }
+                User infoUser = DataHelper.GetUserNoOpen(infoUsername, context);
 
-            if (infoUser.IsOptedOut == true)
-            {
-                QueueMessage($"User: {infoUser.Name} | Level: {infoUser.Level} ({(PermissionLevels)infoUser.Level}) | Controller Port: {infoUser.ControllerPort}");
-                return;
-            }
+                if (infoUser == null)
+                {
+                    QueueMessage($"User does not exist in database!");
+                    return;
+                }
 
-            //Print the user's information
-            QueueMessage($"User: {infoUser.Name} | Level: {infoUser.Level} ({(PermissionLevels)infoUser.Level}) | Controller Port: {infoUser.ControllerPort} | Total Inputs: {infoUser.Stats.ValidInputCount} | Total Messages: {infoUser.Stats.TotalMessageCount}");
+                if (infoUser.IsOptedOut == true)
+                {
+                    QueueMessage($"User: {infoUser.Name} | Level: {infoUser.Level} ({(PermissionLevels)infoUser.Level}) | Controller Port: {infoUser.ControllerPort}");
+                    return;
+                }
+
+                //Print the user's information
+                QueueMessage($"User: {infoUser.Name} | Level: {infoUser.Level} ({(PermissionLevels)infoUser.Level}) | Controller Port: {infoUser.ControllerPort} | Total Inputs: {infoUser.Stats.ValidInputCount} | Total Messages: {infoUser.Stats.TotalMessageCount}");
+            }
         }
     }
 }

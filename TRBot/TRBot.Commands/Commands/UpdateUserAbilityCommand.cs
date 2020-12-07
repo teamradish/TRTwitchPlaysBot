@@ -52,18 +52,15 @@ namespace TRBot.Commands
                 return;
             }
 
-            using BotDBContext context = DatabaseManager.OpenContext();
-
             //Get the user calling this
             string thisUserName = args.Command.ChatMessage.Username.ToLowerInvariant();
 
-            User thisUser = DataHelper.GetUserNoOpen(thisUserName, context);
-
-            string username = arguments[0];
+            string abilityUserName = arguments[0].ToLowerInvariant();
             string abilityName = arguments[1].ToLowerInvariant();
             string abilityEnabledStr = arguments[2].ToLowerInvariant();
 
-            User abilityUser = DataHelper.GetUserNoOpen(username, context);
+            User thisUser = DataHelper.GetUser(thisUserName);
+            User abilityUser = DataHelper.GetUser(abilityUserName);
 
             if (abilityUser == null)
             {
@@ -71,7 +68,12 @@ namespace TRBot.Commands
                 return;
             }
 
-            PermissionAbility permAbility = context.PermAbilities.FirstOrDefault(p => p.Name == abilityName);
+            PermissionAbility permAbility = null;
+
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                permAbility = context.PermAbilities.FirstOrDefault(p => p.Name == abilityName);
+            }
 
             if (permAbility == null)
             {
@@ -79,7 +81,7 @@ namespace TRBot.Commands
                 return;
             }
 
-            if (thisUser != abilityUser && thisUser.Level <= abilityUser.Level)
+            if (thisUser.Name != abilityUser.Name && thisUser.Level <= abilityUser.Level)
             {
                 QueueMessage("You cannot modify abilities for other users with levels greater than or equal to yours!");
                 return;
@@ -103,78 +105,96 @@ namespace TRBot.Commands
                 return;
             }
 
-            UserAbility newUserAbility = null;
-            abilityUser.TryGetAbility(abilityName, out newUserAbility);
+            string valueStrArg = string.Empty;
+            string valueIntArg = string.Empty;
+            string expirationArg = string.Empty;
+            int valueInt = 0;
 
-            bool shouldAdd = false;
-
-            if (newUserAbility == null)
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                newUserAbility = new UserAbility();
-                shouldAdd = true;
-            }
+                UserAbility newUserAbility = null;
 
-            newUserAbility.PermabilityID = permAbility.ID;
-            newUserAbility.UserID = abilityUser.ID;
-            newUserAbility.GrantedByLevel = thisUser.Level;
-            newUserAbility.SetEnabledState(enabledState);
+                abilityUser = DataHelper.GetUserNoOpen(abilityUserName, context);
+                abilityUser.TryGetAbility(abilityName, out newUserAbility);
 
-            if (arguments.Count == 2)
-            {
+                bool shouldAdd = false;
+
+                if (newUserAbility == null)
+                {
+                    Console.WriteLine($"New ability {abilityName}");
+
+                    newUserAbility = new UserAbility();
+                    shouldAdd = true;
+                }
+
+                newUserAbility.PermabilityID = permAbility.ID;
+                newUserAbility.UserID = abilityUser.ID;
+                newUserAbility.GrantedByLevel = thisUser.Level;
+                newUserAbility.SetEnabledState(enabledState);
+
+                //If there are only three arguments, enable/disable the ability
+                if (arguments.Count == 3)
+                {
+                    if (shouldAdd == true)
+                    {
+                        Console.WriteLine($"Adding ability {abilityName}");
+                        abilityUser.UserAbilities.Add(newUserAbility);
+                    }
+
+                    if (enabledState == true)
+                    {
+                        QueueMessage($"Enabled the \"{abilityName}\" ability for {abilityUser.Name}!");
+                    }
+                    else
+                    {
+                        QueueMessage($"Disabled the \"{abilityName}\" ability for {abilityUser.Name}!");
+                    }
+
+                    //Save and exit here
+                    context.SaveChanges();
+
+                    return;
+                }
+
+                valueStrArg = arguments[3];
+                valueIntArg = arguments[4];
+                expirationArg = arguments[5].ToLowerInvariant();
+
+                newUserAbility.ValueStr = valueStrArg;
+
+                //Validate arguments
+                if (int.TryParse(valueIntArg, out valueInt) == false)
+                {
+                    QueueMessage("Invalid value_int argument.");
+                    return;
+                }
+
+                newUserAbility.ValueInt = valueInt;
+
+                if (expirationArg == NULL_EXPIRATION_ARG)
+                {
+                    newUserAbility.Expiration = null;
+                }
+                else
+                {
+                    if (Helpers.TryParseTimeModifierFromStr(expirationArg, out TimeSpan timeFromNow) == false)
+                    {
+                        QueueMessage("Unable to parse expiration time from now.");
+                        return;
+                    }
+
+                    //Set the time to this amount from now
+                    newUserAbility.Expiration = DateTime.UtcNow + timeFromNow;
+                }
+
+                //Add if we should
                 if (shouldAdd == true)
                 {
                     abilityUser.UserAbilities.Add(newUserAbility);
                 }
 
-                if (enabledState == true)
-                {
-                    QueueMessage($"Enabled the \"{abilityName}\" ability for {abilityUser.Name}!");
-                }
-                else
-                {
-                    QueueMessage($"Disabled the \"{abilityName}\" ability for {abilityUser.Name}!");
-                }
-
-                //Save and exit here
+                //Save changes
                 context.SaveChanges();
-
-                return;
-            }
-
-            string valueStrArg = arguments[3];
-            string valueIntArg = arguments[4];
-            string expirationArg = arguments[5].ToLowerInvariant();
-
-            newUserAbility.ValueStr = valueStrArg;
-
-            //Validate arguments
-            if (int.TryParse(valueIntArg, out int valueInt) == false)
-            {
-                QueueMessage("Invalid value_int argument.");
-                return;
-            }
-            
-            newUserAbility.ValueInt = valueInt;
-
-            if (expirationArg == NULL_EXPIRATION_ARG)
-            {
-                newUserAbility.Expiration = null;
-            }
-            else
-            {
-                if (Helpers.TryParseTimeModifierFromStr(expirationArg, out TimeSpan timeFromNow) == false)
-                {
-                    QueueMessage("Unable to parse expiration time from now.");
-                    return;
-                }
-
-                //Set the time to this amount from now
-                newUserAbility.Expiration = DateTime.UtcNow + timeFromNow;
-            }
-
-            if (shouldAdd == true)
-            {
-                abilityUser.UserAbilities.Add(newUserAbility);
             }
 
             if (enabledState == true)
@@ -185,9 +205,6 @@ namespace TRBot.Commands
             {
                 QueueMessage($"Disabled the \"{abilityName}\" ability on {abilityUser.Name} with values ({valueStrArg}, {valueInt}) and expires in {expirationArg}!");
             }
-
-            //Save
-            context.SaveChanges();
         }
     }
 }

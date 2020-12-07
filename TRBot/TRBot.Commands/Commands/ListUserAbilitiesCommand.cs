@@ -91,10 +91,10 @@ namespace TRBot.Commands
                 {
                     UserAbility ability = user.UserAbilities[i];
 
-                    if (ability.IsEnabled == false && ability.HasExpiration == false)
-                    {
-                        continue;
-                    }
+                    //if (ability.IsEnabled == false && ability.HasExpiration == false)
+                    //{
+                    //    continue;
+                    //}
 
                     strBuilder.Append(ability.PermAbility.Name);
 

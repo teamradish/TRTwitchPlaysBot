@@ -107,7 +107,7 @@ namespace TRBot.Commands
 
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                Settings joystickCountSetting = DataHelper.GetSetting(SettingsConstants.JOYSTICK_COUNT);
+                Settings joystickCountSetting = DataHelper.GetSettingNoOpen(SettingsConstants.JOYSTICK_COUNT, context);
 
                 //Set the value and save
                 joystickCountSetting.ValueInt = newJoystickCount;
