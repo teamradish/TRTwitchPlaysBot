@@ -23,7 +23,7 @@ The tables you see in the database are, in short, the categories of data TRBot s
 - **GameLogs** - Stores time-stamped logs that users can add on stream. Useful for tracking game progress.
 - **InputSynonyms** - Stores console-specific synonyms correlating to inputs.
 - **Inputs** - Contains all available inputs. Inputs are console-specific and have button and axes values.
-- **InvalidInputCombos** - Console-specific input combinations that are not allowed. This can include soft reset button combinations.
+- **InvalidInputCombos** - Console-specific inputs that are not allowed to be pressed all at once. This can include soft reset button combinations.
 - **Macros** - Contains all available input macros.
 - **Memes** - Contains all available memes.
 - **PermissionAbilities** - Contains all available abilities that can be granted or revoked to users. Typically, this does not change much over time.
@@ -40,7 +40,7 @@ The Indices likewise should not be modified and exist as a means to improve perf
 ## Browsing data
 While the database is open, click on the Browse Data tab in SQLiteBrowser. You can select the table you want to browse, which will show all the rows in that table. This is how you can view all of TRBot's data!
 
-You can select a column by clicking on it. If the Edit Database Cell menu isn't up, open it with View > Edit Database Cell. You can modify the data for the selected column and apply it. Note that the change hasn't been saved yet! To save changes, hit CTRL + S or click on File > Write Changes.
+You can select a column by clicking on it. If the Edit Database Cell menu isn't up, open it with View > Edit Database Cell. You can modify the data for the selected column and apply it. Note that the change hasn't been saved yet! To save changes, hit CTRL + S or click on File > Write Changes. In SQLiteBrowser, you can hold CTRL + Shift and click on a column to jump to its relation, if it has one. This is useful for seeing which User a UserStats row belongs to, for instance.
 
 If you want to revert the changes you've applied but have not yet saved, click on File > Revert Changes.
 

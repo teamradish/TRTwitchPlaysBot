@@ -19,6 +19,7 @@ TRBot is inspired by TwitchPlays_Everything. The input syntax allows for great p
 * Twitch Plays quality-of-life enhancements - macros, game logs, user silencing (without timeout/ban), stop all ongoing inputs, and switch consoles on the fly.
 * SQLite database with configurable data and settings, including access levels, commands, virtual controller count, and more. Any data changes are immediately reflected in TRBot.
 * Sleep prevention - prevent games and consoles from going to sleep with a periodic input, controller port, and interval of your choosing.
+* Reset prevention - forbid players from hitting button combos to reset the game.
 * Moderation features - control access to commands, inputs, and other features independent of platform.
 * Additional goodies and games - duel for credits, create memes, calculate expressions, and talk to a chatbot.
 
@@ -35,7 +36,7 @@ TRBot's logo was designed by the talented [David Revoy](https://www.davidrevoy.c
 
 TRBot is free software; you are free to run, study, modify, and redistribute it. Specifically, you can modify and/or redistribute TRBot under the terms of the GNU Affero General Public License v3.0 or (at your option) any later version.
 
-See the [LICENSE](https://github.com/teamradish/TRTwitchPlaysBot/blob/master/LICENSE) file for the full terms. See the [Dependency Licenses](./Dependency%20Licenses) file for the licenses of third party libraries used by TRBot. See the [logo license](./Logo/Logo%20License) file for the license of TRBot's logo.
+See the [LICENSE](./LICENSE) file for the full terms. See the [Dependency Licenses](./Dependency%20Licenses) file for the licenses of third party libraries used by TRBot. See the [logo license](./Logo/Logo%20License) file for the license of TRBot's logo.
 
 ## Contributing
 Issues and pull requests are greatly encouraged! Please file an issue for a feature request, such as a new platform or service, or regarding any bugs you encounter.

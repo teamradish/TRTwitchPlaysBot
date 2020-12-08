@@ -48,7 +48,7 @@ If there's no way to prevent players from exiting the game, you can set up a scr
 done)
 ```
 
-This may not always work for games that have DRM and can only be launched through a client, such as Steam. However, you can find a script that does this for Steam games [here](../Supplementary/RestartSteamGame.sh).
+This may not always work for all games, especially those with DRM and/or can only be launched through a client, such as Steam. However, you can find a **bash** script that does this for Steam games [here](../Supplementary/RestartSteamGame.sh).
 
 # Sleep Inactivity
 For games and consoles that sleep after a period of inactivity, you can enable periodic inputs to have TRBot automatically perform an input sequence on a virtual controller at a regular interval (Ex. "a" every 5 minutes). Doing so can prevent the game or console from sleeping. Here's how to configure it:
@@ -58,7 +58,18 @@ For games and consoles that sleep after a period of inactivity, you can enable p
 3. Set the controller port you'd like to press this input on through [periodic_input_port](./Settings-Documentation.md#periodic_input_port).
 4. Set the interval to press your input(s) with [periodic_input_time](./Settings-Documentation.md#periodic_input_time).
 
+# Reset Prevention
+Some games and game consoles have a reset function performed by inputting a specific combination of buttons. One example is the Game Boy Advance, in which pressing "A", "B", "Start", and "Select" will reset the game.
+
+TRBot supports an invalid input combo for each console that can be used to prevent these combinations from being pressed to forbit players from resetting the game. Invalid input combos apply per controller port.
+
+- The [`AddInvalidInputComboCommand`](../TRBot/TRBot.Commands/Commands/AddInvalidInputComboCommand.cs) (default: "!addinvalidcombo") can be used to add an input to the invalid input combo. The given input must already be a valid input on the console itself.
+- The [`RemoveInvalidInputComboCommand`](../TRBot/TRBot.Commands/Commands/RemoveInvalidInputComboCommand.cs) (default: "!removeinvalidcombo") can be used to remove an input from the invalid input combo.
+- The [`ListInvalidInputComboCommand`](../TRBot/TRBot.Commands/Commands/ListInvalidInputComboCommand.cs) (default: "!invalidcombo") can be used to list the invalid input combo for a given game console.
+
+See the [Commands Documentation](./Commands-Documentation.md) for more information on these commands.
+
 # Contributing
 If you find any problems with TRBot, please file an [issue](https://github.com/teamradish/TRTwitchPlaysBot/issues). [Pull requests](https://github.com/teamradish/TRTwitchPlaysBot/pulls) are encouraged if you'd like to make contributions.
 
-TRBot is free software; as such, you can run, study, modify, and distribute it for any purpose. See the [License](https://github.com/teamradish/TRTwitchPlaysBot/blob/master/LICENSE) for more information.
+TRBot is free software; as such, you can run, study, modify, and distribute it for any purpose. See the [License](./LICENSE) for more information.

@@ -14,9 +14,9 @@ TRBot contains several different projects with the purpose of isolating function
 * **TRBot.VirtualControllers** - Handles everything related to virtual controllers, including the implementations for each platform and pressing/releasing buttons on them. This also contains the native code required to manage a given virtual controller implementation.
 
 ## Applications
-* **TRBot.Main** - The main application that connects the components together. This is what you are running (unless you built your own).
-* **TRBot.Tests** - Unit tests for TRBot.
+* **TRBot.Main** - The main application that utilizes the core components together for a full-fledged bot. This is what you're running with each TRBot release.
 * **TRBotDataMigrationTool** - The 1.8 to 2.0+ data migration tool. Converts data from the text files in 1.8 into the SQLite database that versions 2.0 and above use.
+* **TRBot.Tests** - Unit tests for TRBot.
 
 ## Other
 * **Supplementary** - Contains resources and code not directly related to TRBot, such as a ChatterBot instance that users can talk to through TRBot.

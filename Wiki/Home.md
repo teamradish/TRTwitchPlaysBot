@@ -26,3 +26,4 @@ Welcome to the TRBot wiki! Choose the relevant section for your needs.
 ## Developers
 * [Building from source](./Building.md) - How to build TRBot from source.
 * [Project overview](./Project-Overview.md) - Overview of project structure.
+* [Coding Information](./Coding-Information.md) - Contains guidelines and other information regarding TRBot development.

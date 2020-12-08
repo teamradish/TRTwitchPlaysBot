@@ -198,10 +198,10 @@ namespace TRBot.Data
                 new CommandData("invalidcombo", "TRBot.Commands.ListInvalidInputComboCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
+                new CommandData("addsyn", "TRBot.Commands.AddInputSynonymCommand", (long)PermissionLevels.Whitelisted, true, true),
+                new CommandData("removesyn", "TRBot.Commands.RemoveInputSynonymCommand", (long)PermissionLevels.Whitelisted, true, true),
 
                 new CommandData("setmessage", "TRBot.Commands.SetGameMessageCommand", (long)PermissionLevels.VIP, true, true),
-                new CommandData("addsyn", "TRBot.Commands.AddInputSynonymCommand", (long)PermissionLevels.VIP, true, true),
-                new CommandData("removesyn", "TRBot.Commands.RemoveInputSynonymCommand", (long)PermissionLevels.VIP, true, true),
 
                 new CommandData("reload", "TRBot.Commands.ReloadCommand", (long)PermissionLevels.Moderator, true, true),
                 new CommandData("setlevel", "TRBot.Commands.SetUserLevelCommand", (long)PermissionLevels.Moderator, true, true),
