@@ -37,6 +37,7 @@ Table of Contents
 * [game_message_path_is_relative](#game_message_path_is_relative)
 * [info_message](#info_message)
 * [tutorial_message](#tutorial_message)
+* [documentation_message](#documentation_message)
 * [periodic_input_enabled](#periodic_input_enabled)
 * [periodic_input_time](#periodic_input_time)
 * [periodic_input_port](#periodic_input_port)
@@ -156,6 +157,9 @@ An informational message about the current game or stream.
 
 ### tutorial_message
 A message linking to the syntax tutorial on how to play.
+
+### documentation_message
+A message linking to the documentation for the bot.
 
 ### periodic_input_enabled
 Whether to enable an input sequence that is performed periodically by TRBot. Periodic input sequences are useful for newer game consoles that go to sleep after some time of inactivity. 0 = disabled, 1 = enabled. This defaults to 0, disabled.

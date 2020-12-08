@@ -67,6 +67,7 @@ namespace TRBot.Data
         public const string GAME_MESSAGE_PATH_IS_RELATIVE = "game_message_path_is_relative";
         public const string INFO_MESSAGE = "info_message";
         public const string TUTORIAL_MESSAGE = "tutorial_message";
+        public const string DOCUMENTATION_MESSAGE = "documentation_message";
 
         public const string PERIODIC_INPUT_ENABLED = "periodic_input_enabled";
         public const string PERIODIC_INPUT_TIME = "periodic_input_time";
