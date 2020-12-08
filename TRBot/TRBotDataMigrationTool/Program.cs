@@ -166,6 +166,9 @@ namespace TRBotDataMigrationTool
             {
                 Console.WriteLine("All bot data and settings have been imported! Don't forget to double check the data and make sure it's fine!");
             }
+
+            Console.WriteLine("\nPress any key to exit...\n");
+            Console.ReadKey();
         }
 
         private static void MakeTemplateDatabaseFile()
@@ -475,7 +478,8 @@ namespace TRBotDataMigrationTool
             AddSettingIntHelper(SettingsConstants.DEFAULT_INPUT_DURATION, oldBotData.DefaultInputDuration);
             AddSettingIntHelper(SettingsConstants.MAX_INPUT_DURATION, oldBotData.MaxInputDuration);
             AddSettingIntHelper(SettingsConstants.JOYSTICK_COUNT, oldBotData.JoystickCount);
-            AddSettingIntHelper(SettingsConstants.LAST_VCONTROLLER_TYPE, oldBotData.LastVControllerType);
+
+            Console.WriteLine($"Skipping importing the last virtual controller type, as the values don't line up with 2.0+.");
 
             AccessLevels.Levels inputPermLvl = (AccessLevels.Levels)oldBotData.InputPermissions;
             long finalPermVal = oldBotData.InputPermissions;
