@@ -72,4 +72,4 @@ See the [Commands Documentation](./Commands-Documentation.md) for more informati
 # Contributing
 If you find any problems with TRBot, please file an [issue](https://github.com/teamradish/TRTwitchPlaysBot/issues). [Pull requests](https://github.com/teamradish/TRTwitchPlaysBot/pulls) are encouraged if you'd like to make contributions.
 
-TRBot is free software; as such, you can run, study, modify, and distribute it for any purpose. See the [License](./LICENSE) for more information.
+TRBot is free software; as such, you can run, study, modify, and distribute it for any purpose. See the [License](../LICENSE) for more information.

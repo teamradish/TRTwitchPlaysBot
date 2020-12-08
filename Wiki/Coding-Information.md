@@ -33,4 +33,4 @@ This document serves to highlight important information regarding TRBot developm
 # Contributing
 If you find any problems with TRBot, please file an [issue](https://github.com/teamradish/TRTwitchPlaysBot/issues). [Pull requests](https://github.com/teamradish/TRTwitchPlaysBot/pulls) are also highly encouraged!
 
-TRBot is free software; as such, you can run, study, modify, and distribute it for any purpose under the terms of the GNU Affero General Public License v3.0 or (at your option) any later version. See the [License](./LICENSE) for more information and [Dependency Licenses](./Dependency%20Licenses) file for the licenses of third party libraries used by TRBot.
+TRBot is free software; as such, you can run, study, modify, and distribute it for any purpose under the terms of the GNU Affero General Public License v3.0 or (at your option) any later version. See the [License](../LICENSE) for more information and [Dependency Licenses](../Dependency%20Licenses) file for the licenses of third party libraries used by TRBot.
