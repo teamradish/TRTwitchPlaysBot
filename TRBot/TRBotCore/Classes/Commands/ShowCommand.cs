@@ -40,7 +40,7 @@ namespace TRBot
 
             if (BotProgram.BotData.Macros.TryGetValue(macroName, out string macroVal) == false)
             {
-                BotProgram.MsgHandler.QueueMessage($"{macroName} not found.");
+                BotProgram.MsgHandler.QueueMessage($"{macroName} not found. For dynamic macros, use the generic form (Ex. \"#test(*)\")");
                 return;
             }
 

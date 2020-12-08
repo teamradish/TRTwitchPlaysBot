@@ -44,12 +44,12 @@ namespace TRBot
                 return;
             }
 
-            string saveStateStr = $"ss{stateNum}";
-            if (InputGlobals.CurrentConsole.ButtonInputMap.ContainsKey(saveStateStr) == false)
-            {
-                BotProgram.MsgHandler.QueueMessage("Invalid state number.");
-                return;
-            }
+            //string saveStateStr = $"ss{stateNum}";
+            //if (InputGlobals.CurrentConsole.ButtonInputMap.ContainsKey(saveStateStr) == false)
+            //{
+            //    BotProgram.MsgHandler.QueueMessage("Invalid state number.");
+            //    return;
+            //}
 
             //Get the state log
             GameLog stateLog = null;

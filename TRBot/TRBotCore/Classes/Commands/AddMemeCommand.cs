@@ -87,7 +87,7 @@ namespace TRBot
             }
             else
             {
-                MemesCommand.CacheMemesString();
+                ListMemesCommand.CacheMemesString();
             }
         }
     }

@@ -74,8 +74,7 @@ namespace TRBot
 
                     //Add percent if it's an axis or the percent isn't the default
                     if (input.percent != Parser.ParserDefaultPercent
-                        || InputGlobals.CurrentConsole.IsAxis(input) == true
-                        || InputGlobals.CurrentConsole.IsAbsoluteAxis(input) == true)
+                        || InputGlobals.CurrentConsole.IsAxis(input) == true)
                     {
                         strBuilder.Append(input.percent).Append(Parser.ParseRegexPercentInput);
                     }
@@ -171,8 +170,7 @@ namespace TRBot
                         //Add percent if it's an axis, the percent isn't the default, and not releasing
                         if (input.release == false
                             && (input.percent != Parser.ParserDefaultPercent
-                            || InputGlobals.CurrentConsole.IsAxis(input) == true
-                            || InputGlobals.CurrentConsole.IsAbsoluteAxis(input) == true))
+                            || InputGlobals.CurrentConsole.IsAxis(input) == true))
                         {
                             strBuilder.Append(input.percent).Append("% ");
                         }

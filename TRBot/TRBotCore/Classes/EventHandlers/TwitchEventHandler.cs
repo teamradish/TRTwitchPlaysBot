@@ -132,14 +132,15 @@ namespace TRBot
 
             EvtUserMessageArgs umArgs = new EvtUserMessageArgs()
             {
+                UserData = user,
                 UsrMessage = new EvtUserMsgData(e.ChatMessage.UserId, e.ChatMessage.Username,
                     e.ChatMessage.DisplayName, e.ChatMessage.Channel, e.ChatMessage.Message)
             };
 
-            UserSentMessageEvent?.Invoke(user, umArgs);
+            UserSentMessageEvent?.Invoke(umArgs);
 
             //Attempt to parse the message as an input
-            ProcessMsgAsInput(user, umArgs);
+            ProcessMsgAsInput(umArgs);
         }
 
         private void OnNewSubscriber(object sender, OnNewSubscriberArgs e)
@@ -148,11 +149,12 @@ namespace TRBot
 
             EvtOnSubscriptionArgs subArgs = new EvtOnSubscriptionArgs
             {
+                UserData = user,
                 SubscriptionData = new EvtSubscriptionData(e.Subscriber.UserId, e.Subscriber.DisplayName,
                     e.Subscriber.DisplayName)
             };
 
-            UserNewlySubscribedEvent?.Invoke(user, subArgs);
+            UserNewlySubscribedEvent?.Invoke(subArgs);
         }
 
         private void OnReSubscriber(object sender, OnReSubscriberArgs e)
@@ -161,11 +163,12 @@ namespace TRBot
 
             EvtOnReSubscriptionArgs reSubArgs = new EvtOnReSubscriptionArgs
             {
+                UserData = user,
                 ReSubscriptionData = new EvtReSubscriptionData(e.ReSubscriber.UserId, e.ReSubscriber.DisplayName,
                     e.ReSubscriber.DisplayName, e.ReSubscriber.Months)
             };
 
-            UserReSubscribedEvent?.Invoke(user, reSubArgs);
+            UserReSubscribedEvent?.Invoke(reSubArgs);
         }
 
         private void OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
@@ -191,11 +194,12 @@ namespace TRBot
 
             EvtChatCommandArgs chatCmdArgs = new EvtChatCommandArgs
             {
+                UserData = user,
                 Command = new EvtChatCommandData(e.Command.ArgumentsAsList, e.Command.ArgumentsAsString,
                     msgData, e.Command.CommandIdentifier, e.Command.CommandText)
             };
 
-            ChatCommandReceivedEvent?.Invoke(user, chatCmdArgs);
+            ChatCommandReceivedEvent?.Invoke(chatCmdArgs);
         }
 
         private void OnJoinedChannel(object sender, OnJoinedChannelArgs e)
@@ -267,17 +271,12 @@ namespace TRBot
         //NOTE: This would result in lots of code duplication if other streaming services were integrated
         //Is there a better way to do this?
 
-        private void ProcessMsgAsInput(User userData, EvtUserMessageArgs e)
+        private void ProcessMsgAsInput(EvtUserMessageArgs e)
         {
-            //Don't process for inputs if a meme
-            string possibleMeme = e.UsrMessage.Message.ToLower();
-            if (BotProgram.BotData.Memes.TryGetValue(possibleMeme, out string meme) == true)
-            {
-                return;
-            }
+            User userData = e.UserData;
 
             //Ignore commands as inputs
-            if (possibleMeme.StartsWith(Globals.CommandIdentifier) == true)
+            if (e.UsrMessage.Message.StartsWith(Globals.CommandIdentifier) == true)
             {
                 return;
             }
@@ -294,8 +293,9 @@ namespace TRBot
 
             try
             {
-                string parse_message = Parser.Expandify(Parser.PopulateMacros(e.UsrMessage.Message));
-                inputSequence = Parser.ParseInputs(parse_message, userData.Team, true, true);
+                string parse_message = Parser.Expandify(Parser.PopulateMacros(e.UsrMessage.Message, BotProgram.BotData.Macros, BotProgram.BotData.ParserMacroLookup));
+                parse_message = Parser.PopulateSynonyms(parse_message, InputGlobals.InputSynonyms);
+                inputSequence = Parser.ParseInputs(parse_message, InputGlobals.ValidInputRegexStr, new Parser.ParserOptions(userData.Team, BotProgram.BotData.DefaultInputDuration, true, BotProgram.BotData.MaxInputDuration));
                 //parsedVal = Parser.Parse(parse_message);
                 //Console.WriteLine(inputSequence.ToString());
                 //Console.WriteLine("\nReverse Parsed: " + ReverseParser.ReverseParse(inputSequence));
@@ -392,8 +392,15 @@ namespace TRBot
 
             if (InputHandler.StopRunningInputs == false)
             {
+                EvtUserInputArgs userInputArgs = new EvtUserInputArgs()
+                {
+                    UserData = e.UserData,
+                    UsrMessage = e.UsrMessage,
+                    ValidInputSeq = inputSequence
+                };
+
                 //Invoke input event
-                UserMadeInputEvent?.Invoke(userData, e, inputSequence);
+                UserMadeInputEvent?.Invoke(userInputArgs);
             }
             else
             {

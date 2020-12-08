@@ -44,12 +44,13 @@ namespace TRBot
 
         private const string GenerateNewArg = "new";
         private const int BaseCreditReward = 100;
+        private const int CreditRewardMultiplier = 2;
 
         private readonly Random Rand = new Random();
 
         private readonly string[] InvalidExerciseInputs = new string[]
         {
-            "ss1", "ss2", "ss3", "ss4", "ss5", "ss6", "ls1", "ls2", "ls3", "ls4", "ls5", "ls6",
+            "ss1", "ss2", "ss3", "ss4", "ss5", "ss6", "ls1", "ls2", "ls3", "ls4", "ls5", "ls6", "ss", "ls", "incs", "decs",
             "."
         };
 
@@ -110,10 +111,10 @@ namespace TRBot
         private void ExecuteNewArg(User user)
         {
             //Generate the exercise 
-            Parser.InputSequence newSequence = GenerateExercise(InputGlobals.CurrentConsole);
+            Parser.InputSequence newSequence = GenerateExercise(user.Level, InputGlobals.CurrentConsole);
 
             //Give greater credit rewards for longer input sequences
-            long creditReward = newSequence.Inputs.Count * BaseCreditReward;
+            long creditReward = (newSequence.Inputs.Count * BaseCreditReward) * CreditRewardMultiplier;
 
             InputExercise inputExercise = new InputExercise(newSequence, creditReward);
             UserExercises[user.Name] = inputExercise;
@@ -148,19 +149,29 @@ namespace TRBot
         {
             /* We don't need any parser post processing done here, as these inputs don't affect the game itself */
             
+            //Console.WriteLine("USER COMMAND: " + userCommand);
+
             Parser.InputSequence inputSequence = default;
 
             try
             {
                 //Ignore max duration and synonyms
-                string parse_message = Parser.Expandify(Parser.PopulateMacros(userCommand));
-                inputSequence = Parser.ParseInputs(parse_message, 0, false, false);
+                string parse_message = Parser.Expandify(Parser.PopulateMacros(userCommand, BotProgram.BotData.Macros, BotProgram.BotData.ParserMacroLookup));
+                
+                //Ignore synonyms, since they can mess with inputs
+                //parse_message = Parser.PopulateSynonyms(parse_message, InputGlobals.InputSynonyms);
+                
+                inputSequence = Parser.ParseInputs(parse_message, InputGlobals.ValidInputRegexStr, new Parser.ParserOptions(0, BotProgram.BotData.DefaultInputDuration, false, 0));
             }
-            catch
+            catch// (Exception e)
             {
+                //Console.WriteLine($"EXCEPTION: {e.Message}");
+
                 BotProgram.MsgHandler.QueueMessage("Sorry, I couldn't parse your input.");
                 return;
             }
+
+            //Console.WriteLine("VALIDITY: " + inputSequence.InputValidationType);
 
             if (inputSequence.InputValidationType != Parser.InputValidationTypes.Valid)
             {
@@ -169,6 +180,7 @@ namespace TRBot
             }
 
             InputExercise currentExercise = UserExercises[user.Name];
+            //Console.WriteLine("Correct: " + ReverseParser.ReverseParse(currentExercise.Sequence));
             List<List<Parser.Input>> exerciseInputs = currentExercise.Sequence.Inputs;
 
             List<List<Parser.Input>> userInputs = inputSequence.Inputs;
@@ -176,6 +188,8 @@ namespace TRBot
             //Compare input lengths - this has some downsides, but it's a quick check
             if (userInputs.Count != exerciseInputs.Count)
             {
+                //Console.WriteLine($"COUNT DISPARITY {userInputs.Count} vs {exerciseInputs.Count}");
+
                 BotProgram.MsgHandler.QueueMessage("Incorrect input! Try again!");
                 return;
             }
@@ -187,6 +201,8 @@ namespace TRBot
 
                 if (exerciseSubInputs.Count != userSubInputs.Count)
                 {
+                    //Console.WriteLine($"SUBINPUT COUNT DISPARITY AT {i}: {userSubInputs.Count} vs {exerciseSubInputs.Count}");
+
                     BotProgram.MsgHandler.QueueMessage("Incorrect input! Try again!");
                     return;
                 }
@@ -205,6 +221,8 @@ namespace TRBot
 
                     if (CompareInputs(excInp, userInp) == false)
                     {
+                        //Console.WriteLine($"FAILED COMPARISON ON: {userInp.ToString()} ===== CORRECT: {excInp.ToString()}");
+
                         BotProgram.MsgHandler.QueueMessage("Incorrect input! Try again!");
                         return;
                     }
@@ -241,7 +259,7 @@ namespace TRBot
 
         #region Exercise Generation
 
-        private Parser.InputSequence GenerateExercise(ConsoleBase currentConsole)
+        private Parser.InputSequence GenerateExercise(in int userLevel, ConsoleBase currentConsole)
         {
             int numInputs = Rand.Next(MinInputs, MaxInputs);
 
@@ -257,19 +275,20 @@ namespace TRBot
                 bool haveSubSequence = (Rand.Next(0, 2) == 0);
                 int subSequences = (haveSubSequence == false) ? 1 : Rand.Next(MinSubSequences, MaxSubSequences);
 
-                List<Parser.Input> subSequence = GenerateSubSequence(subSequences, heldInputs, currentConsole);
+                List<Parser.Input> subSequence = GenerateSubSequence(subSequences, heldInputs, userLevel, currentConsole);
                 exerciseInputs.Add(subSequence);
             }
 
             return inputSequence;
         }
 
-        private List<Parser.Input> GenerateSubSequence(in int numSubSequences, List<string> heldInputs, ConsoleBase currentConsole)
+        private List<Parser.Input> GenerateSubSequence(in int numSubSequences, List<string> heldInputs, in int userLevel, ConsoleBase currentConsole)
         {
             List<Parser.Input> subSequence = new List<Parser.Input>(numSubSequences);
 
             //Trim inputs that shouldn't be chosen in exercises
-            List<string> validInputs = TrimInvalidExerciseInputs(currentConsole.ValidInputs);
+            //NOTE: To improve performance we should trim only at the highest level, not here in the subsequences
+            List<string> validInputs = TrimInvalidExerciseInputs(userLevel, currentConsole.ValidInputs);
 
             //If there's more than one subsequence, remove wait inputs since they're largely redundant in this case
             if (numSubSequences > 1)
@@ -286,7 +305,7 @@ namespace TRBot
                     break;
                 }
                 
-                Parser.Input input = Parser.Input.Default;
+                Parser.Input input = Parser.Input.Default(BotProgram.BotData.DefaultInputDuration);
 
                 int chosenInputIndex = Rand.Next(0, validInputs.Count);
                 input.name = validInputs[chosenInputIndex];
@@ -327,8 +346,7 @@ namespace TRBot
                 }
 
                 //Check for choosing a percent if the input is an axes
-                if (currentConsole.IsAxis(input) == true 
-                    || currentConsole.IsAbsoluteAxis(input) == true)
+                if (currentConsole.IsAxis(input) == true)
                 {
                     bool usePercent = (Rand.Next(0, 2) == 0);
 
@@ -348,12 +366,29 @@ namespace TRBot
             return subSequence;
         }
 
-        private List<string> TrimInvalidExerciseInputs(string[] validInputs)
+        private List<string> TrimInvalidExerciseInputs(in int userLevel, string[] validInputs)
         {
             List<string> inputs = new List<string>(validInputs);
             for (int i = 0; i < InvalidExerciseInputs.Length; i++)
             {
                 inputs.Remove(InvalidExerciseInputs[i]);
+            }
+
+            for (int i = inputs.Count - 1; i >= 0; i--)
+            {
+                InputAccessInfo accessInfo = default;
+
+                //NOTE: Try to decouple this dictionary from here
+                if (BotProgram.BotData.InputAccess?.InputAccessDict?.TryGetValue(inputs[i], out accessInfo) == false)
+                {
+                    continue;
+                }
+
+                //Remove the input if the user doesn't have access to use it
+                if (userLevel < accessInfo.AccessLevel)
+                {
+                    inputs.RemoveAt(i);
+                }
             }
 
             return inputs;

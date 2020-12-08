@@ -55,7 +55,8 @@ namespace TRBot
             N64,
             GC, PS2, GBA,
             Wii,
-            PC
+            PC,
+            PS4
         }
 
         public static Dictionary<string, string> InputSynonyms
@@ -77,7 +78,8 @@ namespace TRBot
             { InputConsoles.N64, new N64Console() },
             { InputConsoles.GC, new GCConsole() }, { InputConsoles.PS2, new PS2Console() }, { InputConsoles.GBA, new GBAConsole() },
             { InputConsoles.Wii, new WiiConsole() },
-            { InputConsoles.PC, new PCConsole() }
+            { InputConsoles.PC, new PCConsole() },
+            { InputConsoles.PS4, new PS4Console() }
         };
 
         /// <summary>

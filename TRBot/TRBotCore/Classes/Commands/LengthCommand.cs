@@ -43,9 +43,9 @@ namespace TRBot
 
             try
             {
-                string parse_message = Parser.Expandify(Parser.PopulateMacros(args));
-
-                inputSequence = Parser.ParseInputs(parse_message, 0, true, true);
+                string parse_message = Parser.Expandify(Parser.PopulateMacros(args, BotProgram.BotData.Macros, BotProgram.BotData.ParserMacroLookup));
+                parse_message = Parser.PopulateSynonyms(parse_message, InputGlobals.InputSynonyms);
+                inputSequence = Parser.ParseInputs(parse_message, InputGlobals.ValidInputRegexStr, new Parser.ParserOptions(0, BotProgram.BotData.DefaultInputDuration, true, BotProgram.BotData.MaxInputDuration));
                 //parsedVal = Parser.Parse(parse_message);
             }
             catch
@@ -56,7 +56,18 @@ namespace TRBot
 
             if (inputSequence.InputValidationType != Parser.InputValidationTypes.Valid)
             {
-                BotProgram.MsgHandler.QueueMessage("Invalid input. Note that length cannot be determined for dynamic macros without inputs filled in.");
+                const string dyMacroLenErrorMsg = "Note that length cannot be determined for dynamic macros without inputs filled in.";
+
+                if (inputSequence.InputValidationType == Parser.InputValidationTypes.NormalMsg
+                    || string.IsNullOrEmpty(inputSequence.Error) == true)
+                {
+                    BotProgram.MsgHandler.QueueMessage($"Invalid input. {dyMacroLenErrorMsg}");
+                }
+                else
+                {
+                    BotProgram.MsgHandler.QueueMessage($"Invalid input: {inputSequence.Error}. {dyMacroLenErrorMsg}");
+                }
+                
                 return;
             }
 

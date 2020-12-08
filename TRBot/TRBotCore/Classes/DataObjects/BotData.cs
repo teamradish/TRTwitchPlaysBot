@@ -44,6 +44,7 @@ namespace TRBot
         public readonly InputAccessData InputAccess = new InputAccessData();
         public readonly InvalidButtonComboData InvalidBtnCombos = new InvalidButtonComboData();
         public readonly InputSynonymData InputSynonyms = new InputSynonymData();
+        public readonly SavestateSettings SaveLoadStateSettings = new SavestateSettings();
 
         /// <summary>
         /// This data is read from a separate file and is not saved in the JSON.

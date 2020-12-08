@@ -58,12 +58,12 @@ namespace TRBot
 
             if (user.OptedOut == true)
             {
-                BotProgram.MsgHandler.QueueMessage($"User: {user.Name} | Level: {user.Level}");
+                BotProgram.MsgHandler.QueueMessage($"User: {user.Name} | Level: {user.Level} | Controller Port: {user.Team}");
                 return;
             }
 
             //Print the user's information
-            BotProgram.MsgHandler.QueueMessage($"User: {user.Name} | Level: {user.Level} | Total Inputs: {user.ValidInputs} | Total Messages: {user.TotalMessages}");
+            BotProgram.MsgHandler.QueueMessage($"User: {user.Name} | Level: {user.Level} | Controller Port: {user.Team} | Total Inputs: {user.ValidInputs} | Total Messages: {user.TotalMessages}");
         }
     }
 }

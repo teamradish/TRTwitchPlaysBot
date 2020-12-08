@@ -30,20 +30,41 @@ namespace TRBot
 
         public override void ExecuteCommand(EvtChatCommandArgs e)
         {
-            string[] validInputs = InputGlobals.CurrentConsole.ValidInputs;
+            List<string> validInputs = new List<string>(InputGlobals.CurrentConsole.ValidInputs);
 
-            if (validInputs == null || validInputs.Length == 0)
+            User user = BotProgram.GetOrAddUser(e.Command.ChatMessage.Username, false);
+            Dictionary<string, InputAccessInfo> inputAccess = BotProgram.BotData.InputAccess.InputAccessDict;
+
+            //Show the input only if the user has access to use it
+            for (int i = validInputs.Count - 1; i >= 0; i--)
             {
-                BotProgram.MsgHandler.QueueMessage($"Interesting! There are no valid inputs for the {InputGlobals.CurrentConsoleVal} console!");
+                string input = validInputs[i];
+
+                if (inputAccess.TryGetValue(input, out InputAccessInfo accessInfo) == false)
+                {
+                    continue;
+                }
+
+                //Check access level
+                if (InputAccessData.HasAccessToInput(user.Level, accessInfo) == false)
+                {
+                    validInputs.RemoveAt(i);
+                }
+            }
+
+            if (validInputs == null || validInputs.Count == 0)
+            {
+                BotProgram.MsgHandler.QueueMessage($"Interesting! There are no valid inputs you can perform for the {InputGlobals.CurrentConsoleVal} console!");
                 return;
             }
 
+            //Add all remaining inputs
             StrBuilder.Clear();
 
             StrBuilder.Append("Valid inputs for ").Append(InputGlobals.CurrentConsoleVal.ToString()).Append(": ");
 
-            for (int i = 0; i < validInputs.Length; i++)
-            {
+            for (int i = 0; i < validInputs.Count; i++)
+            {   
                 StrBuilder.Append(validInputs[i]).Append(", ");
             }
 

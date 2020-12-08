@@ -65,7 +65,7 @@ namespace TRBot
             CommandDict.Add("jumprope", new JumpRopeCommand());
             CommandDict.Add("jumpropestreak", new HighestJumpRopeCommand());
             CommandDict.Add("calculate", new CalculateCommand());
-            CommandDict.Add("memes", new MemesCommand());
+            CommandDict.Add("memes", new ListMemesCommand());
             CommandDict.Add("addmeme", new AddMemeCommand());
             CommandDict.Add("removememe", new RemoveMemeCommand());
             CommandDict.Add("highfive", new HighFiveCommand());
@@ -74,7 +74,7 @@ namespace TRBot
             CommandDict.Add("crashbot", new CrashBotCommand());
             CommandDict.Add("console", new ConsoleCommand());
             CommandDict.Add("stopall", new StopAllCommand());
-            CommandDict.Add("macros", new MacrosCommand());
+            CommandDict.Add("macros", new ListMacrosCommand());
             CommandDict.Add("addmacro", new AddMacroCommand());
             CommandDict.Add("removemacro", new RemoveMacroCommand());
             CommandDict.Add("show", new ShowCommand());
@@ -121,6 +121,11 @@ namespace TRBot
             CommandDict.Add("removesyn", new RemoveInputSynonymCommand());
             CommandDict.Add("exportbotdata", new ExportBotDataCommand());
             CommandDict.Add("pressedinputs", new ListPressedInputsCommand());
+            CommandDict.Add("reverseparse", new ReverseInputCommand());
+            CommandDict.Add("runninginputs", new NumRunningInputsCommand());
+            CommandDict.Add("cmdperms", new CmdAccessLevelCommand());
+            CommandDict.Add("uptime", new UptimeCommand());
+            CommandDict.Add("bingo", new BingoCommand());
             CommandDict.Add("tutorial", new TutorialCommand());
 
             foreach (KeyValuePair<string, BaseCommand> command in CommandDict)

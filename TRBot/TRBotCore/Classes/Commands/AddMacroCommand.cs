@@ -33,12 +33,6 @@ namespace TRBot
         {
             base.Initialize(commandHandler);
             AccessLevel = (int)AccessLevels.Levels.Whitelisted;
-
-            //Add all macros in the data to the parser list on initialization
-            foreach (var macroName in BotProgram.BotData.Macros.Keys)
-            {
-                AddMacroToParserList(macroName);
-            }
         }
 
         public override void ExecuteCommand(EvtChatCommandArgs e)
@@ -128,9 +122,9 @@ namespace TRBot
             {
                 try
                 {
-                    string parse_message = Parser.Expandify(Parser.PopulateMacros(parsedVal));
-
-                    Parser.InputSequence inputSequence = Parser.ParseInputs(parse_message, 0, true, true);
+                    string parse_message = Parser.Expandify(Parser.PopulateMacros(parsedVal, BotProgram.BotData.Macros, BotProgram.BotData.ParserMacroLookup));
+                    parse_message = Parser.PopulateSynonyms(parse_message, InputGlobals.InputSynonyms);
+                    Parser.InputSequence inputSequence = Parser.ParseInputs(parse_message, InputGlobals.ValidInputRegexStr, new Parser.ParserOptions(0, BotProgram.BotData.DefaultInputDuration, true, BotProgram.BotData.MaxInputDuration));
                     //var val = Parser.Parse(parse_message);
 
                     if (inputSequence.InputValidationType != Parser.InputValidationTypes.Valid)//val.Item1 == false)
@@ -207,16 +201,7 @@ namespace TRBot
 
         private void AddMacroToParserList(string macroName)
         {
-            char macroFirstChar = macroName[1];
-
-            //Add to the parsed macro list for quicker lookup
-            if (BotProgram.BotData.ParserMacroLookup.TryGetValue(macroFirstChar, out List<string> macroList) == false)
-            {
-                macroList = new List<string>(16);
-                BotProgram.BotData.ParserMacroLookup.Add(macroFirstChar, macroList);
-            }
-
-            macroList.Add(macroName);
+            DataInit.AddMacroToParserList(macroName, BotProgram.BotData.ParserMacroLookup);
         }
     }
 }

@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static TRBot.VirtualControllerDelegates;
 
 namespace TRBot
 {
@@ -68,11 +69,8 @@ namespace TRBot
         void PressInput(in Parser.Input input);
         void ReleaseInput(in Parser.Input input);
 
-        void PressAxis(in int axis, in bool min, in int percent);
+        void PressAxis(in int axis, in double minAxisVal, in double maxAxisVal, in int percent);
         void ReleaseAxis(in int axis);
-
-        void PressAbsoluteAxis(in int axis, in int percent);
-        void ReleaseAbsoluteAxis(in int axis);
 
         void PressButton(in uint buttonVal);
         void ReleaseButton(in uint buttonVal);
@@ -87,6 +85,55 @@ namespace TRBot
         /// Updates the virtual device by applying all changes.
         /// </summary>
         void UpdateController();
+
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        /// An event invoked after an input is pressed on the controller.
+        /// </summary>
+        event OnInputPressed InputPressedEvent;
+
+        /// <summary>
+        /// An event invoked after an input is released on the controller.
+        /// </summary>
+        event OnInputReleased InputReleasedEvent;
+
+        /// <summary>
+        /// An event invoked after a button is pressed on the controller.
+        /// </summary>
+        event OnButtonPressed ButtonPressedEvent;
+
+        /// <summary>
+        /// An event invoked after a button is released on the controller.
+        /// </summary>
+        event OnButtonReleased ButtonReleasedEvent;
+
+        /// <summary>
+        /// An event invoked after an axis is pressed on the controller.
+        /// </summary>
+        event OnAxisPressed AxisPressedEvent;
+
+        /// <summary>
+        /// An event invoked after an axis is released on the controller.
+        /// </summary>
+        event OnAxisReleased AxisReleasedEvent;
+
+        /// <summary>
+        /// An event invoked after the virtual device is updated with all changes.
+        /// </summary>
+        event OnControllerUpdated ControllerUpdatedEvent;
+
+        /// <summary>
+        /// An event invoked after the controller is reset to its defaults.
+        /// </summary>
+        event OnControllerReset ControllerResetEvent;
+
+        /// <summary>
+        /// An event invoked after the controller has been closed and is no longer available.
+        /// </summary>
+        event OnControllerClosed ControllerClosedEvent;
 
         #endregion
     }

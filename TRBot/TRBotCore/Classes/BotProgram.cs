@@ -39,6 +39,9 @@ namespace TRBot
 
         public bool Initialized { get; private set; } = false;
 
+        public static TimeSpan TotalUptime { get; private set;} = TimeSpan.Zero;
+        private static DateTime StartUptime = DateTime.UtcNow;
+
         //NOTE: Potentially move all these to a separate data storage class
         private LoginInfo LoginInformation = null;
         public static Settings BotSettings { get; private set; } = null;
@@ -187,7 +190,6 @@ namespace TRBot
             RoutineHandler.AddRoutine(new PeriodicMessageRoutine());
             RoutineHandler.AddRoutine(new CreditsGiveRoutine());
             RoutineHandler.AddRoutine(new ReconnectRoutine());
-            RoutineHandler.AddRoutine(new ChatBotResponseRoutine());
 
             //Initialize controller input - validate the controller type first
             if (InputGlobals.IsVControllerSupported((InputGlobals.VControllerTypes)BotData.LastVControllerType) == false)
@@ -199,6 +201,8 @@ namespace TRBot
             Console.WriteLine($"Setting up virtual controller {vCType}");
             
             InputGlobals.SetVirtualController(vCType);
+
+            StartUptime = DateTime.UtcNow;
 
             Initialized = true;
         }
@@ -216,6 +220,10 @@ namespace TRBot
             //Run
             while (true)
             {
+                //Store the bot's uptime
+                DateTime utcNow = DateTime.UtcNow;
+                TotalUptime = (utcNow - StartUptime);
+
                 DateTime now = DateTime.Now;
 
                 //Update queued messages
@@ -288,12 +296,12 @@ namespace TRBot
             }
         }
 
-        private void OnChatCommandReceived(User userData, EvtChatCommandArgs e)
+        private void OnChatCommandReceived(EvtChatCommandArgs e)
         {
             //If an exception is unhandled in a command, the entire bot will hang up (potential internal TwitchLib issue)
             try
             {
-                CommandHandler.HandleCommand(userData, e);
+                CommandHandler.HandleCommand(e.UserData, e);
             }
             catch (Exception exc)
             {
@@ -301,11 +309,11 @@ namespace TRBot
             }
         }
 
-        private void OnUserSentMessage(User user, EvtUserMessageArgs e)
+        private void OnUserSentMessage(EvtUserMessageArgs e)
         {
-            if (user.OptedOut == false)
+            if (e.UserData.OptedOut == false)
             {
-                user.IncrementMsgCount();
+                e.UserData.IncrementMsgCount();
             }
 
             string possibleMeme = e.UsrMessage.Message.ToLower();
@@ -315,8 +323,10 @@ namespace TRBot
             }
         }
 
-        private void OnUserMadeInput(User user, EvtUserMessageArgs e, in Parser.InputSequence validInputSeq)
+        private void OnUserMadeInput(EvtUserInputArgs e)
         {
+            User user = e.UserData;
+
             //Mark this as a valid input
             if (user.OptedOut == false)
             {
@@ -346,7 +356,7 @@ namespace TRBot
             //We're okay to perform the input
             //if (shouldPerformInput == true)
             //{
-                InputHandler.CarryOutInput(validInputSeq.Inputs);
+                InputHandler.CarryOutInput(e.ValidInputSeq.Inputs, InputGlobals.CurrentConsole, InputGlobals.ControllerMngr);
 
                 //If auto whitelist is enabled, the user reached the whitelist message threshold,
                 //the user isn't whitelisted, and the user hasn't ever been whitelisted, whitelist them
@@ -379,7 +389,7 @@ namespace TRBot
             }
         }
 
-        private void OnNewSubscriber(User user, EvtOnSubscriptionArgs e)
+        private void OnNewSubscriber(EvtOnSubscriptionArgs e)
         {
             if (string.IsNullOrEmpty(BotSettings.MsgSettings.NewSubscriberMsg) == false)
             {
@@ -388,7 +398,7 @@ namespace TRBot
             }
         }
 
-        private void OnReSubscriber(User user, EvtOnReSubscriptionArgs e)
+        private void OnReSubscriber(EvtOnReSubscriptionArgs e)
         {
             if (string.IsNullOrEmpty(BotSettings.MsgSettings.ReSubscriberMsg) == false)
             {
@@ -547,6 +557,12 @@ namespace TRBot
                 BotSettings.ClientSettings = new ClientSettings();
                 settingsChanged = true;
             }
+
+            if (BotSettings.BingoSettings == null)
+            {
+                BotSettings.BingoSettings = new BingoSettings();
+                settingsChanged = true;
+            }
             
             //Write only once after checking all the changes
             if (settingsChanged == true)
@@ -588,6 +604,9 @@ namespace TRBot
             {
                 MsgHandler.SetMessageCooldown(BotSettings.MsgSettings.MessageCooldown);
             }
+
+            //Re-populate macros
+            DataInit.PopulateMacrosToParserList(BotProgram.BotData.Macros, BotProgram.BotData.ParserMacroLookup);
 
             //string achievementsText = Globals.ReadFromTextFileOrCreate(Globals.AchievementsFilename);
             //BotData.Achievements = JsonConvert.DeserializeObject<AchievementData>(achievementsText);
@@ -687,10 +706,17 @@ namespace TRBot
             public ClientServiceTypes ClientType = ClientServiceTypes.Twitch;
         }
 
+        public class BingoSettings
+        {
+            public bool UseBingo = false;
+            public string BingoPipeFilePath = Globals.GetDataFilePath("BingoPipe");
+        }
+
         public class Settings
         {
             public ClientSettings ClientSettings = null;
             public MessageSettings MsgSettings = null;
+            public BingoSettings BingoSettings = null;
 
             /// <summary>
             /// The time, in minutes, for outputting the periodic message.
@@ -750,6 +776,11 @@ namespace TRBot
             /// If true, will acknowledge that a chat bot is in use and allow interacting with it, provided it's set up.
             /// </summary>
             public bool UseChatBot = false;
+
+            /// <summary>
+            /// The name of the file for the chatbot's socket in the data directory.
+            /// </summary>
+            public string ChatBotSocketFilename = "ChatterBotSocket";
         }
     }
 }

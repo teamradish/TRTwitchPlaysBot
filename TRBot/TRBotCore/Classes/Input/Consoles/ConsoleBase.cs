@@ -37,13 +37,13 @@ namespace TRBot
         /// <summary>
         /// The input axes this console supports.
         /// </summary>
-        public abstract Dictionary<string, int> InputAxes { get; protected set; }
+        public abstract Dictionary<string, InputAxis> InputAxes { get; protected set; }
 
         /// <summary>
         /// The button input map for this console.
-        /// Each value corresponds to a numbered button on a vJoy controller.
+        /// Each value corresponds to a numbered button on a virtual controller.
         /// </summary>
-        public abstract Dictionary<string, uint> ButtonInputMap { get; protected set; }
+        public abstract Dictionary<string, InputButton> ButtonInputMap { get; protected set; }
 
         public string InputRegex { get; private set; } = string.Empty;
 
@@ -66,9 +66,9 @@ namespace TRBot
         /// Returns the axis if found to save a dictionary lookup if one is needed afterwards.
         /// </summary>
         /// <param name="input">The input to check.</param>
-        /// <param name="axis">The axis value that is assigned. If no axis is found, the default value.</param>
+        /// <param name="axis">The InputAxis value that is assigned. If no axis is found, the default value.</param>
         /// <returns>true if the input is an axis, otherwise false.</returns>
-        public abstract bool GetAxis(in Parser.Input input, out int axis);
+        public abstract bool GetAxis(in Parser.Input input, out InputAxis axis);
 
         /// <summary>
         /// Tells whether an input is an axis or not.
@@ -84,22 +84,6 @@ namespace TRBot
         /// <returns>true if the input is a button, otherwise false.</returns>
         public abstract bool IsButton(in Parser.Input input);
 
-        /// <summary>
-        /// Tells whether the axis is an axis that ranges from a negative value to 0.
-        /// This is used to tell the vJoy controller how to press the axis.
-        /// </summary>
-        /// <param name="input">The input to check.</param>
-        /// <returns>true if the input is a min axis, otherwise false.</returns>
-        public abstract bool IsMinAxis(in Parser.Input input);
-
-        /// <summary>
-        /// Tells whether the input is an absolute axis - one that starts at 0 and goes up to a value.
-        /// <para>This is usually true only for triggers, such as the GameCube's L and R buttons.</para>
-        /// </summary>
-        /// <param name="input">The input to check.</param>
-        /// <returns>true if the input is an absolute axis, otherwise false.</returns>
-        public abstract bool IsAbsoluteAxis(in Parser.Input input);
-
         #endregion
 
         #region Methods
@@ -114,29 +98,7 @@ namespace TRBot
 
         public void Initialize()
         {
-            //Set up the regex for the console
-            //Add longer inputs first due to how the new parser works
-            //This avoids picking up shorter inputs with the same characters first
-            IOrderedEnumerable<string> sorted = from str in ValidInputs
-                                                orderby str.Length descending
-                                                select str;
-
-            StringBuilder sb = new StringBuilder(Parser.ParseRegexStart.Length + Parser.ParseRegexEnd.Length);
-            int i = 0;
-
-            sb.Append(Parser.ParseRegexStart);
-            foreach (string s in sorted)
-            {
-                sb.Append(System.Text.RegularExpressions.Regex.Escape(s));
-                if (i != (ValidInputs.Length - 1))
-                {
-                    sb.Append('|');
-                }
-                i++;
-            }
-            sb.Append(Parser.ParseRegexEnd);
-
-            InputRegex = sb.ToString();
+            InputRegex = Parser.BuildInputRegex(ValidInputs);
         }
 
         #endregion
