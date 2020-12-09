@@ -39,8 +39,14 @@ TRBot is free software; you are free to run, study, modify, and redistribute it.
 See the [LICENSE](./LICENSE) file for the full terms. See the [Dependency Licenses](./Dependency%20Licenses) file for the licenses of third party libraries used by TRBot. See the [logo license](./Logo/Logo%20License) file for the license of TRBot's logo.
 
 ## Contributing
+We are on Matrix at [#TRBot-Dev:matrix.org](https://matrix.to/#/!hTfcbsKMAuenQAetQm:matrix.org?via=matrix.org). Feel free to ask any questions or discuss development there!
+
+We also have an additional remote respository on Codeberg at: https://codeberg.org/kimimaru/TRBot
+
 Issues and pull requests are greatly encouraged! Please file an issue for a feature request, such as a new platform or service, or regarding any bugs you encounter.
 
-Developing software takes considerable time and effort, and we have poured hundreds of hours into making TRBot as powerful as it is and freely available to everyone in our spare time. Kindly consider donating to us on Liberapay: https://liberapay.com/kimimaru/
+Developing software takes considerable time and effort, and we have poured hundreds of hours into making TRBot as powerful as it is and freely available to everyone in our spare time. Kindly consider donating to us on Liberapay:
+
+https://liberapay.com/kimimaru/
 
 All donations go towards improving TRBot, and if enough donations have been met, working on it full-time.
