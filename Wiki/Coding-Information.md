@@ -1,6 +1,10 @@
 # Coding Information
 This document serves to highlight important information regarding TRBot development.
 
+We are on Matrix at [#TRBot-Dev:matrix.org](https://matrix.to/#/!hTfcbsKMAuenQAetQm:matrix.org?via=matrix.org). Feel free to ask any questions or discuss development there!
+
+We also have an additional remote respository on Codeberg at: https://codeberg.org/kimimaru/TRBot.git
+
 # Data-Related
 - Most data-related code can be found in the `TRBot.Data` project.
 - **Always** open a new database context with `DatabaseManager.OpenContext()` or `DatabaseManager.OpenCloseContext(DBContextAction<BotDBContext> dbContextAction)`. These methods use the correct path for the database and are consistent. **Do not instantiate a `BotDBContext` manually!** I'll repeat it as many times as it takes! 
@@ -9,6 +13,7 @@ This document serves to highlight important information regarding TRBot developm
 - `DataHelper` contains many useful utility methods to obtain information from the database.
 - If you have a database context open, **do NOT** use the `DataHelper` methods that don't end with "NoOpen". This will cause it to re-open the database context and probably not do whatever you wanted it to do. In this case, use the "NoOpen" variants instead, **but remember to keep things concise**. I'll say it again and again!
 - `DataContainer` holds several important objects, such as the message handler and the current virtual controller manager. If you make a change to one of its objects, make sure to make the change with the `DataContainer`'s reference. This container is shared between the `TRBot.Main` application, all the commands, and all the bot routines, giving them access to the same crucial information.
+-To add new default data, add them to `DefaultData.cs`. If you need to add a new category of data that isn't there, you will have to modify `DataHelper.InitDefaultData`. Make sure to add to the count of new entries, and don't add the entries if they already exist; this prevents overwriting data.
 
 # Parsing Inputs
 - Parsing inputs is performed with `ParsedInputSequence ParseInputs(string message, string inputRegex, in ParserOptions parserOptions)` on a `TRBot.Parsing.Parser` instance.
