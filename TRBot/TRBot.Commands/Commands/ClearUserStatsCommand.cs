@@ -57,7 +57,7 @@ namespace TRBot.Commands
 
             if (ConfirmClearedStatsUsers.Contains(userName) == false)
             {
-                QueueMessage($"WARNING {userName}: this clears all miscellaneous user stats, such as {creditsName.Pluralize(false, 0)} and message/input counts. If you're sure, retype this command with \"{CONFIRM_CLEAR_STR}\" as an argument to clear or \"{CONFIRM_STOP_STR}\" to decline.");
+                QueueMessage($"WARNING {userName}: this clears all miscellaneous user stats, such as {creditsName.Pluralize(false, 0)}, message/input counts, and recent inputs. If you're sure, retype this command with \"{CONFIRM_CLEAR_STR}\" as an argument to clear or \"{CONFIRM_STOP_STR}\" to decline.");
                 ConfirmClearedStatsUsers.Add(userName);
                 return;
             }
@@ -82,7 +82,11 @@ namespace TRBot.Commands
                     user = DataHelper.GetUserNoOpen(userName, context);
 
                     //Clear stats and save
-                    user.Stats.ClearCountedStats();
+                    user.RecentInputs.Clear();
+
+                    user.Stats.Credits = 0L;
+                    user.Stats.TotalMessageCount = 0L;
+                    user.Stats.ValidInputCount = 0L;
 
                     context.SaveChanges();
                 }

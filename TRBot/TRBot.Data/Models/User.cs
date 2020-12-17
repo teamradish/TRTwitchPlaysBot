@@ -52,6 +52,12 @@ namespace TRBot.Data
         public virtual List<RestrictedInput> RestrictedInputs { get; set; }
 
         /// <summary>
+        /// Recent valid inputs the user made.
+        /// This is used by the database and should not be assigned manually. 
+        /// </summary>
+        public virtual List<RecentInput> RecentInputs { get; set; }
+
+        /// <summary>
         /// Tells if the user is opted out of stats.
         /// </summary>
         public bool IsOptedOut => (Stats.OptedOut != 0);
@@ -68,6 +74,7 @@ namespace TRBot.Data
             Stats = new UserStats();
             UserAbilities = new List<UserAbility>();
             RestrictedInputs = new List<RestrictedInput>();
+            RecentInputs = new List<RecentInput>();
         }
 
         public User(string userName, in long level)

@@ -124,6 +124,9 @@ You will need to reload data or restart TRBot to apply any changes in the **Comm
   - Example: "!periodicinputtime 30000" - Sets the periodic input to be performed every 30 seconds.
 - ['GetSetPeriodicInputSequenceCommand'](../TRBot/TRBot.Commands/Commands/GetSetPeriodicInputSequenceCommand.cs) (default: "!periodicinputseq") - Obtains the input sequence the periodic input performs, or sets it if you have sufficient privileges and provide an input sequence as an argument. The input sequence must be one that you can normally perform, and it will perform some validation to ensure this. The validation includes includes comparing the user's level to the global input permission level and the permission level of each input in the input sequence, checking the user's restricted inputs, and verifying the controller port for each input. Invalid input combos are not checked at this time but rather when the input sequence is actually performed.
   - Example: "!periodicinputseq a+b #1s _left #300ms a1s &2b500ms"
+- [`ListUserRecentInputsCommand`](../TRBot/TRBot.Commands/Commands/ListUserRecentInputsCommand.cs) (default: "!recentinput") - Views a user's most recent input sequence at a given position, with higher values being older. You can supply an argument for which user to view recent inputs for. If the user being checked is currently opted out of bot stats, it will not display their recent inputs.
+  - Example: "!recentinput 1" - Displays the most recent input for yourself.
+  - Example: "!recentinput user1 3" - Displays the 3rd most recent input for user1. 
 
 ## Game Progress/Logging
 - [`AddGameLogCommand`](../TRBot/TRBot.Commands/Commands/AddGameLogCommand.cs) (default: "!addlog") - Adds a time-stamped game log to the database. This log is used to indicate others of game progress.

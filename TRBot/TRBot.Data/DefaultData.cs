@@ -92,6 +92,7 @@ namespace TRBot.Data
                 SettingsHelper(MAX_INPUT_DURATION, 60000L),
                 SettingsHelper(GLOBAL_MID_INPUT_DELAY_ENABLED, 0L),
                 SettingsHelper(GLOBAL_MID_INPUT_DELAY_TIME, 34L),
+                SettingsHelper(MAX_USER_RECENT_INPUTS, 5L),
                 SettingsHelper(LAST_CONSOLE, 1L),
                 SettingsHelper(LAST_VCONTROLLER_TYPE, (long)VControllerHelper.GetDefaultVControllerTypeForPlatform(TRBotOSPlatform.CurrentOS)),
                 SettingsHelper(JOYSTICK_COUNT, 1L),
@@ -196,6 +197,7 @@ namespace TRBot.Data
                 new CommandData("periodicinputseq", "TRBot.Commands.GetSetPeriodicInputSequenceCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("periodicinputtime", "TRBot.Commands.GetSetPeriodicInputTimeCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("invalidcombo", "TRBot.Commands.ListInvalidInputComboCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("recentinput", "TRBot.Commands.ListUserRecentInputsCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
                 new CommandData("addsyn", "TRBot.Commands.AddInputSynonymCommand", (long)PermissionLevels.Whitelisted, true, true),

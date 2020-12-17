@@ -1,4 +1,4 @@
-﻿/* This file is part of TRBot.
+/* This file is part of TRBot.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,37 +16,42 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Text;
-using Newtonsoft.Json;
 
 namespace TRBot.Data
 {
     /// <summary>
-    /// Represents user stats.
+    /// Describes a recent input sequence.
     /// </summary>
-    public class UserStats
+    public class RecentInput
     {
         public int ID { get; set; } = 0;
-        public int UserID { get; set; } = 0;
-        
-        public long Credits { get; set; } = 0;
-        public long TotalMessageCount { get; set; } = 0;
-        public long ValidInputCount { get; set; } = 0;
-        public long IsSubscriber { get; set; } = 0;
-        public long BetCounter { get; set; } = 0;
-        public long AutoPromoted { get; set; } = 0;
-        public long OptedOut { get; set; } = 0;
-        public long IgnoreMemes { get; set; } = 0;
 
         /// <summary>
-        /// The User associated with the user stats.
-        /// This is used by the database and should not be assigned or modified manually. 
+        /// The ID of the user the recent input belongs to.
+        /// </summary>
+        public int UserID { get; set; } = 0;
+
+        /// <summary>
+        /// The recent input sequence.
+        /// </summary>
+        public string InputSequence { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The User associated with the recent input.
+        /// This is used by the database and should not be assigned or modified manually.
         /// </summary>
         public virtual User user { get; set; } = null;
 
-        public UserStats()
+        public RecentInput()
         {
+            
+        }
 
+        public RecentInput(string inputSequence)
+        {
+            InputSequence = inputSequence;
         }
     }
 }

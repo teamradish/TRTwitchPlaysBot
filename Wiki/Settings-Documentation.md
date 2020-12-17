@@ -208,6 +208,9 @@ This defaults to 0. The delay inserted is determined by [global_mid_input_delay_
 ### global_mid_input_delay_time
 The global time, in milliseconds, of the blank inputs inserted between each input. This does not apply if [global_mid_input_delay_enabled](#global_mid_input_delay_enabled) is 0 or lower. This defaults to 34 milliseconds.
 
+### max_user_recent_inputs
+The max number of recent input sequences to store per user. If the user is opted out of stats, it won't store any inputs. This defaults to 5.
+
 ### last_console
 The game console to use.
 

@@ -488,10 +488,10 @@ namespace TRBot.Main
 
             ParsedInputSequence inputSequence = default;
             string userName = e.UsrMessage.Username;
+            int defaultDur = 200;
 
             try
             {
-                int defaultDur = 200;
                 int maxDur = 60000;
                 int defaultPort = 0;
 
@@ -658,7 +658,11 @@ namespace TRBot.Main
 
             bool addedInputCount = false;
 
+            //Get the max recorded inputs per-user
+            long maxUserRecInps = DataHelper.GetSettingInt(SettingsConstants.MAX_USER_RECENT_INPUTS, 0L);
+
             //It's a valid input - save it in the user's stats
+            //Also record the input if we should
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
                 User user = DataHelper.GetUserNoOpen(e.UsrMessage.Username, context);
@@ -670,6 +674,36 @@ namespace TRBot.Main
                     addedInputCount = true;
 
                     context.SaveChanges();
+
+                    //If we should store recent user inputs, do so
+                    if (maxUserRecInps > 0)
+                    {
+                        //Get the input sequence - we may have added mid input delays between
+                        //As a result, we'll need to reverse parse it
+                        string message = ReverseParser.ReverseParse(inputSequence, usedConsole,
+                            new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.ShowNonDefaultPorts, (int)user.ControllerPort,
+                            ReverseParser.ShowDurationTypes.ShowNonDefaultDurations, defaultDur));
+
+                        //Add the recorded input
+                        user.RecentInputs.Add(new RecentInput(message));
+                        context.SaveChanges();
+
+                        int diff = user.RecentInputs.Count - (int)maxUserRecInps;
+
+                        //If we're over the max after adding, remove
+                        if (diff > 0)
+                        {
+                            //Order by ascending ID and take the difference
+                            //Lower IDs = older entries
+                            IEnumerable<RecentInput> shouldRemove = user.RecentInputs.OrderBy(r => r.UserID).Take(diff);
+
+                            foreach (RecentInput rec in shouldRemove)
+                            {
+                                user.RecentInputs.Remove(rec);
+                                context.SaveChanges();
+                            }
+                        }
+                    }
                 }
             }
 
