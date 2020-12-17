@@ -169,6 +169,13 @@ Determines if the user can set the periodic input sequence through the ['GetSetP
 
 Attempting to set this causes the command to undergo steps to validate that the user setting this value cannot bypass their normal input restrictions. This includes comparing the user's level to the global input permission level and the permission level of each input in the input sequence, checking the user's restricted inputs, and verifying the controller port for each input.
 
+### setmaxuserrecentinputs
+**Default level: Moderator (30)**
+
+Determines if the user can set the max number of recent inputs stored per user through the [`GetSetMaxUserRecentInputsCommand`](../TRBot/TRBot.Commands/Commands/GetSetMaxUserRecentInputsCommand.cs).
+
+A value of 0 will essentially disable the feature. Any excess recent inputs stored above the limit will be removed next time a new one is added.
+
 ### updateotheruserabilities
 **Default level: Admin (40)**
 

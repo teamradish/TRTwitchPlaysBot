@@ -49,6 +49,7 @@ Table of Contents
 * [max_input_duration](#max_input_duration)
 * [global_mid_input_delay_enabled](#global_mid_input_delay_enabled)
 * [global_mid_input_delay_time](#global_mid_input_delay_time)
+* [max_user_recent_inputs](#max_user_recent_inputs)
 * [last_console](#last_console)
 * [last_vcontroller_type](#last_vcontroller_type)
 * [joystick_count](#joystick_count)

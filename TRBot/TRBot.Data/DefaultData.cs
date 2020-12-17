@@ -198,6 +198,7 @@ namespace TRBot.Data
                 new CommandData("periodicinputtime", "TRBot.Commands.GetSetPeriodicInputTimeCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("invalidcombo", "TRBot.Commands.ListInvalidInputComboCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("recentinput", "TRBot.Commands.ListUserRecentInputsCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("recentinputcount", "TRBot.Commands.GetSetMaxUserRecentInputsCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
                 new CommandData("addsyn", "TRBot.Commands.AddInputSynonymCommand", (long)PermissionLevels.Whitelisted, true, true),
@@ -284,6 +285,7 @@ namespace TRBot.Data
                 new PermissionAbility(SET_PERIODIC_INPUT_PORT_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
                 new PermissionAbility(SET_PERIODIC_INPUT_TIME_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
                 new PermissionAbility(SET_PERIODIC_INPUT_SEQUENCE_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
+                new PermissionAbility(SET_MAX_USER_RECENT_INPUTS_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
 
                 new PermissionAbility(UPDATE_OTHER_USER_ABILITES, PermissionLevels.Admin, PermissionLevels.Admin),
                 new PermissionAbility(SET_GLOBAL_INPUT_LEVEL_ABILITY, PermissionLevels.Admin, PermissionLevels.Admin),

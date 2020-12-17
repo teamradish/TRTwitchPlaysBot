@@ -489,11 +489,11 @@ namespace TRBot.Main
             ParsedInputSequence inputSequence = default;
             string userName = e.UsrMessage.Username;
             int defaultDur = 200;
+            int defaultPort = 0;
 
             try
             {
                 int maxDur = 60000;
-                int defaultPort = 0;
 
                 string regexStr = usedConsole.InputRegex;
 
@@ -523,15 +523,16 @@ namespace TRBot.Main
                 //Parse inputs to get our parsed input sequence
                 inputSequence = InputParser.ParseInputs(readyMessage, regexStr, new ParserOptions(defaultPort, defaultDur, true, maxDur));
                 //Console.WriteLine(inputSequence.ToString());
-                //Console.WriteLine("\nReverse Parsed: " + ReverseParser.ReverseParse(inputSequence));
-                //Console.WriteLine("\nReverse Parsed Natural:\n" + ReverseParser.ReverseParseNatural(inputSequence));
+                //Console.WriteLine("\nReverse Parsed (on parse): " + ReverseParser.ReverseParse(inputSequence, usedConsole,
+                //    new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.ShowNonDefaultPorts, defaultPort,
+                //    ReverseParser.ShowDurationTypes.ShowNonDefaultDurations, defaultDur)));
             }
             catch (Exception exception)
             {
                 string excMsg = exception.Message;
 
                 //Handle parsing exceptions
-                MsgHandler.QueueMessage($"ERROR: {excMsg} | {exception.StackTrace}");
+                MsgHandler.QueueMessage($"ERROR PARSING: {excMsg} | {exception.StackTrace}");
                 inputSequence.ParsedInputResult = ParsedInputResults.Invalid;
             }
 
@@ -657,6 +658,10 @@ namespace TRBot.Main
             string autoPromoteMsg = DataHelper.GetSettingString(SettingsConstants.AUTOPROMOTE_MESSAGE, string.Empty);
 
             bool addedInputCount = false;
+
+            //Console.WriteLine("\nReverse Parsed (post-process): " + ReverseParser.ReverseParse(inputSequence, usedConsole,
+            //        new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.ShowNonDefaultPorts, defaultPort,
+            //        ReverseParser.ShowDurationTypes.ShowNonDefaultDurations, defaultDur)));
 
             //Get the max recorded inputs per-user
             long maxUserRecInps = DataHelper.GetSettingInt(SettingsConstants.MAX_USER_RECENT_INPUTS, 0L);

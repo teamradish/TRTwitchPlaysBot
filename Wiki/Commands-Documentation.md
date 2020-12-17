@@ -126,7 +126,10 @@ You will need to reload data or restart TRBot to apply any changes in the **Comm
   - Example: "!periodicinputseq a+b #1s _left #300ms a1s &2b500ms"
 - [`ListUserRecentInputsCommand`](../TRBot/TRBot.Commands/Commands/ListUserRecentInputsCommand.cs) (default: "!recentinput") - Views a user's most recent input sequence at a given position, with higher values being older. You can supply an argument for which user to view recent inputs for. If the user being checked is currently opted out of bot stats, it will not display their recent inputs.
   - Example: "!recentinput 1" - Displays the most recent input for yourself.
-  - Example: "!recentinput user1 3" - Displays the 3rd most recent input for user1. 
+  - Example: "!recentinput user1 3" - Displays the 3rd most recent input for user1.
+- [`GetSetMaxUserRecentInputsCommand`](../TRBot/TRBot.Commands/Commands/GetSetMaxUserRecentInputsCommand.cs) (default: "!recentinputcount") - Obtains the max number of recent input sequences stored per user, or sets it if you have sufficient privileges and provide an argument.
+  - Example: "!recentinputcount" - Displays the max number of recent input sequences stored per user.
+  - Example: "!recentinputcount 3" - Sets the max number of recent input sequences stored per user to 3.
 
 ## Game Progress/Logging
 - [`AddGameLogCommand`](../TRBot/TRBot.Commands/Commands/AddGameLogCommand.cs) (default: "!addlog") - Adds a time-stamped game log to the database. This log is used to indicate others of game progress.
