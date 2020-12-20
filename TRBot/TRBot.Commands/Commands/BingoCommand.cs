@@ -106,7 +106,7 @@ namespace TRBot.Commands
             }
             catch (Exception exc)
             {
-                QueueMessage($"Error with sending bingo message: {exc.Message} - Please check the \"{SettingsConstants.BINGO_PIPE_PATH}\" and \"{SettingsConstants.BINGO_PIPE_PATH_IS_RELATIVE}\" settings in the database.");
+                QueueMessage($"Error with sending bingo message: {exc.Message} - Please check the \"{SettingsConstants.BINGO_PIPE_PATH}\" and \"{SettingsConstants.BINGO_PIPE_PATH_IS_RELATIVE}\" settings in the database. Also ensure TRBotBingo is running!");
             }
         }
     }

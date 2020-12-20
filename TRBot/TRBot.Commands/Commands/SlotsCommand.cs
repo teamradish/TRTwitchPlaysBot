@@ -58,17 +58,17 @@ namespace TRBot.Commands
         }
 
         /// <summary>
-        /// Maps a slot name to an emote.
+        /// Maps a slot name to an emote. The value is the setting name controlling the emote.
         /// </summary>
         private readonly Dictionary<SlotInternalNames, string> SlotToEmoteMap = new Dictionary<SlotInternalNames, string>(7)
         {
-            { SlotInternalNames.Blank, "FailFish" },
-            { SlotInternalNames.Cherry, "Kappa" },
-            { SlotInternalNames.Plum, "HeyGuys" },
-            { SlotInternalNames.Watermelon, "SeemsGood" },
-            { SlotInternalNames.Orange, "CoolCat" },
-            { SlotInternalNames.Lemon, "PartyTime" },
-            { SlotInternalNames.Bar, "PogChamp" }
+            { SlotInternalNames.Blank, SettingsConstants.SLOTS_BLANK_EMOTE },
+            { SlotInternalNames.Cherry, SettingsConstants.SLOTS_CHERRY_EMOTE },
+            { SlotInternalNames.Plum, SettingsConstants.SLOTS_PLUM_EMOTE },
+            { SlotInternalNames.Watermelon, SettingsConstants.SLOTS_WATERMELON_EMOTE },
+            { SlotInternalNames.Orange, SettingsConstants.SLOTS_ORANGE_EMOTE },
+            { SlotInternalNames.Lemon, SettingsConstants.SLOTS_LEMON_EMOTE },
+            { SlotInternalNames.Bar, SettingsConstants.SLOTS_BAR_EMOTE },
         };
         
         private readonly Dictionary<SlotInternalNames, double> SlotRewardModifiers = new Dictionary<SlotInternalNames, double>(7)
@@ -98,7 +98,6 @@ namespace TRBot.Commands
         private Random Rand = new Random();
 
         private string UsageMessage = "Usage: \"buy-in (int)\" or \"info\"";
-        private string CachedInfoMessage = string.Empty;
 
         public SlotsCommand()
         {
@@ -198,7 +197,9 @@ namespace TRBot.Commands
                 SlotInternalNames chosenSlot = ChooseSlot(weight.Value);
                 slotsChosen[i] = chosenSlot;
 
-                strBuilder.Append(SlotToEmoteMap[chosenSlot]).Append(' ').Append('|').Append(' ');
+                string emote = DataHelper.GetSettingString(SlotToEmoteMap[chosenSlot], string.Empty);
+
+                strBuilder.Append(emote).Append(' ').Append('|').Append(' ');
 
                 i++;
             }
@@ -355,27 +356,23 @@ namespace TRBot.Commands
 
         private void PrintInfoMessage()
         {
-            //Cache the info message if it's empty
-            if (string.IsNullOrEmpty(CachedInfoMessage) == true)
+            int count = WeightTable.Count;
+
+            StringBuilder stringBuilder = new StringBuilder(128);
+
+            foreach (KeyValuePair<SlotInternalNames, double> kvPair in SlotRewardModifiers)
             {
-                int count = WeightTable.Count;
+                string emoteName = DataHelper.GetSettingString(SlotToEmoteMap[kvPair.Key], string.Empty);
 
-                StringBuilder stringBuilder = new StringBuilder(128);
-
-                foreach (KeyValuePair<SlotInternalNames, double> kvPair in SlotRewardModifiers)
-                {
-                    string emoteName = SlotToEmoteMap[kvPair.Key];
-
-                    stringBuilder.Append(emoteName).Append(' ').Append('x').Append(count).Append(" = ");
-                    stringBuilder.Append(kvPair.Value).Append('x').Append(" buy-in | ");
-                }
-
-                stringBuilder.Remove(stringBuilder.Length - 3, 3);
-
-                CachedInfoMessage = stringBuilder.ToString();
+                stringBuilder.Append(emoteName).Append(' ').Append('x').Append(count).Append(" = ");
+                stringBuilder.Append(kvPair.Value).Append('x').Append(" buy-in | ");
             }
 
-            QueueMessage(CachedInfoMessage);
+            stringBuilder.Remove(stringBuilder.Length - 3, 3);
+
+            string infoMessage = stringBuilder.ToString();
+
+            QueueMessage(infoMessage);
         }
 
         private struct ReelWeight

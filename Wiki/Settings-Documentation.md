@@ -38,6 +38,13 @@ Table of Contents
 * [info_message](#info_message)
 * [tutorial_message](#tutorial_message)
 * [documentation_message](#documentation_message)
+* [slots_blank_emote](#slots_blank_emote)
+* [slots_cherry_emote](#slots_cherry_emote)
+* [slots_plum_emote](#slots_plum_emote)
+* [slots_watermelon_emote](#slots_watermelon_emote)
+* [slots_orange_emote](#slots_orange_emote)
+* [slots_lemon_emote](#slots_lemon_emote)
+* [slots_bar_emote](#slots_bar_emote)
 * [periodic_input_enabled](#periodic_input_enabled)
 * [periodic_input_time](#periodic_input_time)
 * [periodic_input_port](#periodic_input_port)
@@ -80,7 +87,7 @@ The total time, in milliseconds, a group bet takes place in.
 The minimum number of participants to start a group bet.
 
 ### chatbot_enabled
-Whether users can talk with the chatbot.
+Whether users can talk with a chatbot instance, such as [ChatterBot](../Supplementary/ChatterBot.py).
 
 ### chatbot_socket_path
 The path to the socket for the chatbot, which TRBot uses to communicate.
@@ -89,7 +96,7 @@ The path to the socket for the chatbot, which TRBot uses to communicate.
 If 1, [chatbot_socket_path](#chatbot_socket_path) is a path relative to the Data folder, otherwise it's an absolute path.
 
 ### bingo_enabled
-Whether users can participate in the external bingo application.
+Whether users can participate in bingo through an external application, such as [TRBotBingo](https://github.com/teamradish/TRBotBingo).
 
 ### bingo_pipe_path
 The path to the socket for the bingo application, which TRBot uses to communicate.
@@ -161,6 +168,27 @@ A message linking to the syntax tutorial on how to play.
 
 ### documentation_message
 A message linking to the documentation for the bot.
+
+### slots_blank_emote
+The emote to use, as a string, for the Blank slot in the slots game. This defaults to "FailFish".
+
+### slots_cherry_emote
+The emote to use, as a string, for the Cherry slot in the slots game. This defaults to "Kappa".
+
+### slots_plum_emote
+The emote to use, as a string, for the Plum slot in the slots game. This defaults to "HeyGuys".
+    
+### slots_watermelon_emote
+The emote to use, as a string, for the Watermelon slot in the slots game. This defaults to "SeemsGood".
+   
+### slots_orange_emote
+The emote to use, as a string, for the Orange slot in the slots game. This defaults to "CoolCat".
+
+### slots_lemon_emote
+The emote to use, as a string, for the Lemon slot in the slots game. This defaults to "PartyTime".
+
+### slots_bar_emote
+The emote to use, as a string, for the Bar slot in the slots game. This defaults to "PogChamp".
 
 ### periodic_input_enabled
 Whether to enable an input sequence that is performed periodically by TRBot. Periodic input sequences are useful for newer game consoles that go to sleep after some time of inactivity. 0 = disabled, 1 = enabled. This defaults to 0, disabled.

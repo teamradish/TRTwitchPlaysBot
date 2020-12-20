@@ -98,7 +98,9 @@ namespace TRBot.Commands
                 recentInputSeq = inputUser.RecentInputs[finalRecentInputNum].InputSequence;
             }
 
-            QueueMessage($"{inputUsername}'s #{recentInputNum} most recent input: {recentInputSeq}");
+            int botCharLimit = (int)DataHelper.GetSettingInt(SettingsConstants.BOT_MSG_CHAR_LIMIT, 500L);
+
+            QueueMessageSplit($"{inputUsername}'s #{recentInputNum} most recent input: {recentInputSeq}", botCharLimit, " ");
         }
     }
 }

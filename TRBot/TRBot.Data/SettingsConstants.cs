@@ -68,7 +68,15 @@ namespace TRBot.Data
         public const string INFO_MESSAGE = "info_message";
         public const string TUTORIAL_MESSAGE = "tutorial_message";
         public const string DOCUMENTATION_MESSAGE = "documentation_message";
-
+        
+        public const string SLOTS_BLANK_EMOTE = "slots_blank_emote";
+        public const string SLOTS_CHERRY_EMOTE = "slots_cherry_emote";
+        public const string SLOTS_PLUM_EMOTE = "slots_plum_emote";
+        public const string SLOTS_WATERMELON_EMOTE = "slots_watermelon_emote";
+        public const string SLOTS_ORANGE_EMOTE = "slots_orange_emote";
+        public const string SLOTS_LEMON_EMOTE = "slots_lemon_emote";
+        public const string SLOTS_BAR_EMOTE = "slots_bar_emote";
+        
         public const string PERIODIC_INPUT_ENABLED = "periodic_input_enabled";
         public const string PERIODIC_INPUT_TIME = "periodic_input_time";
         public const string PERIODIC_INPUT_PORT = "periodic_input_port";

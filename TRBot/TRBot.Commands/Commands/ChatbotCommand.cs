@@ -127,7 +127,7 @@ namespace TRBot.Commands
             }
             catch (Exception exc)
             {
-                QueueMessage($"Error with sending chatbot reply: {exc.Message} - Please check the \"{SettingsConstants.CHATBOT_SOCKET_PATH}\" and \"{SettingsConstants.CHATBOT_SOCKET_PATH_IS_RELATIVE}\" settings in the database.");
+                QueueMessage($"Error with sending chatbot reply: {exc.Message} - Please check the \"{SettingsConstants.CHATBOT_SOCKET_PATH}\" and \"{SettingsConstants.CHATBOT_SOCKET_PATH_IS_RELATIVE}\" settings in the database. Also ensure your ChatterBot instance is running!");
             }
         }
     }
