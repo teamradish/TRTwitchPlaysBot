@@ -36,16 +36,28 @@ TRBot's logo was designed by the talented [David Revoy](https://www.davidrevoy.c
 
 TRBot is free software; you are free to run, study, modify, and redistribute it. Specifically, you can modify and/or redistribute TRBot under the terms of the GNU Affero General Public License v3.0 or (at your option) any later version.
 
+In simple terms, if you give someone a copy of TRBot or deploy TRBot to an online service, you must provide a way to obtain the license and source code for that version of TRBot upon request. This includes modified versions of TRBot.
+
 See the [LICENSE](./LICENSE) file for the full terms. See the [Dependency Licenses](./Dependency%20Licenses) file for the licenses of third party libraries used by TRBot. See the [logo license](./Logo/Logo%20License) file for the license of TRBot's logo.
 
+## Banner
+Show your support for TRBot by using a simple promo banner on one of your Twitch stream panels or a video! 
+
+Large:
+`![Powered by TRBot](https://github.com/teamradish/TRTwitchPlaysBot/Logo/TRBotLogo_Promo.png "TRBot Logo")`
+
+Small:
+`![Powered by TRBot](https://github.com/teamradish/TRTwitchPlaysBot/Logo/TRBotLogo_Promo_Small.png "TRBot Logo")`
+
 ## Contributing
-We are on Matrix at [#TRBot-Dev:matrix.org](https://matrix.to/#/!hTfcbsKMAuenQAetQm:matrix.org?via=matrix.org). Feel free to ask any questions or discuss development there!
+Issues and pull requests are greatly encouraged! Please file an issue for a feature request, such as a new platform or service, or regarding any bugs you encounter.
 
 We also have an additional remote respository on Codeberg at: https://codeberg.org/kimimaru/TRBot
 
-Issues and pull requests are greatly encouraged! Please file an issue for a feature request, such as a new platform or service, or regarding any bugs you encounter.
+### Support
+We are on Matrix at [#TRBot-Dev:matrix.org](https://matrix.to/#/!hTfcbsKMAuenQAetQm:matrix.org?via=matrix.org). Feel free to ask any questions or discuss development there!
 
-Developing software takes considerable time and effort, and we have poured hundreds of hours into making TRBot as powerful as it is and freely available to everyone in our spare time. Kindly consider donating to us on Liberapay:
+Developing software takes considerable time and effort, and we have poured hundreds of hours of our spare time into making TRBot as powerful as it is and freely available to everyone. Kindly consider donating to us on Liberapay:
 
 https://liberapay.com/kimimaru/
 

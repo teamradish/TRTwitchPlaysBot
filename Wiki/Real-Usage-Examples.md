@@ -1,4 +1,6 @@
-Here are some examples of TRBot in action on actual game playthroughs.
+TRBot has been used by many streams to date, including [TwitchPlaysSpeedruns](https://www.twitch.tv/twitchplaysspeedruns), [TwitchPlaysPaperMario](https://www.twitch.tv/twitchplayspapermario), [f1ashko](https://www.twitch.tv/f1ashko), and [BraceYourselfGames](https://www.twitch.tv/braceyourselfgames/clip/SmoggyTangibleChoughEleGiggle) (the developers behind Crypt of the NecroDancer!).
+
+Here are some more examples of TRBot in action:
 
 * **Long Sequence (Kirby Super Star)**
   * https://www.twitch.tv/twitchplayspapermario/clip/TransparentTiredNikudonChocolateRain
