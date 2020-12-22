@@ -803,6 +803,7 @@ namespace TRBot.Main
                     || string.IsNullOrEmpty(twitchSettings.BotName))
                 {
                     Console.WriteLine($"Twitch login settings are invalid. Please modify the data in the \"{TwitchConstants.LOGIN_SETTINGS_FILENAME}\" file.");
+                    return;
                 }
 
                 TwitchClient client = new TwitchClient();
