@@ -44,12 +44,11 @@ See the [LICENSE](./LICENSE) file for the full terms. See the [Dependency Licens
 Show your support for TRBot by using one of the following promo banner Markdown codes on your Twitch stream panel or video!
 
 Large:
-
-`![Powered by TRBot](https://github.com/teamradish/TRTwitchPlaysBot/Logo/TRBotLogo_Promo.png "TRBot Logo")`
+`![Powered by TRBot](https://raw.githubusercontent.com/teamradish/TRTwitchPlaysBot/develop/Logo/TRBotLogo_Promo.png "TRBot Logo")`
 
 Small:
 
-`![Powered by TRBot](https://github.com/teamradish/TRTwitchPlaysBot/Logo/TRBotLogo_Promo_Small.png "TRBot Logo")`
+`![Powered by TRBot](https://raw.githubusercontent.com/teamradish/TRTwitchPlaysBot/develop/Logo/TRBotLogo_Promo_Small.png "TRBot Logo")`
 
 ## Contributing
 Issues and pull requests are greatly encouraged! Please file an issue for a feature request, such as a new platform or service, or regarding any bugs you encounter.
