@@ -32,6 +32,8 @@ The original Python version of the original parser was written by TwitchPlays_Ev
 TRBot's logo was designed by the talented [David Revoy](https://www.davidrevoy.com/), well-known for his Pepper & Carrot comic series.
 
 ## License
+Copyright © 2019-2020 Thomas "Kimimaru" Deeb.
+
 [![AGPL](https://www.gnu.org/graphics/agplv3-155x51.png)](https://www.gnu.org/licenses/agpl-3.0.en.html)
 
 TRBot is free software; you are free to run, study, modify, and redistribute it. Specifically, you can modify and/or redistribute TRBot under the terms of the GNU Affero General Public License v3.0 or (at your option) any later version.
@@ -41,7 +43,7 @@ In simple terms, if you give someone a copy of TRBot or deploy TRBot to an onlin
 See the [LICENSE](./LICENSE) file for the full terms. See the [Dependency Licenses](./Dependency%20Licenses) file for the licenses of third party libraries used by TRBot. See the [logo license](./Logo/Logo%20License) file for the license of TRBot's logo.
 
 ## Banner
-Show your support for TRBot by using one of the following promo banner Markdown codes on your Twitch stream panel or video!
+Show your support for TRBot by using one of the following promo banner Markdown codes on your blog, video, or Twitch stream panel!
 
 Large:
 `![Powered by TRBot](https://raw.githubusercontent.com/teamradish/TRTwitchPlaysBot/develop/Logo/TRBotLogo_Promo.png "TRBot Logo")`
