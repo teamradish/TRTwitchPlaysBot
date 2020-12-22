@@ -41,12 +41,14 @@ In simple terms, if you give someone a copy of TRBot or deploy TRBot to an onlin
 See the [LICENSE](./LICENSE) file for the full terms. See the [Dependency Licenses](./Dependency%20Licenses) file for the licenses of third party libraries used by TRBot. See the [logo license](./Logo/Logo%20License) file for the license of TRBot's logo.
 
 ## Banner
-Show your support for TRBot by using a simple promo banner on one of your Twitch stream panels or a video! 
+Show your support for TRBot by using one of the following promo banner Markdown codes on your Twitch stream panel or video!
 
 Large:
+
 `![Powered by TRBot](https://github.com/teamradish/TRTwitchPlaysBot/Logo/TRBotLogo_Promo.png "TRBot Logo")`
 
 Small:
+
 `![Powered by TRBot](https://github.com/teamradish/TRTwitchPlaysBot/Logo/TRBotLogo_Promo_Small.png "TRBot Logo")`
 
 ## Contributing
