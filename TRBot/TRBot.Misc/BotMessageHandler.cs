@@ -29,6 +29,8 @@ namespace TRBot.Misc
     /// </summary>
     public class BotMessageHandler
     {
+        private static BotMessageNoThrottle NoThrottleInstance = new BotMessageNoThrottle();
+
         /// <summary>
         /// The ClientService the message handler is using.
         /// </summary>
@@ -39,26 +41,26 @@ namespace TRBot.Misc
         /// </summary>
         public bool LogToConsole { get; private set; } = true;
 
+        /// <summary>
+        /// How many messages are in the queue.
+        /// </summary>
+        public int ClientMessageCount => ClientMessages.Count;
+
         private string ChannelName = string.Empty;
-        private long MessageCooldown = 1000L;
+
+        /// <summary>
+        /// The message throttler that handles sending the messages when it's time.
+        /// </summary>
+        private BotMessageThrottler MessageThrottler = NoThrottleInstance;
 
         /// <summary>
         /// Queued messages.
         /// </summary>
         private readonly Queue<string> ClientMessages = new Queue<string>(16);
 
-        private DateTime CurQueueTime = default;
-
         public BotMessageHandler()
         {
 
-        }
-
-        public BotMessageHandler(IClientService clientService, string channelName, in long messageCooldown)
-        {
-            SetClientService(clientService);
-            SetChannelName(channelName);
-            SetMessageCooldown(messageCooldown);
         }
 
         public void CleanUp()
@@ -76,9 +78,24 @@ namespace TRBot.Misc
             ChannelName = channelName;
         }
 
-        public void SetMessageCooldown(in long messageCooldown)
+        public void SetMessageThrottling(in MessageThrottlingOptions msgThrottleOption, in long maxMsgCount,
+            in long msgCooldown)
         {
-            MessageCooldown = messageCooldown;
+            MessageThrottler = InstantiateThrottler(msgThrottleOption, maxMsgCount, msgCooldown);
+        }
+
+        private BotMessageThrottler InstantiateThrottler(in MessageThrottlingOptions msgThrottleOption,
+            in long maxMsgCount, in long msgCooldown)
+        {
+            switch (msgThrottleOption)
+            {
+                case MessageThrottlingOptions.MsgCountPerInterval:
+                    return new BotMessagePerIntervalThrottler(maxMsgCount, msgCooldown);
+                case MessageThrottlingOptions.TimeThrottled:
+                    return new BotMessageTimeThrottler(msgCooldown);
+                case MessageThrottlingOptions.None:
+                default: return NoThrottleInstance;
+            }
         }
 
         public void SetLogToConsole(in bool logToConsole)
@@ -88,39 +105,45 @@ namespace TRBot.Misc
 
         public void Update(in DateTime nowUTC)
         {
-            TimeSpan queueDiff = nowUTC - CurQueueTime;
+            MessageThrottler.Update(nowUTC, this);
+        }
 
-            //Queued messages
-            if (ClientMessages.Count > 0 && queueDiff.TotalMilliseconds >= MessageCooldown)
+        /// <summary>
+        /// Sends the next queued message through the client service. This returns false if this fails.
+        /// </summary>
+        /// <returns>true if the message was successfully sent. false if the client service is disconnected or the message fails to send.</returns>
+        public bool SendNextQueuedMessage()
+        {
+            //Ensure the client service has joined a channel, otherwise we can't send the message 
+            if (ClientMessages.Count == 0 || ClientService.IsConnected == false || ClientService.JoinedChannels?.Count <= 0)
             {
-                //Ensure the client service has joined a channel, otherwise we can't send the message 
-                if (ClientService.IsConnected == true && ClientService.JoinedChannels?.Count >= 1)
-                {
-                    //See the message
-                    string message = ClientMessages.Peek();
-
-                    //There's a chance the bot could be disconnected from the channel between the conditional and now
-                    try
-                    {
-                        //Send the message
-                        ClientService.SendMessage(ChannelName, message);
-
-                        if (LogToConsole == true)
-                        {
-                            Console.WriteLine(message);
-                        }
-
-                        //Remove from queue
-                        ClientMessages.Dequeue();
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine($"Could not send message: {e.Message}");
-                    }
-
-                    CurQueueTime = nowUTC;
-                }
+                return false;
             }
+            
+            //See the message
+            string message = ClientMessages.Peek();
+
+            //There's a chance the bot could be disconnected from the channel between the conditional and now
+            try
+            {
+                //Send the message
+                ClientService.SendMessage(ChannelName, message);
+
+                if (LogToConsole == true)
+                {
+                    Console.WriteLine(message);
+                }
+
+                //Remove from queue
+                ClientMessages.Dequeue();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Could not send message: {e.Message}");
+                return false;
+            }
+
+            return true;
         }
 
         public void QueueMessage(string message)

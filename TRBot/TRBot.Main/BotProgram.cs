@@ -153,7 +153,7 @@ namespace TRBot.Main
             MsgHandler.SetClientService(ClientService);
 
             long msgCooldown = DataHelper.GetSettingInt(SettingsConstants.MESSAGE_COOLDOWN, 1000L);
-            MsgHandler.SetMessageCooldown(msgCooldown);
+            MsgHandler.SetMessageThrottling(MessageThrottlingOptions.TimeThrottled, 100L, msgCooldown);
 
             //Subscribe to events
             UnsubscribeEvents();
