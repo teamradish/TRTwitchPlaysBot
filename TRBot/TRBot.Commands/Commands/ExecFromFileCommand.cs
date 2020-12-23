@@ -74,7 +74,7 @@ namespace TRBot.Commands
             }
 
             //Execute the code
-            ExecuteCSharpScript(codeText);
+            ExecuteCSharpScript(codeText, args);
         }
     }
 }

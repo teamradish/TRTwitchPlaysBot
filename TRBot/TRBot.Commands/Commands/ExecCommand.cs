@@ -28,6 +28,7 @@ using TRBot.Misc;
 using TRBot.Utilities;
 using TRBot.Consoles;
 using TRBot.Data;
+using TRBot.Routines;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 
@@ -97,10 +98,10 @@ namespace TRBot.Commands
                 return;
             }
 
-            ExecuteCSharpScript(code);
+            ExecuteCSharpScript(code, args);
         }
 
-        protected async void ExecuteCSharpScript(string code)
+        protected async void ExecuteCSharpScript(string code, EvtChatCommandArgs args)
         {
             //Store the default console output stream
             TextWriter defaultOut = Console.Out;
@@ -109,53 +110,35 @@ namespace TRBot.Commands
 
             try
             {
-                //Output any Console output to the chat
-                //To do this, we're overriding the Console's output stream
-                using (BotWriter writer = new BotWriter(DataContainer.MessageHandler))
-                {
-                    Console.SetOut(writer);
-                    DataContainer.MessageHandler.SetLogToConsole(false);
+                ExecScriptDataContainer execContainer = new ExecScriptDataContainer(this, CmdHandler, DataContainer, RoutineHandler, args);
 
-                    var script = await CSharpScript.RunAsync(code, ScriptCompileOptions);
-
-                    Console.SetOut(defaultOut);
-                    DataContainer.MessageHandler.SetLogToConsole(prevIgnoreConsoleLogVal);
-                }
+                var script = await CSharpScript.RunAsync(code, ScriptCompileOptions, execContainer, typeof(ExecScriptDataContainer));
             }
             catch (CompilationErrorException exception)
             {
                 QueueMessage($"Compiler error: {exception.Message}");
             }
-            //Regardless of what happens, return the output stream to the default
-            finally
-            {
-                Console.SetOut(defaultOut);
-                DataContainer.MessageHandler.SetLogToConsole(prevIgnoreConsoleLogVal);
-            }
         }
 
         /// <summary>
-        /// TextWriter class that outputs a message through the bot.
+        /// A container class holding global data accessible to arbitrary code.
         /// </summary>
-        public class BotWriter : TextWriter
+        public class ExecScriptDataContainer
         {
-            public override Encoding Encoding => System.Text.Encoding.Default;
+            public BaseCommand ThisCmd = null;
+            public CommandHandler CmdHandler = null;
+            public DataContainer DataContainer = null;
+            public BotRoutineHandler RoutineHandler = null;
+            public EvtChatCommandArgs Args = null;
 
-            private BotMessageHandler MessageHandler = null;
-
-            public BotWriter(BotMessageHandler msgHandler)
+            public ExecScriptDataContainer(BaseCommand thisCmd, CommandHandler cmdHandler,
+                DataContainer dataContainer, BotRoutineHandler routineHandler, EvtChatCommandArgs args)
             {
-                MessageHandler = msgHandler;
-            }
-
-            public override void Write(string value)
-            {
-                MessageHandler.QueueMessage(value);
-            }
-
-            public override void WriteLine(string value)
-            {
-                MessageHandler.QueueMessage(value);
+                ThisCmd = thisCmd;
+                CmdHandler = cmdHandler;
+                DataContainer = dataContainer;
+                RoutineHandler = routineHandler;
+                Args = args;
             }
         }
     }
