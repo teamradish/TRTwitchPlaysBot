@@ -152,8 +152,10 @@ namespace TRBot.Main
             //Set client service and message cooldown
             MsgHandler.SetClientService(ClientService);
 
-            long msgCooldown = DataHelper.GetSettingInt(SettingsConstants.MESSAGE_COOLDOWN, 1000L);
-            MsgHandler.SetMessageCooldown(msgCooldown);
+            MessageThrottlingOptions msgThrottleOption = (MessageThrottlingOptions)DataHelper.GetSettingInt(SettingsConstants.MESSAGE_THROTTLE_TYPE, 0L);
+            long msgCooldown = DataHelper.GetSettingInt(SettingsConstants.MESSAGE_COOLDOWN, 30000L);
+            long msgThrottleCount = DataHelper.GetSettingInt(SettingsConstants.MESSAGE_THROTTLE_COUNT, 20L);
+            MsgHandler.SetMessageThrottling(msgThrottleOption, new MessageThrottleData(msgCooldown, msgThrottleCount));
 
             //Subscribe to events
             UnsubscribeEvents();
@@ -876,11 +878,23 @@ namespace TRBot.Main
                 }
 
                 ChangeVControllerType(supportedVCType);
-
-                return; 
             }
-        
-            ReinitVControllerCount();
+            else
+            {
+                ReinitVControllerCount();
+            }
+
+            //Handle message throttling changes
+            MessageThrottlingOptions msgThrottle = (MessageThrottlingOptions)DataHelper.GetSettingInt(SettingsConstants.MESSAGE_THROTTLE_TYPE, 0L);
+            long msgTime = DataHelper.GetSettingInt(SettingsConstants.MESSAGE_COOLDOWN, 30000L);
+            long msgThrottleCount = DataHelper.GetSettingInt(SettingsConstants.MESSAGE_THROTTLE_COUNT, 20L);
+
+            if (msgThrottle != MsgHandler.CurThrottleOption)
+            {
+                Console.WriteLine("Detected change in message throttling type - changing message throttler.");
+            }
+
+            MsgHandler.SetMessageThrottling(msgThrottle, new MessageThrottleData(msgTime, msgThrottleCount));
         }
 
         private bool LastVControllerTypeChanged()

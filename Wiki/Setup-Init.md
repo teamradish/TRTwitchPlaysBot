@@ -17,7 +17,7 @@ For security reasons, no user is an Admin or Superadmin by default. To set a use
 
 After these are set, run TRBot again and you should see it connect to the channel.
 <br />***IMPORTANT:*** If you don't see the bot's connection message on the channel, make sure the channel doesn't have chat restrictions, such as Followers-only, or have the bot account adhere to the restrictions so it can chat.
-<br />***IMPORTANT 2:*** To improve the experience of using TRBot in Twitch chat, the bot account should be a VIP or moderator of the channel so it doesn't have restrictions on repeated messages.
+<br />***IMPORTANT 2:*** To improve the experience of using TRBot in Twitch chat, the bot account should be a VIP or moderator of the channel so it doesn't have restrictions on repeated messages. If you do this, you may want to also raise the [message_throttle_count](./Settings-Documentation.md#message_throttle_count) to the moderator values outlined [here](https://dev.twitch.tv/docs/irc/guide#command--message-limits) so your bot can send more messages.
 
 The bot internally uses [TwitchLib](https://github.com/TwitchLib/TwitchLib) to handle Twitch connection.
 
