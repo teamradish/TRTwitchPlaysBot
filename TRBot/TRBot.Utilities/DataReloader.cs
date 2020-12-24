@@ -27,6 +27,8 @@ namespace TRBot.Utilities
     /// <summary>
     /// Notifies subscribers when data should be reloaded.
     /// </summary>
+    //NOTE: We may want to use a more generalized observer pattern via IObservable/IObserver
+    //in order to make this more useful throughout the project  
     public class DataReloader
     {
         /// <summary>
@@ -46,7 +48,7 @@ namespace TRBot.Utilities
 
         public DataReloader()
         {
-
+            
         }
 
         public void CleanUp()

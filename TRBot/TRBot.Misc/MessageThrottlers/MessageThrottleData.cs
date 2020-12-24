@@ -25,34 +25,17 @@ using TRBot.Utilities;
 namespace TRBot.Misc
 {
     /// <summary>
-    /// Handles throttling each message within a given time.
+    /// Data regarding message throttling.
     /// </summary>
-    public class BotMessageTimeThrottler : BotMessageThrottler
+    public struct MessageThrottleData
     {
-        private DateTime CurMsgTime = default;
+        public long MessageTime;
+        public long MessageCount;
 
-        public BotMessageTimeThrottler(in MessageThrottleData msgThrottleData)
+        public MessageThrottleData(in long messageTime, in long messageCount)
         {
-            SetData(msgThrottleData);
-
-            CurMsgTime = DateTime.UtcNow;
-        }
-
-        public override void Update(in DateTime nowUTC, BotMessageHandler botMsgHandler)
-        {
-            TimeSpan diff = nowUTC - CurMsgTime;
-
-            //Send all the messages in the queue until we hit our limit
-            if (diff.TotalMilliseconds >= MsgThrottleData.MessageTime && botMsgHandler.ClientMessageCount > 0)
-            {
-                //Return if sending the message fails
-                if (botMsgHandler.SendNextQueuedMessage() == false)
-                {
-                    return;
-                }
-
-                CurMsgTime = nowUTC;
-            }
+            MessageTime = messageTime;
+            MessageCount = messageCount;
         }
     }
 }

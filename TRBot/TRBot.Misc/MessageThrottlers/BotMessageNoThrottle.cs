@@ -31,7 +31,7 @@ namespace TRBot.Misc
     {
         public BotMessageNoThrottle()
         {
-
+            
         }
 
         public override void Update(in DateTime nowUTC, BotMessageHandler botMsgHandler)

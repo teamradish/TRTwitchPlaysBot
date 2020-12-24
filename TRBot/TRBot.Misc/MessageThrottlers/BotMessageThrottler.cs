@@ -29,6 +29,14 @@ namespace TRBot.Misc
     /// </summary>
     public abstract class BotMessageThrottler
     {
+        public MessageThrottleData ThrottleData => MsgThrottleData; 
+        protected MessageThrottleData MsgThrottleData = default;
+
+        public void SetData(in MessageThrottleData msgThrottleData)
+        {
+            MsgThrottleData = msgThrottleData;
+        }
+
         public abstract void Update(in DateTime nowUTC, BotMessageHandler botMsgHandler);
     }
 }

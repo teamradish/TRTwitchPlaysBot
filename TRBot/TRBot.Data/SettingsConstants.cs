@@ -53,7 +53,10 @@ namespace TRBot.Data
 
         public const string BOT_MSG_CHAR_LIMIT = "bot_message_char_limit";
         public const string PERIODIC_MSG_TIME = "periodic_message_time";
+        public const string MESSAGE_THROTTLE_TYPE = "message_throttle_type";
         public const string MESSAGE_COOLDOWN = "message_cooldown";
+        public const string MESSAGE_THROTTLE_COUNT = "message_throttle_count";
+
         public const string CONNECT_MESSAGE = "connect_message";
         public const string RECONNECTED_MESSAGE = "reconnected_message";
         public const string PERIODIC_MESSAGE = "periodic_message";

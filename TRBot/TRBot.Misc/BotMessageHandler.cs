@@ -49,9 +49,14 @@ namespace TRBot.Misc
         private string ChannelName = string.Empty;
 
         /// <summary>
-        /// The message throttler that handles sending the messages when it's time.
+        /// The message throttler that restricts how often messages are sent.
         /// </summary>
-        private BotMessageThrottler MessageThrottler = NoThrottleInstance;
+        public BotMessageThrottler MessageThrottler { get; private set; } = NoThrottleInstance;
+
+        /// <summary>
+        /// The current message throttling option.
+        /// </summary>
+        public MessageThrottlingOptions CurThrottleOption { get; private set; } = MessageThrottlingOptions.None;
 
         /// <summary>
         /// Queued messages.
@@ -78,23 +83,37 @@ namespace TRBot.Misc
             ChannelName = channelName;
         }
 
-        public void SetMessageThrottling(in MessageThrottlingOptions msgThrottleOption, in long maxMsgCount,
-            in long msgCooldown)
+        public void SetMessageThrottling(in MessageThrottlingOptions msgThrottleOption,
+            in MessageThrottleData messageThrottleData)
         {
-            MessageThrottler = InstantiateThrottler(msgThrottleOption, maxMsgCount, msgCooldown);
+            InstantiateOrUpdateThrottler(msgThrottleOption, messageThrottleData);
+            CurThrottleOption = msgThrottleOption;
         }
 
-        private BotMessageThrottler InstantiateThrottler(in MessageThrottlingOptions msgThrottleOption,
-            in long maxMsgCount, in long msgCooldown)
+        private void InstantiateOrUpdateThrottler(in MessageThrottlingOptions msgThrottleOption,
+            in MessageThrottleData messageThrottleData)
         {
-            switch (msgThrottleOption)
+            //Simply set data if the throttle option hasn't changed
+            if (CurThrottleOption == msgThrottleOption && MessageThrottler != null)
             {
-                case MessageThrottlingOptions.MsgCountPerInterval:
-                    return new BotMessagePerIntervalThrottler(maxMsgCount, msgCooldown);
-                case MessageThrottlingOptions.TimeThrottled:
-                    return new BotMessageTimeThrottler(msgCooldown);
-                case MessageThrottlingOptions.None:
-                default: return NoThrottleInstance;
+                MessageThrottler.SetData(messageThrottleData);
+            }
+            else
+            {
+                //Instantiate based on the throttle option we have
+                switch (msgThrottleOption)
+                {
+                    case MessageThrottlingOptions.MsgCountPerInterval:
+                        MessageThrottler = new BotMessagePerIntervalThrottler(messageThrottleData);
+                        break;
+                    case MessageThrottlingOptions.TimeThrottled:
+                        MessageThrottler = new BotMessageTimeThrottler(messageThrottleData);
+                        break;
+                    case MessageThrottlingOptions.None:
+                    default: 
+                        MessageThrottler = NoThrottleInstance;
+                        break;
+                }
             }
         }
 

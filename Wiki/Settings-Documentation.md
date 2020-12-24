@@ -22,7 +22,9 @@ Table of Contents
 * [auto_promote_input_req](#auto_promote_input_req)
 * [bot_message_char_limit](#bot_message_char_limit)
 * [periodic_message_time](#periodic_message_time)
+* [message_throttle_type](#message_throttle_type)
 * [message_cooldown](#message_cooldown)
+* [message_throttle_count](#message_throttle_count)
 * [connect_message](#connect_message)
 * [reconnected_message](#reconnected_message)
 * [periodic_message](#periodic_message)
@@ -118,8 +120,21 @@ The number of valid inputs required for a user to be automatically promoted to.
 ### bot_message_char_limit
 The character limit for the bot. This should often be set to the limit for the service you're deploying TRBot to. For example, this value should be 500 for Twitch. Bot messages longer than this value will often be split into separate messages.
 
+### message_throttle_type
+Indicates the type of message throttling, which is useful for platforms with some form of built-in rate limiting.
+
+Values:
+- 0 = None - Messages are sent as soon as possible after being queued up with no rate limiting.
+- 1 = Time-based - Only one message can be sent every X milliseconds, with X determined by [message_cooldown](#message_cooldown).
+- 2 = Messages-per-interval - Only Y messages can be sent in X milliseconds intervals, with X determined by [message_cooldown](#message_cooldown) and Y determined by [message_throttle_count](#message_throttle_count). 
+
+This defaults to 2.
+
 ### message_cooldown
-Indicates how much time, in milliseconds, each message can be sent in max. This acts as a message throttler for platforms with rate-limiting on bots.
+Indicates the time used in message throttling. See [message_throttle_type](#message_throttle_type) for more information. This defaults to 30000, or 30 seconds, the default for Twitch bots.
+
+### message_throttle_count
+Indicates the number of messages that can be sent in a given time interval. See [message_throttle_type](#message_throttle_type) for more information. This defaults to 20, the default for Twitch bots.
 
 ### periodic_message_time
 The interval, in milliseconds, for TRBot to output the [periodic_message](#periodic_message).

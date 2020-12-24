@@ -29,16 +29,14 @@ namespace TRBot.Misc
     /// </summary>
     public class BotMessagePerIntervalThrottler : BotMessageThrottler
     {
-        private long MsgThrottleCount = 20L;
-        private long MsgInterval = 30000L;
-
         private DateTime CurMsgTime = default;
         private long CurMsgCount = 0L;
 
-        public BotMessagePerIntervalThrottler(in long msgThrottleCount, in long msgInterval)
+        public BotMessagePerIntervalThrottler(in MessageThrottleData msgThrottleData)
         {
-            MsgThrottleCount = msgThrottleCount;
-            MsgInterval = msgInterval;
+            SetData(msgThrottleData);
+
+            CurMsgTime = DateTime.UtcNow;
         }
 
         public override void Update(in DateTime nowUTC, BotMessageHandler botMsgHandler)
@@ -46,14 +44,14 @@ namespace TRBot.Misc
             TimeSpan diff = nowUTC - CurMsgTime;
 
             //Reset the count if we surpassed the interval
-            if (diff.TotalMilliseconds >= MsgInterval)
+            if (diff.TotalMilliseconds >= MsgThrottleData.MessageTime)
             {
                 CurMsgCount = 0L;
                 CurMsgTime = nowUTC;
             }
 
             //Send all the messages in the queue until we hit our limit
-            while (botMsgHandler.ClientMessageCount > 0 && CurMsgCount < MsgThrottleCount)
+            while (botMsgHandler.ClientMessageCount > 0 && CurMsgCount < MsgThrottleData.MessageCount)
             {
                 //End if sending the message fails
                 if (botMsgHandler.SendNextQueuedMessage() == false)

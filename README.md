@@ -32,7 +32,7 @@ The original Python version of the original parser was written by TwitchPlays_Ev
 TRBot's logo was designed by the talented [David Revoy](https://www.davidrevoy.com/), well-known for his Pepper & Carrot comic series.
 
 ## License
-Copyright © 2019-2020 Thomas "Kimimaru" Deeb.
+Copyright © 2019-2020 Thomas "Kimimaru" Deeb
 
 [![AGPL](https://www.gnu.org/graphics/agplv3-155x51.png)](https://www.gnu.org/licenses/agpl-3.0.en.html)
 
@@ -42,15 +42,20 @@ In simple terms, if you give someone a copy of TRBot or deploy TRBot to an onlin
 
 See the [LICENSE](./LICENSE) file for the full terms. See the [Dependency Licenses](./Dependency%20Licenses) file for the licenses of third party libraries used by TRBot. See the [logo license](./Logo/Logo%20License) file for the license of TRBot's logo.
 
-## Banner
-Show your support for TRBot by using one of the following promo banner Markdown codes on your blog, video, or Twitch stream panel!
+## Attribution Banner
+If you have found TRBot useful, please spread the word by placing one of our promo banners on your blog, video, or Twitch stream panel!
 
-Large:
-`![Powered by TRBot](https://raw.githubusercontent.com/teamradish/TRTwitchPlaysBot/develop/Logo/TRBotLogo_Promo.png "TRBot Logo")`
+[Link to large banner](https://raw.githubusercontent.com/teamradish/TRTwitchPlaysBot/develop/Logo/TRBotLogo_Promo.png)
+- Markdown code:
+    ```
+    ![Powered by TRBot](https://raw.githubusercontent.com/teamradish/TRTwitchPlaysBot/develop/Logo/TRBotLogo_Promo.png "TRBot Logo")
+    ```
 
-Small:
-
-`![Powered by TRBot](https://raw.githubusercontent.com/teamradish/TRTwitchPlaysBot/develop/Logo/TRBotLogo_Promo_Small.png "TRBot Logo")`
+[Link to small banner](https://raw.githubusercontent.com/teamradish/TRTwitchPlaysBot/develop/Logo/TRBotLogo_Promo_Small.png)
+- Markdown code: 
+    ```
+    ![Powered by TRBot](https://raw.githubusercontent.com/teamradish/TRTwitchPlaysBot/develop/Logo/TRBotLogo_Promo_Small.png "TRBot Logo")
+    ```
 
 ## Contributing
 Issues and pull requests are greatly encouraged! Please file an issue for a feature request, such as a new platform or service, or regarding any bugs you encounter.
