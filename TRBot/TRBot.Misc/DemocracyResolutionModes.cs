@@ -17,23 +17,30 @@
 */
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TRBot.Routines
+namespace TRBot.Misc
 {
     /// <summary>
-    /// Constants for bot routines.
+    /// The available resolution modes for democracy.
     /// </summary>
-    public static class RoutineConstants
+    public enum DemocracyResolutionModes
     {
-        public const string CREDITS_GIVE_ROUTINE_ID = "creditsgive";
-        public const string GROUP_BET_ROUTINE_ID = "groupbet";
-        public const string PERIODIC_MSG_ROUTINE_ID = "periodicmessage";
-        public const string RECONNECT_ROUTINE_ID = "reconnect";
-        public const string PERIODIC_INPUT_ROUTINE_ID = "periodicinput";
-        public const string DEMOCRACY_ROUTINE_ID = "democracy";
+        /// <summary>
+        /// The most voted on input sequence will be executed.
+        /// This must be exact. For instance, "r+b" is a different vote from "r b".
+        /// </summary>
+        ExactSequence = 0,
+
+        /// <summary>
+        /// The most voted on input name will be executed. Only the first input in each input sequence is considered.
+        /// The duration used is the global default for inputs.
+        /// For instance, "a32ms" and "a250ms" are considered for the same vote.
+        /// </summary>
+        SameName = 1
     }
 }

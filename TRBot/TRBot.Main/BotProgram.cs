@@ -763,11 +763,38 @@ namespace TRBot.Main
                 }
             }
 
-            /************************************
-            * Finally carry out the inputs now! *
-            ************************************/
+            InputModes inputMode = (InputModes)DataHelper.GetSettingInt(SettingsConstants.INPUT_MODE, 0L);
 
-            InputHandler.CarryOutInput(inputSequence.Inputs, usedConsole, DataContainer.ControllerMngr);
+            //If the mode is Democracy, add it as a vote for this input
+            if (inputMode == InputModes.Democracy)
+            {
+                //Set up the routine if it doesn't exist
+                BaseRoutine foundRoutine = RoutineHandler.FindRoutine(RoutineConstants.DEMOCRACY_ROUTINE_ID, out int indexFound);
+                DemocracyRoutine democracyRoutine = null;
+
+                if (foundRoutine == null)
+                {
+                    long voteTime = DataHelper.GetSettingInt(SettingsConstants.DEMOCRACY_INPUT_VOTE_TIME, 10000L);
+
+                    democracyRoutine = new DemocracyRoutine(voteTime);
+                    RoutineHandler.AddRoutine(democracyRoutine);
+                }
+                else
+                {
+                    democracyRoutine = (DemocracyRoutine)foundRoutine;
+                }
+
+                democracyRoutine.AddInputSequence(userName, inputSequence.Inputs);
+            }
+            //If it's Anarchy, carry out the input
+            else
+            {
+                /************************************
+                * Finally carry out the inputs now! *
+                ************************************/
+
+                InputHandler.CarryOutInput(inputSequence.Inputs, usedConsole, DataContainer.ControllerMngr);
+            }
         }
 
 #endregion

@@ -104,10 +104,13 @@ namespace TRBot.Data
                 SettingsHelper(GLOBAL_MID_INPUT_DELAY_ENABLED, 0L),
                 SettingsHelper(GLOBAL_MID_INPUT_DELAY_TIME, 34L),
                 SettingsHelper(MAX_USER_RECENT_INPUTS, 5L),
+                SettingsHelper(DEMOCRACY_INPUT_VOTE_TIME, 10000L),
+                SettingsHelper(DEMOCRACY_RESOLUTION_MODE, (long)DemocracyResolutionModes.ExactSequence),
                 SettingsHelper(LAST_CONSOLE, 1L),
                 SettingsHelper(LAST_VCONTROLLER_TYPE, (long)VControllerHelper.GetDefaultVControllerTypeForPlatform(TRBotOSPlatform.CurrentOS)),
                 SettingsHelper(JOYSTICK_COUNT, 1L),
                 SettingsHelper(GLOBAL_INPUT_LEVEL, (long)PermissionLevels.User),
+                SettingsHelper(INPUT_MODE, (long)InputModes.Anarchy),
             };
 
             return defaultSettings;
