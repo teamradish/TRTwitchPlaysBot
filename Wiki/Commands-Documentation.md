@@ -130,6 +130,13 @@ You will need to reload data or restart TRBot to apply any changes in the **Comm
 - [`GetSetMaxUserRecentInputsCommand`](../TRBot/TRBot.Commands/Commands/GetSetMaxUserRecentInputsCommand.cs) (default: "!recentinputcount") - Obtains the max number of recent input sequences stored per user, or sets it if you have sufficient privileges and provide an argument.
   - Example: "!recentinputcount" - Displays the max number of recent input sequences stored per user.
   - Example: "!recentinputcount 3" - Sets the max number of recent input sequences stored per user to 3.
+- [`GetSetInputModeCommand`](../TRBot/TRBot.Commands/Commands/GetSetInputModeCommand.cs) (default: "!inputmode") - Obtains the input mode, or sets it if you have sufficient privileges and provide an argument. The two available modes are Anarchy (default) and Democracy. See the [input_mode](./Settings-Documentation.md#input_mode) setting for more information on these options.
+  - Example: "!inputmode Anarchy" - Sets the input mode to Anarchy.
+  - Example: "!inputmode Democracy" - Sets the input mode to Democracy.
+- [`GetSetDemocracyResModeCommand`](../TRBot/TRBot.Commands/Commands/GetSetDemocracyResModeCommand.cs) (default: "!dresmode") - Obtains the resolution mode for the Democracy input mode, or sets it if you have sufficient privileges and provide an argument. See the [democracy_resolution_mode](./Settings-Documentation.md#democracy_resolution_mode) setting for more information about the available options.
+  - Example: "!dresmode exactsequence" - Sets the resolution mode to ExactSequence.
+- [`GetSetDemocracyVoteTimeCommand`](../TRBot/TRBot.Commands/Commands/GetSetDemocracyVoteTimeCommand.cs) (default: "!dvotetime") - Obtains the voting time for the Democracy input mode, in milliseconds, or sets it if you have sufficient privileges and provide an argument. It's recommended to keep this value in the 1000 to 120000 range, as values too high can significantly slow down gameplay.
+  - Example: "!dvotetime 5000" - Sets the voting time to 5 seconds.
 
 ## Game Progress/Logging
 - [`AddGameLogCommand`](../TRBot/TRBot.Commands/Commands/AddGameLogCommand.cs) (default: "!addlog") - Adds a time-stamped game log to the database. This log is used to indicate others of game progress.

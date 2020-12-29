@@ -192,6 +192,21 @@ Determines if the user can set the global minimum access level to perform inputs
 Determines if the user can set the virtual controller type through the [`VirtualControllerCommand`](../TRBot/TRBot.Commands/Commands/VirtualControllerCommand.cs).
 
 ### setvcontrollercount
-**Default level: Admin(40)**
+**Default level: Admin (40)**
 
 Determines if the user can set the number of virtual controllers available through the [`ControllerCountCommand`](../TRBot/TRBot.Commands/Commands/ControllerCountCommand.cs).
+
+### setdemocracyvotetime
+**Default level: Admin (40)**
+
+Determines if the user can set the [Democracy vote time](./Settings-Documentation.md#democracy_input_vote_time) through the [`GetSetDemocracyVoteTimeCommand`](../TRBot/TRBot.Commands/Commands/GetSetDemocracyVoteTimeCommand.cs).
+
+### setdemocracyresolutionmode
+**Default level: Admin (40)**
+
+Determines if the user can set the [Democracy resolution mode](./Settings-Documentation.md#democracy_resolution_mode) through the [`GetSetDemocracyResModeCommand`](../TRBot/TRBot.Commands/Commands/GetSetDemocracyResModeCommand.cs).
+
+### setinputmode
+**Default level: Admin (40)**
+
+Determines if the user can set the [input mode](./Settings-Documentation.md#democracy_resolution_mode) through the [`GetSetInputModeCommand`](../TRBot/TRBot.Commands/Commands/GetSetInputModeCommand.cs).

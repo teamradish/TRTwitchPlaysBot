@@ -99,7 +99,7 @@ namespace TRBot.Data
 
         public const string MAX_USER_RECENT_INPUTS = "max_user_recent_inputs";
 
-        public const string DEMOCRACY_INPUT_VOTE_TIME = "democracy_input_vote_time";
+        public const string DEMOCRACY_VOTE_TIME = "democracy_vote_time";
         public const string DEMOCRACY_RESOLUTION_MODE = "democracy_resolution_mode";
 
         public const string LAST_CONSOLE = "last_console";

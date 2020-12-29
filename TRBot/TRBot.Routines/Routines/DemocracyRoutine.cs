@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,7 +47,7 @@ namespace TRBot.Routines
         /// Inputs sent by each user. These must be valid inputs run through post-process methods.
         /// The key is the input list and the value is the count.
         /// </summary>
-        private Dictionary<List<List<ParsedInput>>, long> AllInputs = new Dictionary<List<List<ParsedInput>>, long>(64, new InputListComparer());
+        private ConcurrentDictionary<List<List<ParsedInput>>, long> AllInputs = new ConcurrentDictionary<List<List<ParsedInput>>, long>(Environment.ProcessorCount, 64, new InputListComparer());
 
         public DemocracyRoutine(in long votingDuration)
         {
@@ -95,7 +96,7 @@ namespace TRBot.Routines
         private void OnDataReload()
         {
             //Update voting time to the new value
-            VotingDuration = DataHelper.GetSettingInt(SettingsConstants.DEMOCRACY_INPUT_VOTE_TIME, 10000L);
+            VotingDuration = DataHelper.GetSettingInt(SettingsConstants.DEMOCRACY_VOTE_TIME, 10000L);
         }
 
         /// <summary>
@@ -106,13 +107,13 @@ namespace TRBot.Routines
             if (inputList == null || inputList.Count == 0
                 || inputList[0] == null || inputList[0].Count == 0)
             {
-                Console.WriteLine("Invalid input list!");
+                Console.WriteLine($"Invalid input list added by {userName}!");
                 return;
             }
 
             if (AllInputs.TryGetValue(inputList, out long count) == false)
             {
-                AllInputs.Add(inputList, 1);
+                AllInputs[inputList] = 1;
             }
             else
             {
@@ -120,7 +121,7 @@ namespace TRBot.Routines
                 AllInputs[inputList] = count;
             }
 
-            Console.WriteLine($"Added input sequence for user {userName}. Count: {AllInputs[inputList]} | Total: {AllInputs.Count}");
+            //Console.WriteLine($"Added input sequence for user {userName}. Count: {AllInputs[inputList]} | Total: {AllInputs.Count}");
         }
 
         public override void UpdateRoutine(in DateTime currentTimeUTC)
@@ -129,7 +130,7 @@ namespace TRBot.Routines
             //This refreshes the duration so inputs consistently go through
             if (AllInputs.Count == 0)
             {
-                NextInputTime = DateTime.UtcNow;
+                NextInputTime = currentTimeUTC;
                 return;
             }
 
@@ -141,6 +142,9 @@ namespace TRBot.Routines
             {
                 return;
             }
+
+            //Update next input time
+            NextInputTime = currentTimeUTC;
 
             DemocracyResolutionModes resolutionMode = (DemocracyResolutionModes)DataHelper.GetSettingInt(SettingsConstants.DEMOCRACY_RESOLUTION_MODE, 0L);
 
@@ -165,6 +169,7 @@ namespace TRBot.Routines
                 }
             }
 
+            //Console.WriteLine($"Resolution mode: {resolutionMode}");
             //Console.WriteLine($"Passed voting duration of {VotingDuration}");
 
             List<List<ParsedInput>> executedInputList = null;
@@ -249,7 +254,7 @@ namespace TRBot.Routines
             long maxCount = -1;
 
             //Create a new dictionary to store the input names and their counts
-            //We can't rely on the count from the original dictionary since it
+            //We can't rely only on the count from the original dictionary since it
             //records only completely unique input sequences
             Dictionary<string, long> inputNames = new Dictionary<string, long>(AllInputs.Count);
 
@@ -257,15 +262,24 @@ namespace TRBot.Routines
             {
                 string inputName = kvPair.Key[0][0].name;
 
+                //Console.WriteLine($"Iterating through input \"{inputName}\"");
+
                 if (inputNames.TryGetValue(inputName, out long count) == false)
                 {
-                    count = 1;
+                    //Set the count to the original count to account for identical entries
+                    count = kvPair.Value;
                     inputNames.Add(inputName, count);
+
+                    //Console.WriteLine($"Added input \"{inputName}\"");
                 }
                 else
                 {
-                    count += 1;
+                    //Add the count from the dictionary
+                    //This way we account for identical entries (Ex. three separate "a" inputs)
+                    count += kvPair.Value;
                     inputNames[inputName] = count;
+
+                    //Console.WriteLine($"Input name \"{inputName}\" now has count of {inputNames[inputName]}");
                 }
                 
                 //Check for a greater count
@@ -274,6 +288,8 @@ namespace TRBot.Routines
                 {
                     chosenInputName = inputName;
                     maxCount = count;
+
+                    //Console.WriteLine($"Found greater: \"{chosenInputName}\" with count of {maxCount}");
                 }
             }
 
@@ -285,6 +301,8 @@ namespace TRBot.Routines
 
             List<List<ParsedInput>> executedInputList = new List<List<ParsedInput>>(1);
             executedInputList.Add(new List<ParsedInput>(1) { pressedInput });
+
+            //Console.WriteLine($"Carrying out: {pressedInput.ToString()}");
 
             return executedInputList;
         }

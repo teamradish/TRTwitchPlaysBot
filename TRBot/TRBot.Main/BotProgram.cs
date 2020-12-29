@@ -774,7 +774,7 @@ namespace TRBot.Main
 
                 if (foundRoutine == null)
                 {
-                    long voteTime = DataHelper.GetSettingInt(SettingsConstants.DEMOCRACY_INPUT_VOTE_TIME, 10000L);
+                    long voteTime = DataHelper.GetSettingInt(SettingsConstants.DEMOCRACY_VOTE_TIME, 10000L);
 
                     democracyRoutine = new DemocracyRoutine(voteTime);
                     RoutineHandler.AddRoutine(democracyRoutine);
