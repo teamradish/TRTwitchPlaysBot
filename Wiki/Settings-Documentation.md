@@ -266,6 +266,7 @@ The means of resolving votes for the Democracy input mode:
 
 - 0 = ExactSequence - The most voted on input sequence will be executed. Input sequences must be exact; for instance, "r201ms" is a different vote from "r200ms".
 - 1 = SameName - The most voted on input name will be executed. Only the first input in each input sequence is considered; for instance, "a32ms" and "a250ms" are the same vote for the "a" input. The duration used upon execution is [default_input_duration](#default_input_duration).
+- 2 = ExactInput - The most voted on input will be executed. Only the first input in each input sequence is considered. For example, "b500ms" and "&2b400ms" are considered different votes.
 
 This defaults to 0, ExactSequence.
 

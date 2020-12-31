@@ -41,6 +41,13 @@ namespace TRBot.Misc
         /// The duration used is the global default for inputs.
         /// For instance, "a32ms" and "a250ms" are considered for the same vote.
         /// </summary>
-        SameName = 1
+        SameName = 1,
+
+        /// <summary>
+        /// The most voted on input will be executed. Only the first input in each input sequence is considered.
+        /// This must be exact.
+        /// For instance, "x400ms" and "x399ms" are considered different votes.
+        /// </summary>
+        ExactInput = 2
     }
 }

@@ -92,7 +92,7 @@ namespace TRBot.Parsing
 
         public override string ToString()
         {
-            return $"\"{name}\" {duration}{duration_type} | H:{hold} | R:{release} | P:{percent} | CPort:{controllerPort} | Err:{error}";
+            return $"\"{name}\" {duration}{duration_type} | H:{hold} | R:{release} | P:{percent} | CPort:{controllerPort} | Err: \"{error}\"";
         }
     }
 }

@@ -149,7 +149,7 @@ namespace TRBot.Routines
             DemocracyResolutionModes resolutionMode = (DemocracyResolutionModes)DataHelper.GetSettingInt(SettingsConstants.DEMOCRACY_RESOLUTION_MODE, 0L);
 
             //Make sure the given resolution mode is valid
-            if (resolutionMode < 0 || resolutionMode > DemocracyResolutionModes.SameName)
+            if (resolutionMode < 0 || resolutionMode > DemocracyResolutionModes.ExactInput)
             {
                 DataContainer.MessageHandler.QueueMessage($"Democracy resolution mode is invalid! Setting resolution mode to {DemocracyResolutionModes.ExactSequence}");
                 
@@ -174,13 +174,17 @@ namespace TRBot.Routines
 
             List<List<ParsedInput>> executedInputList = null;
 
-            if (resolutionMode == DemocracyResolutionModes.ExactSequence)
-            {
-                executedInputList = ResolveExactSequence();
-            }
-            else if (resolutionMode == DemocracyResolutionModes.SameName)
+            if (resolutionMode == DemocracyResolutionModes.SameName)
             {
                 executedInputList = ResolveSameName();
+            }
+            else if (resolutionMode == DemocracyResolutionModes.ExactInput)
+            {
+                executedInputList = ResolveExactInput();
+            }
+            else
+            {
+                executedInputList = ResolveExactSequence();
             }
 
             //Clear all inputs in our main list now that they're in the dictionary by count
@@ -303,6 +307,64 @@ namespace TRBot.Routines
             executedInputList.Add(new List<ParsedInput>(1) { pressedInput });
 
             //Console.WriteLine($"Carrying out: {pressedInput.ToString()}");
+
+            return executedInputList;
+        }
+
+        private List<List<ParsedInput>> ResolveExactInput()
+        {
+            //ExactInput resolution: The first input in each sequence is considered
+            //The first one found with the max value is chosen in the event of a tie
+
+            //Find the highest count
+            ParsedInput chosenInput = default;
+            long maxCount = -1;
+
+            //Create a new dictionary to store the first input and their counts
+            //We can't rely only on the count from the original dictionary since it
+            //records only completely unique input sequences
+            Dictionary<ParsedInput, long> inputDict = new Dictionary<ParsedInput, long>(AllInputs.Count);
+
+            foreach (KeyValuePair<List<List<ParsedInput>>, long> kvPair in AllInputs)
+            {
+                //Take only the first input
+                ParsedInput input = kvPair.Key[0][0];
+
+                //Console.WriteLine($"Iterating through input \"{input}\"");
+
+                if (inputDict.TryGetValue(input, out long count) == false)
+                {
+                    //Set the count to the original count to account for identical entries
+                    count = kvPair.Value;
+                    inputDict.Add(input, count);
+
+                    //Console.WriteLine($"Added input {input}");
+                }
+                else
+                {
+                    //Add the count from the dictionary
+                    //This way we account for identical entries
+                    count += kvPair.Value;
+                    inputDict[input] = count;
+
+                    //Console.WriteLine($"Input {input} now has count of {inputDict[input]}");
+                }
+                
+                //Check for a greater count
+                //If we surpass it, this is the new max
+                if (count > maxCount)
+                {
+                    chosenInput = input;
+                    maxCount = count;
+
+                    //Console.WriteLine($"Found greater: {chosenInput} with count of {maxCount}");
+                }
+            }
+
+            List<List<ParsedInput>> executedInputList = new List<List<ParsedInput>>(1);
+            executedInputList.Add(new List<ParsedInput>(1) { chosenInput });
+
+            //Console.WriteLine($"Carrying out: {chosenInput}");
 
             return executedInputList;
         }
