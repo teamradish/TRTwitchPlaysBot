@@ -691,5 +691,15 @@ namespace TRBot.Data
 
             return entriesAdded;
         }
+
+        /// <summary>
+        /// Obtains the string representation of a DateTime object in database form.
+        /// </summary>
+        /// <param name="dateTime">The DateTime object to convert to a string.</param>
+        /// <returns>A string from a DateTime stored in the database.</returns>
+        public static string GetStrFromDateTime(DateTime dateTime)
+        {
+            return dateTime.ToString("yyyy-MM-dd HH:mm:ss");
+        }
     }
 }

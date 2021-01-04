@@ -35,5 +35,6 @@ namespace TRBot.Routines
         public const string RECONNECT_ROUTINE_ID = "reconnect";
         public const string PERIODIC_INPUT_ROUTINE_ID = "periodicinput";
         public const string DEMOCRACY_ROUTINE_ID = "democracy";
+        public const string INPUT_MODE_VOTE_ROUTINE_ID = "inputmodevote";
     }
 }

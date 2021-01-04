@@ -101,6 +101,9 @@ namespace TRBot.Data
 
         public const string DEMOCRACY_VOTE_TIME = "democracy_vote_time";
         public const string DEMOCRACY_RESOLUTION_MODE = "democracy_resolution_mode";
+        public const string INPUT_MODE_VOTE_TIME = "input_mode_vote_time";
+        public const string INPUT_MODE_CHANGE_COOLDOWN = "input_mode_change_cooldown";
+        public const string INPUT_MODE_NEXT_VOTE_DATE = "input_mode_next_vote_date";
 
         public const string LAST_CONSOLE = "last_console";
         public const string LAST_VCONTROLLER_TYPE = "last_vcontroller_type";

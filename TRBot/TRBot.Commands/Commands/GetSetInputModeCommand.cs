@@ -20,7 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using TRBot.Connection;
-using TRBot.VirtualControllers;
 using TRBot.Data;
 using TRBot.Utilities;
 using TRBot.Misc;
@@ -69,7 +68,7 @@ namespace TRBot.Commands
             long curInputMode = DataHelper.GetSettingInt(SettingsConstants.INPUT_MODE, 0L);
             InputModes inpMode = (InputModes)curInputMode;
 
-            //See the virtual controller
+            //See the input mode
             if (arguments.Count == 0)
             {
                 QueueMessage($"The current input mode is {inpMode}. To set the input mode, add one as an argument: {CachedInputModesStr}");
