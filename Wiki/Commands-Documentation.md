@@ -130,6 +130,20 @@ You will need to reload data or restart TRBot to apply any changes in the **Comm
 - [`GetSetMaxUserRecentInputsCommand`](../TRBot/TRBot.Commands/Commands/GetSetMaxUserRecentInputsCommand.cs) (default: "!recentinputcount") - Obtains the max number of recent input sequences stored per user, or sets it if you have sufficient privileges and provide an argument.
   - Example: "!recentinputcount" - Displays the max number of recent input sequences stored per user.
   - Example: "!recentinputcount 3" - Sets the max number of recent input sequences stored per user to 3.
+- [`GetSetInputModeCommand`](../TRBot/TRBot.Commands/Commands/GetSetInputModeCommand.cs) (default: "!inputmode") - Obtains the input mode, or sets it if you have sufficient privileges and provide an argument. The two available modes are Anarchy (default) and Democracy. See the [input_mode](./Settings-Documentation.md#input_mode) setting for more information on these options.
+  - Example: "!inputmode Anarchy" - Sets the input mode to Anarchy.
+  - Example: "!inputmode Democracy" - Sets the input mode to Democracy.
+- [`GetSetDemocracyResModeCommand`](../TRBot/TRBot.Commands/Commands/GetSetDemocracyResModeCommand.cs) (default: "!dresmode") - Obtains the resolution mode for the Democracy input mode, or sets it if you have sufficient privileges and provide an argument. See the [democracy_resolution_mode](./Settings-Documentation.md#democracy_resolution_mode) setting for more information about the available options.
+  - Example: "!dresmode exactsequence" - Sets the resolution mode to ExactSequence.
+- [`GetSetDemocracyVoteTimeCommand`](../TRBot/TRBot.Commands/Commands/GetSetDemocracyVoteTimeCommand.cs) (default: "!dvotetime") - Obtains the voting time for the Democracy input mode, in milliseconds, or sets it if you have sufficient privileges and provide an argument. It's recommended to keep this value in the 1000 to 120000 range, as values too high can significantly slow down gameplay.
+  - Example: "!dvotetime 5000" - Sets the voting time to 5 seconds.
+- [`VoteForInputModeCommand`](../TRBot/TRBot.Commands/Commands/VoteForInputModeCommand.cs) (default: "!vote") - Votes for a given input mode if you have sufficient privileges, or retrieves the current number of votes for each input mode if a vote has begun. If no vote is in progress, a new vote will be started. Once the vote is concluded, the input mode with the most votes will be set as the new one, and voting will be on cooldown, determined by the value of the [input_mode_change_cooldown](./Settings-Documentation.md#input_mode_change_cooldown) setting.
+  - Example: "!vote Anarchy" - Places a vote for the Anarchy input mode.
+  - Example: "!vote Democracy" - Places a vote for the Democracy input mode.
+- [`GetSetInputModeVoteTimeCommand`](../TRBot/TRBot.Commands/Commands/GetSetInputModeVoteTimeCommand.cs) (default: "!votetime") - Obtains the duration of the voting period for changing the input mode, in milliseconds, or sets it if you have sufficient privileges and provide an argument.
+  - Example: "!votetime 50000" - Sets the input mode voting time to 50 seconds.
+- [`GetSetInputModeCooldownCommand`](../TRBot/TRBot.Commands/Commands/GetSetInputModeCooldownCommand.cs) (default: "!votecooldown") - Obtains the duration of the voting cooldown after a new input mode was voted on. Once the cooldown expires, a new vote to change the input mode can begin. It's recommended to have this value at least at 10 minutes so players can focus more on playing than voting, but your stream may vary. The [input_mode_next_vote_date](./Settings-Documentation.md#input_mode_next_vote_date) setting is assigned to the current time plus this value after voting is completed.
+  - Example: "!votecooldown 2400000" - Sets the voting cooldown to 40 minutes.
 
 ## Game Progress/Logging
 - [`AddGameLogCommand`](../TRBot/TRBot.Commands/Commands/AddGameLogCommand.cs) (default: "!addlog") - Adds a time-stamped game log to the database. This log is used to indicate others of game progress.

@@ -6,7 +6,7 @@ TRBot is inspired by TwitchPlays_Everything. The input syntax allows for great p
 
 ## Features
 * [Simple yet expressive input syntax](./Wiki/Syntax-Walkthrough.md) - translate your text to game inputs easily. Make your inputs as simple or precise as you want!
-* Game-agnostic - TRBot runs alongside your game and can be configured as you like.
+* Portable and game-agnostic - TRBot runs alongside your game and can be configured as you like. No complex installation required - just download and run it!
 * Cross-platform - Runs on Windows (vJoy) and GNU/Linux (uinput).
 * Emulator support - NES, SNES, N64, GCN, and more. Several [emulator controller config files](./Emulator%20Controller%20Configs) are available.
 * Multiplayer support - Control [multiple players](./Wiki/Syntax-Walkthrough.md#multi-controller-inputs) separately or simultaneously.

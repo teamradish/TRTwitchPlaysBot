@@ -77,6 +77,13 @@ namespace TRBot.Permissions
         
         public const string SET_MAX_USER_RECENT_INPUTS_ABILITY = "setmaxuserrecentinputs"; 
 
+        public const string SET_DEMOCRACY_VOTE_TIME_ABILITY = "setdemocracyvotetime";
+        public const string SET_DEMOCRACY_RESOLUTION_MODE_ABILITY = "setdemocracyresolutionmode";
+        public const string SET_INPUT_MODE_VOTE_TIME_ABILITY = "setinputmodevotetime";
+        public const string SET_INPUT_MODE_CHANGE_COOLDOWN_ABILITY = "setinputmodechangecooldown";
+        public const string SET_INPUT_MODE_ABILITY = "setinputmode";
+        public const string VOTE_INPUT_MODE_ABILITY = "voteinputmode";
+
         //Abilities for games/extras
         public const string BET_ABILITY = "bet";
         public const string DUEL_ABILITY = "duel";

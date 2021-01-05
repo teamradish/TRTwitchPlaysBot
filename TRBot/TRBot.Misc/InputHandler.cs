@@ -51,6 +51,13 @@ namespace TRBot.Misc
             }
         }
 
+        public delegate void OnInputsHalted();
+
+        /// <summary>
+        /// An event invoked when all inputs are halted.
+        /// </summary>
+        public static event OnInputsHalted InputsHaltedEvent = null;
+
         /// <summary>
         /// The current number of running input sequences.
         /// </summary>
@@ -73,6 +80,9 @@ namespace TRBot.Misc
         private static void CancelRunningInputs()
         {
             InputsHalted = true;
+
+            //Invoke the event
+            InputsHaltedEvent?.Invoke();
         }
 
         /// <summary>

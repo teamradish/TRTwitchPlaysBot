@@ -104,10 +104,16 @@ namespace TRBot.Data
                 SettingsHelper(GLOBAL_MID_INPUT_DELAY_ENABLED, 0L),
                 SettingsHelper(GLOBAL_MID_INPUT_DELAY_TIME, 34L),
                 SettingsHelper(MAX_USER_RECENT_INPUTS, 5L),
+                SettingsHelper(DEMOCRACY_VOTE_TIME, 10000L),
+                SettingsHelper(DEMOCRACY_RESOLUTION_MODE, (long)DemocracyResolutionModes.ExactSequence),
+                SettingsHelper(INPUT_MODE_VOTE_TIME, 60000L),
+                SettingsHelper(INPUT_MODE_CHANGE_COOLDOWN, 1000L * 60L * 15L),
+                SettingsHelper(INPUT_MODE_NEXT_VOTE_DATE, DataHelper.GetStrFromDateTime(DateTime.UnixEpoch)),
                 SettingsHelper(LAST_CONSOLE, 1L),
                 SettingsHelper(LAST_VCONTROLLER_TYPE, (long)VControllerHelper.GetDefaultVControllerTypeForPlatform(TRBotOSPlatform.CurrentOS)),
                 SettingsHelper(JOYSTICK_COUNT, 1L),
                 SettingsHelper(GLOBAL_INPUT_LEVEL, (long)PermissionLevels.User),
+                SettingsHelper(INPUT_MODE, (long)InputModes.Anarchy),
             };
 
             return defaultSettings;
@@ -210,6 +216,12 @@ namespace TRBot.Data
                 new CommandData("invalidcombo", "TRBot.Commands.ListInvalidInputComboCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("recentinput", "TRBot.Commands.ListUserRecentInputsCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("recentinputcount", "TRBot.Commands.GetSetMaxUserRecentInputsCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("inputmode", "TRBot.Commands.GetSetInputModeCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("dresmode", "TRBot.Commands.GetSetDemocracyResModeCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("dvotetime", "TRBot.Commands.GetSetDemocracyVoteTimeCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("vote", "TRBot.Commands.VoteForInputModeCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("votetime", "TRBot.Commands.GetSetInputModeVoteTimeCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("votecooldown", "TRBot.Commands.GetSetInputModeCooldownCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
                 new CommandData("addsyn", "TRBot.Commands.AddInputSynonymCommand", (long)PermissionLevels.Whitelisted, true, true),
@@ -283,6 +295,7 @@ namespace TRBot.Data
                 new PermissionAbility(BINGO_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
                 new PermissionAbility(TRANSFER_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
                 new PermissionAbility(SLOTS_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(VOTE_INPUT_MODE_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
 
                 new PermissionAbility(SET_GAME_MESSAGE_ABILITY, PermissionLevels.VIP, PermissionLevels.VIP),
 
@@ -302,6 +315,11 @@ namespace TRBot.Data
                 new PermissionAbility(SET_GLOBAL_INPUT_LEVEL_ABILITY, PermissionLevels.Admin, PermissionLevels.Admin),
                 new PermissionAbility(SET_VCONTROLLER_TYPE_ABILITY, PermissionLevels.Admin, PermissionLevels.Admin),
                 new PermissionAbility(SET_VCONTROLLER_COUNT_ABILITY, PermissionLevels.Admin, PermissionLevels.Admin),
+                new PermissionAbility(SET_DEMOCRACY_VOTE_TIME_ABILITY, PermissionLevels.Admin, PermissionLevels.Admin),
+                new PermissionAbility(SET_DEMOCRACY_RESOLUTION_MODE_ABILITY, PermissionLevels.Admin, PermissionLevels.Admin),
+                new PermissionAbility(SET_INPUT_MODE_ABILITY, PermissionLevels.Admin, PermissionLevels.Admin),
+                new PermissionAbility(SET_INPUT_MODE_VOTE_TIME_ABILITY, PermissionLevels.Admin, PermissionLevels.Admin),
+                new PermissionAbility(SET_INPUT_MODE_CHANGE_COOLDOWN_ABILITY, PermissionLevels.Admin, PermissionLevels.Admin),
 
                 PermissionAbility.CreateWithMinLvlGrant(SILENCED_ABILITY, PermissionLevels.Moderator),
                 PermissionAbility.CreateWithMinLvlGrant(USER_DEFAULT_INPUT_DUR_ABILITY, PermissionLevels.Moderator),

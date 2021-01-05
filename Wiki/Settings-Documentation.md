@@ -59,10 +59,16 @@ Table of Contents
 * [global_mid_input_delay_enabled](#global_mid_input_delay_enabled)
 * [global_mid_input_delay_time](#global_mid_input_delay_time)
 * [max_user_recent_inputs](#max_user_recent_inputs)
+* [democracy_vote_time](#democracy_vote_time)
+* [democracy_resolution_mode](#democracy_resolution_mode)
+* [input_mode_vote_time](#input_mode_vote_time)
+* [input_mode_change_cooldown](#input_mode_change_cooldown)
+* [input_mode_next_vote_date](#input_mode_next_vote_date)
 * [last_console](#last_console)
 * [last_vcontroller_type](#last_vcontroller_type)
 * [joystick_count](#joystick_count)
 * [global_input_level](#global_input_level)
+* [input_mode](#input_mode)
 * [first_launch](#first_launch)
 * [force_init_defaults](#force_init_defaults)
 * [data_version](#data_version)
@@ -255,6 +261,27 @@ The global time, in milliseconds, of the blank inputs inserted between each inpu
 ### max_user_recent_inputs
 The max number of recent input sequences to store per user. If the user is opted out of stats, it won't store any inputs. This defaults to 5.
 
+### democracy_vote_time
+The duration of the voting period in the Democracy input mode, in milliseconds. See [input_mode](#input_mode) for more information. This defaults to 10000 milliseconds, or 10 seconds.
+
+### democracy_resolution_mode
+The means of resolving votes for the Democracy input mode:
+
+- 0 = ExactSequence - The most voted on input sequence will be executed. Input sequences must be exact; for instance, "r201ms" is a different vote from "r200ms".
+- 1 = SameName - The most voted on input name will be executed. Only the first input in each input sequence is considered; for instance, "a32ms" and "a250ms" are the same vote for the "a" input. The duration used upon execution is [default_input_duration](#default_input_duration).
+- 2 = ExactInput - The most voted on input will be executed. Only the first input in each input sequence is considered. For example, "b500ms" and "&2b400ms" are considered different votes.
+
+This defaults to 0, ExactSequence.
+
+### input_mode_vote_time
+The duration of the voting period to change the current input mode. This defaults to 60000 milliseconds, or 1 minute.
+
+### input_mode_change_cooldown
+The cooldown, in milliseconds, after completing a vote to change the current input mode. This defaults to 900000 milliseconds, or 15 minutes.
+
+### input_mode_next_vote_date
+The date and time of the next available vote to change the input mode. This is set automatically and often does not need to be manually changed. The format is yyyy-MM-dd HH:mm:ss on a 24 hour UTC time.
+
 ### last_console
 The game console to use.
 
@@ -266,6 +293,14 @@ The number of virtual controllers to use. Values greater than 1 enable playing m
 
 ### global_input_level
 The global access level required to perform inputs. Users not at or above this level are refrained from making inputs.
+
+### input_mode
+The type of input mode to use:
+
+- 0 = Anarchy - All inputs that come in are executed.
+- 1 = Democracy - Inputs are queued up over a time period, with the most popular inputs being executed based on the resolution mode. See [democracy_resolution_mode](#democracy_resolution_mode) for more information.
+
+This defaults to 0, Anarchy.
 
 ### first_launch
 Indicates the first ever launch of TRBot. This sets up all the default game consoles. Starts at 0 then gets set to 1.

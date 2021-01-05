@@ -17,24 +17,27 @@
 */
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TRBot.Routines
+namespace TRBot.Misc
 {
     /// <summary>
-    /// Constants for bot routines.
+    /// The available input modes.
     /// </summary>
-    public static class RoutineConstants
+    public enum InputModes
     {
-        public const string CREDITS_GIVE_ROUTINE_ID = "creditsgive";
-        public const string GROUP_BET_ROUTINE_ID = "groupbet";
-        public const string PERIODIC_MSG_ROUTINE_ID = "periodicmessage";
-        public const string RECONNECT_ROUTINE_ID = "reconnect";
-        public const string PERIODIC_INPUT_ROUTINE_ID = "periodicinput";
-        public const string DEMOCRACY_ROUTINE_ID = "democracy";
-        public const string INPUT_MODE_VOTE_ROUTINE_ID = "inputmodevote";
+        /// <summary>
+        /// Inputs are executed as they come with no limitations.
+        /// </summary>
+        Anarchy = 0,
+        
+        /// <summary>
+        /// Inputs are executed based on popularity within a given timeframe.
+        /// </summary>
+        Democracy = 1
     }
 }

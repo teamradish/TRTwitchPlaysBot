@@ -99,11 +99,18 @@ namespace TRBot.Data
 
         public const string MAX_USER_RECENT_INPUTS = "max_user_recent_inputs";
 
+        public const string DEMOCRACY_VOTE_TIME = "democracy_vote_time";
+        public const string DEMOCRACY_RESOLUTION_MODE = "democracy_resolution_mode";
+        public const string INPUT_MODE_VOTE_TIME = "input_mode_vote_time";
+        public const string INPUT_MODE_CHANGE_COOLDOWN = "input_mode_change_cooldown";
+        public const string INPUT_MODE_NEXT_VOTE_DATE = "input_mode_next_vote_date";
+
         public const string LAST_CONSOLE = "last_console";
         public const string LAST_VCONTROLLER_TYPE = "last_vcontroller_type";
         public const string JOYSTICK_COUNT = "joystick_count";
 
         public const string GLOBAL_INPUT_LEVEL = "global_input_level";
+        public const string INPUT_MODE = "input_mode";
 
         public const string FIRST_LAUNCH = "first_launch";
         public const string FORCE_INIT_DEFAULTS = "force_init_defaults";
