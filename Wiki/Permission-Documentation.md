@@ -112,6 +112,11 @@ Determines if the user can transfer credits to others through the [`TransferCred
 
 Determines if the user can play the slots through the [`SlotsCommand`](../TRBot/TRBot.Commands/Commands/SlotsCommand.cs).
 
+### voteinputmode
+**Default level: User (0)**
+
+Determines if the user can vote to change the input mode through the [`VoteForInputModeCommand`](../TRBot/TRBot.Commands/Commands/VoteForInputModeCommand.cs).
+
 ### setgamemessage
 **Default level: VIP (20)**
 
@@ -206,7 +211,17 @@ Determines if the user can set the [Democracy vote time](./Settings-Documentatio
 
 Determines if the user can set the [Democracy resolution mode](./Settings-Documentation.md#democracy_resolution_mode) through the [`GetSetDemocracyResModeCommand`](../TRBot/TRBot.Commands/Commands/GetSetDemocracyResModeCommand.cs).
 
+### setinputmodevotetime
+**Default level: Admin (40)**
+
+Determines if the user can set the length of the voting period when changing the input mode.
+
+### setinputmodechangecooldown
+**Default level: Admin (40)**
+
+Determines if the user can set the cooldown after voting for an input mode.
+
 ### setinputmode
 **Default level: Admin (40)**
 
-Determines if the user can set the [input mode](./Settings-Documentation.md#democracy_resolution_mode) through the [`GetSetInputModeCommand`](../TRBot/TRBot.Commands/Commands/GetSetInputModeCommand.cs).
+Determines if the user can directly set the [input mode](./Settings-Documentation.md#input_mode) through the [`GetSetInputModeCommand`](../TRBot/TRBot.Commands/Commands/GetSetInputModeCommand.cs).

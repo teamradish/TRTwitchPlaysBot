@@ -137,6 +137,9 @@ You will need to reload data or restart TRBot to apply any changes in the **Comm
   - Example: "!dresmode exactsequence" - Sets the resolution mode to ExactSequence.
 - [`GetSetDemocracyVoteTimeCommand`](../TRBot/TRBot.Commands/Commands/GetSetDemocracyVoteTimeCommand.cs) (default: "!dvotetime") - Obtains the voting time for the Democracy input mode, in milliseconds, or sets it if you have sufficient privileges and provide an argument. It's recommended to keep this value in the 1000 to 120000 range, as values too high can significantly slow down gameplay.
   - Example: "!dvotetime 5000" - Sets the voting time to 5 seconds.
+- [`VoteForInputModeCommand`](../TRBot/TRBot.Commands/Commands/VoteForInputModeCommand.cs) (default: "!vote") - Votes for a given input mode if you have sufficient privileges, or retrieves the current number of votes for each input mode if a vote has begun. If no vote is in progress, a new vote will be started. Once the vote is concluded, the input mode with the most votes will be set as the new one, and voting will be on cooldown, determined by the value of the [input_mode_change_cooldown](./Settings-Documentation.md#input_mode_change_cooldown) setting.
+  - Example: "!vote Anarchy" - Places a vote for the Anarchy input mode.
+  - Example: "!vote Democracy" - Places a vote for the Democracy input mode.
 
 ## Game Progress/Logging
 - [`AddGameLogCommand`](../TRBot/TRBot.Commands/Commands/AddGameLogCommand.cs) (default: "!addlog") - Adds a time-stamped game log to the database. This log is used to indicate others of game progress.

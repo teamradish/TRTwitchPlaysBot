@@ -61,6 +61,9 @@ Table of Contents
 * [max_user_recent_inputs](#max_user_recent_inputs)
 * [democracy_vote_time](#democracy_vote_time)
 * [democracy_resolution_mode](#democracy_resolution_mode)
+* [input_mode_vote_time](#input_mode_vote_time)
+* [input_mode_change_cooldown](#input_mode_change_cooldown)
+* [input_mode_next_vote_date](#input_mode_next_vote_date)
 * [last_console](#last_console)
 * [last_vcontroller_type](#last_vcontroller_type)
 * [joystick_count](#joystick_count)
@@ -269,6 +272,15 @@ The means of resolving votes for the Democracy input mode:
 - 2 = ExactInput - The most voted on input will be executed. Only the first input in each input sequence is considered. For example, "b500ms" and "&2b400ms" are considered different votes.
 
 This defaults to 0, ExactSequence.
+
+### input_mode_vote_time
+The duration of the voting period to change the current input mode. This defaults to 60000 milliseconds, or 1 minute.
+
+### input_mode_change_cooldown
+The cooldown, in milliseconds, after completing a vote to change the current input mode. This defaults to 900000 milliseconds, or 15 minutes.
+
+### input_mode_next_vote_date
+The date and time of the next available vote to change the input mode. This is set automatically and often does not need to be manually changed. The format is yyyy-MM-dd HH:mm:ss on a 24 hour UTC time.
 
 ### last_console
 The game console to use.

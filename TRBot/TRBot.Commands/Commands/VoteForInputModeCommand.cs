@@ -160,6 +160,13 @@ namespace TRBot.Commands
 
                 commencedNewVote = true;
             }
+            
+            //Check for tallying
+            if (inputModeVoteRoutine.TallyingCommenced == true)
+            {
+                QueueMessage("Too late! Voting has ended and tallying has already begun!");
+                return;
+            }
 
             string userName = args.Command.ChatMessage.Username.ToLowerInvariant();
 

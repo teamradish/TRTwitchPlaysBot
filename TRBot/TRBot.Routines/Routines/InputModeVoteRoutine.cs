@@ -70,6 +70,14 @@ namespace TRBot.Routines
             StartVotingTime = nowUTC;
         }
 
+        public override void CleanUp()
+        {
+            base.CleanUp();
+
+            UsersVoted.Clear();
+            VotesPerMode.Clear();
+        }
+
         /// <summary>
         /// Returns the current votes per input mode in a new dictionary.
         /// </summary>
@@ -201,6 +209,8 @@ namespace TRBot.Routines
 
             TallyingCommenced = false;
             StartVotingTime = currentTimeUTC;
+            UsersVoted.Clear();
+            VotesPerMode.Clear();
 
             //Remove the routine
             RoutineHandler.RemoveRoutine(Identifier);
