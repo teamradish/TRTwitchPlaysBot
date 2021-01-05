@@ -51,7 +51,7 @@ namespace TRBot.Routines
         /// <summary>
         /// A dictionary containing the input modes and how many votes each one has.
         /// </summary>
-        private ConcurrentDictionary<InputModes, long> VotesPerMode = new ConcurrentDictionary<InputModes, long>(Environment.ProcessorCount, 64);
+        private ConcurrentDictionary<InputModes, long> VotesPerMode = new ConcurrentDictionary<InputModes, long>(Environment.ProcessorCount, 2);
         
         public bool TallyingCommenced { get; private set; } = false;
 
@@ -68,6 +68,14 @@ namespace TRBot.Routines
 
             DateTime nowUTC = DateTime.UtcNow;
             StartVotingTime = nowUTC;
+
+            //Initialize the dictionary with 0 votes for each input mode
+            InputModes[] inpModes = EnumUtility.GetValues<InputModes>.EnumValues;
+
+            for (int i = 0; i < inpModes.Length; i++)
+            {
+                VotesPerMode[inpModes[i]] = 0;
+            }
         }
 
         public override void CleanUp()
@@ -87,8 +95,10 @@ namespace TRBot.Routines
             return new Dictionary<InputModes, long>(VotesPerMode);
         }
 
-        public void AddModeVote(string userName, in InputModes vote)
+        public void AddModeVote(string userName, in InputModes vote, out bool voteChanged)
         {
+            voteChanged = false;
+
             //Add a vote for this user
             if (UsersVoted.TryGetValue(userName, out InputModes prevVotedMode) == false)
             {
@@ -97,17 +107,22 @@ namespace TRBot.Routines
             //Change the user's vote
             else
             {
+                voteChanged = true;
+
                 //Voting for the same mode, so return since there's nothing to do
                 if (prevVotedMode == vote)
                 {
                     return;
                 }
 
+                //Update what the user voted for
+                UsersVoted[userName] = vote;
+
                 //Subtract 1 from the previous mode's vote
                 VotesPerMode[prevVotedMode] -= 1;
             }
 
-            //Add this mode to the list if it's not present
+            //Add this mode to the dictionary if it's not present
             if (VotesPerMode.TryGetValue(vote, out long count) == false)
             {
                 if (VotesPerMode.TryAdd(vote, 1L) == false)

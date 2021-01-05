@@ -220,6 +220,8 @@ namespace TRBot.Data
                 new CommandData("dresmode", "TRBot.Commands.GetSetDemocracyResModeCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("dvotetime", "TRBot.Commands.GetSetDemocracyVoteTimeCommand", (long)PermissionLevels.User, true, true),
                 new CommandData("vote", "TRBot.Commands.VoteForInputModeCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("votetime", "TRBot.Commands.GetSetInputModeVoteTimeCommand", (long)PermissionLevels.User, true, true),
+                new CommandData("votecooldown", "TRBot.Commands.GetSetInputModeCooldownCommand", (long)PermissionLevels.User, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", (long)PermissionLevels.Whitelisted, true, true),
                 new CommandData("addsyn", "TRBot.Commands.AddInputSynonymCommand", (long)PermissionLevels.Whitelisted, true, true),

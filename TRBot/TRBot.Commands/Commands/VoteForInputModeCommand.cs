@@ -171,11 +171,18 @@ namespace TRBot.Commands
             string userName = args.Command.ChatMessage.Username.ToLowerInvariant();
 
             //Add the vote
-            inputModeVoteRoutine.AddModeVote(userName, parsedInputMode);
+            inputModeVoteRoutine.AddModeVote(userName, parsedInputMode, out bool voteChanged);
 
             if (commencedNewVote == false)
             {
-                QueueMessage($"{userName} voted for {parsedInputMode}!");
+                if (voteChanged == true)
+                {
+                    QueueMessage($"{userName} changed their vote to {parsedInputMode}!");
+                }
+                else
+                {
+                    QueueMessage($"{userName} voted for {parsedInputMode}!");
+                }
             }
             else
             {

@@ -29,15 +29,13 @@ using TRBot.Permissions;
 namespace TRBot.Commands
 {
     /// <summary>
-    /// Displays or changes the current vote time in the Democracy input mode.
+    /// Displays or changes the cooldown for voting after the input mode was changed.
     /// </summary>
-    public sealed class GetSetDemocracyVoteTimeCommand : BaseCommand
+    public sealed class GetSetInputModeCooldownCommand : BaseCommand
     {
-        private const long MIN_VOTING_TIME = 1000L;
-        private const long MAX_VOTING_TIME_WARNING = 120000L;
-        private string UsageMessage = "Usage: \"voting time (int) - in milliseconds\"";
+        private string UsageMessage = "Usage: \"cooldown (int) - in milliseconds\"";
         
-        public GetSetDemocracyVoteTimeCommand()
+        public GetSetInputModeCooldownCommand()
         {
             
         }
@@ -46,12 +44,12 @@ namespace TRBot.Commands
         {
             List<string> arguments = args.Command.ArgumentsAsList;
 
-            long curVoteTime = DataHelper.GetSettingInt(SettingsConstants.DEMOCRACY_VOTE_TIME, 10000L);
+            long curCooldown = DataHelper.GetSettingInt(SettingsConstants.INPUT_MODE_CHANGE_COOLDOWN, 1000L * 60L * 15L);
 
             //See the time
             if (arguments.Count == 0)
             {
-                QueueMessage($"The current Democracy voting time is {curVoteTime}. To set the vote time, add it as an argument, in milliseconds.");
+                QueueMessage($"The current post-voting cooldown for changing the input mode is {curCooldown}. To set the cooldown, add it as an argument, in milliseconds.");
                 return;
             }
 
@@ -64,12 +62,12 @@ namespace TRBot.Commands
 
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                //Check if the user has the ability to set the vote time
+                //Check if the user has the ability to set the cooldown
                 User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
 
-                if (user != null && user.HasEnabledAbility(PermissionConstants.SET_DEMOCRACY_VOTE_TIME_ABILITY) == false)
+                if (user != null && user.HasEnabledAbility(PermissionConstants.SET_INPUT_MODE_CHANGE_COOLDOWN_ABILITY) == false)
                 {
-                    QueueMessage("You don't have the ability to set the Democracy voting time!");
+                    QueueMessage("You don't have the ability to set the input mode post-voting cooldown!");
                     return;
                 }
             }
@@ -84,34 +82,29 @@ namespace TRBot.Commands
             }
 
             //Same time
-            if (curVoteTime == parsedTime)
+            if (curCooldown == parsedTime)
             {
-                QueueMessage($"The current voting time is already {curVoteTime}!");
+                QueueMessage($"The current cooldown is already {curCooldown}!");
                 return;
             }
 
             //Check min value
-            if (parsedTime < MIN_VOTING_TIME)
+            if (parsedTime <= 0)
             {
-                QueueMessage($"{parsedTime} is a very low voting time and may not be useful in the long run! Please set it to at least {MIN_VOTING_TIME} milliseconds.");
+                QueueMessage($"{parsedTime} is less than or equal to 0! Consider setting it higher.");
                 return;
-            }
-
-            if (parsedTime > MAX_VOTING_TIME_WARNING)
-            {
-                QueueMessage($"{parsedTime} milliseconds is a long voting time that may slow down the stream. Consider setting the time lower than {MAX_VOTING_TIME_WARNING} milliseconds.");
             }
             
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
                 //Set the value and save
-                Settings resModeSetting = DataHelper.GetSettingNoOpen(SettingsConstants.DEMOCRACY_VOTE_TIME, context);
+                Settings resModeSetting = DataHelper.GetSettingNoOpen(SettingsConstants.INPUT_MODE_CHANGE_COOLDOWN, context);
                 resModeSetting.ValueInt = parsedTime;
 
                 context.SaveChanges();
             }
             
-            QueueMessage($"Changed the Democracy voting time from {curVoteTime} to {parsedTime}!");
+            QueueMessage($"Changed the post-voting cooldown time from {curCooldown} to {parsedTime}!");
         }
     }
 }

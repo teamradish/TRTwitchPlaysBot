@@ -140,6 +140,10 @@ You will need to reload data or restart TRBot to apply any changes in the **Comm
 - [`VoteForInputModeCommand`](../TRBot/TRBot.Commands/Commands/VoteForInputModeCommand.cs) (default: "!vote") - Votes for a given input mode if you have sufficient privileges, or retrieves the current number of votes for each input mode if a vote has begun. If no vote is in progress, a new vote will be started. Once the vote is concluded, the input mode with the most votes will be set as the new one, and voting will be on cooldown, determined by the value of the [input_mode_change_cooldown](./Settings-Documentation.md#input_mode_change_cooldown) setting.
   - Example: "!vote Anarchy" - Places a vote for the Anarchy input mode.
   - Example: "!vote Democracy" - Places a vote for the Democracy input mode.
+- [`GetSetInputModeVoteTimeCommand`](../TRBot/TRBot.Commands/Commands/GetSetInputModeVoteTimeCommand.cs) (default: "!votetime") - Obtains the duration of the voting period for changing the input mode, in milliseconds, or sets it if you have sufficient privileges and provide an argument.
+  - Example: "!votetime 50000" - Sets the input mode voting time to 50 seconds.
+- [`GetSetInputModeCooldownCommand`](../TRBot/TRBot.Commands/Commands/GetSetInputModeCooldownCommand.cs) (default: "!votecooldown") - Obtains the duration of the voting cooldown after a new input mode was voted on. Once the cooldown expires, a new vote to change the input mode can begin. It's recommended to have this value at least at 10 minutes so players can focus more on playing than voting, but your stream may vary. The [input_mode_next_vote_date](./Settings-Documentation.md#input_mode_next_vote_date) setting is assigned to the current time plus this value after voting is completed.
+  - Example: "!votecooldown 2400000" - Sets the voting cooldown to 40 minutes.
 
 ## Game Progress/Logging
 - [`AddGameLogCommand`](../TRBot/TRBot.Commands/Commands/AddGameLogCommand.cs) (default: "!addlog") - Adds a time-stamped game log to the database. This log is used to indicate others of game progress.

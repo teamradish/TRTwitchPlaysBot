@@ -29,15 +29,13 @@ using TRBot.Permissions;
 namespace TRBot.Commands
 {
     /// <summary>
-    /// Displays or changes the current vote time in the Democracy input mode.
+    /// Displays or changes the current vote time when changing the input mode.
     /// </summary>
-    public sealed class GetSetDemocracyVoteTimeCommand : BaseCommand
+    public sealed class GetSetInputModeVoteTimeCommand : BaseCommand
     {
-        private const long MIN_VOTING_TIME = 1000L;
-        private const long MAX_VOTING_TIME_WARNING = 120000L;
         private string UsageMessage = "Usage: \"voting time (int) - in milliseconds\"";
         
-        public GetSetDemocracyVoteTimeCommand()
+        public GetSetInputModeVoteTimeCommand()
         {
             
         }
@@ -46,12 +44,12 @@ namespace TRBot.Commands
         {
             List<string> arguments = args.Command.ArgumentsAsList;
 
-            long curVoteTime = DataHelper.GetSettingInt(SettingsConstants.DEMOCRACY_VOTE_TIME, 10000L);
+            long curVoteTime = DataHelper.GetSettingInt(SettingsConstants.INPUT_MODE_VOTE_TIME, 60000L);
 
             //See the time
             if (arguments.Count == 0)
             {
-                QueueMessage($"The current Democracy voting time is {curVoteTime}. To set the vote time, add it as an argument, in milliseconds.");
+                QueueMessage($"The current voting time for changing the input mode {curVoteTime}. To set the vote time, add it as an argument, in milliseconds.");
                 return;
             }
 
@@ -67,9 +65,9 @@ namespace TRBot.Commands
                 //Check if the user has the ability to set the vote time
                 User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
 
-                if (user != null && user.HasEnabledAbility(PermissionConstants.SET_DEMOCRACY_VOTE_TIME_ABILITY) == false)
+                if (user != null && user.HasEnabledAbility(PermissionConstants.SET_INPUT_MODE_VOTE_TIME_ABILITY) == false)
                 {
-                    QueueMessage("You don't have the ability to set the Democracy voting time!");
+                    QueueMessage("You don't have the ability to set the input mode voting time!");
                     return;
                 }
             }
@@ -91,27 +89,22 @@ namespace TRBot.Commands
             }
 
             //Check min value
-            if (parsedTime < MIN_VOTING_TIME)
+            if (parsedTime <= 0)
             {
-                QueueMessage($"{parsedTime} is a very low voting time and may not be useful in the long run! Please set it to at least {MIN_VOTING_TIME} milliseconds.");
+                QueueMessage($"{parsedTime} is less than or equal to 0! Consider setting it higher.");
                 return;
-            }
-
-            if (parsedTime > MAX_VOTING_TIME_WARNING)
-            {
-                QueueMessage($"{parsedTime} milliseconds is a long voting time that may slow down the stream. Consider setting the time lower than {MAX_VOTING_TIME_WARNING} milliseconds.");
             }
             
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
                 //Set the value and save
-                Settings resModeSetting = DataHelper.GetSettingNoOpen(SettingsConstants.DEMOCRACY_VOTE_TIME, context);
+                Settings resModeSetting = DataHelper.GetSettingNoOpen(SettingsConstants.INPUT_MODE_VOTE_TIME, context);
                 resModeSetting.ValueInt = parsedTime;
 
                 context.SaveChanges();
             }
             
-            QueueMessage($"Changed the Democracy voting time from {curVoteTime} to {parsedTime}!");
+            QueueMessage($"Changed the input mode voting time from {curVoteTime} to {parsedTime}!");
         }
     }
 }
