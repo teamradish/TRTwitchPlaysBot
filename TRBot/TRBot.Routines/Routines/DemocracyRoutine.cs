@@ -79,11 +79,11 @@ namespace TRBot.Routines
 
         public override void CleanUp()
         {
-            base.CleanUp();
-
             InputHandler.InputsHaltedEvent -= OnInputsHalted;
             DataContainer.DataReloader.SoftDataReloadedEvent -= OnDataReload;
             DataContainer.DataReloader.HardDataReloadedEvent -= OnDataReload;
+
+            base.CleanUp();
         }
 
         private void OnInputsHalted()
