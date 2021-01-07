@@ -106,7 +106,7 @@ namespace TRBot.Commands
             //Store the default console output stream
             TextWriter defaultOut = Console.Out;
 
-            bool prevIgnoreConsoleLogVal = DataContainer.MessageHandler.LogToConsole;
+            bool prevIgnoreConsoleLogVal = DataContainer.MessageHandler.LogToLogger;
 
             try
             {

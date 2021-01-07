@@ -28,6 +28,7 @@ using TRBot.Consoles;
 using TRBot.Misc;
 using TRBot.Data;
 using TRBot.Utilities;
+using TRBot.Logging;
 
 namespace TRBot.Routines
 {
@@ -127,7 +128,7 @@ namespace TRBot.Routines
             {
                 if (VotesPerMode.TryAdd(vote, 1L) == false)
                 {
-                    Console.WriteLine($"Unable to add vote. Input Mode: {vote} | Name: {userName}"); 
+                    TRBotLogger.Logger.Error($"Unable to add vote. Input Mode: {vote} | Name: {userName}"); 
                     return;
                 }
             }

@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Text;
 using TRBot.Connection;
 using TRBot.Data;
+using TRBot.Logging;
 
 namespace TRBot.Routines
 {
@@ -82,11 +83,11 @@ namespace TRBot.Routines
                 CurReconnectionAttempts++;
                 CurReconnectTimeStamp = currentTimeUTC;
 
-                Console.WriteLine($"Attempting reconnect #{CurReconnectionAttempts} to channel.");
+                TRBotLogger.Logger.Information($"Attempting reconnect #{CurReconnectionAttempts} to channel.");
 
                 if (CurReconnectionAttempts >= MaxReconnectAttempts)
                 {
-                    Console.WriteLine($"Exceeded max reconnection attempts of {MaxReconnectAttempts}. Please check your internet connection and restart the bot.");
+                    TRBotLogger.Logger.Error($"Exceeded max reconnection attempts of {MaxReconnectAttempts}. Please check your internet connection and restart the bot.");
                 }
 
                 //Double check yet again just to make sure the client isn't already connected before trying to reconnect

@@ -5,6 +5,7 @@
     <ProjectReference Include="..\TRBot.Consoles\TRBot.Consoles.csproj" />
     <ProjectReference Include="..\TRBot.VirtualControllers\TRBot.VirtualControllers.csproj" />
     <ProjectReference Include="..\TRBot.Parsing\TRBot.Parsing.csproj" />
+    <ProjectReference Include="..\TRBot.Logging\TRBot.Logging.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

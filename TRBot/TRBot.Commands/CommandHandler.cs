@@ -28,6 +28,7 @@ using TRBot.Misc;
 using TRBot.Utilities;
 using TRBot.Routines;
 using TRBot.Permissions;
+using TRBot.Logging;
 
 namespace TRBot.Commands
 {
@@ -150,7 +151,7 @@ namespace TRBot.Commands
         {
             if (command == null)
             {
-                Console.WriteLine("Cannot add null command.");
+                TRBotLogger.Logger.Warning("Cannot add null command.");
                 return false;
             }
 

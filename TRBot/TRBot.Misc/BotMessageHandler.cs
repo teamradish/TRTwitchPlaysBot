@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Text;
 using TRBot.Connection;
 using TRBot.Utilities;
+using TRBot.Logging;
 
 namespace TRBot.Misc
 {
@@ -37,9 +38,9 @@ namespace TRBot.Misc
         public IClientService ClientService { get; private set; } = null;
 
         /// <summary>
-        /// Whether to also log bot messages to the console.
+        /// Whether to also log bot messages to the logger.
         /// </summary>
-        public bool LogToConsole { get; private set; } = true;
+        public bool LogToLogger { get; private set; } = true;
 
         /// <summary>
         /// How many messages are in the queue.
@@ -117,9 +118,9 @@ namespace TRBot.Misc
             }
         }
 
-        public void SetLogToConsole(in bool logToConsole)
+        public void SetLogToLogger(in bool logToLogger)
         {
-            LogToConsole = logToConsole;
+            LogToLogger = logToLogger;
         }
 
         public void Update(in DateTime nowUTC)
@@ -148,9 +149,9 @@ namespace TRBot.Misc
                 //Send the message
                 ClientService.SendMessage(ChannelName, message);
 
-                if (LogToConsole == true)
+                if (LogToLogger == true)
                 {
-                    Console.WriteLine(message);
+                    TRBotLogger.Logger.Information(message);
                 }
 
                 //Remove from queue
@@ -158,7 +159,7 @@ namespace TRBot.Misc
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Could not send message: {e.Message}");
+                TRBotLogger.Logger.Error($"Could not send message: {e.Message}");
                 return false;
             }
 

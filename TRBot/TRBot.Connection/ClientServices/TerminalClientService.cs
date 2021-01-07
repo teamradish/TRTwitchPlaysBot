@@ -19,9 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using TwitchLib.Client;
-using TwitchLib.Client.Events;
-using TwitchLib.Client.Models;
+using TRBot.Logging;
 
 namespace TRBot.Connection
 {
@@ -110,7 +108,7 @@ namespace TRBot.Connection
         /// </summary>
         public void SendMessage(string channel, string message)
         {
-            Console.WriteLine(message);
+            TRBotLogger.Logger.Information(message);
         }
 
         /// <summary>

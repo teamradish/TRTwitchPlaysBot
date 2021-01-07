@@ -22,6 +22,7 @@
     <ProjectReference Include="..\TRBot.Misc\TRBot.Misc.csproj" />
     <ProjectReference Include="..\TRBot.VirtualControllers\TRBot.VirtualControllers.csproj" />
     <ProjectReference Include="..\TRBot.Permissions\TRBot.Permissions.csproj" />
+    <ProjectReference Include="..\TRBot.Logging\TRBot.Logging.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

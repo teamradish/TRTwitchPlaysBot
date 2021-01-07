@@ -26,6 +26,7 @@ using TRBot.Parsing;
 using TRBot.Connection;
 using TRBot.Consoles;
 using TRBot.VirtualControllers;
+using TRBot.Logging;
 
 namespace TRBot.Misc
 {
@@ -109,7 +110,7 @@ namespace TRBot.Misc
         /// </summary>
         public static async void StopThenResumeAllInputs()
         {
-            //Console.WriteLine("Stopping all inputs!");
+            //TRBotLogger.Logger.Information("Stopping all inputs!");
             
             CancelRunningInputs();
 
@@ -117,7 +118,7 @@ namespace TRBot.Misc
 
             ResumeRunningInputs();
 
-            //Console.WriteLine("All inputs resumed!");
+            //TRBotLogger.Logger.Information("All inputs resumed!");
         }
 
         private static async Task WaitAllInputsStopped()
@@ -126,7 +127,7 @@ namespace TRBot.Misc
 
             while (RunningInputCount != 0)
             {
-                //Console.WriteLine($"Delaying {delay}ms");
+                //TRBotLogger.Logger.Information($"Delaying {delay}ms");
                 await Task.Delay(delay);
             }
         }
@@ -143,7 +144,7 @@ namespace TRBot.Misc
              * Uncomment the following lines to see how many threads are supported in the pool on your machine */
             //ThreadPool.GetMinThreads(out int workermin, out int completionmin);
             //ThreadPool.GetMaxThreads(out int workerthreads, out int completionPortThreads);
-            //Console.WriteLine($"Min workers: {workermin} Max workers: {workerthreads} Min async IO threads: {completionmin} Max async IO threads: {completionPortThreads}");
+            //TRBotLogger.Logger.Information($"Min workers: {workermin} Max workers: {workerthreads} Min async IO threads: {completionmin} Max async IO threads: {completionPortThreads}");
 
             //Kimimaru: Copy the input list over to an array, which is more performant
             //and lets us bypass redundant copying and bounds checks in certain instances

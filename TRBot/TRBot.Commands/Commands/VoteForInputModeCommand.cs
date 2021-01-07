@@ -26,6 +26,7 @@ using TRBot.Utilities;
 using TRBot.Misc;
 using TRBot.Permissions;
 using TRBot.Routines;
+using TRBot.Logging;
 
 namespace TRBot.Commands
 {
@@ -128,7 +129,7 @@ namespace TRBot.Commands
             if (DateTime.TryParse(lastComplete, out DateTime lastCompleteDate) == false)
             {
                 lastCompleteDate = DateTime.UnixEpoch;
-                Console.WriteLine($"Failed to parse DateTime: {DataHelper.GetStrFromDateTime(lastCompleteDate)}");
+                TRBotLogger.Logger.Warning($"Failed to parse DateTime: {DataHelper.GetStrFromDateTime(lastCompleteDate)}");
             }
 
             if (nowUTC < lastCompleteDate)

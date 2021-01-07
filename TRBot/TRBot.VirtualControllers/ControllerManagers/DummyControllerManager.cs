@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Runtime.CompilerServices;
+using TRBot.Logging;
 
 namespace TRBot.VirtualControllers
 {
@@ -82,7 +83,7 @@ namespace TRBot.VirtualControllers
             if (count < MinControllers)
             {
                 count = MinControllers;
-                Console.WriteLine($"Joystick count of {count} is less than {nameof(MinControllers)}. Clamping value to this limit.");
+                TRBotLogger.Logger.Information($"Joystick count of {count} is less than {nameof(MinControllers)}. Clamping value to this limit.");
             }
 
             //Check for max controller ID
@@ -90,7 +91,7 @@ namespace TRBot.VirtualControllers
             {
                 count = MaxControllers;
 
-                Console.WriteLine($"Joystick count of {count} is greater than max {nameof(MaxControllers)} of {MaxControllers}. Clamping value to this limit.");
+                TRBotLogger.Logger.Information($"Joystick count of {count} is greater than max {nameof(MaxControllers)} of {MaxControllers}. Clamping value to this limit.");
             }
 
             Joysticks = new DummyController[count];
@@ -109,12 +110,12 @@ namespace TRBot.VirtualControllers
                 joystick.Acquire();
                 if (joystick.IsAcquired == false)
                 {
-                    Console.WriteLine($"Unable to acquire dummy device at index {joystick.ControllerIndex}...HUH?!?!");
+                    TRBotLogger.Logger.Error($"Unable to acquire dummy device at index {joystick.ControllerIndex}...HUH?!?!");
                     continue;
                 }
 
                 acquiredCount++;
-                Console.WriteLine($"Acquired dummy device ID {joystick.ControllerID} at index {joystick.ControllerIndex}!");
+                TRBotLogger.Logger.Information($"Acquired dummy device ID {joystick.ControllerID} at index {joystick.ControllerIndex}!");
 
                 //Initialize the joystick
                 joystick.Init();

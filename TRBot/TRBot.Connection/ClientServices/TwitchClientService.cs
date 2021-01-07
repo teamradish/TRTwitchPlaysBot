@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TRBot.Logging;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
@@ -98,7 +99,7 @@ namespace TRBot.Connection
         {
             if (twitchClient.IsConnected == true)
             {
-                Console.WriteLine("Attempting to connect while already connected!");
+                TRBotLogger.Logger.Warning("Attempting to connect while already connected!");
                 return;
             }
             
@@ -112,7 +113,7 @@ namespace TRBot.Connection
         {
             if (twitchClient.IsConnected == false)
             {
-                Console.WriteLine("Attempting to disconnect while not connected!");
+                TRBotLogger.Logger.Warning("Attempting to disconnect while not connected!");
                 return;
             }
 
@@ -127,7 +128,7 @@ namespace TRBot.Connection
         {
             if (twitchClient.IsConnected == false)
             {
-                Console.WriteLine("Attempting to reconnect while not connected!");
+                TRBotLogger.Logger.Warning("Attempting to reconnect while not connected!");
                 return;
             }
 
