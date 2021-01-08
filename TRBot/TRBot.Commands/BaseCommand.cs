@@ -75,9 +75,20 @@ namespace TRBot.Commands
             DataContainer.MessageHandler.QueueMessage(message);
         }
 
+        protected void QueueMessage(string message, in Serilog.Events.LogEventLevel logLevel)
+        {
+            DataContainer.MessageHandler.QueueMessage(message, logLevel);
+        }
+
         protected void QueueMessageSplit(string message, in int maxCharCount, string separator)
         {
             DataContainer.MessageHandler.QueueMessageSplit(message, maxCharCount, separator);
+        }
+
+        protected void QueueMessageSplit(string message, in Serilog.Events.LogEventLevel logLevel,
+            in int maxCharCount, string separator)
+        {
+            DataContainer.MessageHandler.QueueMessageSplit(message, logLevel, maxCharCount, separator);
         }
     }
 }

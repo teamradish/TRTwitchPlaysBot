@@ -106,7 +106,7 @@ namespace TRBot.Commands
             //Store the default console output stream
             TextWriter defaultOut = Console.Out;
 
-            bool prevIgnoreConsoleLogVal = DataContainer.MessageHandler.LogToConsole;
+            bool prevIgnoreConsoleLogVal = DataContainer.MessageHandler.LogToLogger;
 
             try
             {
@@ -116,7 +116,7 @@ namespace TRBot.Commands
             }
             catch (CompilationErrorException exception)
             {
-                QueueMessage($"Compiler error: {exception.Message}");
+                QueueMessage($"Compiler error: {exception.Message}", Serilog.Events.LogEventLevel.Warning);
             }
         }
 

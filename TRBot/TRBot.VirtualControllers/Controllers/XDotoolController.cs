@@ -23,6 +23,7 @@ using System.Text;
 using System.Runtime.CompilerServices;
 using System.Diagnostics;
 using TRBot.Utilities;
+using TRBot.Logging;
 using static TRBot.VirtualControllers.VirtualControllerDelegates;
 
 namespace TRBot.VirtualControllers
@@ -230,72 +231,6 @@ namespace TRBot.VirtualControllers
             InputReleasedEvent?.Invoke(inputName);
         }
 
-        /*public void PressInput(in Parser.Input input)
-        {
-            ConsoleBase curConsole = InputGlobals.CurrentConsole;
-
-            if (curConsole.IsWait(input) == true)
-            {
-                return;
-            }
-
-            if (curConsole.GetAxis(input, out InputAxis axis) == true)
-            {
-                PressAxis(axis.AxisVal, axis.MinAxisVal, axis.MaxAxisVal, input.percent);
-
-                //Release a button with the same name (Ex. L/R buttons on GCN)
-                if (curConsole.ButtonInputMap.TryGetValue(input.name, out InputButton btnVal) == true)
-                {
-                    ReleaseButton(btnVal.ButtonVal);
-                }
-            }
-            else if (curConsole.IsButton(input) == true)
-            {
-                PressButton(curConsole.ButtonInputMap[input.name].ButtonVal);
-
-                //Release an axis with the same name (Ex. L/R buttons on GCN)
-                if (curConsole.InputAxes.TryGetValue(input.name, out InputAxis value) == true)
-                {
-                    ReleaseAxis(value.AxisVal);
-                }
-            }
-
-            InputPressedEvent?.Invoke(input);
-        }
-
-        public void ReleaseInput(in Parser.Input input)
-        {
-            ConsoleBase curConsole = InputGlobals.CurrentConsole;
-
-            if (curConsole.IsWait(input) == true)
-            {
-                return;
-            }
-
-            if (curConsole.GetAxis(input, out InputAxis axis) == true)
-            {
-                ReleaseAxis(axis.AxisVal);
-
-                //Release a button with the same name (Ex. L/R buttons on GCN)
-                if (curConsole.ButtonInputMap.TryGetValue(input.name, out InputButton btnVal) == true)
-                {
-                    ReleaseButton(btnVal.ButtonVal);
-                }
-            }
-            else if (curConsole.IsButton(input) == true)
-            {
-                ReleaseButton(curConsole.ButtonInputMap[input.name].ButtonVal);
-
-                //Release an axis with the same name (Ex. L/R buttons on GCN)
-                if (curConsole.InputAxes.TryGetValue(input.name, out InputAxis value) == true)
-                {
-                    ReleaseAxis(value.AxisVal);
-                }
-            }
-
-            InputReleasedEvent?.Invoke(input);
-        }*/
-
         public void PressAxis(in int axis, in double minAxisVal, in double maxAxisVal, in int percent)
         {
             //Not a valid axis - defaulting to 0 results in the wrong axis being set
@@ -319,7 +254,7 @@ namespace TRBot.VirtualControllers
             int finalVal = (int)Helpers.RemapNum(pressAmount, minAxisVal, maxAxisVal,
                 minAxisVal * axisVals.Item1, maxAxisVal * axisVals.Item2);
 
-            //Console.WriteLine($"%: {percent} | Min/Max: {minAxisVal}/{maxAxisVal} | pressAmount: {pressAmount} | finalVal: {finalVal}");
+            //TRBotLogger.Logger.Information($"%: {percent} | Min/Max: {minAxisVal}/{maxAxisVal} | pressAmount: {pressAmount} | finalVal: {finalVal}");
 
             if (inputAxis == (int)AxisCodes.MouseX)
             {
@@ -336,61 +271,16 @@ namespace TRBot.VirtualControllers
         public void ReleaseAxis(in int axis)
         {
             AxisReleasedEvent?.Invoke(axis);
-
-            //Not a valid axis - defaulting to 0 results in the wrong axis being set
-            //if (AxisCodeMap.TryGetValue(axis, out int xdotoolAxis) == false)
-            //{
-            //    return;
-            //}
-            //
-            //if (MinMaxAxes.TryGetValue(axis, out (long, long) axisVals) == false)
-            //{
-            //    return;
-            //}
-            //
-            //Neutral is halfway between the min and max axes
-            //long half = (axisVals.Item2 - axisVals.Item1) / 2L;
-            //int val = (int)(axisVals.Item1 + half);
-            //
-            //SetAxis(uinputAxis, val);
         }
 
         public void PressAbsoluteAxis(in int axis, in int percent)
         {
             AxisPressedEvent?.Invoke(axis, percent);
-
-            ////Not a valid axis - defaulting to 0 results in the wrong axis being set
-            //if (AxisCodeMap.TryGetValue(axis, out int xdotoolAxis) == false)
-            //{
-            //    return;
-            //}
-            //
-            //if (MinMaxAxes.TryGetValue(axis, out (long, long) axisVals) == false)
-            //{
-            //    return;
-            //}
-            //
-            //int val = (int)(axisVals.Item2 * (percent / 100f));
-            //
-            //SetAxis(uinputAxis, val);
         }
 
         public void ReleaseAbsoluteAxis(in int axis)
         {
             AxisReleasedEvent?.Invoke(axis);
-
-            ////Not a valid axis - defaulting to 0 results in the wrong axis being set
-            //if (AxisCodeMap.TryGetValue(axis, out int xdotoolAxis) == false)
-            //{
-            //    return;
-            //}
-            //
-            //if (MinMaxAxes.ContainsKey(axis) == false)
-            //{
-            //    return;
-            //}
-            //
-            //SetAxis(uinputAxis, 0);
         }
 
         public void PressButton(in uint buttonVal)
@@ -460,7 +350,7 @@ namespace TRBot.VirtualControllers
             //Execute all the built up commands at once by passing them as arguments to xdotool
             string argList = BuiltArgList.ToString();
             
-            //Console.WriteLine($"BUILT ARG LIST: \"{argList}\"");
+            //TRBotLogger.Logger.Information($"BUILT ARG LIST: \"{argList}\"");
             
             //A lot can go wrong when trying to start the process, so catch exceptions
             try
@@ -472,7 +362,7 @@ namespace TRBot.VirtualControllers
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Unable to carry out xdotool inputs: {e.Message}");
+                TRBotLogger.Logger.Error($"Unable to carry out xdotool inputs: {e.Message}");
             }
             
             BuiltArgList.Clear();
@@ -491,25 +381,21 @@ namespace TRBot.VirtualControllers
         private void HandleMouseUp(int mouseBtn)
         {
             BuiltArgList.Append(MouseUpArg).Append(mouseBtn).Append(" ");
-            //Process.Start(ProcessName, MouseUpArg + mouseBtn.ToString());
         }
         
         private void HandleMouseMove(int moveLeft, int moveUp)
         {
             BuiltArgList.Append(MouseMoveRelArg).Append(moveLeft).Append(" ").Append(moveUp).Append(" ");
-            //Process.Start(ProcessName, MouseMoveRelArg + moveLeft.ToString() + " " + moveUp.ToString());
         }
         
         private void HandleProcessKeyDown(string key)
         {
             BuiltArgList.Append(KeyDownArg).Append(key).Append(" ");
-            //Process.Start(ProcessName, KeyDownArg + key);
         }
         
         private void HandleProcessKeyUp(string key)
         {
             BuiltArgList.Append(KeyUpArg).Append(key).Append(" ");
-            //Process.Start(ProcessName, KeyUpArg + key);
         }
     }
 }

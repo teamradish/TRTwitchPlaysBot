@@ -28,6 +28,7 @@ using TRBot.Consoles;
 using TRBot.Misc;
 using TRBot.Data;
 using TRBot.Utilities;
+using TRBot.Logging;
 
 namespace TRBot.Routines
 {
@@ -107,7 +108,7 @@ namespace TRBot.Routines
             if (inputList == null || inputList.Count == 0
                 || inputList[0] == null || inputList[0].Count == 0)
             {
-                Console.WriteLine($"Invalid input list added by {userName}!");
+                TRBotLogger.Logger.Error($"Invalid input list added by {userName}!");
                 return;
             }
 
@@ -121,7 +122,7 @@ namespace TRBot.Routines
                 AllInputs[inputList] = count;
             }
 
-            //Console.WriteLine($"Added input sequence for user {userName}. Count: {AllInputs[inputList]} | Total: {AllInputs.Count}");
+            //TRBotLogger.Logger.Information($"Added input sequence for user {userName}. Count: {AllInputs[inputList]} | Total: {AllInputs.Count}");
         }
 
         public override void UpdateRoutine(in DateTime currentTimeUTC)
@@ -169,8 +170,8 @@ namespace TRBot.Routines
                 }
             }
 
-            //Console.WriteLine($"Resolution mode: {resolutionMode}");
-            //Console.WriteLine($"Passed voting duration of {VotingDuration}");
+            //TRBotLogger.Logger.Information($"Resolution mode: {resolutionMode}");
+            //TRBotLogger.Logger.Information($"Passed voting duration of {VotingDuration}");
 
             List<List<ParsedInput>> executedInputList = null;
 
@@ -266,7 +267,7 @@ namespace TRBot.Routines
             {
                 string inputName = kvPair.Key[0][0].name;
 
-                //Console.WriteLine($"Iterating through input \"{inputName}\"");
+                //TRBotLogger.Logger.Information($"Iterating through input \"{inputName}\"");
 
                 if (inputNames.TryGetValue(inputName, out long count) == false)
                 {
@@ -274,7 +275,7 @@ namespace TRBot.Routines
                     count = kvPair.Value;
                     inputNames.Add(inputName, count);
 
-                    //Console.WriteLine($"Added input \"{inputName}\"");
+                    //TRBotLogger.Logger.Information($"Added input \"{inputName}\"");
                 }
                 else
                 {
@@ -283,7 +284,7 @@ namespace TRBot.Routines
                     count += kvPair.Value;
                     inputNames[inputName] = count;
 
-                    //Console.WriteLine($"Input name \"{inputName}\" now has count of {inputNames[inputName]}");
+                    //TRBotLogger.Logger.Information($"Input name \"{inputName}\" now has count of {inputNames[inputName]}");
                 }
                 
                 //Check for a greater count
@@ -293,7 +294,7 @@ namespace TRBot.Routines
                     chosenInputName = inputName;
                     maxCount = count;
 
-                    //Console.WriteLine($"Found greater: \"{chosenInputName}\" with count of {maxCount}");
+                    //TRBotLogger.Logger.Information($"Found greater: \"{chosenInputName}\" with count of {maxCount}");
                 }
             }
 
@@ -306,7 +307,7 @@ namespace TRBot.Routines
             List<List<ParsedInput>> executedInputList = new List<List<ParsedInput>>(1);
             executedInputList.Add(new List<ParsedInput>(1) { pressedInput });
 
-            //Console.WriteLine($"Carrying out: {pressedInput.ToString()}");
+            //TRBotLogger.Logger.Information($"Carrying out: {pressedInput.ToString()}");
 
             return executedInputList;
         }
@@ -330,7 +331,7 @@ namespace TRBot.Routines
                 //Take only the first input
                 ParsedInput input = kvPair.Key[0][0];
 
-                //Console.WriteLine($"Iterating through input \"{input}\"");
+                //TRBotLogger.Logger.Information($"Iterating through input \"{input}\"");
 
                 if (inputDict.TryGetValue(input, out long count) == false)
                 {
@@ -338,7 +339,7 @@ namespace TRBot.Routines
                     count = kvPair.Value;
                     inputDict.Add(input, count);
 
-                    //Console.WriteLine($"Added input {input}");
+                    //TRBotLogger.Logger.Information($"Added input {input}");
                 }
                 else
                 {
@@ -347,7 +348,7 @@ namespace TRBot.Routines
                     count += kvPair.Value;
                     inputDict[input] = count;
 
-                    //Console.WriteLine($"Input {input} now has count of {inputDict[input]}");
+                    //TRBotLogger.Logger.Information($"Input {input} now has count of {inputDict[input]}");
                 }
                 
                 //Check for a greater count
@@ -357,14 +358,14 @@ namespace TRBot.Routines
                     chosenInput = input;
                     maxCount = count;
 
-                    //Console.WriteLine($"Found greater: {chosenInput} with count of {maxCount}");
+                    //TRBotLogger.Logger.Information($"Found greater: {chosenInput} with count of {maxCount}");
                 }
             }
 
             List<List<ParsedInput>> executedInputList = new List<List<ParsedInput>>(1);
             executedInputList.Add(new List<ParsedInput>(1) { chosenInput });
 
-            //Console.WriteLine($"Carrying out: {chosenInput}");
+            //TRBotLogger.Logger.Information($"Carrying out: {chosenInput}");
 
             return executedInputList;
         }

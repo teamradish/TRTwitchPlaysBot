@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Text;
 using TRBot.Connection;
 using TRBot.Utilities;
+using TRBot.Logging;
 
 namespace TRBot.Misc
 {
@@ -37,9 +38,9 @@ namespace TRBot.Misc
         public IClientService ClientService { get; private set; } = null;
 
         /// <summary>
-        /// Whether to also log bot messages to the console.
+        /// Whether to also log bot messages to the logger.
         /// </summary>
-        public bool LogToConsole { get; private set; } = true;
+        public bool LogToLogger { get; private set; } = true;
 
         /// <summary>
         /// How many messages are in the queue.
@@ -61,7 +62,7 @@ namespace TRBot.Misc
         /// <summary>
         /// Queued messages.
         /// </summary>
-        private readonly Queue<string> ClientMessages = new Queue<string>(16);
+        private readonly Queue<QueuedMessage> ClientMessages = new Queue<QueuedMessage>(16);
 
         public BotMessageHandler()
         {
@@ -117,9 +118,9 @@ namespace TRBot.Misc
             }
         }
 
-        public void SetLogToConsole(in bool logToConsole)
+        public void SetLogToLogger(in bool logToLogger)
         {
-            LogToConsole = logToConsole;
+            LogToLogger = logToLogger;
         }
 
         public void Update(in DateTime nowUTC)
@@ -140,17 +141,17 @@ namespace TRBot.Misc
             }
             
             //See the message
-            string message = ClientMessages.Peek();
+            QueuedMessage queuedMsg = ClientMessages.Peek();
 
             //There's a chance the bot could be disconnected from the channel between the conditional and now
             try
             {
                 //Send the message
-                ClientService.SendMessage(ChannelName, message);
+                ClientService.SendMessage(ChannelName, queuedMsg.Message);
 
-                if (LogToConsole == true)
+                if (LogToLogger == true)
                 {
-                    Console.WriteLine(message);
+                    TRBotLogger.Logger.Write(queuedMsg.LogLevel, queuedMsg.Message);
                 }
 
                 //Remove from queue
@@ -158,7 +159,7 @@ namespace TRBot.Misc
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Could not send message: {e.Message}");
+                TRBotLogger.Logger.Error($"Could not send message: {e.Message}");
                 return false;
             }
 
@@ -169,7 +170,17 @@ namespace TRBot.Misc
         {
             if (string.IsNullOrEmpty(message) == false)
             {
-                ClientMessages.Enqueue(message);
+                QueuedMessage queuedMsg = new QueuedMessage(message);
+                ClientMessages.Enqueue(queuedMsg);
+            }
+        }
+
+        public void QueueMessage(string message, in Serilog.Events.LogEventLevel logLevel)
+        {
+            if (string.IsNullOrEmpty(message) == false)
+            {
+                QueuedMessage queuedMsg = new QueuedMessage(message, logLevel);
+                ClientMessages.Enqueue(queuedMsg);
             }
         }
 
@@ -189,6 +200,77 @@ namespace TRBot.Misc
                 {
                     QueueMessage(textList[i]);
                 }
+            }
+        }
+
+        public void QueueMessageSplit(string message, in Serilog.Events.LogEventLevel logLevel, in int maxCharCount, string separator)
+        {
+            string sentMessage = Helpers.SplitStringWithinCharCount(message, maxCharCount, separator, out List<string> textList);
+
+            //If the text fits within the character limit, print it all out at once
+            if (textList == null)
+            {
+                QueueMessage(sentMessage, logLevel);
+            }
+            else
+            {
+                //Otherwise, queue up the text in pieces
+                for (int i = 0; i < textList.Count; i++)
+                {
+                    QueueMessage(textList[i], logLevel);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Represents a queued message.
+        /// </summary>
+        private struct QueuedMessage
+        {
+            public string Message;
+            public Serilog.Events.LogEventLevel LogLevel;
+
+            public QueuedMessage(string message)
+            {
+                Message = message;
+                LogLevel = Serilog.Events.LogEventLevel.Information;
+            }
+
+            public QueuedMessage(string message, in Serilog.Events.LogEventLevel logLevel)
+            {
+                Message = message;
+                LogLevel = logLevel;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj is QueuedMessage queuedMsg)
+                {
+                    return (this == queuedMsg);
+                }
+
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hash = 5;
+                    hash = (hash * 31) + ((Message == null) ? 0 : Message.GetHashCode());
+                    hash = (hash * 31) + LogLevel.GetHashCode();
+                    return hash;
+                }
+            }
+
+            public static bool operator==(QueuedMessage a, QueuedMessage b)
+            {
+                return (a.Message == b.Message && a.LogLevel == b.LogLevel);
+            }
+
+            public static bool operator!=(QueuedMessage a, QueuedMessage b)
+            {
+                return !(a == b);
             }
         }
     }

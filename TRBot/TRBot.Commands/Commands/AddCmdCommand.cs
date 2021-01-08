@@ -26,6 +26,7 @@ using TRBot.Misc;
 using TRBot.Utilities;
 using TRBot.Data;
 using TRBot.Permissions;
+using TRBot.Logging;
 
 namespace TRBot.Commands
 {

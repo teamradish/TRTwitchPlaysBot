@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using TRBot.Utilities;
+using TRBot.Logging;
 using static TRBot.Connection.EventDelegates;
 
 namespace TRBot.Connection
@@ -101,7 +102,7 @@ namespace TRBot.Connection
 
         private void SetupStart()
         {
-            Console.WriteLine($"\nPlease enter a name to use (no spaces)! This can be an existing name in the database. Skip to use \"{DEFAULT_TERMINAL_USERNAME}\" as the name.");
+            TRBotLogger.Logger.Information($"\nPlease enter a name to use (no spaces)! This can be an existing name in the database. Skip to use \"{DEFAULT_TERMINAL_USERNAME}\" as the name.");
 
             string newName = Console.ReadLine();
 

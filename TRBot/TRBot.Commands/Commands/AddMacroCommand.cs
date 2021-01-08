@@ -28,6 +28,7 @@ using TRBot.Consoles;
 using TRBot.Parsing;
 using TRBot.Data;
 using TRBot.Permissions;
+using TRBot.Logging;
 
 namespace TRBot.Commands
 {
@@ -162,7 +163,7 @@ namespace TRBot.Commands
                     }
 
                     inputSequence = parser.ParseInputs(readyMessage, regexStr, new ParserOptions(0, defaultDur, true, maxDur));
-                    //Console.WriteLine(inputSequence.ToString());
+                    TRBotLogger.Logger.Debug(inputSequence.ToString());
 
                     if (inputSequence.ParsedInputResult != ParsedInputResults.Valid)
                     {

@@ -24,6 +24,7 @@ using System.Threading.Tasks;
 using TRBot.Connection;
 using TRBot.Data;
 using TRBot.Utilities;
+using TRBot.Logging;
 
 namespace TRBot.Routines
 {
@@ -140,7 +141,7 @@ namespace TRBot.Routines
             //The millisecond component would otherwise make it one second off (Ex. saying 29 seconds remaining instead of 30)
             TimeSpan timeRemaining = TotalTime - TimeSpan.FromSeconds((long)Math.Floor(diff.TotalSeconds));
 
-            //Console.WriteLine($"CurMinute: {CurMinute} | diff minutes: {diff.Minutes} Seconds: {diff.Seconds} | Remaining: Min: {timeRemaining.Minutes} Sec: {timeRemaining.Seconds}");
+            //TRBotLogger.Logger.Information($"CurMinute: {CurMinute} | diff minutes: {diff.Minutes} Seconds: {diff.Seconds} | Remaining: Min: {timeRemaining.Minutes} Sec: {timeRemaining.Seconds}");
 
             //Remind users about the group bet every minute
             if (diff.Minutes > CurMinute && diff.TotalMilliseconds < MillisecondsForBet)

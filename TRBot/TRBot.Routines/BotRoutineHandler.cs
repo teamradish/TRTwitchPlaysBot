@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using TRBot.Data;
+using TRBot.Logging;
 
 namespace TRBot.Routines
 {
@@ -75,7 +76,7 @@ namespace TRBot.Routines
         {
             if (index < 0 || index >= BotRoutines.Count)
             {
-                Console.WriteLine($"Index {index} is out of the routine count of 0 through {BotRoutines.Count}."); 
+                TRBotLogger.Logger.Information($"Index {index} is out of the routine count of 0 through {BotRoutines.Count}."); 
                 return;
             }
 
