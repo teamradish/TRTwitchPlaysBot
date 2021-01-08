@@ -62,6 +62,7 @@ namespace TRBot.Data
                 SettingsHelper(BINGO_PIPE_PATH, "BingoPipe"),
                 SettingsHelper(BINGO_PIPE_PATH_IS_RELATIVE, true),
                 SettingsHelper(CLIENT_SERVICE_TYPE, (long)ClientServiceTypes.Twitch),
+                SettingsHelper(LOG_LEVEL, (long)Serilog.Events.LogEventLevel.Information),
                 SettingsHelper(AUTO_PROMOTE_ENABLED, true),
                 SettingsHelper(AUTO_PROMOTE_LEVEL, (long)PermissionLevels.Whitelisted),
                 SettingsHelper(AUTO_PROMOTE_INPUT_REQ, 50L),

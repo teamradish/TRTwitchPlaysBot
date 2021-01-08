@@ -46,6 +46,7 @@ namespace TRBot.Data
         public const string BINGO_PIPE_PATH_IS_RELATIVE = "bingo_pipe_path_is_relative";
 
         public const string CLIENT_SERVICE_TYPE = "client_service_type";
+        public const string LOG_LEVEL = "log_level";
 
         public const string AUTO_PROMOTE_ENABLED = "auto_promote_enabled";
         public const string AUTO_PROMOTE_LEVEL = "auto_promote_level";

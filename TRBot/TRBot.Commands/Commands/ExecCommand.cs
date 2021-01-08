@@ -116,7 +116,7 @@ namespace TRBot.Commands
             }
             catch (CompilationErrorException exception)
             {
-                QueueMessage($"Compiler error: {exception.Message}");
+                QueueMessage($"Compiler error: {exception.Message}", Serilog.Events.LogEventLevel.Warning);
             }
         }
 

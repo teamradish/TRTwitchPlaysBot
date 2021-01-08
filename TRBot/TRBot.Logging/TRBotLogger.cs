@@ -16,9 +16,15 @@ namespace TRBot.Logging
         public static ILogger Logger => Log.Logger;
 
         /// <summary>
+        /// The minimum logging level for the logger.
+        /// </summary>
+        /// <returns>The <see cref="LogEventLevel" /> representing the minimum logging level for the logger.</returns>
+        public static LogEventLevel MinLoggingLevel => LogLevelSwitch.MinimumLevel;
+
+        /// <summary>
         /// The log level switch for the minimum logging level.
         /// </summary>
-        public static LoggingLevelSwitch LogLevelSwitch { get; private set; } = new LoggingLevelSwitch();
+        private static LoggingLevelSwitch LogLevelSwitch = new LoggingLevelSwitch();
 
         /// <summary>
         /// Sets up the logger with given information.
@@ -33,13 +39,26 @@ namespace TRBot.Logging
         {
             LogLevelSwitch.MinimumLevel = logLevel;
 
+            //We need to set the minimum level passed to sinks to Verbose to catch everything when creating the config
+            //Otherwise, even if the minimum level is set to lower than Information at runtime, the sinks won't
+            //be passed lower level events and thus won't appear
             Logger logger = new LoggerConfiguration().WriteTo.Console(levelSwitch: LogLevelSwitch)
+                                .MinimumLevel.Is(LogEventLevel.Verbose)
                                 .WriteTo.File(filePath, levelSwitch: LogLevelSwitch,
                                     rollingInterval: fileRollingInterval, rollOnFileSizeLimit: true,
                                     fileSizeLimitBytes: logFileSizeLimit,
                                     flushToDiskInterval: fileWriteInterval)
                                 .CreateLogger();
             Log.Logger = logger;
+        }
+
+        /// <summary>
+        /// Sets the minimum logging level for the logger.
+        /// </summary>
+        /// <param name="newLogLevel">The new minimum logging level for the logger.</param>
+        public static void SetLogLevel(LogEventLevel newLogLevel)
+        {
+            LogLevelSwitch.MinimumLevel = newLogLevel;
         }
 
         /// <summary>

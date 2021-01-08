@@ -119,7 +119,7 @@ namespace TRBot.Commands
                 //Handle parsing exceptions
                 inputSequence.ParsedInputResult = ParsedInputResults.Invalid;
 
-                QueueMessage($"Invalid input: {excMsg}");
+                QueueMessage($"Invalid input: {excMsg}", Serilog.Events.LogEventLevel.Warning);
                 return;
             }
 

@@ -129,8 +129,6 @@ namespace TRBot.Connection
         //Break up much of the message handling by sending events
         private void OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
-            //User user = BotProgram.GetOrAddUser(e.ChatMessage.DisplayName, false);
-
             EvtUserMessageArgs umArgs = new EvtUserMessageArgs()
             {
                 //UserData = user,
@@ -139,9 +137,6 @@ namespace TRBot.Connection
             };
 
             UserSentMessageEvent?.Invoke(umArgs);
-
-            //Attempt to parse the message as an input
-            //ProcessMsgAsInput(umArgs);
         }
 
         private void OnNewSubscriber(object sender, OnNewSubscriberArgs e)

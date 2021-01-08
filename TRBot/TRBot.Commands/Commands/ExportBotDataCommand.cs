@@ -66,7 +66,7 @@ namespace TRBot.Commands
                 //Check if the database file exists
                 if (File.Exists(DatabaseManager.DatabasePath) == false)
                 {
-                    QueueMessage("Huh?! The database file doesn't exist! This is a serious problem!");
+                    QueueMessage("Huh?! The database file doesn't exist! This is a serious problem!", Serilog.Events.LogEventLevel.Error);
                     return;
                 }
 
@@ -78,7 +78,7 @@ namespace TRBot.Commands
                 //Double check if the directory exists - don't overwrite anything if it does
                 if (Directory.Exists(dirPath) == true)
                 {
-                    QueueMessage("ERROR - Path for bot data export already exists, not overwriting.");
+                    QueueMessage("ERROR - Path for bot data export already exists, not overwriting.", Serilog.Events.LogEventLevel.Warning);
                     return;
                 }
 
@@ -92,7 +92,7 @@ namespace TRBot.Commands
             }
             catch (Exception exc)
             {
-                QueueMessage($"ERROR - Failed to export bot data: {exc.Message}");
+                QueueMessage($"ERROR - Failed to export bot data: {exc.Message}", Serilog.Events.LogEventLevel.Error);
                 return;
             }
 

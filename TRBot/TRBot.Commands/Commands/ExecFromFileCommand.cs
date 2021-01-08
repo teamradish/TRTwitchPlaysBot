@@ -69,7 +69,7 @@ namespace TRBot.Commands
 
             if (string.IsNullOrEmpty(codeText) == true)
             {
-                QueueMessage("Invalid source file. Double check its location.");
+                QueueMessage("Invalid source file. Double check its location.", Serilog.Events.LogEventLevel.Warning);
                 return;
             }
 

@@ -101,6 +101,8 @@ namespace TRBot.Main
 
             //Dispose and relinquish the virtual controllers when we're done
             DataContainer?.ControllerMngr?.Dispose();
+
+            TRBotLogger.DisposeLogger();
         }
 
         public void Initialize()
@@ -120,7 +122,7 @@ namespace TRBot.Main
 
             //Set up the logger
             //Cap the size at 10 MB
-            TRBotLogger.SetupLogger(logPath, Serilog.Events.LogEventLevel.Information,
+            TRBotLogger.SetupLogger(logPath, Serilog.Events.LogEventLevel.Verbose,
                 Serilog.RollingInterval.Day, 1024L * 1024L * 10L, TimeSpan.FromSeconds(60d));
 
             //Initialize database
@@ -147,6 +149,10 @@ namespace TRBot.Main
             {
                 TRBotLogger.Logger.Information($"Added {addedDefaultEntries} additional entries to the database.");
             }
+
+            //Set the logger's log level
+            long logLevel = DataHelper.GetSettingInt(SettingsConstants.LOG_LEVEL, (long)Serilog.Events.LogEventLevel.Information);
+            TRBotLogger.SetLogLevel((Serilog.Events.LogEventLevel)logLevel);
 
             TRBotLogger.Logger.Information("Initializing client service");
 
@@ -540,17 +546,17 @@ namespace TRBot.Main
 
                 //Parse inputs to get our parsed input sequence
                 inputSequence = InputParser.ParseInputs(readyMessage, regexStr, new ParserOptions(defaultPort, defaultDur, true, maxDur));
-                //TRBotLogger.Logger.Information(inputSequence.ToString());
-                //TRBotLogger.Logger.Information("\nReverse Parsed (on parse): " + ReverseParser.ReverseParse(inputSequence, usedConsole,
-                //    new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.ShowNonDefaultPorts, defaultPort,
-                //    ReverseParser.ShowDurationTypes.ShowNonDefaultDurations, defaultDur)));
+                TRBotLogger.Logger.Debug(inputSequence.ToString());
+                TRBotLogger.Logger.Debug("Reverse Parsed (on parse): " + ReverseParser.ReverseParse(inputSequence, usedConsole,
+                    new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.ShowNonDefaultPorts, defaultPort,
+                    ReverseParser.ShowDurationTypes.ShowNonDefaultDurations, defaultDur)));
             }
             catch (Exception exception)
             {
                 string excMsg = exception.Message;
 
                 //Handle parsing exceptions
-                MsgHandler.QueueMessage($"ERROR PARSING: {excMsg} | {exception.StackTrace}");
+                MsgHandler.QueueMessage($"ERROR PARSING: {excMsg} | {exception.StackTrace}", Serilog.Events.LogEventLevel.Warning);
                 inputSequence.ParsedInputResult = ParsedInputResults.Invalid;
             }
 
@@ -611,7 +617,7 @@ namespace TRBot.Main
                     inputSequence.Inputs = midInputDelayData.NewInputs;
                     inputSequence.TotalDuration = midInputDelayData.NewTotalDuration;
 
-                    //TRBotLogger.Logger.Information($"Mid input delay success. Message: {midInputDelay.Message} | OldDur: {oldDur} | NewDur: {inputSequence.TotalDuration}\n{ReverseParser.ReverseParse(inputSequence, usedConsole, new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.ShowAllPorts, 0))}");
+                    //TRBotLogger.Logger.Debug($"Mid input delay success. Message: {midInputDelayData.Message} | OldDur: {oldDur} | NewDur: {inputSequence.TotalDuration}\n{ReverseParser.ReverseParse(inputSequence, usedConsole, new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.ShowAllPorts, 0))}");
                 }
             }
 
@@ -654,7 +660,7 @@ namespace TRBot.Main
             {
                 if (string.IsNullOrEmpty(validation.Message) == false)
                 {
-                    MsgHandler.QueueMessage(validation.Message);
+                    MsgHandler.QueueMessage(validation.Message, Serilog.Events.LogEventLevel.Warning);
                 }
                 return;
             }
@@ -665,7 +671,7 @@ namespace TRBot.Main
             if (InputHandler.InputsHalted == true)
             {
                 //We can't process inputs because they're currently stopped
-                MsgHandler.QueueMessage("New inputs cannot be processed until all other inputs have stopped.");
+                MsgHandler.QueueMessage("New inputs cannot be processed until all other inputs have stopped.", Serilog.Events.LogEventLevel.Warning);
                 return;
             }
 
@@ -676,8 +682,8 @@ namespace TRBot.Main
             string autoPromoteMsg = DataHelper.GetSettingString(SettingsConstants.AUTOPROMOTE_MESSAGE, string.Empty);
 
             bool addedInputCount = false;
-
-            TRBotLogger.Logger.Debug("\nReverse Parsed (post-process): " + ReverseParser.ReverseParse(inputSequence, usedConsole,
+            
+            TRBotLogger.Logger.Debug($"Reverse Parsed (post-process): " + ReverseParser.ReverseParse(inputSequence, usedConsole,
                     new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.ShowNonDefaultPorts, defaultPort,
                     ReverseParser.ShowDurationTypes.ShowNonDefaultDurations, defaultDur)));
 
@@ -877,6 +883,14 @@ namespace TRBot.Main
 
         private void HandleReloadBoth()
         {
+            //Check for changes in the log level
+            Serilog.Events.LogEventLevel logLevel = (Serilog.Events.LogEventLevel)DataHelper.GetSettingInt(SettingsConstants.LOG_LEVEL, (long)Serilog.Events.LogEventLevel.Information);
+            if (logLevel != TRBotLogger.MinLoggingLevel)
+            {
+                TRBotLogger.Logger.Information($"Detected change in logging level - changing the logging level from {TRBotLogger.MinLoggingLevel} to {logLevel}");
+                TRBotLogger.SetLogLevel(logLevel);
+            }
+
             //Check if the periodic input value changed, and enable/disable the routine if we should
             long periodicEnabled = DataHelper.GetSettingInt(SettingsConstants.PERIODIC_INPUT_ENABLED, 0L);
             if (periodicEnabled == 0)

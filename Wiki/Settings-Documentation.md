@@ -17,6 +17,7 @@ Table of Contents
 * [bingo_pipe_path](#bingo_pipe_path)
 * [bingo_pipe_path_is_relative](#bingo_pipe_path_is_relative)
 * [client_service_type](#client_service_type)
+* [log_level](#log_level)
 * [auto_promote_enabled](#auto_promote_enabled)
 * [auto_promote_level](#auto_promote_level)
 * [auto_promote_input_req](#auto_promote_input_req)
@@ -115,11 +116,24 @@ If 1, [bingo_pipe_path](#bingo_pipe_path) is a path relative to the Data folder,
 ### client_service_type
 The type of client service connection to use. 0 = Terminal, 1 = Twitch. **Requires restarting TRBot to apply.**
 
+## log_level
+The minimum logging level of the bot's logger. This determines which types of logs get output to the log file and in the console. TRBot uses [Serilog](https://github.com/serilog/serilog) for logging, thus this value is directly linked to Serilog's [LogEventLevel enum](https://github.com/serilog/serilog/blob/dev/src/Serilog/Events/LogEventLevel.cs).
+
+- 0 = Verbose
+- 1 = Debug
+- 2 = Informational
+- 3 = Warning
+- 4 = Error
+- 5 = Fatal
+
+Lower values result in more detailed logs. This defaults to 2, Informational. Requires reloading to apply changes while the bot is running.
+
 ### auto_promote_enabled
 If 1, users who reach a threshold of valid inputs will be automatically promoted to a given access level, if they haven't already. A value of 0 disables this.
 
 ### auto_promote_level
 The access level to automatically promote users to.
+
 ### auto_promote_input_req
 The number of valid inputs required for a user to be automatically promoted to.
 
@@ -134,7 +148,7 @@ Values:
 - 1 = Time-based - Only one message can be sent every X milliseconds, with X determined by [message_cooldown](#message_cooldown).
 - 2 = Messages-per-interval - Only Y messages can be sent in X milliseconds intervals, with X determined by [message_cooldown](#message_cooldown) and Y determined by [message_throttle_count](#message_throttle_count). 
 
-This defaults to 2.
+This defaults to 2, Messages-per-interval.
 
 ### message_cooldown
 Indicates the time used in message throttling. See [message_throttle_type](#message_throttle_type) for more information. This defaults to 30000, or 30 seconds, the default for Twitch bots.
