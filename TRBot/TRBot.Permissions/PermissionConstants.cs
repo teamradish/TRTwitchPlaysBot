@@ -1,4 +1,6 @@
-﻿/* This file is part of TRBot.
+﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+ * 
+ * This file is part of TRBot,software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -72,6 +74,15 @@ namespace TRBot.Permissions
         public const string SET_PERIODIC_INPUT_PORT_ABILITY = "setperiodicinputport";
         public const string SET_PERIODIC_INPUT_TIME_ABILITY = "setperiodicinputtime";
         public const string SET_PERIODIC_INPUT_SEQUENCE_ABILITY = "setperiodicinputsequence";
+        
+        public const string SET_MAX_USER_RECENT_INPUTS_ABILITY = "setmaxuserrecentinputs"; 
+
+        public const string SET_DEMOCRACY_VOTE_TIME_ABILITY = "setdemocracyvotetime";
+        public const string SET_DEMOCRACY_RESOLUTION_MODE_ABILITY = "setdemocracyresolutionmode";
+        public const string SET_INPUT_MODE_VOTE_TIME_ABILITY = "setinputmodevotetime";
+        public const string SET_INPUT_MODE_CHANGE_COOLDOWN_ABILITY = "setinputmodechangecooldown";
+        public const string SET_INPUT_MODE_ABILITY = "setinputmode";
+        public const string VOTE_INPUT_MODE_ABILITY = "voteinputmode";
 
         //Abilities for games/extras
         public const string BET_ABILITY = "bet";

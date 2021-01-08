@@ -1,4 +1,6 @@
-﻿/* This file is part of TRBot.
+﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+ * 
+ * This file is part of TRBot,software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using TRBot.Data;
+using TRBot.Logging;
 
 namespace TRBot.Routines
 {
@@ -73,7 +76,7 @@ namespace TRBot.Routines
         {
             if (index < 0 || index >= BotRoutines.Count)
             {
-                Console.WriteLine($"Index {index} is out of the routine count of 0 through {BotRoutines.Count}."); 
+                TRBotLogger.Logger.Information($"Index {index} is out of the routine count of 0 through {BotRoutines.Count}."); 
                 return;
             }
 

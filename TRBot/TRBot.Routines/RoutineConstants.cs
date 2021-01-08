@@ -1,4 +1,6 @@
-﻿/* This file is part of TRBot.
+﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+ * 
+ * This file is part of TRBot,software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -32,5 +34,7 @@ namespace TRBot.Routines
         public const string PERIODIC_MSG_ROUTINE_ID = "periodicmessage";
         public const string RECONNECT_ROUTINE_ID = "reconnect";
         public const string PERIODIC_INPUT_ROUTINE_ID = "periodicinput";
+        public const string DEMOCRACY_ROUTINE_ID = "democracy";
+        public const string INPUT_MODE_VOTE_ROUTINE_ID = "inputmodevote";
     }
 }

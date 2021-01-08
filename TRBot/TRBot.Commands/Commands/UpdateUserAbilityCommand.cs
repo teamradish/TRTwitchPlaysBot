@@ -1,4 +1,6 @@
-﻿/* This file is part of TRBot.
+﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+ * 
+ * This file is part of TRBot,software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,6 +28,7 @@ using TRBot.Consoles;
 using TRBot.Parsing;
 using TRBot.Data;
 using TRBot.Permissions;
+using TRBot.Logging;
 
 namespace TRBot.Commands
 {
@@ -121,7 +124,7 @@ namespace TRBot.Commands
 
                 if (newUserAbility == null)
                 {
-                    Console.WriteLine($"New ability {abilityName}");
+                    //TRBotLogger.Logger.Information($"New ability {abilityName}");
 
                     newUserAbility = new UserAbility();
                     shouldAdd = true;
@@ -137,7 +140,7 @@ namespace TRBot.Commands
                 {
                     if (shouldAdd == true)
                     {
-                        Console.WriteLine($"Adding ability {abilityName}");
+                        //TRBotLogger.Logger.Information($"Adding ability {abilityName}");
                         abilityUser.UserAbilities.Add(newUserAbility);
                     }
 

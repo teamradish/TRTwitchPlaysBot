@@ -1,4 +1,6 @@
-﻿/* This file is part of TRBot.
+﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+ * 
+ * This file is part of TRBot,software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -40,6 +42,7 @@ using TwitchLib.Client.Models;
 using TwitchLib.Client.Events;
 using TwitchLib.Communication.Events;
 using TwitchLib.Communication.Interfaces;
+using TRBot.Logging;
 
 namespace TRBot.Main
 {
@@ -98,6 +101,8 @@ namespace TRBot.Main
 
             //Dispose and relinquish the virtual controllers when we're done
             DataContainer?.ControllerMngr?.Dispose();
+
+            TRBotLogger.DisposeLogger();
         }
 
         public void Initialize()
@@ -108,34 +113,48 @@ namespace TRBot.Main
             //Use invariant culture
             Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
-            InputParser = new Parser();
+            //Set up the logger
+            string logPath = Path.Combine(LoggingConstants.LogFolderPath, LoggingConstants.LOG_FILE_NAME);
+            if (Utilities.FileHelpers.ValidatePathForFile(logPath) == false)
+            {
+                Console.WriteLine("Logger path cannot be validated. This is a problem! Double check the path is correct.");
+            }
+
+            //Set up the logger
+            //Cap the size at 10 MB
+            TRBotLogger.SetupLogger(logPath, Serilog.Events.LogEventLevel.Verbose,
+                Serilog.RollingInterval.Day, 1024L * 1024L * 10L, TimeSpan.FromSeconds(60d));
 
             //Initialize database
             string databasePath = Path.Combine(DataConstants.DataFolderPath, DataConstants.DATABASE_FILE_NAME);
 
-            Console.WriteLine($"Validating database at: {databasePath}");
+            TRBotLogger.Logger.Information($"Validating database at: {databasePath}");
             if (Utilities.FileHelpers.ValidatePathForFile(databasePath) == false)
             {
-                Console.WriteLine($"Cannot create database path at {databasePath}. Check if you have permission to write to this directory. Aborting.");
+                TRBotLogger.Logger.Error($"Cannot create database path at {databasePath}. Check if you have permission to write to this directory. Aborting.");
                 return;
             }
 
-            Console.WriteLine("Database path validated! Initializing database and importing migrations.");
+            TRBotLogger.Logger.Information("Database path validated! Initializing database and importing migrations.");
 
             DatabaseManager.SetDatabasePath(databasePath);
             DatabaseManager.InitAndMigrateContext();
             
-            Console.WriteLine("Checking to initialize default values for missing database entries.");
+            TRBotLogger.Logger.Information("Checking to initialize default values for missing database entries.");
 
             //Check for and initialize default values if the database was newly created or needs updating
             int addedDefaultEntries = DataHelper.InitDefaultData();
 
             if (addedDefaultEntries > 0)
             {
-                Console.WriteLine($"Added {addedDefaultEntries} additional entries to the database.");
+                TRBotLogger.Logger.Information($"Added {addedDefaultEntries} additional entries to the database.");
             }
 
-            Console.WriteLine("Initializing client service");
+            //Set the logger's log level
+            long logLevel = DataHelper.GetSettingInt(SettingsConstants.LOG_LEVEL, (long)Serilog.Events.LogEventLevel.Information);
+            TRBotLogger.SetLogLevel((Serilog.Events.LogEventLevel)logLevel);
+
+            TRBotLogger.Logger.Information("Initializing client service");
 
             //Initialize client service
             InitClientService();
@@ -143,15 +162,17 @@ namespace TRBot.Main
             //If the client service doesn't exist, we can't continue
             if (ClientService == null)
             {
-                Console.WriteLine("Client service failed to initialize; please check your settings. Aborting.");
+                TRBotLogger.Logger.Error("Client service failed to initialize; please check your settings. Aborting.");
                 return;
             }
 
             //Set client service and message cooldown
             MsgHandler.SetClientService(ClientService);
 
-            long msgCooldown = DataHelper.GetSettingInt(SettingsConstants.MESSAGE_COOLDOWN, 1000L);
-            MsgHandler.SetMessageCooldown(msgCooldown);
+            MessageThrottlingOptions msgThrottleOption = (MessageThrottlingOptions)DataHelper.GetSettingInt(SettingsConstants.MESSAGE_THROTTLE_TYPE, 0L);
+            long msgCooldown = DataHelper.GetSettingInt(SettingsConstants.MESSAGE_COOLDOWN, 30000L);
+            long msgThrottleCount = DataHelper.GetSettingInt(SettingsConstants.MESSAGE_THROTTLE_COUNT, 20L);
+            MsgHandler.SetMessageThrottling(msgThrottleOption, new MessageThrottleData(msgCooldown, msgThrottleCount));
 
             //Subscribe to events
             UnsubscribeEvents();
@@ -160,7 +181,7 @@ namespace TRBot.Main
             DataContainer.SetMessageHandler(MsgHandler);
             DataContainer.SetDataReloader(DataReloader);
 
-            Console.WriteLine("Setting up virtual controller manager.");
+            TRBotLogger.Logger.Information("Setting up virtual controller manager.");
 
             VirtualControllerTypes lastVControllerType = (VirtualControllerTypes)DataHelper.GetSettingInt(SettingsConstants.LAST_VCONTROLLER_TYPE, 0L);
 
@@ -215,7 +236,7 @@ namespace TRBot.Main
             DataContainer.ControllerMngr.Initialize();
             int acquiredCount = DataContainer.ControllerMngr.InitControllers(controllerCount);
 
-            Console.WriteLine($"Setting up virtual controller {curVControllerType} and acquired {acquiredCount} controllers!");
+            TRBotLogger.Logger.Information($"Setting up virtual controller {curVControllerType} and acquired {acquiredCount} controllers!");
 
             CmdHandler = new CommandHandler();
             CmdHandler.Initialize(DataContainer, RoutineHandler);
@@ -229,6 +250,9 @@ namespace TRBot.Main
             //Initialize routines
             InitRoutines();
 
+            //Cache our parser
+            InputParser = new Parser();
+
             Initialized = true;
         }
 
@@ -236,7 +260,7 @@ namespace TRBot.Main
         {
             if (ClientService.IsConnected == true)
             {
-                Console.WriteLine("Client is already connected and running!");
+                TRBotLogger.Logger.Information("Client is already connected and running!");
                 return;
             }
 
@@ -320,7 +344,7 @@ namespace TRBot.Main
 
         private void OnConnected(EvtConnectedArgs e)
         {
-            Console.WriteLine($"Bot connected!");
+            TRBotLogger.Logger.Information($"Bot connected!");
         }
 
         private void OnConnectionError(EvtConnectionErrorArgs e)
@@ -330,7 +354,7 @@ namespace TRBot.Main
 
         private void OnJoinedChannel(EvtJoinedChannelArgs e)
         {
-            Console.WriteLine($"Joined channel \"{e.Channel}\"");
+            TRBotLogger.Logger.Information($"Joined channel \"{e.Channel}\"");
 
             MsgHandler.SetChannelName(e.Channel);
 
@@ -348,7 +372,7 @@ namespace TRBot.Main
             }
             catch (Exception exc)
             {
-                Console.WriteLine($"Ran into exception on command {e.Command.CommandText}: {exc.Message}\n{exc.StackTrace}"); 
+                TRBotLogger.Logger.Error($"Ran into exception on command {e.Command.CommandText}: {exc.Message}\n{exc.StackTrace}"); 
             }
         }
 
@@ -447,7 +471,7 @@ namespace TRBot.Main
 
         private void OnDisconnected(EvtDisconnectedArgs e)
         {
-            Console.WriteLine("Bot disconnected! Please check your internet connection.");
+            TRBotLogger.Logger.Warning("Bot disconnected! Please check your internet connection.");
         }
 
         private void ProcessMsgAsInput(EvtUserMessageArgs e)
@@ -488,12 +512,12 @@ namespace TRBot.Main
 
             ParsedInputSequence inputSequence = default;
             string userName = e.UsrMessage.Username;
+            int defaultDur = 200;
+            int defaultPort = 0;
 
             try
             {
-                int defaultDur = 200;
                 int maxDur = 60000;
-                int defaultPort = 0;
 
                 string regexStr = usedConsole.InputRegex;
 
@@ -509,7 +533,7 @@ namespace TRBot.Main
                 defaultDur = (int)DataHelper.GetUserOrGlobalDefaultInputDur(userName);
                 maxDur = (int)DataHelper.GetUserOrGlobalMaxInputDur(userName);
 
-                //Console.WriteLine($"Default dur: {defaultDur} | Max dur: {maxDur}");
+                //TRBotLogger.Logger.Information($"Default dur: {defaultDur} | Max dur: {maxDur}");
 
                 using (BotDBContext context = DatabaseManager.OpenContext())
                 {
@@ -522,16 +546,17 @@ namespace TRBot.Main
 
                 //Parse inputs to get our parsed input sequence
                 inputSequence = InputParser.ParseInputs(readyMessage, regexStr, new ParserOptions(defaultPort, defaultDur, true, maxDur));
-                //Console.WriteLine(inputSequence.ToString());
-                //Console.WriteLine("\nReverse Parsed: " + ReverseParser.ReverseParse(inputSequence));
-                //Console.WriteLine("\nReverse Parsed Natural:\n" + ReverseParser.ReverseParseNatural(inputSequence));
+                TRBotLogger.Logger.Debug(inputSequence.ToString());
+                TRBotLogger.Logger.Debug("Reverse Parsed (on parse): " + ReverseParser.ReverseParse(inputSequence, usedConsole,
+                    new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.ShowNonDefaultPorts, defaultPort,
+                    ReverseParser.ShowDurationTypes.ShowNonDefaultDurations, defaultDur)));
             }
             catch (Exception exception)
             {
                 string excMsg = exception.Message;
 
                 //Handle parsing exceptions
-                MsgHandler.QueueMessage($"ERROR: {excMsg} | {exception.StackTrace}");
+                MsgHandler.QueueMessage($"ERROR PARSING: {excMsg} | {exception.StackTrace}", Serilog.Events.LogEventLevel.Warning);
                 inputSequence.ParsedInputResult = ParsedInputResults.Invalid;
             }
 
@@ -592,7 +617,7 @@ namespace TRBot.Main
                     inputSequence.Inputs = midInputDelayData.NewInputs;
                     inputSequence.TotalDuration = midInputDelayData.NewTotalDuration;
 
-                    //Console.WriteLine($"Mid input delay success. Message: {midInputDelay.Message} | OldDur: {oldDur} | NewDur: {inputSequence.TotalDuration}\n{ReverseParser.ReverseParse(inputSequence, usedConsole, new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.ShowAllPorts, 0))}");
+                    //TRBotLogger.Logger.Debug($"Mid input delay success. Message: {midInputDelayData.Message} | OldDur: {oldDur} | NewDur: {inputSequence.TotalDuration}\n{ReverseParser.ReverseParse(inputSequence, usedConsole, new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.ShowAllPorts, 0))}");
                 }
             }
 
@@ -635,7 +660,7 @@ namespace TRBot.Main
             {
                 if (string.IsNullOrEmpty(validation.Message) == false)
                 {
-                    MsgHandler.QueueMessage(validation.Message);
+                    MsgHandler.QueueMessage(validation.Message, Serilog.Events.LogEventLevel.Warning);
                 }
                 return;
             }
@@ -646,7 +671,7 @@ namespace TRBot.Main
             if (InputHandler.InputsHalted == true)
             {
                 //We can't process inputs because they're currently stopped
-                MsgHandler.QueueMessage("New inputs cannot be processed until all other inputs have stopped.");
+                MsgHandler.QueueMessage("New inputs cannot be processed until all other inputs have stopped.", Serilog.Events.LogEventLevel.Warning);
                 return;
             }
 
@@ -657,8 +682,16 @@ namespace TRBot.Main
             string autoPromoteMsg = DataHelper.GetSettingString(SettingsConstants.AUTOPROMOTE_MESSAGE, string.Empty);
 
             bool addedInputCount = false;
+            
+            TRBotLogger.Logger.Debug($"Reverse Parsed (post-process): " + ReverseParser.ReverseParse(inputSequence, usedConsole,
+                    new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.ShowNonDefaultPorts, defaultPort,
+                    ReverseParser.ShowDurationTypes.ShowNonDefaultDurations, defaultDur)));
+
+            //Get the max recorded inputs per-user
+            long maxUserRecInps = DataHelper.GetSettingInt(SettingsConstants.MAX_USER_RECENT_INPUTS, 0L);
 
             //It's a valid input - save it in the user's stats
+            //Also record the input if we should
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
                 User user = DataHelper.GetUserNoOpen(e.UsrMessage.Username, context);
@@ -670,6 +703,36 @@ namespace TRBot.Main
                     addedInputCount = true;
 
                     context.SaveChanges();
+
+                    //If we should store recent user inputs, do so
+                    if (maxUserRecInps > 0)
+                    {
+                        //Get the input sequence - we may have added mid input delays between
+                        //As a result, we'll need to reverse parse it
+                        string message = ReverseParser.ReverseParse(inputSequence, usedConsole,
+                            new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.ShowNonDefaultPorts, (int)user.ControllerPort,
+                            ReverseParser.ShowDurationTypes.ShowNonDefaultDurations, defaultDur));
+
+                        //Add the recorded input
+                        user.RecentInputs.Add(new RecentInput(message));
+                        context.SaveChanges();
+
+                        int diff = user.RecentInputs.Count - (int)maxUserRecInps;
+
+                        //If we're over the max after adding, remove
+                        if (diff > 0)
+                        {
+                            //Order by ascending ID and take the difference
+                            //Lower IDs = older entries
+                            IEnumerable<RecentInput> shouldRemove = user.RecentInputs.OrderBy(r => r.UserID).Take(diff);
+
+                            foreach (RecentInput rec in shouldRemove)
+                            {
+                                user.RecentInputs.Remove(rec);
+                                context.SaveChanges();
+                            }
+                        }
+                    }
                 }
             }
 
@@ -720,11 +783,38 @@ namespace TRBot.Main
                 }
             }
 
-            /************************************
-            * Finally carry out the inputs now! *
-            ************************************/
+            InputModes inputMode = (InputModes)DataHelper.GetSettingInt(SettingsConstants.INPUT_MODE, 0L);
 
-            InputHandler.CarryOutInput(inputSequence.Inputs, usedConsole, DataContainer.ControllerMngr);
+            //If the mode is Democracy, add it as a vote for this input
+            if (inputMode == InputModes.Democracy)
+            {
+                //Set up the routine if it doesn't exist
+                BaseRoutine foundRoutine = RoutineHandler.FindRoutine(RoutineConstants.DEMOCRACY_ROUTINE_ID, out int indexFound);
+                DemocracyRoutine democracyRoutine = null;
+
+                if (foundRoutine == null)
+                {
+                    long voteTime = DataHelper.GetSettingInt(SettingsConstants.DEMOCRACY_VOTE_TIME, 10000L);
+
+                    democracyRoutine = new DemocracyRoutine(voteTime);
+                    RoutineHandler.AddRoutine(democracyRoutine);
+                }
+                else
+                {
+                    democracyRoutine = (DemocracyRoutine)foundRoutine;
+                }
+
+                democracyRoutine.AddInputSequence(userName, inputSequence.Inputs);
+            }
+            //If it's Anarchy, carry out the input
+            else
+            {
+                /************************************
+                * Finally carry out the inputs now! *
+                ************************************/
+
+                InputHandler.CarryOutInput(inputSequence.Inputs, usedConsole, DataContainer.ControllerMngr);
+            }
         }
 
 #endregion
@@ -742,17 +832,17 @@ namespace TRBot.Main
                 }
                 else
                 {
-                    Console.WriteLine($"Database does not contain the {SettingsConstants.CLIENT_SERVICE_TYPE} setting. It will default to {clientServiceType}.");
+                    TRBotLogger.Logger.Warning($"Database does not contain the {SettingsConstants.CLIENT_SERVICE_TYPE} setting. It will default to {clientServiceType}.");
                 }
             }
 
-            Console.WriteLine($"Setting up client service: {clientServiceType}");
+            TRBotLogger.Logger.Information($"Setting up client service: {clientServiceType}");
 
             if (clientServiceType == ClientServiceTypes.Terminal)
             {
                 ClientService = new TerminalClientService(DataConstants.COMMAND_IDENTIFIER);
 
-                MsgHandler.SetLogToConsole(false);
+                MsgHandler.SetLogToLogger(false);
             }
             else if (clientServiceType == ClientServiceTypes.Twitch)
             {
@@ -763,7 +853,8 @@ namespace TRBot.Main
                 if (string.IsNullOrEmpty(twitchSettings.ChannelName) || string.IsNullOrEmpty(twitchSettings.Password)
                     || string.IsNullOrEmpty(twitchSettings.BotName))
                 {
-                    Console.WriteLine($"Twitch login settings are invalid. Please modify the data in the \"{TwitchConstants.LOGIN_SETTINGS_FILENAME}\" file.");
+                    TRBotLogger.Logger.Error($"Twitch login settings are invalid. Please modify the data in the \"{TwitchConstants.LOGIN_SETTINGS_FILENAME}\" file.");
+                    return;
                 }
 
                 TwitchClient client = new TwitchClient();
@@ -792,6 +883,14 @@ namespace TRBot.Main
 
         private void HandleReloadBoth()
         {
+            //Check for changes in the log level
+            Serilog.Events.LogEventLevel logLevel = (Serilog.Events.LogEventLevel)DataHelper.GetSettingInt(SettingsConstants.LOG_LEVEL, (long)Serilog.Events.LogEventLevel.Information);
+            if (logLevel != TRBotLogger.MinLoggingLevel)
+            {
+                TRBotLogger.Logger.Information($"Detected change in logging level - changing the logging level from {TRBotLogger.MinLoggingLevel} to {logLevel}");
+                TRBotLogger.SetLogLevel(logLevel);
+            }
+
             //Check if the periodic input value changed, and enable/disable the routine if we should
             long periodicEnabled = DataHelper.GetSettingInt(SettingsConstants.PERIODIC_INPUT_ENABLED, 0L);
             if (periodicEnabled == 0)
@@ -834,11 +933,23 @@ namespace TRBot.Main
                 }
 
                 ChangeVControllerType(supportedVCType);
-
-                return; 
             }
-        
-            ReinitVControllerCount();
+            else
+            {
+                ReinitVControllerCount();
+            }
+
+            //Handle message throttling changes
+            MessageThrottlingOptions msgThrottle = (MessageThrottlingOptions)DataHelper.GetSettingInt(SettingsConstants.MESSAGE_THROTTLE_TYPE, 0L);
+            long msgTime = DataHelper.GetSettingInt(SettingsConstants.MESSAGE_COOLDOWN, 30000L);
+            long msgThrottleCount = DataHelper.GetSettingInt(SettingsConstants.MESSAGE_THROTTLE_COUNT, 20L);
+
+            if (msgThrottle != MsgHandler.CurThrottleOption)
+            {
+                TRBotLogger.Logger.Information("Detected change in message throttling type - changing message throttler.");
+            }
+
+            MsgHandler.SetMessageThrottling(msgThrottle, new MessageThrottleData(msgTime, msgThrottleCount));
         }
 
         private bool LastVControllerTypeChanged()

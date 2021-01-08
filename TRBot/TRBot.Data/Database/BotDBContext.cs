@@ -1,4 +1,6 @@
-/* This file is part of TRBot.
+/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+ * 
+ * This file is part of TRBot,software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -173,6 +175,7 @@ namespace TRBot.Data
                 entity.HasOne(e => e.Stats).WithOne(u => u.user).HasForeignKey<UserStats>(u => u.UserID).IsRequired().OnDelete(DeleteBehavior.Cascade);
                 entity.HasMany(e => e.UserAbilities).WithOne(c => c.user).HasForeignKey(u => u.UserID).IsRequired().OnDelete(DeleteBehavior.Cascade);
                 entity.HasMany(e => e.RestrictedInputs).WithOne(e => e.user).HasForeignKey(e => e.UserID).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(e => e.RecentInputs).WithOne(e => e.user).HasForeignKey(e => e.UserID).IsRequired().OnDelete(DeleteBehavior.Cascade);
                 entity.HasIndex(e => e.Name);
             });
 
@@ -206,21 +209,19 @@ namespace TRBot.Data
                 entity.HasIndex(e => new { e.UserID, e.InputID }).IsUnique();
             });
 
+            modelBuilder.Entity<RecentInput>().ToTable("RecentInputs", "recentinputs");
+            modelBuilder.Entity<RecentInput>(entity =>
+            {
+                entity.HasKey(e => e.ID);
+                entity.HasIndex(e => e.UserID);
+            });
+
             base.OnModelCreating(modelBuilder);
         }
 
         private void ContextBuilder(SqliteDbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.MigrationsAssembly(System.Reflection.Assembly.GetExecutingAssembly().FullName);
-        }
-
-        public override int SaveChanges()
-        {
-            int saved = base.SaveChanges();
-
-            //Console.WriteLine($"Saved {saved} changes!");
-
-            return saved;
         }
     }
 }

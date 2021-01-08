@@ -17,12 +17,15 @@ Table of Contents
 * [bingo_pipe_path](#bingo_pipe_path)
 * [bingo_pipe_path_is_relative](#bingo_pipe_path_is_relative)
 * [client_service_type](#client_service_type)
+* [log_level](#log_level)
 * [auto_promote_enabled](#auto_promote_enabled)
 * [auto_promote_level](#auto_promote_level)
 * [auto_promote_input_req](#auto_promote_input_req)
 * [bot_message_char_limit](#bot_message_char_limit)
 * [periodic_message_time](#periodic_message_time)
+* [message_throttle_type](#message_throttle_type)
 * [message_cooldown](#message_cooldown)
+* [message_throttle_count](#message_throttle_count)
 * [connect_message](#connect_message)
 * [reconnected_message](#reconnected_message)
 * [periodic_message](#periodic_message)
@@ -38,6 +41,13 @@ Table of Contents
 * [info_message](#info_message)
 * [tutorial_message](#tutorial_message)
 * [documentation_message](#documentation_message)
+* [slots_blank_emote](#slots_blank_emote)
+* [slots_cherry_emote](#slots_cherry_emote)
+* [slots_plum_emote](#slots_plum_emote)
+* [slots_watermelon_emote](#slots_watermelon_emote)
+* [slots_orange_emote](#slots_orange_emote)
+* [slots_lemon_emote](#slots_lemon_emote)
+* [slots_bar_emote](#slots_bar_emote)
 * [periodic_input_enabled](#periodic_input_enabled)
 * [periodic_input_time](#periodic_input_time)
 * [periodic_input_port](#periodic_input_port)
@@ -49,10 +59,17 @@ Table of Contents
 * [max_input_duration](#max_input_duration)
 * [global_mid_input_delay_enabled](#global_mid_input_delay_enabled)
 * [global_mid_input_delay_time](#global_mid_input_delay_time)
+* [max_user_recent_inputs](#max_user_recent_inputs)
+* [democracy_vote_time](#democracy_vote_time)
+* [democracy_resolution_mode](#democracy_resolution_mode)
+* [input_mode_vote_time](#input_mode_vote_time)
+* [input_mode_change_cooldown](#input_mode_change_cooldown)
+* [input_mode_next_vote_date](#input_mode_next_vote_date)
 * [last_console](#last_console)
 * [last_vcontroller_type](#last_vcontroller_type)
 * [joystick_count](#joystick_count)
 * [global_input_level](#global_input_level)
+* [input_mode](#input_mode)
 * [first_launch](#first_launch)
 * [force_init_defaults](#force_init_defaults)
 * [data_version](#data_version)
@@ -79,7 +96,7 @@ The total time, in milliseconds, a group bet takes place in.
 The minimum number of participants to start a group bet.
 
 ### chatbot_enabled
-Whether users can talk with the chatbot.
+Whether users can talk with a chatbot instance, such as [ChatterBot](../Supplementary/ChatterBot.py).
 
 ### chatbot_socket_path
 The path to the socket for the chatbot, which TRBot uses to communicate.
@@ -88,7 +105,7 @@ The path to the socket for the chatbot, which TRBot uses to communicate.
 If 1, [chatbot_socket_path](#chatbot_socket_path) is a path relative to the Data folder, otherwise it's an absolute path.
 
 ### bingo_enabled
-Whether users can participate in the external bingo application.
+Whether users can participate in bingo through an external application, such as [TRBotBingo](https://github.com/teamradish/TRBotBingo).
 
 ### bingo_pipe_path
 The path to the socket for the bingo application, which TRBot uses to communicate.
@@ -99,19 +116,45 @@ If 1, [bingo_pipe_path](#bingo_pipe_path) is a path relative to the Data folder,
 ### client_service_type
 The type of client service connection to use. 0 = Terminal, 1 = Twitch. **Requires restarting TRBot to apply.**
 
+## log_level
+The minimum logging level of the bot's logger. This determines which types of logs get output to the log file and in the console. TRBot uses [Serilog](https://github.com/serilog/serilog) for logging, thus this value is directly linked to Serilog's [LogEventLevel enum](https://github.com/serilog/serilog/blob/dev/src/Serilog/Events/LogEventLevel.cs).
+
+- 0 = Verbose
+- 1 = Debug
+- 2 = Informational
+- 3 = Warning
+- 4 = Error
+- 5 = Fatal
+
+Lower values result in more detailed logs. This defaults to 2, Informational. Requires reloading to apply changes while the bot is running.
+
 ### auto_promote_enabled
 If 1, users who reach a threshold of valid inputs will be automatically promoted to a given access level, if they haven't already. A value of 0 disables this.
 
 ### auto_promote_level
 The access level to automatically promote users to.
+
 ### auto_promote_input_req
 The number of valid inputs required for a user to be automatically promoted to.
 
 ### bot_message_char_limit
 The character limit for the bot. This should often be set to the limit for the service you're deploying TRBot to. For example, this value should be 500 for Twitch. Bot messages longer than this value will often be split into separate messages.
 
+### message_throttle_type
+Indicates the type of message throttling, which is useful for platforms with some form of built-in rate limiting.
+
+Values:
+- 0 = None - Messages are sent as soon as possible after being queued up with no rate limiting.
+- 1 = Time-based - Only one message can be sent every X milliseconds, with X determined by [message_cooldown](#message_cooldown).
+- 2 = Messages-per-interval - Only Y messages can be sent in X milliseconds intervals, with X determined by [message_cooldown](#message_cooldown) and Y determined by [message_throttle_count](#message_throttle_count). 
+
+This defaults to 2, Messages-per-interval.
+
 ### message_cooldown
-Indicates how much time, in milliseconds, each message can be sent in max. This acts as a message throttler for platforms with rate-limiting on bots.
+Indicates the time used in message throttling. See [message_throttle_type](#message_throttle_type) for more information. This defaults to 30000, or 30 seconds, the default for Twitch bots.
+
+### message_throttle_count
+Indicates the number of messages that can be sent in a given time interval. See [message_throttle_type](#message_throttle_type) for more information. This defaults to 20, the default for Twitch bots.
 
 ### periodic_message_time
 The interval, in milliseconds, for TRBot to output the [periodic_message](#periodic_message).
@@ -161,6 +204,27 @@ A message linking to the syntax tutorial on how to play.
 ### documentation_message
 A message linking to the documentation for the bot.
 
+### slots_blank_emote
+The emote to use, as a string, for the Blank slot in the slots game. This defaults to "FailFish".
+
+### slots_cherry_emote
+The emote to use, as a string, for the Cherry slot in the slots game. This defaults to "Kappa".
+
+### slots_plum_emote
+The emote to use, as a string, for the Plum slot in the slots game. This defaults to "HeyGuys".
+    
+### slots_watermelon_emote
+The emote to use, as a string, for the Watermelon slot in the slots game. This defaults to "SeemsGood".
+   
+### slots_orange_emote
+The emote to use, as a string, for the Orange slot in the slots game. This defaults to "CoolCat".
+
+### slots_lemon_emote
+The emote to use, as a string, for the Lemon slot in the slots game. This defaults to "PartyTime".
+
+### slots_bar_emote
+The emote to use, as a string, for the Bar slot in the slots game. This defaults to "PogChamp".
+
 ### periodic_input_enabled
 Whether to enable an input sequence that is performed periodically by TRBot. Periodic input sequences are useful for newer game consoles that go to sleep after some time of inactivity. 0 = disabled, 1 = enabled. This defaults to 0, disabled.
 
@@ -208,6 +272,30 @@ This defaults to 0. The delay inserted is determined by [global_mid_input_delay_
 ### global_mid_input_delay_time
 The global time, in milliseconds, of the blank inputs inserted between each input. This does not apply if [global_mid_input_delay_enabled](#global_mid_input_delay_enabled) is 0 or lower. This defaults to 34 milliseconds.
 
+### max_user_recent_inputs
+The max number of recent input sequences to store per user. If the user is opted out of stats, it won't store any inputs. This defaults to 5.
+
+### democracy_vote_time
+The duration of the voting period in the Democracy input mode, in milliseconds. See [input_mode](#input_mode) for more information. This defaults to 10000 milliseconds, or 10 seconds.
+
+### democracy_resolution_mode
+The means of resolving votes for the Democracy input mode:
+
+- 0 = ExactSequence - The most voted on input sequence will be executed. Input sequences must be exact; for instance, "r201ms" is a different vote from "r200ms".
+- 1 = SameName - The most voted on input name will be executed. Only the first input in each input sequence is considered; for instance, "a32ms" and "a250ms" are the same vote for the "a" input. The duration used upon execution is [default_input_duration](#default_input_duration).
+- 2 = ExactInput - The most voted on input will be executed. Only the first input in each input sequence is considered. For example, "b500ms" and "&2b400ms" are considered different votes.
+
+This defaults to 0, ExactSequence.
+
+### input_mode_vote_time
+The duration of the voting period to change the current input mode. This defaults to 60000 milliseconds, or 1 minute.
+
+### input_mode_change_cooldown
+The cooldown, in milliseconds, after completing a vote to change the current input mode. This defaults to 900000 milliseconds, or 15 minutes.
+
+### input_mode_next_vote_date
+The date and time of the next available vote to change the input mode. This is set automatically and often does not need to be manually changed. The format is yyyy-MM-dd HH:mm:ss on a 24 hour UTC time.
+
 ### last_console
 The game console to use.
 
@@ -219,6 +307,14 @@ The number of virtual controllers to use. Values greater than 1 enable playing m
 
 ### global_input_level
 The global access level required to perform inputs. Users not at or above this level are refrained from making inputs.
+
+### input_mode
+The type of input mode to use:
+
+- 0 = Anarchy - All inputs that come in are executed.
+- 1 = Democracy - Inputs are queued up over a time period, with the most popular inputs being executed based on the resolution mode. See [democracy_resolution_mode](#democracy_resolution_mode) for more information.
+
+This defaults to 0, Anarchy.
 
 ### first_launch
 Indicates the first ever launch of TRBot. This sets up all the default game consoles. Starts at 0 then gets set to 1.

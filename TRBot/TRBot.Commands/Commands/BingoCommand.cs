@@ -1,4 +1,6 @@
-﻿/* This file is part of TRBot.
+﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+ * 
+ * This file is part of TRBot,software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,6 +26,7 @@ using System.IO.Pipes;
 using TRBot.Connection;
 using TRBot.Permissions;
 using TRBot.Data;
+using TRBot.Logging;
 
 namespace TRBot.Commands
 {
@@ -90,11 +93,14 @@ namespace TRBot.Commands
                     bingoPipePath = Path.Combine(DataConstants.DataFolderPath, fileName);
                 }
 
+                TRBotLogger.Logger.Debug($"Full bingo path: {bingoPipePath}");
+
                 //Set up the pipe stream
                 using (NamedPipeClientStream bingoClient = new NamedPipeClientStream(".", bingoPipePath, PipeDirection.Out))
                 {
                     //Connect to the pipe or wait until it's available, with a timeout
-                    //Console.WriteLine("Attempting to connect to bingo pipe...");
+                    TRBotLogger.Logger.Debug("Attempting to connect to bingo pipe...");
+                    
                     bingoClient.Connect(BINGO_SERVER_TIMEOUT);
 
                     //Send the data to the bingo server
@@ -106,7 +112,7 @@ namespace TRBot.Commands
             }
             catch (Exception exc)
             {
-                QueueMessage($"Error with sending bingo message: {exc.Message} - Please check the \"{SettingsConstants.BINGO_PIPE_PATH}\" and \"{SettingsConstants.BINGO_PIPE_PATH_IS_RELATIVE}\" settings in the database.");
+                QueueMessage($"Error with sending bingo message: {exc.Message} - Please check the \"{SettingsConstants.BINGO_PIPE_PATH}\" and \"{SettingsConstants.BINGO_PIPE_PATH_IS_RELATIVE}\" settings in the database. Also ensure TRBotBingo is running!", Serilog.Events.LogEventLevel.Warning);
             }
         }
     }

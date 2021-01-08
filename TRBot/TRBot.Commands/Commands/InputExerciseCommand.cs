@@ -1,4 +1,6 @@
-﻿/* This file is part of TRBot.
+﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+ * 
+ * This file is part of TRBot,software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -27,6 +29,7 @@ using TRBot.Consoles;
 using TRBot.Misc;
 using TRBot.Data;
 using TRBot.Utilities;
+using TRBot.Logging;
 
 namespace TRBot.Commands
 {
@@ -283,7 +286,7 @@ namespace TRBot.Commands
             //Use the global default input duration for consistency
             int defaultInputDur = (int)DataHelper.GetSettingInt(SettingsConstants.DEFAULT_INPUT_DURATION, 200L);
 
-            //Console.WriteLine("USER COMMAND: " + userCommand);
+            TRBotLogger.Logger.Debug($"USER INPUT: {userInput}");
 
             ParsedInputSequence inputSequence = default;
 
@@ -313,7 +316,7 @@ namespace TRBot.Commands
                 return false;
             }
 
-            //Console.WriteLine("RESULT: " + inputSequence.ParsedInputResult);
+            TRBotLogger.Logger.Debug($"RESULT: {inputSequence.ParsedInputResult}");
 
             if (inputSequence.ParsedInputResult != ParsedInputResults.Valid)
             {
@@ -329,7 +332,9 @@ namespace TRBot.Commands
             }
 
             InputExercise currentExercise = UserExercises[userName];
-            //Console.WriteLine("Correct: " + ReverseParser.ReverseParse(currentExercise.Sequence));
+            
+            TRBotLogger.Logger.Debug($"Correct: {ReverseParser.ReverseParse(currentExercise.Sequence, console, options)}");
+            
             List<List<ParsedInput>> exerciseInputs = currentExercise.Sequence.Inputs;
 
             List<List<ParsedInput>> userInputs = inputSequence.Inputs;
@@ -337,7 +342,7 @@ namespace TRBot.Commands
             //Compare input lengths - this has some downsides, but it's a quick check
             if (userInputs.Count != exerciseInputs.Count)
             {
-                //Console.WriteLine($"COUNT DISPARITY {userInputs.Count} vs {exerciseInputs.Count}");
+                TRBotLogger.Logger.Debug($"COUNT DISPARITY {userInputs.Count} vs {exerciseInputs.Count}");
 
                 QueueMessage("Incorrect input! Try again!");
                 return false;
@@ -350,7 +355,7 @@ namespace TRBot.Commands
 
                 if (exerciseSubInputs.Count != userSubInputs.Count)
                 {
-                    //Console.WriteLine($"SUBINPUT COUNT DISPARITY AT {i}: {userSubInputs.Count} vs {exerciseSubInputs.Count}");
+                    TRBotLogger.Logger.Debug($"SUBINPUT COUNT DISPARITY AT {i}: {userSubInputs.Count} vs {exerciseSubInputs.Count}");
 
                     QueueMessage("Incorrect input! Try again!");
                     return false;
@@ -370,7 +375,7 @@ namespace TRBot.Commands
 
                     if (excInp != userInp)
                     {
-                        //Console.WriteLine($"FAILED COMPARISON ON: {userInp.ToString()} ===== CORRECT: {excInp.ToString()}");
+                        TRBotLogger.Logger.Debug($"FAILED COMPARISON ON: {userInp.ToString()} ===== CORRECT: {excInp.ToString()}");
 
                         QueueMessage("Incorrect input! Try again!");
                         return false;

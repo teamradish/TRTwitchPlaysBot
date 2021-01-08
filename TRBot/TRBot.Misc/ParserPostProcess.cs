@@ -1,4 +1,6 @@
-﻿/* This file is part of TRBot.
+﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+ * 
+ * This file is part of TRBot,software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,6 +27,7 @@ using System.Diagnostics;
 using TRBot.Parsing;
 using TRBot.Consoles;
 using TRBot.VirtualControllers;
+using TRBot.Logging;
 
 namespace TRBot.Misc
 {
@@ -129,7 +132,7 @@ namespace TRBot.Misc
                     }
                     else
                     {
-                        Console.WriteLine($"Warning: \"{inputName}\" is part of an invalid input combo but doesn't exist for {gameConsole.Name}.");
+                        TRBotLogger.Logger.Warning($"\"{inputName}\" is part of an invalid input combo but doesn't exist for {gameConsole.Name}.");
                     }
                 }
             }
@@ -434,7 +437,7 @@ namespace TRBot.Misc
                     }
                 }
 
-                //Console.WriteLine($"Index {i} | LastBlankLongest: {lastIndexBlankLongestDur} | CurBlankLongest: {blankHasLongestDur}"); 
+                //TRBotLogger.Logger.Information($"Index {i} | LastBlankLongest: {lastIndexBlankLongestDur} | CurBlankLongest: {blankHasLongestDur}"); 
 
                 //Add a delay input in between
                 if (blankHasLongestDur == false && lastIndexBlankLongestDur == false)

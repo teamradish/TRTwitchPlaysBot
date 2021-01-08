@@ -1,4 +1,6 @@
-﻿/* This file is part of TRBot.
+﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+ * 
+ * This file is part of TRBot,software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Runtime.CompilerServices;
+using TRBot.Logging;
 
 namespace TRBot.VirtualControllers
 {
@@ -59,7 +62,7 @@ namespace TRBot.VirtualControllers
         {
             if (Initialized == false)
             {
-                //Console.WriteLine("UInputControllerManager not initialized; cannot clean up");
+                TRBotLogger.Logger.Warning("UInputControllerManager not initialized; cannot clean up");
                 return;
             }
 
@@ -82,7 +85,7 @@ namespace TRBot.VirtualControllers
             if (count < MinControllers)
             {
                 count = MinControllers;
-                Console.WriteLine($"Joystick count of {count} is less than {nameof(MinControllers)} of {MinControllers}. Clamping value to this limit.");
+                TRBotLogger.Logger.Information($"Joystick count of {count} is less than {nameof(MinControllers)} of {MinControllers}. Clamping value to this limit.");
             }
 
             //Check for max uinput device ID to ensure we don't try to register more devices than it can support
@@ -90,7 +93,7 @@ namespace TRBot.VirtualControllers
             {
                 count = MaxControllers;
 
-                Console.WriteLine($"Joystick count of {count} is greater than {nameof(MaxControllers)} of {MaxControllers}. Clamping value to this limit.");
+                TRBotLogger.Logger.Information($"Joystick count of {count} is greater than {nameof(MaxControllers)} of {MaxControllers}. Clamping value to this limit.");
             }
 
             Joysticks = new UInputController[count];
@@ -109,12 +112,12 @@ namespace TRBot.VirtualControllers
                 joystick.Acquire();
                 if (joystick.IsAcquired == false)
                 {
-                    Console.WriteLine($"Unable to acquire uinput device at index {joystick.ControllerIndex}. Make sure you have permissions set with \"sudo chmod a+rw /dev/uinput\"");
+                    TRBotLogger.Logger.Error($"Unable to acquire uinput device at index {joystick.ControllerIndex}. Make sure you have permissions set with \"sudo chmod a+rw /dev/uinput\"");
                     continue;
                 }
 
                 acquiredCount++;
-                Console.WriteLine($"Acquired uinput device ID {joystick.ControllerID} at index {joystick.ControllerIndex} with descriptor {joystick.ControllerDescriptor}!");
+                TRBotLogger.Logger.Information($"Acquired uinput device ID {joystick.ControllerID} at index {joystick.ControllerIndex} with descriptor {joystick.ControllerDescriptor}!");
 
                 //Initialize the joystick
                 joystick.Init();

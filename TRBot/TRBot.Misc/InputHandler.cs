@@ -1,4 +1,6 @@
-﻿/* This file is part of TRBot.
+﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+ * 
+ * This file is part of TRBot,software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,6 +26,7 @@ using TRBot.Parsing;
 using TRBot.Connection;
 using TRBot.Consoles;
 using TRBot.VirtualControllers;
+using TRBot.Logging;
 
 namespace TRBot.Misc
 {
@@ -49,6 +52,13 @@ namespace TRBot.Misc
             }
         }
 
+        public delegate void OnInputsHalted();
+
+        /// <summary>
+        /// An event invoked when all inputs are halted.
+        /// </summary>
+        public static event OnInputsHalted InputsHaltedEvent = null;
+
         /// <summary>
         /// The current number of running input sequences.
         /// </summary>
@@ -71,6 +81,9 @@ namespace TRBot.Misc
         private static void CancelRunningInputs()
         {
             InputsHalted = true;
+
+            //Invoke the event
+            InputsHaltedEvent?.Invoke();
         }
 
         /// <summary>
@@ -97,7 +110,7 @@ namespace TRBot.Misc
         /// </summary>
         public static async void StopThenResumeAllInputs()
         {
-            //Console.WriteLine("Stopping all inputs!");
+            //TRBotLogger.Logger.Information("Stopping all inputs!");
             
             CancelRunningInputs();
 
@@ -105,7 +118,7 @@ namespace TRBot.Misc
 
             ResumeRunningInputs();
 
-            //Console.WriteLine("All inputs resumed!");
+            //TRBotLogger.Logger.Information("All inputs resumed!");
         }
 
         private static async Task WaitAllInputsStopped()
@@ -114,7 +127,7 @@ namespace TRBot.Misc
 
             while (RunningInputCount != 0)
             {
-                //Console.WriteLine($"Delaying {delay}ms");
+                //TRBotLogger.Logger.Information($"Delaying {delay}ms");
                 await Task.Delay(delay);
             }
         }
@@ -131,7 +144,7 @@ namespace TRBot.Misc
              * Uncomment the following lines to see how many threads are supported in the pool on your machine */
             //ThreadPool.GetMinThreads(out int workermin, out int completionmin);
             //ThreadPool.GetMaxThreads(out int workerthreads, out int completionPortThreads);
-            //Console.WriteLine($"Min workers: {workermin} Max workers: {workerthreads} Min async IO threads: {completionmin} Max async IO threads: {completionPortThreads}");
+            //TRBotLogger.Logger.Information($"Min workers: {workermin} Max workers: {workerthreads} Min async IO threads: {completionmin} Max async IO threads: {completionPortThreads}");
 
             //Kimimaru: Copy the input list over to an array, which is more performant
             //and lets us bypass redundant copying and bounds checks in certain instances

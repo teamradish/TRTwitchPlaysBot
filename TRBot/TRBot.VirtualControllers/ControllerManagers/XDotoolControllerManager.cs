@@ -1,4 +1,6 @@
-﻿/* This file is part of TRBot.
+﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+ * 
+ * This file is part of TRBot,software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Runtime.CompilerServices;
+using TRBot.Logging;
 
 namespace TRBot.VirtualControllers
 {
@@ -49,16 +52,13 @@ namespace TRBot.VirtualControllers
             if (Initialized == true) return;
 
             Initialized = true;
-
-            //int acquiredCount = InitControllers(BotProgram.BotData.JoystickCount);
-            //Console.WriteLine($"Acquired {acquiredCount} controllers!");
         }
 
         public void Dispose()
         {
             if (Initialized == false)
             {
-                //Console.WriteLine("XDotoolControllerManager not initialized; cannot clean up");
+                TRBotLogger.Logger.Warning("XDotoolControllerManager not initialized; cannot clean up");
                 return;
             }
 
@@ -81,7 +81,7 @@ namespace TRBot.VirtualControllers
             if (count < MinControllers)
             {
                 count = MinControllers;
-                Console.WriteLine($"Joystick count of {count} is less than {nameof(MinControllers)} of {MinControllers}. Clamping value to this limit.");
+                TRBotLogger.Logger.Information($"Joystick count of {count} is less than {nameof(MinControllers)} of {MinControllers}. Clamping value to this limit.");
             }
 
             //Check for max device count to ensure we don't try to register more devices than it can support
@@ -89,7 +89,7 @@ namespace TRBot.VirtualControllers
             {
                 count = MaxControllers;
 
-                Console.WriteLine($"Joystick count of {count} is greater than {nameof(MaxControllers)} of {MaxControllers}. Clamping value to this limit.");
+                TRBotLogger.Logger.Information($"Joystick count of {count} is greater than {nameof(MaxControllers)} of {MaxControllers}. Clamping value to this limit.");
             }
 
             Joysticks = new XDotoolController[count];
@@ -108,12 +108,12 @@ namespace TRBot.VirtualControllers
                 joystick.Acquire();
                 if (joystick.IsAcquired == false)
                 {
-                    Console.WriteLine($"Unable to acquire xdotool device at index {joystick.ControllerIndex}");
+                    TRBotLogger.Logger.Error($"Unable to acquire xdotool device at index {joystick.ControllerIndex}");
                     continue;
                 }
 
                 acquiredCount++;
-                Console.WriteLine($"Acquired xdotool device at index {joystick.ControllerIndex}!");
+                TRBotLogger.Logger.Information($"Acquired xdotool device at index {joystick.ControllerIndex}!");
 
                 //Initialize the joystick
                 joystick.Init();

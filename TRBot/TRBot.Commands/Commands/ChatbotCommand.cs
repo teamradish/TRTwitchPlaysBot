@@ -1,4 +1,6 @@
-﻿/* This file is part of TRBot.
+﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+ * 
+ * This file is part of TRBot,software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,6 +26,7 @@ using System.IO.Pipes;
 using TRBot.Connection;
 using TRBot.Permissions;
 using TRBot.Data;
+using TRBot.Logging;
 
 namespace TRBot.Commands
 {
@@ -90,13 +93,14 @@ namespace TRBot.Commands
                     chatbotPipePath = Path.Combine(DataConstants.DataFolderPath, fileName);
                 }
 
-                //Console.WriteLine("Full path: " + pipePath);
+                TRBotLogger.Logger.Debug($"Full chatbot path: {chatbotPipePath}");
 
                 //Set up the pipe stream
                 using (NamedPipeClientStream chatterBotClient = new NamedPipeClientStream(".", chatbotPipePath, PipeDirection.InOut))
                 {
                     //Connect to the pipe or wait until it's available, with a timeout
-                    //Console.WriteLine("Attempting to connect to chatbot socket...");
+                    TRBotLogger.Logger.Debug("Attempting to connect to chatbot socket...");
+                    
                     chatterBotClient.Connect(RESPONSE_TIMEOUT);
 
                     //Send the input to ChatterBot
@@ -114,11 +118,12 @@ namespace TRBot.Commands
                             //Get the data back from the socket
                             uint responseLength = responseReader.ReadUInt32();
                             
-                            //Console.WriteLine($"Response length: responseLength");
+                            TRBotLogger.Logger.Debug($"Response length: {responseLength}");
                             
                             string response = new string(responseReader.ReadChars((int)responseLength));
                             
-                            //Console.WriteLine($"Received response: {response}");
+                            TRBotLogger.Logger.Debug($"Received response: {response}");
+                            
                             //Output the response
                             QueueMessage(response);
                         }
@@ -127,7 +132,7 @@ namespace TRBot.Commands
             }
             catch (Exception exc)
             {
-                QueueMessage($"Error with sending chatbot reply: {exc.Message} - Please check the \"{SettingsConstants.CHATBOT_SOCKET_PATH}\" and \"{SettingsConstants.CHATBOT_SOCKET_PATH_IS_RELATIVE}\" settings in the database.");
+                QueueMessage($"Error with sending chatbot reply: {exc.Message} - Please check the \"{SettingsConstants.CHATBOT_SOCKET_PATH}\" and \"{SettingsConstants.CHATBOT_SOCKET_PATH_IS_RELATIVE}\" settings in the database. Also ensure your ChatterBot instance is running!", Serilog.Events.LogEventLevel.Warning);
             }
         }
     }

@@ -9,6 +9,7 @@
     <ProjectReference Include="..\TRBot.Consoles\TRBot.Consoles.csproj" />
     <ProjectReference Include="..\TRBot.Connection\TRBot.Connection.csproj" />
     <ProjectReference Include="..\TRBot.Permissions\TRBot.Permissions.csproj" />
+    <ProjectReference Include="..\TRBot.Logging\TRBot.Logging.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

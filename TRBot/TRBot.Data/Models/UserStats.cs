@@ -1,4 +1,6 @@
-﻿/* This file is part of TRBot.
+﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+ * 
+ * This file is part of TRBot,software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -47,16 +49,6 @@ namespace TRBot.Data
         public UserStats()
         {
 
-        }
-
-        /// <summary>
-        /// Clears counted stats, such as credits, message count, and valid inputs.
-        /// </summary>
-        public void ClearCountedStats()
-        {
-            Credits = 0L;
-            TotalMessageCount = 0L;
-            ValidInputCount = 0L;
         }
     }
 }

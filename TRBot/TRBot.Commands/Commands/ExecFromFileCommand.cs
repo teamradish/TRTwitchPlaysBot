@@ -1,4 +1,6 @@
-﻿/* This file is part of TRBot.
+﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+ * 
+ * This file is part of TRBot,software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -67,12 +69,12 @@ namespace TRBot.Commands
 
             if (string.IsNullOrEmpty(codeText) == true)
             {
-                QueueMessage("Invalid source file. Double check its location.");
+                QueueMessage("Invalid source file. Double check its location.", Serilog.Events.LogEventLevel.Warning);
                 return;
             }
 
             //Execute the code
-            ExecuteCSharpScript(codeText);
+            ExecuteCSharpScript(codeText, args);
         }
     }
 }

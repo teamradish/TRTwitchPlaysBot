@@ -1,4 +1,6 @@
-﻿/* This file is part of TRBot.
+﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+ * 
+ * This file is part of TRBot,software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,6 +28,7 @@ using TRBot.Misc;
 using TRBot.Utilities;
 using TRBot.Routines;
 using TRBot.Permissions;
+using TRBot.Logging;
 
 namespace TRBot.Commands
 {
@@ -148,7 +151,7 @@ namespace TRBot.Commands
         {
             if (command == null)
             {
-                Console.WriteLine("Cannot add null command.");
+                TRBotLogger.Logger.Warning("Cannot add null command.");
                 return false;
             }
 

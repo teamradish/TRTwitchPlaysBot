@@ -1,4 +1,6 @@
-﻿/* This file is part of TRBot.
+﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+ * 
+ * This file is part of TRBot,software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -23,6 +25,7 @@ using TRBot.Permissions;
 using TRBot.Connection;
 using TRBot.Consoles;
 using TRBot.Utilities;
+using TRBot.Logging;
 
 namespace TRBot.Data
 {
@@ -491,7 +494,7 @@ namespace TRBot.Data
                     context.SaveChanges();
 
                     entriesAdded++;
-                    Console.WriteLine($"Data version setting \"{SettingsConstants.DATA_VERSION_NUM}\" not found in database - adding.");
+                    TRBotLogger.Logger.Information($"Data version setting \"{SettingsConstants.DATA_VERSION_NUM}\" not found in database - adding.");
                 }
 
                 dataVersionStr = dataVersionSetting.ValueStr;
@@ -515,7 +518,7 @@ namespace TRBot.Data
                     context.SaveChanges();
 
                     entriesAdded++;
-                    Console.WriteLine($"Force initialize setting \"{SettingsConstants.FORCE_INIT_DEFAULTS}\" not found in database; adding.");
+                    TRBotLogger.Logger.Information($"Force initialize setting \"{SettingsConstants.FORCE_INIT_DEFAULTS}\" not found in database; adding.");
                 }
 
                 forceInit = forceInitSetting.ValueInt;
@@ -526,13 +529,13 @@ namespace TRBot.Data
             //The bot version is greater, so update the data version number and set it to force init
             if (result < 0)
             {
-                Console.WriteLine($"Data version {dataVersionStr} is less than bot version {Application.VERSION_NUMBER}. Updating version number and forcing database initialization for missing entries.");
+                TRBotLogger.Logger.Information($"Data version {dataVersionStr} is less than bot version {Application.VERSION_NUMBER}. Updating version number and forcing database initialization for missing entries.");
                 newDataVersion = Application.VERSION_NUMBER;
             }
             //If the data version is greater than the bot, we should let them know
             else if (result > 0)
             {
-                Console.WriteLine($"Data version {dataVersionStr} is greater than bot version {Application.VERSION_NUMBER}. Ensure you're running the correct version of TRBot to avoid potential issues.");
+                TRBotLogger.Logger.Information($"Data version {dataVersionStr} is greater than bot version {Application.VERSION_NUMBER}. Ensure you're running the correct version of TRBot to avoid potential issues.");
             }
 
             //Update the data version string if we changed it
@@ -550,7 +553,7 @@ namespace TRBot.Data
             //Initialize if we're told to
             if (forceInit > 0)
             {
-                Console.WriteLine($"{SettingsConstants.FORCE_INIT_DEFAULTS} is true; initializing missing defaults in database.");
+                TRBotLogger.Logger.Information($"{SettingsConstants.FORCE_INIT_DEFAULTS} is true; initializing missing defaults in database.");
 
                 //Tell it to no longer force initializing
                 using (BotDBContext context = DatabaseManager.OpenContext())
@@ -688,6 +691,16 @@ namespace TRBot.Data
             }
 
             return entriesAdded;
+        }
+
+        /// <summary>
+        /// Obtains the string representation of a DateTime object in database form.
+        /// </summary>
+        /// <param name="dateTime">The DateTime object to convert to a string.</param>
+        /// <returns>A string from a DateTime stored in the database.</returns>
+        public static string GetStrFromDateTime(DateTime dateTime)
+        {
+            return dateTime.ToString("yyyy-MM-dd HH:mm:ss");
         }
     }
 }

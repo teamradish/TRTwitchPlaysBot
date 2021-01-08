@@ -1,4 +1,6 @@
-﻿/* This file is part of TRBot.
+﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+ * 
+ * This file is part of TRBot,software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -127,8 +129,6 @@ namespace TRBot.Connection
         //Break up much of the message handling by sending events
         private void OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
-            //User user = BotProgram.GetOrAddUser(e.ChatMessage.DisplayName, false);
-
             EvtUserMessageArgs umArgs = new EvtUserMessageArgs()
             {
                 //UserData = user,
@@ -137,9 +137,6 @@ namespace TRBot.Connection
             };
 
             UserSentMessageEvent?.Invoke(umArgs);
-
-            //Attempt to parse the message as an input
-            //ProcessMsgAsInput(umArgs);
         }
 
         private void OnNewSubscriber(object sender, OnNewSubscriberArgs e)

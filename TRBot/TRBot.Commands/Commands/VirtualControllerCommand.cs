@@ -1,4 +1,6 @@
-﻿/* This file is part of TRBot.
+﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+ * 
+ * This file is part of TRBot,software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -118,7 +120,7 @@ namespace TRBot.Commands
             //Make sure this virtual controller is supported on this platform
             if (VControllerHelper.IsVControllerSupported(parsedVCType, TRBotOSPlatform.CurrentOS) == false)
             {
-                QueueMessage($"{parsedVCType} virtual controllers are not supported on {TRBotOSPlatform.CurrentOS} platforms.");
+                QueueMessage($"{parsedVCType} virtual controllers are not supported on {TRBotOSPlatform.CurrentOS} platforms.", Serilog.Events.LogEventLevel.Warning);
                 return;
             }
             
@@ -141,7 +143,7 @@ namespace TRBot.Commands
 
                 if (controllerMngr == null)
                 {
-                    QueueMessage($"Virtual controller manager of new type {parsedVCType} failed to initialize. This indicates an invalid {SettingsConstants.LAST_VCONTROLLER_TYPE} setting in the database or an unimplemented platform.");
+                    QueueMessage($"Virtual controller manager of new type {parsedVCType} failed to initialize. This indicates an invalid {SettingsConstants.LAST_VCONTROLLER_TYPE} setting in the database or an unimplemented platform.", Serilog.Events.LogEventLevel.Error);
                     return;
                 }
 
@@ -190,7 +192,7 @@ namespace TRBot.Commands
             }
             catch (Exception e)
             {
-                DataContainer.MessageHandler.QueueMessage($"Error changing virtual controller type: {e.Message}");
+                DataContainer.MessageHandler.QueueMessage($"Error changing virtual controller type: {e.Message}", Serilog.Events.LogEventLevel.Error);
                 return;
             }
             finally

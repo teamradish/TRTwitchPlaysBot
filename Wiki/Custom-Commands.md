@@ -24,25 +24,40 @@ Right now the database has a "testcmd" command that will execute custom code fro
 Open up that file and input the following lines:
 
 ```
-Console.WriteLine("This is a test cmd!");
+DataContainer.MessageHandler.QueueMessage("This is a test cmd!");
 
 using (BotDBContext context = DatabaseManager.OpenContext())
 {
-    User user = DataHelper.GetOrAddUserNoOpen("terminaluser", context, out bool added);
+    User user = DataHelper.GetUserNoOpen("terminaluser", context);
     
-    Console.WriteLine($"{user.Name} has {user.Stats.Credits} credits!!!!!!!");
+    DataContainer.MessageHandler.QueueMessage($"{user.Name} has {user.Stats.Credits} credits!!!!!!!");
 }
+
+DataContainer.MessageHandler.QueueMessage($"Cmd Level: {ThisCmd.Level} | Enabled: {ThisCmd.Enabled}");
+
+DataContainer.MessageHandler.QueueMessage($"Evt chat command args: {Args.Command.ArgumentsAsString}");
 ```
 
-Save the file, load up TRBot (or hard reload with "!reload hard" if it's already running), then type "!testcmd" to invoke the command.
+Save the file, load up TRBot (or hard reload with "!reload hard" if it's already running), then type "!testcmd a b cd" to invoke the command.
 
-If all went well, you should see "This is a test cmd!" as well as "terminaluser has x credits!!!!!!!", with "x" being the number of credits for "terminaluser". In basic terms, what this command did was print a message, load a user object from the database (or add one with that name if it didn't exist), and print their credit count.
+If all went well, you should see the following messages in order:
+1. "This is a test cmd!"
+2. "terminaluser has x credits!!!!!!!" ("x" being the number of credits for "terminaluser")
+3. "Cmd Level: 0 | Enabled: True"
+4. "Evt chat command args: a b cd"
+
+In basic terms, what this command did was print a message, load a user object from the database and print their credit count. Then, it printed data about the command itself and finally printed the arguments given to the command.
 
 If things didn't go so well, you should see a descriptive error message in your console. The nice thing about custom commands is you can change their source code while TRBot is running, and those changes will be applied immediately!
 
 ## Important things to note
-- While a custom command is being invoked, the standard output stream of `System.Console` is temporarily changed to send a message through the client service in use. For example, if you're running TRBot over Twitch, any `Console.WriteLine` calls will print the output to Twitch chat.
-- Custom commands currently do not have access to any derived fields other commands do, such as the `DataContainer` and `QueueMessage` methods. Furthermore, they do not have access to the `EvtChatCommandArgs` argument passed in when the command is invoked.
+- Custom commands have access to the following global fields:
+ - `ThisCmd` - The command instance being executed. From here you can access the `Level`, `Enabled` fields, and more of the command.
+ - `CmdHandler` - The command handler that all commands have access to.
+ - `DataContainer` - The data container instance all commands have access to. From here you can access the message handler, virtual controller manager, and more.
+ - `RoutineHandler` - The bot routine handler.
+ - `Args` - The `EvtChatCommandArgs` containing data about the user who ran the command, the supplied arguments, and more.
+- Use `DataContainer.MessageHandler.QueueMessage` over `Console.WriteLine` to send messages through the current client service. On top of sending the messages to the correct destination, `QueueMessage` also respects the rate-limiting settings for TRBot.
 - Custom commands have most other TRBot projects and several common namespaces imported (such as `System`). Anything else will need their full type names, or you will need to explicitly include the namespace. For example, `StringBuilder` needs to be referenced as `System.Text.StringBuilder`, but if you want just `StringBuilder`, you will need to add `using System.Text;` at the top of your custom command's source file.
 - While custom commands have access to most of TRBot, it may not be possible to add additional libraries or do much beyond what TRBot is already capable of.
 - Since custom commands are directly utilizing TRBot code, and TRBot is directly executing the custom commands, [they are subject to the same licensing terms as TRBot itself](../LICENSE). Keep this in mind if you intend to include any sensitive data in your custom commands.

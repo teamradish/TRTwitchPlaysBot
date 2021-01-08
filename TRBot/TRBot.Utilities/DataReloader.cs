@@ -1,4 +1,6 @@
-﻿/* This file is part of TRBot.
+﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+ * 
+ * This file is part of TRBot,software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,6 +27,8 @@ namespace TRBot.Utilities
     /// <summary>
     /// Notifies subscribers when data should be reloaded.
     /// </summary>
+    //NOTE: We may want to use a more generalized observer pattern via IObservable/IObserver
+    //in order to make this more useful throughout the project  
     public class DataReloader
     {
         /// <summary>
@@ -44,7 +48,7 @@ namespace TRBot.Utilities
 
         public DataReloader()
         {
-
+            
         }
 
         public void CleanUp()

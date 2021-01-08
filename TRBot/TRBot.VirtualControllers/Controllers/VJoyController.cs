@@ -1,4 +1,6 @@
-﻿/* This file is part of TRBot.
+﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+ * 
+ * This file is part of TRBot,software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,6 +23,7 @@ using System.Text;
 using vJoyInterfaceWrap;
 using System.Runtime.CompilerServices;
 using TRBot.Utilities;
+using TRBot.Logging;
 using static vJoyInterfaceWrap.vJoy;
 using static TRBot.VirtualControllers.VirtualControllerDelegates;
 
@@ -232,72 +235,6 @@ namespace TRBot.VirtualControllers
             InputReleasedEvent?.Invoke(inputName);
         }
 
-        /*public void PressInput(in Parser.Input input)
-        {
-            ConsoleBase curConsole = InputGlobals.CurrentConsole;
-
-            if (curConsole.IsWait(input) == true)
-            {
-                return;
-            }
-
-            if (curConsole.GetAxis(input, out InputAxis axis) == true)
-            {
-                PressAxis(axis.AxisVal, axis.MinAxisVal, axis.MaxAxisVal, input.percent);
-
-                //Release a button with the same name (Ex. L/R buttons on GCN)
-                if (curConsole.ButtonInputMap.TryGetValue(input.name, out InputButton btnVal) == true)
-                {
-                    ReleaseButton(btnVal.ButtonVal);
-                }
-            }
-            else if (curConsole.IsButton(input) == true)
-            {
-                PressButton(curConsole.ButtonInputMap[input.name].ButtonVal);
-
-                //Release an axis with the same name (Ex. L/R buttons on GCN)
-                if (curConsole.InputAxes.TryGetValue(input.name, out InputAxis value) == true)
-                {
-                    ReleaseAxis(value.AxisVal);
-                }
-            }
-
-            InputPressedEvent?.Invoke(input);
-        }
-
-        public void ReleaseInput(in Parser.Input input)
-        {
-            ConsoleBase curConsole = InputGlobals.CurrentConsole;
-
-            if (curConsole.IsWait(input) == true)
-            {
-                return;
-            }
-
-            if (curConsole.GetAxis(input, out InputAxis axis) == true)
-            {
-                ReleaseAxis(axis.AxisVal);
-
-                //Release a button with the same name (Ex. L/R buttons on GCN)
-                if (curConsole.ButtonInputMap.TryGetValue(input.name, out InputButton btnVal) == true)
-                {
-                    ReleaseButton(btnVal.ButtonVal);
-                }
-            }
-            else if (curConsole.IsButton(input) == true)
-            {
-                ReleaseButton(curConsole.ButtonInputMap[input.name].ButtonVal);
-
-                //Release an axis with the same name (Ex. L/R buttons on GCN)
-                if (curConsole.InputAxes.TryGetValue(input.name, out InputAxis value) == true)
-                {
-                    ReleaseAxis(value.AxisVal);
-                }
-            }
-
-            InputReleasedEvent?.Invoke(input);
-        }*/
-
         public void PressAxis(in int axis, in double minAxisVal, in double maxAxisVal, in int percent)
         {
             //Not a valid axis - defaulting to 0 results in the wrong axis being set
@@ -321,7 +258,7 @@ namespace TRBot.VirtualControllers
             int finalVal = (int)Helpers.RemapNum(pressAmount, minAxisVal, maxAxisVal,
                 minAxisVal * axisVals.Item1, maxAxisVal * axisVals.Item2);
 
-            //Console.WriteLine($"%: {percent} | Min/Max: {minAxisVal}/{maxAxisVal} | pressAmount: {pressAmount} | finalVal: {finalVal}");
+            //TRBotLogger.Logger.Information($"%: {percent} | Min/Max: {minAxisVal}/{maxAxisVal} | pressAmount: {pressAmount} | finalVal: {finalVal}");
 
             SetAxisEfficient(vJoyAxis, finalVal);
 
@@ -396,7 +333,7 @@ namespace TRBot.VirtualControllers
                 return;
             }
 
-            //Kimimaru: Handle button counts greater than 32
+            //Handle button counts greater than 32
             //Each buttons value contains 32 bits, so choose the appropriate one based on the value of the button pressed
             //Note that not all emulators (such as Dolphin) support more than 32 buttons
             int divVal = button / 32;
@@ -422,7 +359,7 @@ namespace TRBot.VirtualControllers
                 return;
             }
 
-            //Kimimaru: Handle button counts greater than 32
+            //Handle button counts greater than 32
             //Each buttons value contains 32 bits, so choose the appropriate one based on the value of the button pressed
             //Note that not all emulators (such as Dolphin) support more than 32 buttons
             int divVal = button / 32;

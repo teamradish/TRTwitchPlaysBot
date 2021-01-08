@@ -6,7 +6,7 @@ TRBot is inspired by TwitchPlays_Everything. The input syntax allows for great p
 
 ## Features
 * [Simple yet expressive input syntax](./Wiki/Syntax-Walkthrough.md) - translate your text to game inputs easily. Make your inputs as simple or precise as you want!
-* Game-agnostic - TRBot runs alongside your game and can be configured as you like.
+* Portable and game-agnostic - TRBot runs alongside your game and can be configured as you like. No complex installation required - just download and run it!
 * Cross-platform - Runs on Windows (vJoy) and GNU/Linux (uinput).
 * Emulator support - NES, SNES, N64, GCN, and more. Several [emulator controller config files](./Emulator%20Controller%20Configs) are available.
 * Multiplayer support - Control [multiple players](./Wiki/Syntax-Walkthrough.md#multi-controller-inputs) separately or simultaneously.
@@ -32,20 +32,40 @@ The original Python version of the original parser was written by TwitchPlays_Ev
 TRBot's logo was designed by the talented [David Revoy](https://www.davidrevoy.com/), well-known for his Pepper & Carrot comic series.
 
 ## License
+Copyright © 2019-2020 Thomas "Kimimaru" Deeb
+
 [![AGPL](https://www.gnu.org/graphics/agplv3-155x51.png)](https://www.gnu.org/licenses/agpl-3.0.en.html)
 
 TRBot is free software; you are free to run, study, modify, and redistribute it. Specifically, you can modify and/or redistribute TRBot under the terms of the GNU Affero General Public License v3.0 or (at your option) any later version.
 
+In simple terms, if you give someone a copy of TRBot or deploy TRBot to an online service, you must provide a way to obtain the license and source code for that version of TRBot upon request. This includes modified versions of TRBot.
+
 See the [LICENSE](./LICENSE) file for the full terms. See the [Dependency Licenses](./Dependency%20Licenses) file for the licenses of third party libraries used by TRBot. See the [logo license](./Logo/Logo%20License) file for the license of TRBot's logo.
 
+## Attribution Banner
+If you have found TRBot useful, please spread the word by placing one of our promo banners on your blog, video, or Twitch stream panel!
+
+[Link to large banner](https://raw.githubusercontent.com/teamradish/TRTwitchPlaysBot/develop/Logo/TRBotLogo_Promo.png)
+- Markdown code:
+    ```
+    ![Powered by TRBot](https://raw.githubusercontent.com/teamradish/TRTwitchPlaysBot/develop/Logo/TRBotLogo_Promo.png "TRBot Logo")
+    ```
+
+[Link to small banner](https://raw.githubusercontent.com/teamradish/TRTwitchPlaysBot/develop/Logo/TRBotLogo_Promo_Small.png)
+- Markdown code: 
+    ```
+    ![Powered by TRBot](https://raw.githubusercontent.com/teamradish/TRTwitchPlaysBot/develop/Logo/TRBotLogo_Promo_Small.png "TRBot Logo")
+    ```
+
 ## Contributing
-We are on Matrix at [#TRBot-Dev:matrix.org](https://matrix.to/#/!hTfcbsKMAuenQAetQm:matrix.org?via=matrix.org). Feel free to ask any questions or discuss development there!
+Issues and pull requests are greatly encouraged! Please file an issue for a feature request, such as a new platform or service, or regarding any bugs you encounter.
 
 We also have an additional remote respository on Codeberg at: https://codeberg.org/kimimaru/TRBot
 
-Issues and pull requests are greatly encouraged! Please file an issue for a feature request, such as a new platform or service, or regarding any bugs you encounter.
+### Support
+We are on Matrix at [#TRBot-Dev:matrix.org](https://matrix.to/#/!hTfcbsKMAuenQAetQm:matrix.org?via=matrix.org). Feel free to ask any questions or discuss development there!
 
-Developing software takes considerable time and effort, and we have poured hundreds of hours into making TRBot as powerful as it is and freely available to everyone in our spare time. Kindly consider donating to us on Liberapay:
+Developing software takes considerable time and effort, and we have poured hundreds of hours of our spare time into making TRBot as powerful as it is and freely available to everyone. Kindly consider donating to us on Liberapay:
 
 https://liberapay.com/kimimaru/
 

@@ -193,6 +193,25 @@ namespace TRBot.Data.Migrations
                     b.ToTable("Memes", "memes");
                 });
 
+            modelBuilder.Entity("TRBot.Data.RecentInput", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("InputSequence")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("RecentInputs", "recentinputs");
+                });
+
             modelBuilder.Entity("TRBot.Data.RestrictedInput", b =>
                 {
                     b.Property<int>("ID")
@@ -460,6 +479,17 @@ namespace TRBot.Data.Migrations
                     b.Navigation("Input");
                 });
 
+            modelBuilder.Entity("TRBot.Data.RecentInput", b =>
+                {
+                    b.HasOne("TRBot.Data.User", "user")
+                        .WithMany("RecentInputs")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("user");
+                });
+
             modelBuilder.Entity("TRBot.Data.RestrictedInput", b =>
                 {
                     b.HasOne("TRBot.Consoles.InputData", "inputData")
@@ -518,6 +548,8 @@ namespace TRBot.Data.Migrations
 
             modelBuilder.Entity("TRBot.Data.User", b =>
                 {
+                    b.Navigation("RecentInputs");
+
                     b.Navigation("RestrictedInputs");
 
                     b.Navigation("Stats");
