@@ -21,7 +21,7 @@ namespace TRBot.Tests
            to no preparation required for these tests.
         */
 
-        [TestCase("a", true, 60000)]
+        /*[TestCase("a", true, 60000)]
         [TestCase("b", true, 60000)]
         [TestCase("x", true, 60000)]
         [TestCase("jump", true, 60000)]
@@ -152,9 +152,82 @@ namespace TRBot.Tests
             string expandify = parser.Expandify(input);
 
             Assert.AreEqual(expandify, expectedOutput);
+        }*/
+
+        [TestCase("a", new string[] { "a" })]
+        [TestCase("bx", new string[] { "a", "b", "x" })]
+        public void TestBasic(string input, params string[] inputList)
+        {
+            StandardParser standardParser = Basic(inputList);
+
+            ParsedInputSequence seq = standardParser.ParseInputs(input);
+            Assert.AreEqual(seq.ParsedInputResult, ParsedInputResults.Valid);
+            Assert.AreEqual(seq.Error, string.Empty);
+        }
+
+        [TestCase("a", new string[] { "b" })]
+        [TestCase("r3", new string[] { "r2" })]
+        [TestCase("bx", new string[] { "abx" })]
+        public void TestBasicFail(string input, params string[] inputList)
+        {
+            StandardParser standardParser = Basic(inputList);
+
+            ParsedInputSequence seq = standardParser.ParseInputs(input);
+
+            Assert.AreNotEqual(seq.ParsedInputResult, ParsedInputResults.Valid);
+            Assert.AreNotEqual(seq.Error, string.Empty);
+        }
+
+        [TestCase("_q", new string[] { "q" })]
+        [TestCase("q", new string[] { "q" })]
+        [TestCase("_x_yxy", new string[] { "x", "y" })]
+        [TestCase("_ab_rl", new string[] { "a", "b", "r", "l" })]
+        public void TestHold(string input, params string[] inputList)
+        {
+            List<IParserComponent> components = new List<IParserComponent>()
+            {
+                new GenericParserComponent(@"(?<hold>_)?"),
+                new InputParserComponent(inputList),
+            };
+
+            StandardParser standardParser = new StandardParser(components);
+
+            ParsedInputSequence seq = standardParser.ParseInputs(input);
+
+            Assert.AreEqual(seq.ParsedInputResult, ParsedInputResults.Valid);
+        }
+
+        [TestCase("-q", new string[] { "q" })]
+        [TestCase("q", new string[] { "q" })]
+        [TestCase("-ab-rl", new string[] { "a", "b", "r", "l" })]
+        [TestCase("q-", new string[] { "q" })]
+        public void TestRelease(string input, params string[] inputList)
+        {
+            List<IParserComponent> components = new List<IParserComponent>()
+            {
+                new GenericParserComponent(@"(?<release>\-)?"),
+                new InputParserComponent(inputList),
+            };
+
+            StandardParser standardParser = new StandardParser(components);
+
+            ParsedInputSequence seq = standardParser.ParseInputs(input);
+
+            Assert.AreEqual(seq.ParsedInputResult, ParsedInputResults.Valid);
         }
 
         # region Utility
+
+        private StandardParser Basic(string[] inputList)
+        {
+            List<IParserComponent> components = new List<IParserComponent>()
+            {
+                new InputParserComponent(inputList)
+            };
+
+            StandardParser standardParser = new StandardParser(components);
+            return standardParser;
+        }
 
         private Dictionary<T, U> BuildDictWithArrays<T, U>(T[] array1, U[] array2)
         {
