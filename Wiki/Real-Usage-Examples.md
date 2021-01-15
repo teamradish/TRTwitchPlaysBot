@@ -26,3 +26,7 @@ Here are some more examples of TRBot in action:
   * https://www.twitch.tv/twitchplayspapermario/clip/PopularRealPastaMcaT
 * **Boss of Tricky Ruins Skip (Super Mario Sunshine)**
   * https://clips.twitch.tv/MotionlessAgreeablePepperoniBCouch
+* **Gnorc Cove Big Skip (Spyro the Dragon)**
+  * https://www.twitch.tv/twitchplaysspeedruns/clip/FurtiveIcySwallowLitty
+* **Dust Bunny Demodash (Celeste)**
+  * https://www.twitch.tv/twitchplayspapermario/clip/SavoryFancyTroutFunRun
