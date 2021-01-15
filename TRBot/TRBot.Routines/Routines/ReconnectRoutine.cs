@@ -33,7 +33,7 @@ namespace TRBot.Routines
         /// <summary>
         /// The amount of time to attempt another reconnect.
         /// </summary>
-        private readonly double ReconnectTime = 3000d;
+        private long ReconnectTime = 5000L;
 
         /// <summary>
         /// The max number of reconnect attempts.
@@ -48,6 +48,33 @@ namespace TRBot.Routines
         public ReconnectRoutine()
         {
             Identifier = RoutineConstants.RECONNECT_ROUTINE_ID;
+        }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            ReconnectTime = DataHelper.GetSettingInt(SettingsConstants.RECONNECT_TIME, 5000L);
+
+            DataContainer.DataReloader.SoftDataReloadedEvent -= OnReload;
+            DataContainer.DataReloader.SoftDataReloadedEvent += OnReload;
+
+            DataContainer.DataReloader.HardDataReloadedEvent -= OnReload;
+            DataContainer.DataReloader.HardDataReloadedEvent += OnReload;
+        }
+
+        public override void CleanUp()
+        {
+            DataContainer.DataReloader.SoftDataReloadedEvent -= OnReload;
+            DataContainer.DataReloader.HardDataReloadedEvent -= OnReload;
+
+            base.CleanUp();
+        }
+
+        private void OnReload()
+        {
+            //Fetch the new reconnect time
+            ReconnectTime = DataHelper.GetSettingInt(SettingsConstants.RECONNECT_TIME, 5000L);
         }
 
         public override void UpdateRoutine(in DateTime currentTimeUTC)
