@@ -22,80 +22,68 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Threading.Tasks;
+using TRBot.Utilities;
 
 namespace TRBot.Misc
 {
     /// <summary>
-    /// Debugging.
+    /// Contains utilities for debugging.
     /// </summary>
     public static class Debug
     {
         /// <summary>
-        /// Global values regarding debugging.
+        /// The name of the crash log folder.
         /// </summary>
-        public static class DebugGlobals
+        public const string CRASH_LOG_FOLDER = "CrashLogs";
+
+        /// <summary>
+        /// The path to the crash log folder.
+        /// </summary>
+        public static readonly string CrashLogPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, CRASH_LOG_FOLDER);
+        
+        /// <summary>
+        /// Gets the path for crash log files.
+        /// </summary>
+        /// <returns>A string with the full name of the crash log file.</returns>
+        public static string GetCrashLogPath()
         {
-            /// <summary>
-            /// Gets the path for crash log files.
-            /// </summary>
-            /// <returns>A string with the full name of the crash log file.</returns>
-            public static string GetCrashLogPath()
-            {
-                string time = GetFileFriendlyTimeStamp();
-
-                string path = Path.Combine(Environment.CurrentDirectory, $"{GetAssemblyName()} {GetBuildNumber()} Crash Log - {time}.txt");
-
-                return path;
-            }
-
-            /// <summary>
-            /// Returns a file friendly time stamp of the current time.
-            /// </summary>
-            /// <returns>A string representing current time.</returns>
-            public static string GetFileFriendlyTimeStamp()
-            {
-                return GetFileFriendlyTimeStamp(DateTime.Now);
-            }
-
-            /// <summary>
-            /// Returns a file friendly time stamp of a given time.
-            /// </summary>
-            /// <param name="dateTime">The time stamp.</param>
-            /// <returns>A string representing current time.</returns>
-            public static string GetFileFriendlyTimeStamp(DateTime dateTime)
-            {
-                string time = dateTime.ToUniversalTime().ToString();
-                time = time.Replace(':', '-');
-                time = time.Replace('/', '-');
-
-                return time;
-            }
-
-            // <summary>
-            /// Gets the name of the assembly.
-            /// </summary>
-            /// <returns>A string representing the name of the assembly.</returns>
-            public static string GetAssemblyName()
-            {
-                //Get the name from the assembly information
-                System.Reflection.Assembly assembly = typeof(Debug).Assembly;
-                System.Reflection.AssemblyName asm = assembly.GetName();
-
-                return asm.Name;
-            }
-
-            /// <summary>
-            /// Gets the full build number as a string.
-            /// </summary>
-            /// <returns>A string representing the full build number.</returns>
-            public static string GetBuildNumber()
-            {
-                //Get the build number from the assembly information
-                System.Reflection.Assembly assembly = typeof(Debug).Assembly;
-                System.Reflection.AssemblyName asm = assembly.GetName();
-
-                return asm.Version.Major + "." + asm.Version.Minor + "." + asm.Version.Build + "." + asm.Version.Revision;
-            }
+            string time = GetFileFriendlyTimeStamp();
+            string path = Path.Combine(CrashLogPath, $"{GetAssemblyName()} {Application.VERSION_NUMBER} Crash Log - {time}.txt");
+            return path;
+        }
+        
+        /// <summary>
+        /// Returns a file friendly time stamp of the current time.
+        /// </summary>
+        /// <returns>A string representing current time.</returns>
+        public static string GetFileFriendlyTimeStamp()
+        {
+            return GetFileFriendlyTimeStamp(DateTime.Now);
+        }
+        
+        /// <summary>
+        /// Returns a file friendly time stamp of a given time.
+        /// </summary>
+        /// <param name="dateTime">The time stamp.</param>
+        /// <returns>A string representing current time.</returns>
+        public static string GetFileFriendlyTimeStamp(DateTime dateTime)
+        {
+            string time = dateTime.ToUniversalTime().ToString();
+            time = time.Replace(':', '-');
+            time = time.Replace('/', '-');
+            return time;
+        }
+        
+        /// <summary>
+        /// Gets the name of the assembly.
+        /// </summary>
+        /// <returns>A string representing the name of the assembly.</returns>
+        public static string GetAssemblyName()
+        {
+            //Get the name from the assembly information
+            System.Reflection.Assembly assembly = typeof(Debug).Assembly;
+            System.Reflection.AssemblyName asm = assembly.GetName();
+            return asm.Name;
         }
     }
 }

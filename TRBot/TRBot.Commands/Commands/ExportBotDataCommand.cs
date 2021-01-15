@@ -70,7 +70,7 @@ namespace TRBot.Commands
                     return;
                 }
 
-                string timeStamp = Debug.DebugGlobals.GetFileFriendlyTimeStamp();
+                string timeStamp = Debug.GetFileFriendlyTimeStamp();
                 
                 //Use the time stamp in the folder name
                 string dirPath = Path.Combine(DataConstants.DataFolderPath, $"TRBot Data Export ({timeStamp})");

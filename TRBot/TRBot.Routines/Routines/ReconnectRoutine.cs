@@ -94,7 +94,14 @@ namespace TRBot.Routines
                 if (DataContainer.MessageHandler.ClientService.IsConnected == false)
                 {
                     //Attempt a reconnect
-                    DataContainer.MessageHandler.ClientService.Connect();
+                    try
+                    {
+                        DataContainer.MessageHandler.ClientService.Connect();
+                    }
+                    catch (Exception e)
+                    {
+                        TRBotLogger.Logger.Error($"Unable to reconnect to client service: {e.Message}\n{e.StackTrace}");
+                    }
                 }
             }
         }

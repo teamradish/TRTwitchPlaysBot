@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TRBot.Logging;
 
 namespace TRBot.Misc
 {
@@ -39,7 +40,9 @@ namespace TRBot.Misc
         ~CrashHandler()
         {
             if (AppDomain.CurrentDomain != null)
+            {
                 AppDomain.CurrentDomain.UnhandledException -= HandleCrash;
+            }
         }
 
         /// <summary>
@@ -53,13 +56,25 @@ namespace TRBot.Misc
             Exception exc = e.ExceptionObject as Exception;
             if (exc != null)
             {
-                //Dump the message, stack trace, and logs to a file
-                using (StreamWriter writer = File.CreateText(Debug.DebugGlobals.GetCrashLogPath()))
+                //Create the directory to the crash log path
+                if (Directory.Exists(Debug.CrashLogPath) == false)
                 {
-                    writer.Write($"Message: {exc.Message}\n\nStack Trace:\n");
-                    writer.Write($"{exc.StackTrace}\n\n");
+                    Directory.CreateDirectory(Debug.CrashLogPath);
+                }
+
+                //Dump the message, stack trace, and logs to a file
+                using (StreamWriter writer = File.CreateText(Debug.GetCrashLogPath()))
+                {
+                    string message = $"Message: {exc.Message}\n\nStack Trace:\n";
+                    string trace = $"{exc.StackTrace}\n\n";
+
+                    writer.Write(message);
+                    writer.Write(trace);
 
                     writer.Flush();
+
+                    TRBotLogger.Logger.Fatal($"CRASH: {exc.Message}");
+                    TRBotLogger.Logger.Fatal(exc.StackTrace);
                 }
             }
         }
