@@ -26,6 +26,7 @@ Table of Contents
 * [message_throttle_type](#message_throttle_type)
 * [message_cooldown](#message_cooldown)
 * [message_throttle_count](#message_throttle_count)
+* [reconnect_time](#reconnect_time)
 * [connect_message](#connect_message)
 * [reconnected_message](#reconnected_message)
 * [periodic_message](#periodic_message)
@@ -41,6 +42,7 @@ Table of Contents
 * [info_message](#info_message)
 * [tutorial_message](#tutorial_message)
 * [documentation_message](#documentation_message)
+* [donate_message](#donate_message)
 * [slots_blank_emote](#slots_blank_emote)
 * [slots_cherry_emote](#slots_cherry_emote)
 * [slots_plum_emote](#slots_plum_emote)
@@ -156,6 +158,9 @@ Indicates the time used in message throttling. See [message_throttle_type](#mess
 ### message_throttle_count
 Indicates the number of messages that can be sent in a given time interval. See [message_throttle_type](#message_throttle_type) for more information. This defaults to 20, the default for Twitch bots.
 
+### reconnect_time
+Indicates the time, in milliseconds, TRBot waits each time to reconnect to the client service after it loses connection. This applies only to online client services. This defaults to 5000, or 5 seconds. Requires reloading to apply changes while the bot is running.
+
 ### periodic_message_time
 The interval, in milliseconds, for TRBot to output the [periodic_message](#periodic_message).
 
@@ -203,6 +208,9 @@ A message linking to the syntax tutorial on how to play.
 
 ### documentation_message
 A message linking to the documentation for the bot.
+
+### donate_message
+A message linking to a donation page for the bot developer and/or streamer.
 
 ### slots_blank_emote
 The emote to use, as a string, for the Blank slot in the slots game. This defaults to "FailFish".
@@ -276,7 +284,7 @@ The global time, in milliseconds, of the blank inputs inserted between each inpu
 The max number of recent input sequences to store per user. If the user is opted out of stats, it won't store any inputs. This defaults to 5.
 
 ### democracy_vote_time
-The duration of the voting period in the Democracy input mode, in milliseconds. See [input_mode](#input_mode) for more information. This defaults to 10000 milliseconds, or 10 seconds.
+The duration of the voting period in the Democracy input mode, in milliseconds. See [input_mode](#input_mode) for more information. This defaults to 10000 milliseconds, or 10 seconds. Requires reloading to apply changes while the bot is running.
 
 ### democracy_resolution_mode
 The means of resolving votes for the Democracy input mode:
@@ -294,7 +302,7 @@ The duration of the voting period to change the current input mode. This default
 The cooldown, in milliseconds, after completing a vote to change the current input mode. This defaults to 900000 milliseconds, or 15 minutes.
 
 ### input_mode_next_vote_date
-The date and time of the next available vote to change the input mode. This is set automatically and often does not need to be manually changed. The format is yyyy-MM-dd HH:mm:ss on a 24 hour UTC time.
+The date and time of the next available vote to change the input mode. This is set automatically and usually shouldn't be manually changed. The format is yyyy-MM-dd HH:mm:ss on a 24 hour UTC time.
 
 ### last_console
 The game console to use.
@@ -306,7 +314,7 @@ The type of virtual controller to use. If the one specified is not available on 
 The number of virtual controllers to use. Values greater than 1 enable playing multiplayer games. This value will be automatically capped by the minimum and maximum values supported by the current virtual controller implementation.
 
 ### global_input_level
-The global access level required to perform inputs. Users not at or above this level are refrained from making inputs.
+The global access level required to perform inputs. Users below this level are refrained from making inputs.
 
 ### input_mode
 The type of input mode to use:
@@ -317,11 +325,11 @@ The type of input mode to use:
 This defaults to 0, Anarchy.
 
 ### first_launch
-Indicates the first ever launch of TRBot. This sets up all the default game consoles. Starts at 0 then gets set to 1.
+Indicates the first ever launch of TRBot. This sets up all the default game consoles. This defaults to 0 and gets set to 1 after the first launch.
 
 ### force_init_defaults
-If 1, initializes all default values, including default commands, permissions, and settings, if the don't already exist.
+If 1, initializes all default values, including default commands, permissions, and settings, if the don't already exist. This defaults to 0.
 
 ### data_version
-The version for TRBot's data. If this is behind the bot version being used, it will automatically set force_init_defaults to 1 and add missing data. Data versions are in the format "x.y.z", with the initial 2.0 release being "2.0.0".
+The version for TRBot's data. If this is behind the bot version being used, it will automatically set [force_init_defaults](#force_init_defaults) to 1 and add missing default data. Data versions are in the format "x.y.z", with the initial 2.0 release being "2.0.0".
 

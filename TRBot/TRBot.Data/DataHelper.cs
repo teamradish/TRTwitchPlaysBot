@@ -531,6 +531,8 @@ namespace TRBot.Data
             {
                 TRBotLogger.Logger.Information($"Data version {dataVersionStr} is less than bot version {Application.VERSION_NUMBER}. Updating version number and forcing database initialization for missing entries.");
                 newDataVersion = Application.VERSION_NUMBER;
+
+                forceInit = 1L;
             }
             //If the data version is greater than the bot, we should let them know
             else if (result > 0)
