@@ -57,6 +57,7 @@ namespace TRBot.Data
         public const string MESSAGE_THROTTLE_TYPE = "message_throttle_type";
         public const string MESSAGE_COOLDOWN = "message_cooldown";
         public const string MESSAGE_THROTTLE_COUNT = "message_throttle_count";
+        public const string RECONNECT_TIME = "reconnect_time";
 
         public const string CONNECT_MESSAGE = "connect_message";
         public const string RECONNECTED_MESSAGE = "reconnected_message";
@@ -74,6 +75,7 @@ namespace TRBot.Data
         public const string INFO_MESSAGE = "info_message";
         public const string TUTORIAL_MESSAGE = "tutorial_message";
         public const string DOCUMENTATION_MESSAGE = "documentation_message";
+        public const string DONATE_MESSAGE = "donate_message";
         
         public const string SLOTS_BLANK_EMOTE = "slots_blank_emote";
         public const string SLOTS_CHERRY_EMOTE = "slots_cherry_emote";

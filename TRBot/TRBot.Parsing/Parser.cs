@@ -49,7 +49,7 @@ namespace TRBot.Parsing
         public const int PARSER_DEFAULT_PERCENT = 100;
         public const string PARSER_DEFAULT_DUR_TYPE = DEFAULT_PARSE_REGEX_MILLISECONDS_INPUT;
 
-        private const string DEFAULT_PARSE_MACRO_REGEX = DEFAULT_PARSER_REGEX_MACRO_INPUT + @"[a-zA-Z0-9\(\,\.\+_\-&%]*";
+        private const string DEFAULT_PARSE_MACRO_REGEX = DEFAULT_PARSER_REGEX_MACRO_INPUT + @"[a-zA-Z0-9\(\,\.\+_\-&%!]*";
 
         /// <summary>
         /// The start of the input regex string.

@@ -264,7 +264,14 @@ namespace TRBot.Main
                 return;
             }
 
-            ClientService.Connect();
+            try
+            {
+                ClientService.Connect();
+            }
+            catch (Exception e)
+            {
+                TRBotLogger.Logger.Error($"Unable to connect to client service: {e.Message}\n{e.StackTrace}");
+            }
 
             //Run
             while (true)
