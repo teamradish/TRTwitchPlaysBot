@@ -52,6 +52,12 @@ namespace TRBot.Misc
             }
         }
 
+        /// <summary>
+        /// If all inputs in a subsequence have a remaining press time greater than this value,
+        /// the InputHandler will wait very briefly to save on CPU time.
+        /// </summary>
+        private const long CPU_TIME_SAVER_INPUT_REMAINING_MS = 20;
+
         public delegate void OnInputsHalted();
 
         /// <summary>
@@ -60,19 +66,19 @@ namespace TRBot.Misc
         public static event OnInputsHalted InputsHaltedEvent = null;
 
         /// <summary>
-        /// The current number of running input sequences.
+        /// Whether inputs are currently halted.
         /// </summary>
-        public static int RunningInputCount => Interlocked.CompareExchange(ref RunningInputThreads, 0, 0);
+        public static bool InputsHalted { get; private set; } = false;
 
         /// <summary>
         /// The current number of running input threads.
         /// </summary>
-        private static volatile int RunningInputThreads = 0;
+        public static int RunningInputCount => Interlocked.CompareExchange(ref RunningInputThreads, 0, 0);
 
-        /// <summary>
-        /// Whether inputs are currently halted.
-        /// </summary>
-        public static bool InputsHalted { get; private set; } = false;
+        // <summary>
+        // The current number of running input threads.
+        // </summary>
+        private static volatile int RunningInputThreads = 0;
 
         /// <summary>
         /// Cancels all currently running inputs.
@@ -91,6 +97,12 @@ namespace TRBot.Misc
         /// </summary>
         public static void ResumeRunningInputs()
         {
+            //Throw an exception if we resume when inputs aren't already cancelled
+            if (InputsHalted == false)
+            {
+                throw new Exception("Inputs are being resumed when they weren't cancelled to begin with. This can lead to corruption if there are ongoing inputs.");
+            }
+
             InputsHalted = false;
         }
 
@@ -123,6 +135,11 @@ namespace TRBot.Misc
 
         private static async Task WaitAllInputsStopped()
         {
+            if (RunningInputCount == 0)
+            {
+                return;
+            }
+
             const int delay = 1;
 
             while (RunningInputCount != 0)
@@ -138,15 +155,7 @@ namespace TRBot.Misc
         /// <param name="inputList">A list of lists of inputs to execute.</param>
         public static void CarryOutInput(List<List<ParsedInput>> inputList, GameConsole currentConsole, IVirtualControllerManager vcManager)
         {
-            /*Kimimaru: We're using a thread pool for efficiency
-             * Though very unlikely, there's a chance the input won't execute right away if it has to wait for a thread to be available
-             * However, there are often plenty of available threads, so this shouldn't be an issue since we use only one thread per input string
-             * Uncomment the following lines to see how many threads are supported in the pool on your machine */
-            //ThreadPool.GetMinThreads(out int workermin, out int completionmin);
-            //ThreadPool.GetMaxThreads(out int workerthreads, out int completionPortThreads);
-            //TRBotLogger.Logger.Information($"Min workers: {workermin} Max workers: {workerthreads} Min async IO threads: {completionmin} Max async IO threads: {completionPortThreads}");
-
-            //Kimimaru: Copy the input list over to an array, which is more performant
+            //Copy the input list over to an array, which is more performant
             //and lets us bypass redundant copying and bounds checks in certain instances
             //This matters once we've begun processing inputs since we're
             //trying to reduce the delay between pressing and releasing inputs as much as we can
@@ -155,7 +164,7 @@ namespace TRBot.Misc
             {
                 inputArray[i] = inputList[i].ToArray();
             }
-        
+
             InputWrapper inputWrapper = new InputWrapper(inputArray, currentConsole, vcManager);
             ThreadPool.QueueUserWorkItem(new WaitCallback(ExecuteInput), inputWrapper);
         }
@@ -248,6 +257,9 @@ namespace TRBot.Misc
                         }
                     }
 
+                    //If this is true, we'll sleep the current thread to save on CPU time
+                    bool shouldCPUWait = false;
+
                     sw.Start();
 
                     while (indices.Count > 0)
@@ -258,15 +270,38 @@ namespace TRBot.Misc
                             goto End;
                         }
 
+                        //If we should wait to save on CPU time, do so now
+                        if (shouldCPUWait == true)
+                        {
+                            Thread.Sleep(1);
+                        }
+
+                        //Default to true since we don't know how much time is remaining yet
+                        shouldCPUWait = true;
+
                         //Release buttons when we should
                         for (int j = indices.Count - 1; j >= 0; j--)
                         {
                             ref ParsedInput input = ref inputs[indices[j]];
 
-                            if (sw.ElapsedMilliseconds < input.duration)
+                            //Check how much time is remaining for this input's duration
+                            long diff = input.duration - sw.ElapsedMilliseconds;
+
+                            //If there's still time left, continue to the next input
+                            if (diff > 0)
                             {
+                                //If it's getting close to finishing this input,
+                                //indicate that we shouldn't wait to save on CPU time
+                                //in case we hold it for too long
+                                if (diff < CPU_TIME_SAVER_INPUT_REMAINING_MS)
+                                {
+                                    shouldCPUWait = false;
+                                }
+
                                 continue;
                             }
+
+                            //TRBotLogger.Logger.Debug($"diff for \"{input.name}{input.duration}\": {diff}");
 
                             //Release if the input isn't held or released and isn't a blank input
                             if (input.hold == false && input.release == false && curConsole.IsBlankInput(input) == false)

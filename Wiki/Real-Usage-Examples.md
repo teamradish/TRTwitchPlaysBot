@@ -30,3 +30,5 @@ Here are some more examples of TRBot in action:
   * https://www.twitch.tv/twitchplaysspeedruns/clip/FurtiveIcySwallowLitty
 * **Dust Bunny Demodash (Celeste)**
   * https://www.twitch.tv/twitchplayspapermario/clip/SavoryFancyTroutFunRun
+* **Golden Ridge Final Sequence (Celeste)**
+  * https://clips.twitch.tv/BlushingSpoopyRutabagaImGlitch

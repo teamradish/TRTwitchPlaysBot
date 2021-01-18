@@ -65,7 +65,7 @@ namespace TRBot.Misc
                 //Dump the message, stack trace, and logs to a file
                 using (StreamWriter writer = File.CreateText(Debug.GetCrashLogPath()))
                 {
-                    string message = $"Message: {exc.Message}\n\nStack Trace:\n";
+                    string message = $"Message: {exc.Message} ({exc.GetType().Name})\n\nStack Trace:\n";
                     string trace = $"{exc.StackTrace}\n\n";
 
                     writer.Write(message);
