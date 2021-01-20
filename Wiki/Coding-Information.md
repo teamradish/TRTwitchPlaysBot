@@ -35,6 +35,11 @@ We also have an additional remote respository on Codeberg at: https://codeberg.o
 - Before calling `InputHandler.CarryOutInput`, make sure to check if `InputHandler.InputsHalted` is false. If it's true, do not call `InputHandler.CarryOutInput`, as something important is going on, which may include changing the virtual controller implementation, changing the number of virtual controllers, or a player desiring all ongoing inputs to be stopped. Failure to do this may likely result in the bot crashing.
 - The console passed into `InputHandler.CarryOutInput` should be a **brand new instance** constructed from one in the database. This ensures that everything that was valid **at that time** will still be valid while executing the input. Basically, this guarantees that if someone removes an input, or even the current console, while executing an input sequence, nothing will go haywire.
 
+# Logging
+- Use the static `TRBotLogger` class for logging. By default, it logs to a file and the console. This class lives in the `TRBot.Logging` project.
+- Internally, TRBot uses Serilog for logging. Use the appropriate methods for the types of information - for example, `Information` should be for general logs whereas `Error` or `Fatal` should be used if something went wrong.
+- Keep in mind that even if logs aren't output based on the log settings, it will still be doing the work when it's constructing the string. If the work involved is expensive (Ex. parsing or reverse parsing) and exclusive to the log, consider commenting it out and uncommenting it when it's needed.
+
 # Contributing
 If you find any problems with TRBot, please file an [issue](https://github.com/teamradish/TRTwitchPlaysBot/issues). [Pull requests](https://github.com/teamradish/TRTwitchPlaysBot/pulls) are also highly encouraged!
 
