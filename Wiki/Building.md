@@ -12,7 +12,7 @@ Command line:
 * Publishing: `dotnet publish -c (config) -o (dir) --self-contained --runtime (RID)`
   * config = "Debug" or "Release"
   * dir = output directory
-  * [RID](https://github.com/dotnet/runtime/blob/master/src/libraries/pkg/Microsoft.NETCore.Platforms/runtime.json) = usually "win-x64" or "linux-x64". See link for a full list of runtime identifiers.
+  * [RID](https://github.com/dotnet/runtime/blob/master/src/libraries/Microsoft.NETCore.Platforms/pkg/runtime.json) = usually "win-x64" or "linux-x64". See link for a full list of runtime identifiers.
   * Example: `dotnet publish -c Debug -o TRBot --self-contained --runtime linux-x64`
 
 **Note: TRBot runs on all major desktop operating systems, but virtual controller input works only on Windows (vJoy) and GNU/Linux (uinput) since virtual controllers are platform-specific. The virtual controller API is abstracted into an `IVirtualController` interface, making it simple to add new implementations. Please file an issue if your platform isn't supported.**
