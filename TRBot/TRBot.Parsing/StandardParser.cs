@@ -28,12 +28,25 @@ namespace TRBot.Parsing
     /// A standard parser.
     /// </summary>
     public class StandardParser : IParser
-    {
+    {   
+        public int DefaultPortNum = 0;
+        public int MaxPortNum = 1;
+        public int DefaultInputDuration = 200;
+        public int MaxInputDuration = 60000;
+        public bool CheckMaxDur = true;
+
         private List<IParserComponent> ParserComponents = null;
 
-        public StandardParser(List<IParserComponent> parserComponents)
+        public StandardParser(List<IParserComponent> parserComponents, in int defaultPortNum,
+            in int maxPortNum, in int defaultInputDur, in int maxInputDur, in bool checkMaxDur)
         {
             ParserComponents = new List<IParserComponent>(parserComponents);
+            
+            DefaultPortNum = defaultPortNum;
+            MaxPortNum = maxPortNum;
+            DefaultInputDuration = defaultInputDur;
+            MaxInputDuration = maxInputDur;
+            CheckMaxDur = checkMaxDur;
         }
 
         /// <summary>
@@ -73,6 +86,7 @@ namespace TRBot.Parsing
                 Console.WriteLine($"Match value: {match.Value}");
 
                 ParsedInput input = new ParsedInput();
+                input.controllerPort = DefaultPortNum;
 
                 Console.WriteLine($"Group count: {match.Groups.Count}");
 
@@ -101,6 +115,11 @@ namespace TRBot.Parsing
                     {
                         return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Port number is invalid.");
                     }
+                }
+
+                if (input.controllerPort > MaxPortNum)
+                {
+                    return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Port number specified is greater than the max port.");
                 }
 
                 if (match.Groups.TryGetValue("percent", out Group percentGroup) == true)
@@ -185,7 +204,7 @@ namespace TRBot.Parsing
                 else
                 {
                     input.duration_type = "ms";
-                    input.duration = 200;
+                    input.duration = DefaultInputDuration;
                 }
 
                 subInputs.Add(input);
@@ -197,6 +216,11 @@ namespace TRBot.Parsing
                 }
 
                 totalDur += input.duration;
+
+                if (CheckMaxDur == true && totalDur > MaxInputDuration)
+                {
+                    return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Input sequence exceeds max input duration.");
+                }
             }
 
             if (subInputs.Count > 0)
