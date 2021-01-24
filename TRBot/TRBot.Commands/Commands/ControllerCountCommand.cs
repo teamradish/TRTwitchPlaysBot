@@ -128,7 +128,7 @@ namespace TRBot.Commands
                 DataContainer.ControllerMngr.Initialize();
                 int acquiredCount = DataContainer.ControllerMngr.InitControllers(newJoystickCount);
 
-                QueueMessage($"Changed controller count from {curJoystickCount} to {newJoystickCount}, acquired {acquiredCount} controllers, and reset all running inputs!");
+                QueueMessage($"Changed controller count from {curJoystickCount} to {newJoystickCount}, acquired {acquiredCount} controller(s), and reset all running inputs!");
             }
             catch (Exception e)
             {

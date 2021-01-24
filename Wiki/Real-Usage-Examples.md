@@ -32,3 +32,10 @@ Here are some more examples of TRBot in action:
   * https://www.twitch.tv/twitchplayspapermario/clip/SavoryFancyTroutFunRun
 * **Golden Ridge Final Sequence (Celeste)**
   * https://clips.twitch.tv/BlushingSpoopyRutabagaImGlitch
+* **Farewell Big Room 1 (Celeste)**
+  * https://clips.twitch.tv/TenaciousPricklyPrariedogPermaSmug
+* **Farewell Final Room (Celeste)**
+  * Part 1: https://clips.twitch.tv/ResoluteBraveHamburgerGOWSkull
+  * Part 2: https://clips.twitch.tv/AuspiciousBoringArugulaUncleNox
+  * Part 3: https://clips.twitch.tv/ElatedVenomousAlbatrossKappaWealth
+  * Part 4: https://clips.twitch.tv/DelightfulCulturedBeefLitty
