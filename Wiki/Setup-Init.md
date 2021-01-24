@@ -10,8 +10,8 @@ After running TRBot once, it will create a **Data** folder in the same folder yo
 By default, TRBot connects to Twitch. If you are connecting through Twitch, TRBot will also create a template file for the login information in this folder. Open the **TwitchLoginSettings.txt** file and fill out the login information for your bot. The settings are described below:
 
 *BotName* = Username of your bot.<br />
-*Password* = Password for your bot. This may start with "oauth."<br />
-*ChannelName* = The name of the channel to have the bot connect to. Multiple channels are not currently supported.
+*Password* = OAuth token for your bot account. **This HAS to be an OAuth token and cannot be your raw password!** You can generate an OAuth token [here](https://twitchapps.com/tmi/) or [here](https://twitchtokengenerator.com/).<br />
+*ChannelName* = The name of the channel to have the bot connect to. Multiple channels are currently not supported.
 
 For security reasons, no user is an Admin or Superadmin by default. To set a user as an Admin or Superadmin, open up the **TRBotData.db** file in SQLite or a database viewer, find the user under the "Users" table, and manually change their level to 40 (Admin) or 50 (Superadmin), then save your changes. If the user is not there
 
