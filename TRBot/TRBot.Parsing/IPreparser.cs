@@ -21,15 +21,16 @@ using System;
 namespace TRBot.Parsing
 {
     /// <summary>
-    /// Represents an input parser.
+    /// Represents an input pre-parser.
+    /// Pre-parsers prepare an input string for parsing.
     /// </summary>
-    public interface IParser
+    public interface IPreparser
     {
         /// <summary>
-        /// Parses a string to return a parsed input sequence.
+        /// Pre-parses a string to prepare it for the parser.
         /// </summary>
-        /// <param name="message">The message to parse.</param>
-        /// <returns>A <see cref="ParsedInputSequence" /> containing all the inputs parsed.</returns>
-        ParsedInputSequence ParseInputs(string message);
+        /// <param name="message">The message to pre-parse.</param>
+        /// <returns>A string containing the modified message.</returns>
+        string Preparse(string message);
     }
 }

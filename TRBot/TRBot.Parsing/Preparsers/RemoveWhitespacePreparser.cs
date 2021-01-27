@@ -21,15 +21,23 @@ using System;
 namespace TRBot.Parsing
 {
     /// <summary>
-    /// Represents an input parser.
+    /// A pre-parser that removes all whitespace from a string.
     /// </summary>
-    public interface IParser
+    public class RemoveWhitespacePreparser : IPreparser
     {
+        public RemoveWhitespacePreparser()
+        {
+
+        }
+
         /// <summary>
-        /// Parses a string to return a parsed input sequence.
+        /// Pre-parses a string to prepare it for the parser.
         /// </summary>
-        /// <param name="message">The message to parse.</param>
-        /// <returns>A <see cref="ParsedInputSequence" /> containing all the inputs parsed.</returns>
-        ParsedInputSequence ParseInputs(string message);
+        /// <param name="message">The message to pre-parse.</param>
+        /// <returns>A string containing the modified message.</returns>
+        public string Preparse(string message)
+        {
+            return ParserUtilities.RemoveAllWhitespace(message);
+        }
     }
 }

@@ -17,35 +17,39 @@
 */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Text.RegularExpressions;
 
 namespace TRBot.Parsing
 {
     /// <summary>
-    /// Various parser utilities and helper methods.
+    /// A pre-parser that substitutes all input synonyms.
     /// </summary>
-    public static class ParserUtilities
+    public class InputSynonymPreparser : IPreparser
     {
-        /// <summary>
-        /// Removes all whitespace from a string, including tabs and spaces.
-        /// </summary>
-        /// <param name="originalStr">The string to remove whitespace from.</param>
-        /// <returns>A string with all whitespace removed. If <paramref name="originalStr"> is null or empty, it is returned instead.</returns>
-        public static string RemoveAllWhitespace(string originalStr)
+        private IEnumerable<InputSynonym> InputSynonyms = null;
+
+        public InputSynonymPreparser(IEnumerable<InputSynonym> inputSynonyms)
         {
-            //Return the original string if null or empty
-            if (string.IsNullOrEmpty(originalStr) == true)
+            InputSynonyms = inputSynonyms;
+        }
+
+        /// <summary>
+        /// Pre-parses a string to prepare it for the parser.
+        /// </summary>
+        /// <param name="message">The message to pre-parse.</param>
+        /// <returns>A string containing the modified message.</returns>
+        public string Preparse(string message)
+        {
+            if (InputSynonyms != null)
             {
-                return originalStr;
+                foreach (InputSynonym synonym in InputSynonyms)
+                {
+                    message = message.Replace(synonym.SynonymName, synonym.SynonymValue);
+                }
             }
 
-            //Replace all whitespace via regex
-            return Regex.Replace(originalStr, @"\s+", string.Empty, RegexOptions.Compiled);
+            return message;
         }
     }
 }
