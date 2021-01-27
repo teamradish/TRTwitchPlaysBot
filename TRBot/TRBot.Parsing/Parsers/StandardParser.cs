@@ -31,15 +31,16 @@ namespace TRBot.Parsing
     {   
         #region Constants
 
-        public const string PORT_OPTION = "port";
-        public const string PORT_NUM_OPTION = "portnum";
-        public const string SIMULTANEOUS_OPTION = "simultaneous";
-        public const string INPUT_OPTION = "input";
-        public const string PERCENTAGE_OPTION = "percent";
-        public const string PERCENTAGE_NUM_OPTION = "percentnum";
-        public const string MS_DUR_OPTION = "ms";
-        public const string SEC_DUR_OPTION = "s";
-        public const string DURATION_NUM_OPTION = "dur";
+        public const string PORT_GROUP_NAME = "port";
+        public const string PORT_NUM_GROUP_NAME = "portnum";
+        public const string HOLD_GROUP_NAME = "hold";
+        public const string RELEASE_GROUP_NAME = "release";
+        public const string SIMULTANEOUS_GROUP_NAME = "simultaneous";
+        public const string PERCENT_GROUP_NAME = "percent";
+        public const string PERCENT_NUM_GROUP_NAME = "percentnum";
+        public const string MS_DUR_GROUP_NAME = "ms";
+        public const string SEC_DUR_GROUP_NAME = "s";
+        public const string DUR_NUM_GROUP_NAME = "dur";
 
         #endregion
 
@@ -88,16 +89,9 @@ namespace TRBot.Parsing
         /// </summary>
         private List<IPreparser> Preparsers = null;
 
-        public StandardParser(List<IParserComponent> parserComponents, in int defaultPortNum,
-            in int maxPortNum, in int defaultInputDur, in int maxInputDur, in bool checkMaxDur)
+        public StandardParser(List<IParserComponent> parserComponents)
         {
-            ParserComponents = new List<IParserComponent>(parserComponents);
-            
-            DefaultPortNum = defaultPortNum;
-            MaxPortNum = maxPortNum;
-            DefaultInputDuration = defaultInputDur;
-            MaxInputDuration = maxInputDur;
-            CheckMaxDur = checkMaxDur;
+            ParserComponents = parserComponents;
 
             string regex = string.Empty;
 
@@ -108,6 +102,17 @@ namespace TRBot.Parsing
             }
 
             ParserRegex = regex;
+        }
+
+        public StandardParser(List<IParserComponent> parserComponents, in int defaultPortNum,
+            in int maxPortNum, in int defaultInputDur, in int maxInputDur, in bool checkMaxDur)
+                : this(parserComponents)
+        {
+            DefaultPortNum = defaultPortNum;
+            MaxPortNum = maxPortNum;
+            DefaultInputDuration = defaultInputDur;
+            MaxInputDuration = maxInputDur;
+            CheckMaxDur = checkMaxDur;
         }
 
         public StandardParser(List<IPreparser> preParsers, List<IParserComponent> parserComponents,
@@ -159,6 +164,11 @@ namespace TRBot.Parsing
             {
                 Match match = matches[i];
                 
+                if (match.Success == false)
+                {
+                    return new ParsedInputSequence(ParsedInputResults.NormalMsg, null, 0, "Parser: Message is a normal one.");
+                }
+
                 Console.WriteLine($"Match value: {match.Value}");
 
                 //Set up our input
@@ -170,15 +180,15 @@ namespace TRBot.Parsing
                 Console.WriteLine($"Group count: {match.Groups.Count}");
 
                 //Look for the input - this is the only required field
-                if (match.Groups.TryGetValue("input", out Group inpGroup) == false)
+                if (match.Groups.TryGetValue(InputParserComponent.INPUT_GROUP_NAME, out Group inpGroup) == false)
                 {
                     return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Input is missing.");
                 }
 
                 input.name = inpGroup.Value;
 
-                bool hasHold = match.Groups.TryGetValue("hold", out Group holdGroup);
-                bool hasRelease = match.Groups.TryGetValue("release", out Group releaseGroup);
+                bool hasHold = match.Groups.TryGetValue(HOLD_GROUP_NAME, out Group holdGroup) && holdGroup?.Success == true;
+                bool hasRelease = match.Groups.TryGetValue(RELEASE_GROUP_NAME, out Group releaseGroup) && releaseGroup?.Success == true;
 
                 //Can't have both a hold and a release
                 if (hasHold == true && hasRelease == true)
@@ -190,9 +200,21 @@ namespace TRBot.Parsing
                 input.release = hasRelease;
 
                 //Check if a port number exists
-                if (match.Groups.TryGetValue(PORT_OPTION, out Group portGroup) == true)
+                if (match.Groups.TryGetValue(PORT_GROUP_NAME, out Group portGroup) == true
+                    && portGroup.Success == true)
                 {
-                    string portNumStr = portGroup.Value.Substring(1);
+                    Console.WriteLine($"Port group success: {portGroup.Success}");
+
+                    //Find the number
+                    if (match.Groups.TryGetValue(PORT_NUM_GROUP_NAME, out Group portNumGroup) == false
+                        || portNumGroup.Success == false)
+                    {
+                        return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Port number not specified.");
+                    }
+
+                    Console.WriteLine($"Port num group success: {portNumGroup.Success}");
+
+                    string portNumStr = portNumGroup.Value;
                     if (int.TryParse(portNumStr, out input.controllerPort) == false)
                     {
                         return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Port number is invalid.");
@@ -206,11 +228,13 @@ namespace TRBot.Parsing
                 }
 
                 //Check for percentage
-                if (match.Groups.TryGetValue(PERCENTAGE_OPTION, out Group percentGroup) == true)
+                if (match.Groups.TryGetValue(PERCENT_GROUP_NAME, out Group percentGroup) == true
+                    && percentGroup.Success == true)
                 {
                     string percentParseStr = percentGroup.Value;
 
-                    if (match.Groups.TryGetValue(PERCENTAGE_NUM_OPTION, out Group percentNumGroup) == false)
+                    if (match.Groups.TryGetValue(PERCENT_NUM_GROUP_NAME, out Group percentNumGroup) == false
+                        || percentNumGroup.Success == false)
                     {
                         return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Percentage number not found.");
                     }
@@ -250,8 +274,8 @@ namespace TRBot.Parsing
                 }
 
                 //Check for duration
-                bool hasMs = match.Groups.TryGetValue(MS_DUR_OPTION, out Group msGroup);
-                bool hasSec = match.Groups.TryGetValue(SEC_DUR_OPTION, out Group secGroup);
+                bool hasMs = match.Groups.TryGetValue(MS_DUR_GROUP_NAME, out Group msGroup) && msGroup?.Success == true;
+                bool hasSec = match.Groups.TryGetValue(SEC_DUR_GROUP_NAME, out Group secGroup) && secGroup?.Success == true;
 
                 //Can't have both durations
                 if (hasMs == true && hasSec == true)
@@ -315,7 +339,8 @@ namespace TRBot.Parsing
                 if (hasMs == true || hasSec == true)
                 {
                     //Get the duration
-                    if (match.Groups.TryGetValue(DURATION_NUM_OPTION, out Group durGroup) == false)
+                    if (match.Groups.TryGetValue(DUR_NUM_GROUP_NAME, out Group durGroup) == false
+                        || durGroup.Success == false)
                     {
                         return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Duration not found.");
                     }
@@ -344,7 +369,8 @@ namespace TRBot.Parsing
                 subInputs.Add(input);
 
                 //If there's no simultaneous input, set up a new list
-                if (match.Groups.TryGetValue(SIMULTANEOUS_OPTION, out Group simultaneousGroup) == false)
+                if (match.Groups.TryGetValue(SIMULTANEOUS_GROUP_NAME, out Group simultaneousGroup) == false
+                    || simultaneousGroup.Success == false)
                 {
                     parsedInputList.Add(subInputs);
                     subInputs = new List<ParsedInput>();

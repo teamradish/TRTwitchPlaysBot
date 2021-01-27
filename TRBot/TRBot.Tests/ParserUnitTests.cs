@@ -179,14 +179,14 @@ namespace TRBot.Tests
         }
 
         [TestCase("_q", new string[] { "q" })]
-        [TestCase("q", new string[] { "q" })]
         [TestCase("_x_yxy", new string[] { "x", "y" })]
         [TestCase("_ab_rl", new string[] { "a", "b", "r", "l" })]
         public void TestHold(string input, params string[] inputList)
         {
+            string holdRegex = @"(?<" + StandardParser.HOLD_GROUP_NAME + @">_)?";
             List<IParserComponent> components = new List<IParserComponent>()
             {
-                new GenericParserComponent(@"(?<hold>_)?"),
+                new GenericParserComponent(holdRegex),
                 new InputParserComponent(inputList),
             };
 
@@ -198,14 +198,14 @@ namespace TRBot.Tests
         }
 
         [TestCase("-q", new string[] { "q" })]
-        [TestCase("q", new string[] { "q" })]
         [TestCase("-ab-rl", new string[] { "a", "b", "r", "l" })]
         [TestCase("q-", new string[] { "q" })]
         public void TestRelease(string input, params string[] inputList)
         {
+            string releaseRegex = @"(?<" + StandardParser.RELEASE_GROUP_NAME + @">\-)?";
             List<IParserComponent> components = new List<IParserComponent>()
             {
-                new GenericParserComponent(@"(?<release>\-)?"),
+                new GenericParserComponent(releaseRegex),
                 new InputParserComponent(inputList),
             };
 
@@ -214,6 +214,35 @@ namespace TRBot.Tests
             ParsedInputSequence seq = standardParser.ParseInputs(input);
 
             Assert.AreEqual(seq.ParsedInputResult, ParsedInputResults.Valid);
+        }
+
+        [TestCase("a", new string[] { "a" }, 0)]
+        [TestCase("&1a", new string[] { "a" }, 1)]
+        [TestCase("&2b", new string[] { "b" }, 2)]
+        [TestCase("&7b", new string[] { "b" }, 7)]
+        [TestCase("&72b", new string[] { "2b" }, 7)]
+        [TestCase("&161a", new string[] { "1a" }, 16)]
+        [TestCase("&99b", new string[] { "b" }, 99)]
+        public void TestPort(string input, string[] inputList, int expectedPort)
+        {
+            string portRegex = @"(?<"
+                + StandardParser.PORT_GROUP_NAME
+                + @">\&(?<"
+                + StandardParser.PORT_NUM_GROUP_NAME
+                + @">[1-9]{1,2}))?";
+
+            List<IParserComponent> components = new List<IParserComponent>()
+            {
+                new GenericParserComponent(portRegex),
+                new InputParserComponent(inputList),
+            };
+
+            StandardParser standardParser = new StandardParser(components);
+            standardParser.MaxPortNum = expectedPort;
+
+            ParsedInputSequence seq = standardParser.ParseInputs(input);
+
+            Assert.AreEqual(seq.Inputs[0][0].controllerPort, expectedPort);
         }
 
         # region Utility
@@ -225,32 +254,8 @@ namespace TRBot.Tests
                 new InputParserComponent(inputList)
             };
 
-            StandardParser standardParser = new StandardParser(components);
+            StandardParser standardParser = new StandardParser(components, 0, 4, 200, 60000, false);
             return standardParser;
-        }
-
-        private Dictionary<T, U> BuildDictWithArrays<T, U>(T[] array1, U[] array2)
-        {
-            Dictionary<T, U> dict = new Dictionary<T, U>(array1.Length);
-
-            for (int i = 0; i < array1.Length; i++)
-            {
-                dict[array1[i]] = array2[i];
-            }
-
-            return dict;
-        }
-
-        private ConcurrentDictionary<T, U> BuildConcurrentDictWithArrays<T, U>(T[] array1, U[] array2)
-        {
-            ConcurrentDictionary<T, U> dict = new ConcurrentDictionary<T, U>(1, array1.Length);
-
-            for (int i = 0; i < array1.Length; i++)
-            {
-                dict[array1[i]] = array2[i];
-            }
-
-            return dict;    
         }
 
         #endregion

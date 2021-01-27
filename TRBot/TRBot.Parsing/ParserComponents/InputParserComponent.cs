@@ -29,6 +29,8 @@ namespace TRBot.Parsing
     /// </summary>
     public class InputParserComponent : IParserComponent
     {
+        public const string INPUT_GROUP_NAME = "input";
+
         public string Regex { get; private set; } = string.Empty;
 
         public InputParserComponent(IList<string> inputList)
@@ -37,7 +39,7 @@ namespace TRBot.Parsing
                                                 orderby str.Length descending
                                                 select str;
 
-            const string startRegex = @"(?<input>(";
+            const string startRegex = @"(?<" + INPUT_GROUP_NAME + @">(";
             const string endRegex = @"))";
             
             StringBuilder strBuilder = new StringBuilder(inputList.Count * 6);
