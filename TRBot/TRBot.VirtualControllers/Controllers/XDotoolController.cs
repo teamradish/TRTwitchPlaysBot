@@ -50,7 +50,12 @@ namespace TRBot.VirtualControllers
             LClick, RClick, MClick,
             
             //Keyboard
-            Return, space, q, w, e, r, a, s, d, p
+            Return, space,
+            q, w, e, r, t, y, u, i, o, p,
+            a, s, d, f, g, h, j, k, l,
+            z, x, c, v, b, n, m,
+
+            Up, Down, Left, Right
         }
         
         /// <summary>
@@ -75,14 +80,40 @@ namespace TRBot.VirtualControllers
             { (int)GlobalButtonVals.BTN7,   (int)InputCodes.RClick },
             { (int)GlobalButtonVals.BTN8,   (int)InputCodes.Return },
             { (int)GlobalButtonVals.BTN9,   (int)InputCodes.space },
+            
             { (int)GlobalButtonVals.BTN10,  (int)InputCodes.q },
             { (int)GlobalButtonVals.BTN11,  (int)InputCodes.w },
             { (int)GlobalButtonVals.BTN12,  (int)InputCodes.e },
             { (int)GlobalButtonVals.BTN13,  (int)InputCodes.r },
-            { (int)GlobalButtonVals.BTN14,  (int)InputCodes.a },
-            { (int)GlobalButtonVals.BTN15,  (int)InputCodes.s },
-            { (int)GlobalButtonVals.BTN16,  (int)InputCodes.d },
-            { (int)GlobalButtonVals.BTN17,  (int)InputCodes.p }
+            { (int)GlobalButtonVals.BTN14,  (int)InputCodes.t },
+            { (int)GlobalButtonVals.BTN15,  (int)InputCodes.y },
+            { (int)GlobalButtonVals.BTN16,  (int)InputCodes.u },
+            { (int)GlobalButtonVals.BTN17,  (int)InputCodes.i },
+            { (int)GlobalButtonVals.BTN18,  (int)InputCodes.o },
+            { (int)GlobalButtonVals.BTN19,  (int)InputCodes.p },
+
+            { (int)GlobalButtonVals.BTN20,  (int)InputCodes.a },
+            { (int)GlobalButtonVals.BTN21,  (int)InputCodes.s },
+            { (int)GlobalButtonVals.BTN22,  (int)InputCodes.d },
+            { (int)GlobalButtonVals.BTN23,  (int)InputCodes.f },
+            { (int)GlobalButtonVals.BTN24,  (int)InputCodes.g },
+            { (int)GlobalButtonVals.BTN25,  (int)InputCodes.h },
+            { (int)GlobalButtonVals.BTN26,  (int)InputCodes.j },
+            { (int)GlobalButtonVals.BTN27,  (int)InputCodes.k },
+            { (int)GlobalButtonVals.BTN28,  (int)InputCodes.l },
+
+            { (int)GlobalButtonVals.BTN29,  (int)InputCodes.z },
+            { (int)GlobalButtonVals.BTN30,  (int)InputCodes.x },
+            { (int)GlobalButtonVals.BTN31,  (int)InputCodes.c },
+            { (int)GlobalButtonVals.BTN32,  (int)InputCodes.v },
+            { (int)GlobalButtonVals.BTN33,  (int)InputCodes.b },
+            { (int)GlobalButtonVals.BTN34,  (int)InputCodes.n },
+            { (int)GlobalButtonVals.BTN35,  (int)InputCodes.m },
+
+            { (int)GlobalButtonVals.BTN36,  (int)InputCodes.Up },
+            { (int)GlobalButtonVals.BTN37,  (int)InputCodes.Down },
+            { (int)GlobalButtonVals.BTN38,  (int)InputCodes.Left },
+            { (int)GlobalButtonVals.BTN39,  (int)InputCodes.Right },
         };
 
         /// <summary>
@@ -288,6 +319,7 @@ namespace TRBot.VirtualControllers
             //Not a valid button - defaulting to 0 results in the wrong button being pressed/released
             if (InputCodeMap.TryGetValue((int)buttonVal, out int button) == false)
             {
+                Console.WriteLine($"Didn't find buttonValue {buttonVal}");
                 return;
             }
             
