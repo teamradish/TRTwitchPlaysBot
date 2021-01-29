@@ -34,6 +34,8 @@ namespace TRBot.VirtualControllers
     /// </summary>
     public class XDotoolController : IVirtualController
     {
+        private readonly object StrBuilderLockObject = new object();
+
         private const string ProcessName = "xdotool";
         private const string MouseMoveRelArg = "mousemove_relative -- ";
         private const string MouseDownArg = "mousedown ";
@@ -167,7 +169,7 @@ namespace TRBot.VirtualControllers
         /// <summary>
         /// The built argument list passed into xdotool.
         /// </summary>
-        private StringBuilder BuiltArgList = new StringBuilder(512);
+        private StringBuilder BuiltArgList = new StringBuilder(1024);
 
         public XDotoolController(in int controllerIndex)
         {
@@ -379,8 +381,13 @@ namespace TRBot.VirtualControllers
                 return;
             }
             
+            string argList = string.Empty;
+
             //Execute all the built up commands at once by passing them as arguments to xdotool
-            string argList = BuiltArgList.ToString();
+            lock (StrBuilderLockObject)
+            {
+                argList = BuiltArgList.ToString();
+            }
             
             //TRBotLogger.Logger.Information($"BUILT ARG LIST: \"{argList}\"");
             
@@ -397,7 +404,10 @@ namespace TRBot.VirtualControllers
                 TRBotLogger.Logger.Error($"Unable to carry out xdotool inputs: {e.Message}");
             }
             
-            BuiltArgList.Clear();
+            lock (StrBuilderLockObject)
+            {
+                BuiltArgList.Clear();
+            }
 
             ControllerUpdatedEvent?.Invoke();
         }
@@ -412,22 +422,34 @@ namespace TRBot.VirtualControllers
         
         private void HandleMouseUp(int mouseBtn)
         {
-            BuiltArgList.Append(MouseUpArg).Append(mouseBtn).Append(" ");
+            lock (StrBuilderLockObject)
+            {
+                BuiltArgList.Append(MouseUpArg).Append(mouseBtn).Append(" ");
+            }
         }
         
         private void HandleMouseMove(int moveLeft, int moveUp)
         {
-            BuiltArgList.Append(MouseMoveRelArg).Append(moveLeft).Append(" ").Append(moveUp).Append(" ");
+            lock (StrBuilderLockObject)
+            {
+                BuiltArgList.Append(MouseMoveRelArg).Append(moveLeft).Append(" ").Append(moveUp).Append(" ");
+            }
         }
         
         private void HandleProcessKeyDown(string key)
         {
-            BuiltArgList.Append(KeyDownArg).Append(key).Append(" ");
+            lock (StrBuilderLockObject)
+            {
+                BuiltArgList.Append(KeyDownArg).Append(key).Append(" ");
+            }
         }
         
         private void HandleProcessKeyUp(string key)
         {
-            BuiltArgList.Append(KeyUpArg).Append(key).Append(" ");
+            lock (StrBuilderLockObject)
+            {
+                BuiltArgList.Append(KeyUpArg).Append(key).Append(" ");
+            }
         }
     }
 }
