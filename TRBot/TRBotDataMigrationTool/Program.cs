@@ -593,7 +593,7 @@ namespace TRBotDataMigrationTool
             }
 
             newUser.ControllerPort = oldUserObj.Team;
-            newUser.SetOptStatus(oldUserObj.OptedOut);
+            newUser.SetOptStatus(!oldUserObj.OptedOut);
             newUser.Stats.AutoPromoted = (oldUserObj.AutoWhitelisted == true) ? 1L : 0L;
             newUser.Stats.BetCounter = oldUserObj.BetCounter;
             newUser.Stats.Credits = oldUserObj.Credits;
