@@ -172,3 +172,5 @@ You will need to reload data or restart TRBot to apply any changes in the **Comm
 - [`EnterGroupBetCommand`](../TRBot/TRBot.Commands/Commands/EnterGroupBetCommand.cs) (default: "!groupbet") - Enters the group bet with a given bet. If you're already in the group bet, this will adjust your bet to the new value. If you entered the group bet and there are now enough participants, the group bet will begin.
   - Example: "!groupbet 500
 - [`LeaveGroupBetCommand`](../TRBot/TRBot.Commands/Commands/LeaveGroupBetCommand.cs) (default: "!exitgroupbet") - Leaves the group bet. If there are no longer enough participants for the group bet after leaving, the group bet will be cancelled.
+- [`IgnoreMemesCommand`](../TRBot/TRBot.Commands/Commands/LeaveGroupBetCommand.cs) (default: "!ignorememes") - Obtains your status for ignoring memes or sets it if an argument is provided. While ignoring memes, any phrases you say in chat will no longer trigger a message from the bot. For example, "hi" may be a meme that causes the bot to reply with "hello" when received in chat. Ignoring memes would cause no response from the bot.
+  - Example: "!ignorememes true"

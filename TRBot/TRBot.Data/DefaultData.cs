@@ -193,6 +193,7 @@ namespace TRBot.Data
                 new CommandData("bingo", "TRBot.Commands.BingoCommand", userPerm, true, false),
                 new CommandData("port", "TRBot.Commands.ControllerPortCommand", userPerm, true, true),
                 new CommandData("optstats", "TRBot.Commands.OptStatsCommand", userPerm, true, true),
+                new CommandData("ignorememes", "TRBot.Commands.IgnoreMemesCommand", userPerm, true, true),
                 new CommandData("length", "TRBot.Commands.InputLengthCommand", userPerm, true, true),
                 new CommandData("clearstats", "TRBot.Commands.ClearUserStatsCommand", userPerm, true, true),
                 new CommandData("calculate", "TRBot.Commands.CalculateCommand", userPerm, true, true),
