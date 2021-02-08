@@ -12,10 +12,6 @@ namespace TRBot.Tests
     [TestFixture]
     public class ParserUnitTests
     {
-        /* For some tests, we need to build dictionaries and other structures ahead of time.
-           Find a way to supply ALL the necessary data ahead of time so each test can focus on just one thing.
-        */
-
         /*
            ALSO, these tests are VERY BAD! We need to test ONLY specific functions. There should be little
            to no preparation required for these tests.
@@ -168,7 +164,7 @@ namespace TRBot.Tests
         [TestCase("a", new string[] { "b" })]
         [TestCase("r3", new string[] { "r2" })]
         [TestCase("bx", new string[] { "abx" })]
-        public void TestBasicFail(string input, params string[] inputList)
+        public void TestBasicFail(string input, string[] inputList)
         {
             StandardParser standardParser = Basic(inputList);
 
@@ -178,15 +174,15 @@ namespace TRBot.Tests
             Assert.AreNotEqual(seq.Error, string.Empty);
         }
 
-        [TestCase("_q", new string[] { "q" })]
-        [TestCase("_x_yxy", new string[] { "x", "y" })]
-        [TestCase("_ab_rl", new string[] { "a", "b", "r", "l" })]
-        public void TestHold(string input, params string[] inputList)
+        [TestCase("_q", new string[] { "q" }, new int[] { 0 })]
+        [TestCase("_x_yxy", new string[] { "x", "y" }, new int[] { 0, 1 })]
+        [TestCase("_ab_rl", new string[] { "a", "b", "r", "l" }, new int[] { 0, 2} )]
+        [TestCase("b25_l3l_l", new string[] { "l3", "b25", "l" }, new int[] { 1, 3} )]
+        public void TestHold(string input, string[] inputList, int[] expectedHoldIndices)
         {
-            string holdRegex = @"(?<" + StandardParser.HOLD_GROUP_NAME + @">_)?";
             List<IParserComponent> components = new List<IParserComponent>()
             {
-                new GenericParserComponent(holdRegex),
+                new HoldParserComponent(),
                 new InputParserComponent(inputList),
             };
 
@@ -195,17 +191,22 @@ namespace TRBot.Tests
             ParsedInputSequence seq = standardParser.ParseInputs(input);
 
             Assert.AreEqual(seq.ParsedInputResult, ParsedInputResults.Valid);
+
+            for (int i = 0; i < expectedHoldIndices.Length; i++)
+            {
+                int holdIndex = expectedHoldIndices[i];
+                Assert.AreEqual(seq.Inputs[holdIndex][0].hold, true);
+            }
         }
 
-        [TestCase("-q", new string[] { "q" })]
-        [TestCase("-ab-rl", new string[] { "a", "b", "r", "l" })]
-        [TestCase("q-", new string[] { "q" })]
-        public void TestRelease(string input, params string[] inputList)
+        [TestCase("-q", new string[] { "q" }, new int[] { 0 })]
+        [TestCase("-ab-rl", new string[] { "a", "b", "r", "l" }, new int[] { 0, 2 })]
+        [TestCase("rwrew-w", new string[] { "q", "w", "e", "r" }, new int[] { 5 })]
+        public void TestRelease(string input, string[] inputList, int[] expectedReleaseIndices)
         {
-            string releaseRegex = @"(?<" + StandardParser.RELEASE_GROUP_NAME + @">\-)?";
             List<IParserComponent> components = new List<IParserComponent>()
             {
-                new GenericParserComponent(releaseRegex),
+                new ReleaseParserComponent(),
                 new InputParserComponent(inputList),
             };
 
@@ -214,35 +215,66 @@ namespace TRBot.Tests
             ParsedInputSequence seq = standardParser.ParseInputs(input);
 
             Assert.AreEqual(seq.ParsedInputResult, ParsedInputResults.Valid);
+
+            for (int i = 0; i < expectedReleaseIndices.Length; i++)
+            {
+                int releaseIndex = expectedReleaseIndices[i];
+                Assert.AreEqual(seq.Inputs[releaseIndex][0].release, true);
+            }
         }
 
-        [TestCase("a", new string[] { "a" }, 0)]
-        [TestCase("&1a", new string[] { "a" }, 1)]
-        [TestCase("&2b", new string[] { "b" }, 2)]
-        [TestCase("&7b", new string[] { "b" }, 7)]
-        [TestCase("&72b", new string[] { "2b" }, 7)]
-        [TestCase("&161a", new string[] { "1a" }, 16)]
-        [TestCase("&99b", new string[] { "b" }, 99)]
-        public void TestPort(string input, string[] inputList, int expectedPort)
+        [TestCase("a", new string[] { "a" }, new int[] { 0 })]
+        [TestCase("&1a", new string[] { "a" }, new int[] { 1 })]
+        [TestCase("&0a&88r", new string[] { "a", "r" }, new int[] { 0, 88 })]
+        [TestCase("&2b", new string[] { "b" }, new int[] { 2 })]
+        [TestCase("&7b", new string[] { "b" }, new int[] { 7 })]
+        [TestCase("&777&21q", new string[] { "7", "q" }, new int[] { 77, 21 })]
+        [TestCase("&72b", new string[] { "2b" }, new int[] { 7 })]
+        [TestCase("&161a", new string[] { "1a" }, new int[] { 16 })]
+        [TestCase("&99b", new string[] { "b" }, new int[] { 99 })]
+        public void TestPort(string input, string[] inputList, int[] expectedPorts)
         {
-            string portRegex = @"(?<"
-                + StandardParser.PORT_GROUP_NAME
-                + @">\&(?<"
-                + StandardParser.PORT_NUM_GROUP_NAME
-                + @">[1-9]{1,2}))?";
-
             List<IParserComponent> components = new List<IParserComponent>()
             {
-                new GenericParserComponent(portRegex),
+                new PortParserComponent(),
                 new InputParserComponent(inputList),
             };
 
             StandardParser standardParser = new StandardParser(components);
-            standardParser.MaxPortNum = expectedPort;
+            standardParser.MaxPortNum = expectedPorts.Max();
 
             ParsedInputSequence seq = standardParser.ParseInputs(input);
 
-            Assert.AreEqual(seq.Inputs[0][0].controllerPort, expectedPort);
+            Assert.AreEqual(seq.ParsedInputResult, ParsedInputResults.Valid);
+
+            for (int i = 0; i < seq.Inputs.Count; i++)
+            {
+                Assert.AreEqual(seq.Inputs[i][0].controllerPort, expectedPorts[i]);
+            }
+        }
+
+        [TestCase("nmh", new string[] { "n", "m", "h" }, new int[] { 100, 100, 100 })]
+        [TestCase("a30%", new string[] { "a" }, new int[] { 30 })]
+        [TestCase("r74%y37%b1%", new string[] { "b", "r", "y" }, new int[] { 74, 37, 1 })]
+        [TestCase("r111%l222%r333%l444%", new string[] { "r1", "l2", "r3", "l4" }, new int[] { 11, 22, 33, 44 })]
+        public void TestPercent(string input, string[] inputList, int[] expectedPercents)
+        {
+            List<IParserComponent> components = new List<IParserComponent>()
+            {
+                new InputParserComponent(inputList),
+                new PercentParserComponent(),
+            };
+
+            StandardParser standardParser = new StandardParser(components);
+
+            ParsedInputSequence seq = standardParser.ParseInputs(input);
+
+            Assert.AreEqual(seq.ParsedInputResult, ParsedInputResults.Valid);
+            
+            for (int i = 0; i < seq.Inputs.Count; i++)
+            {
+                Assert.AreEqual(seq.Inputs[i][0].percent, expectedPercents[i]);
+            }
         }
 
         # region Utility

@@ -29,21 +29,6 @@ namespace TRBot.Parsing
     /// </summary>
     public class StandardParser : IParser
     {   
-        #region Constants
-
-        public const string PORT_GROUP_NAME = "port";
-        public const string PORT_NUM_GROUP_NAME = "portnum";
-        public const string HOLD_GROUP_NAME = "hold";
-        public const string RELEASE_GROUP_NAME = "release";
-        public const string SIMULTANEOUS_GROUP_NAME = "simultaneous";
-        public const string PERCENT_GROUP_NAME = "percent";
-        public const string PERCENT_NUM_GROUP_NAME = "percentnum";
-        public const string MS_DUR_GROUP_NAME = "ms";
-        public const string SEC_DUR_GROUP_NAME = "s";
-        public const string DUR_NUM_GROUP_NAME = "dur";
-
-        #endregion
-
         /// <summary>
         /// The default port number to use for inputs with unspecified ports.
         /// </summary>
@@ -187,8 +172,8 @@ namespace TRBot.Parsing
 
                 input.name = inpGroup.Value;
 
-                bool hasHold = match.Groups.TryGetValue(HOLD_GROUP_NAME, out Group holdGroup) && holdGroup?.Success == true;
-                bool hasRelease = match.Groups.TryGetValue(RELEASE_GROUP_NAME, out Group releaseGroup) && releaseGroup?.Success == true;
+                bool hasHold = match.Groups.TryGetValue(HoldParserComponent.HOLD_GROUP_NAME, out Group holdGroup) && holdGroup?.Success == true;
+                bool hasRelease = match.Groups.TryGetValue(ReleaseParserComponent.RELEASE_GROUP_NAME, out Group releaseGroup) && releaseGroup?.Success == true;
 
                 //Can't have both a hold and a release
                 if (hasHold == true && hasRelease == true)
@@ -200,13 +185,13 @@ namespace TRBot.Parsing
                 input.release = hasRelease;
 
                 //Check if a port number exists
-                if (match.Groups.TryGetValue(PORT_GROUP_NAME, out Group portGroup) == true
+                if (match.Groups.TryGetValue(PortParserComponent.PORT_GROUP_NAME, out Group portGroup) == true
                     && portGroup.Success == true)
                 {
                     Console.WriteLine($"Port group success: {portGroup.Success}");
 
                     //Find the number
-                    if (match.Groups.TryGetValue(PORT_NUM_GROUP_NAME, out Group portNumGroup) == false
+                    if (match.Groups.TryGetValue(PortParserComponent.PORT_NUM_GROUP_NAME, out Group portNumGroup) == false
                         || portNumGroup.Success == false)
                     {
                         return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Port number not specified.");
@@ -228,31 +213,19 @@ namespace TRBot.Parsing
                 }
 
                 //Check for percentage
-                if (match.Groups.TryGetValue(PERCENT_GROUP_NAME, out Group percentGroup) == true
+                if (match.Groups.TryGetValue(PercentParserComponent.PERCENT_GROUP_NAME, out Group percentGroup) == true
                     && percentGroup.Success == true)
                 {
                     string percentParseStr = percentGroup.Value;
 
-                    if (match.Groups.TryGetValue(PERCENT_NUM_GROUP_NAME, out Group percentNumGroup) == false
+                    if (match.Groups.TryGetValue(PercentParserComponent.PERCENT_NUM_GROUP_NAME, out Group percentNumGroup) == false
                         || percentNumGroup.Success == false)
                     {
                         return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Percentage number not found.");
                     }
 
-                    //Validate percentage sign
-                    /*int percentIndex = percentParseStr.IndexOf(PERCENTAGE_SYMBOL);
-                    if (percentIndex < 0)
-                    {
-                        return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, $"Parser error: '{PERCENTAGE_SYMBOL}' symbol not found in percentage.");
-                    }
-
-                    if (percentIndex != (percentParseStr.Length - 1))
-                    {
-                        return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, $"Parser error: '{PERCENTAGE_SYMBOL}' symbol not at end of percentage.");
-                    }*/
-                    
                     //Parse the percentage value
-                    string percentStr = percentNumGroup.Value;//percentParseStr.Substring(0, percentParseStr.Length - percentIndex);
+                    string percentStr = percentNumGroup.Value;
 
                     //Validate this as a number
                     if (int.TryParse(percentStr, out int percent) == false)
@@ -274,72 +247,19 @@ namespace TRBot.Parsing
                 }
 
                 //Check for duration
-                bool hasMs = match.Groups.TryGetValue(MS_DUR_GROUP_NAME, out Group msGroup) && msGroup?.Success == true;
-                bool hasSec = match.Groups.TryGetValue(SEC_DUR_GROUP_NAME, out Group secGroup) && secGroup?.Success == true;
+                bool hasMs = match.Groups.TryGetValue(MillisecondParserComponent.MS_DUR_GROUP_NAME, out Group msGroup) && msGroup?.Success == true;
+                bool hasSec = match.Groups.TryGetValue(SecondParserComponent.SEC_DUR_GROUP_NAME, out Group secGroup) && secGroup?.Success == true;
 
                 //Can't have both durations
                 if (hasMs == true && hasSec == true)
                 {
                     return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Contains both 'ms' and 's' for duration.");
                 }
-                /*else if (hasMs == true)
-                {
-                    //Parse millisecond value
-                    string msParseStr = msGroup.Value;
-                    int msIndex = msParseStr.IndexOf(MS_DUR_OPTION);
-                    if (msIndex < 0)
-                    {
-                        return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: 'ms' not found.");
-                    }
-
-                    if (msIndex != (msParseStr.Length - 2))
-                    {
-                        return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: 'ms' is not at end of duration.");
-                    }
-
-                    string msStr = msParseStr.Substring(0, msParseStr.Length - msIndex);
-                    if (int.TryParse(msStr, out int msVal) == false)
-                    {
-                        return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Invalid millisecond duration.");
-                    }
-
-                    input.duration_type = MS_DUR_OPTION;
-                    input.duration = msVal;
-                }
-                else if (hasSec == true)
-                {
-                    //Parse seconds value
-                    string secParseStr = msGroup.Value;
-                    int secIndex = secParseStr.IndexOf('s');
-                    if (secIndex < 0)
-                    {
-                        return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: 's' not found.");
-                    }
-
-                    if (secIndex != (secParseStr.Length - 1))
-                    {
-                        return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: 's' is not at end of duration.");
-                    }
-
-                    string secStr = secParseStr.Substring(0, secParseStr.Length - secIndex);
-                    if (int.TryParse(secStr, out int secVal) == false)
-                    {
-                        return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Invalid second duration.");
-                    }
-
-                    input.duration_type = SEC_DUR_OPTION;
-                    input.duration = secVal * 1000;
-                }
-                else
-                {
-                    input.duration_type = "ms";
-                    input.duration = DefaultInputDuration;
-                }*/
 
                 if (hasMs == true || hasSec == true)
                 {
                     //Get the duration
-                    if (match.Groups.TryGetValue(DUR_NUM_GROUP_NAME, out Group durGroup) == false
+                    if (match.Groups.TryGetValue(MillisecondParserComponent.DUR_NUM_GROUP_NAME, out Group durGroup) == false
                         || durGroup.Success == false)
                     {
                         return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Duration not found.");
@@ -369,7 +289,7 @@ namespace TRBot.Parsing
                 subInputs.Add(input);
 
                 //If there's no simultaneous input, set up a new list
-                if (match.Groups.TryGetValue(SIMULTANEOUS_GROUP_NAME, out Group simultaneousGroup) == false
+                if (match.Groups.TryGetValue(SimultaneousParserComponent.SIMULTANEOUS_GROUP_NAME, out Group simultaneousGroup) == false
                     || simultaneousGroup.Success == false)
                 {
                     parsedInputList.Add(subInputs);
