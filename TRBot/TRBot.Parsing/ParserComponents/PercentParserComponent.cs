@@ -29,7 +29,9 @@ namespace TRBot.Parsing
         public const string PERCENT_NUM_GROUP_NAME = "percentnum";
 
         public PercentParserComponent()
-            : base(@"(?<" + PERCENT_GROUP_NAME + @">(?<" + PERCENT_NUM_GROUP_NAME + @">\d+)%)?")
+            //We specify the percent number as optional so the regex picks up just the symbol
+            //This allows us to provide an error message when the port number is missing 
+            : base(@"(?<" + PERCENT_GROUP_NAME + @">(?<" + PERCENT_NUM_GROUP_NAME + @">\d+)?%)?")
         {
             
         }

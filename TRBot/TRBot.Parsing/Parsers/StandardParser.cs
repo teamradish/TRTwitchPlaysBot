@@ -133,6 +133,9 @@ namespace TRBot.Parsing
                 return new ParsedInputSequence(ParsedInputResults.NormalMsg, null, 0, "Parser: Message is a normal one.");
             }
 
+            //Store the previous index - if there's anything in between that's not picked up by the regex, it's an invalid input
+            int prevIndex = 0;
+
             Console.WriteLine($"Match count for \"{message}\" is {matches.Count}");
 
             //Create our input sequence and inputs
@@ -148,10 +151,26 @@ namespace TRBot.Parsing
             for (int i = 0; i < matches.Count; i++)
             {
                 Match match = matches[i];
+
+                Console.WriteLine($"Match index: {match.Index} | Value: {match.Value} | Length: {match.Length}");
                 
+                for (int j = 0; j < match.Groups.Count; j++)
+                {
+                    Console.WriteLine($"{j + 1} group match: \"{match.Groups[j].Name}\" | Index: {match.Groups[j].Index} | Value: {match.Groups[j].Value} | Length: {match.Groups[j].Length}");
+                }
+
+                //If there's no match, it should be a normal message
                 if (match.Success == false)
                 {
                     return new ParsedInputSequence(ParsedInputResults.NormalMsg, null, 0, "Parser: Message is a normal one.");
+                }
+
+                //If there's a gap in matches (Ex. "a34ms hi b300ms"), this isn't a valid input and is likely a normal message
+                if (match.Index != prevIndex)
+                {
+                    Console.WriteLine($"PrevIndex: {prevIndex} | Match Index: {match.Index}");
+
+                    return new ParsedInputSequence(ParsedInputResults.NormalMsg, null, 0, "Parser: Message is a normal one, as the indexes don't match.");
                 }
 
                 Console.WriteLine($"Match value: {match.Value}");
@@ -165,21 +184,28 @@ namespace TRBot.Parsing
                 Console.WriteLine($"Group count: {match.Groups.Count}");
 
                 //Look for the input - this is the only required field
-                if (match.Groups.TryGetValue(InputParserComponent.INPUT_GROUP_NAME, out Group inpGroup) == false)
+                if (match.Groups.TryGetValue(InputParserComponent.INPUT_GROUP_NAME, out Group inpGroup) == false
+                    || inpGroup.Success == false)
                 {
                     return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Input is missing.");
                 }
 
                 input.name = inpGroup.Value;
 
+                Console.WriteLine($"FOUND INPUT NAME: \"{input.name}\"");
+
                 bool hasHold = match.Groups.TryGetValue(HoldParserComponent.HOLD_GROUP_NAME, out Group holdGroup) && holdGroup?.Success == true;
                 bool hasRelease = match.Groups.TryGetValue(ReleaseParserComponent.RELEASE_GROUP_NAME, out Group releaseGroup) && releaseGroup?.Success == true;
+
+                Console.WriteLine($"HAS HOLD: {hasHold} | HAS RELEASE: {hasRelease}");
 
                 //Can't have both a hold and a release
                 if (hasHold == true && hasRelease == true)
                 {
                     return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Contains both a hold and a release.");
                 }
+
+                //Console.WriteLine("GOT PAST HOLD");
 
                 input.hold = hasHold;
                 input.release = hasRelease;
@@ -188,21 +214,30 @@ namespace TRBot.Parsing
                 if (match.Groups.TryGetValue(PortParserComponent.PORT_GROUP_NAME, out Group portGroup) == true
                     && portGroup.Success == true)
                 {
-                    //Console.WriteLine($"Port group success: {portGroup.Success}");
+                    Console.WriteLine($"Port group success: {portGroup.Success} | I: {portGroup.Index} - L: {portGroup.Length}");
 
                     //Find the number
                     if (match.Groups.TryGetValue(PortParserComponent.PORT_NUM_GROUP_NAME, out Group portNumGroup) == false
                         || portNumGroup.Success == false)
                     {
-                        return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Port number not specified.");
+                        return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Controller port number not specified.");
                     }
 
-                    //Console.WriteLine($"Port num group success: {portNumGroup.Success}");
+                    Console.WriteLine($"Port num group success: {portNumGroup.Success} | I: {portNumGroup.Index} - L: {portNumGroup.Length}");
 
                     string portNumStr = portNumGroup.Value;
-                    if (int.TryParse(portNumStr, out input.controllerPort) == false)
+                    if (int.TryParse(portNumStr, out int cPort) == false)
                     {
-                        return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Port number is invalid.");
+                        return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Controller port number is invalid.");
+                    }
+
+                    //Subtract 1 from the port
+                    //While the input syntax isn't zero-based, the internal numbers are
+                    input.controllerPort = cPort - 1;
+
+                    if (input.controllerPort < 0)
+                    {
+                        return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Controller port number is too low.");
                     }
                 }
 
@@ -211,6 +246,8 @@ namespace TRBot.Parsing
                 {
                     return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Port number specified is greater than the max port.");
                 }
+
+                //Console.WriteLine("GOT PAST PORT");
 
                 //Check for percentage
                 if (match.Groups.TryGetValue(PercentParserComponent.PERCENT_GROUP_NAME, out Group percentGroup) == true
@@ -245,6 +282,8 @@ namespace TRBot.Parsing
                 {
                     input.percent = DefaultPercentage;
                 }
+
+                //Console.WriteLine("GOT PAST PERCENT");
 
                 //Check for duration
                 bool hasMs = match.Groups.TryGetValue(MillisecondParserComponent.MS_DUR_GROUP_NAME, out Group msGroup) && msGroup?.Success == true;
@@ -291,6 +330,8 @@ namespace TRBot.Parsing
                     input.duration = DefaultInputDuration;
                 }
 
+                //Console.WriteLine("GOT PAST DURATION");
+
                 subInputs.Add(input);
 
                 //If there's no simultaneous input, set up a new list
@@ -308,6 +349,13 @@ namespace TRBot.Parsing
                 {
                     return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Input sequence exceeds max input duration.");
                 }
+
+                Console.WriteLine("GOT PAST MAX DUR CHECK");
+
+                int prevPrev = prevIndex;
+                prevIndex = match.Index + match.Length;
+
+                Console.WriteLine($"PrevIndex WAS: {prevPrev} | NOW: {prevIndex}");
             }
 
             //We still have a subinput in the list, meaning a simultaneous input wasn't closed
@@ -315,6 +363,18 @@ namespace TRBot.Parsing
             {
                 return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Simultaneous specified with no input at end.");
             }
+
+            //Console.WriteLine("GOT PAST SIMULTANEOUS NOT CLOSED");
+
+            //If there's more past what the regex caught, this isn't a valid input and is likely a normal message
+            if (prevIndex != message.Length)
+            {
+                Console.WriteLine($"PREVINDEX: {prevIndex} | MESSAGE LENGTH: {message.Length}");
+
+                return new ParsedInputSequence(ParsedInputResults.NormalMsg, null, 0, "Parser: Message is a normal one.");
+            }
+
+            //Console.WriteLine("EVERYTHING IS GOOD");
 
             //We're good at this point, so set all the values and return the result
             inputSequence.ParsedInputResult = ParsedInputResults.Valid;

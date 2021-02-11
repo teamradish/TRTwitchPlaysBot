@@ -164,7 +164,11 @@ namespace TRBot.Tests
         [TestCase("a", new string[] { "b" })]
         [TestCase("r3", new string[] { "r2" })]
         [TestCase("bx", new string[] { "abx" })]
-        public void TestBasicFail(string input, string[] inputList)
+        [TestCase("arrb", new string[] { "a", "b" })]
+        [TestCase("raab", new string[] { "a", "b" })]
+        [TestCase("aabr", new string[] { "a", "b" })]
+        [TestCase("aq", new string[] { "a" })]
+        public void TestBasicNormalMsg(string input, string[] inputList)
         {
             StandardParser standardParser = Basic(inputList);
 
@@ -178,6 +182,8 @@ namespace TRBot.Tests
         [TestCase("_x_yxy", new string[] { "x", "y" }, new int[] { 0, 1 })]
         [TestCase("_ab_rl", new string[] { "a", "b", "r", "l" }, new int[] { 0, 2} )]
         [TestCase("b25_l3l_l", new string[] { "l3", "b25", "l" }, new int[] { 1, 3} )]
+        [TestCase("__", new string[] { "_" }, new int[] { 0 } )]
+        [TestCase("____", new string[] { "___" }, new int[] { 0 } )]
         public void TestHold(string input, string[] inputList, int[] expectedHoldIndices)
         {
             List<IParserComponent> components = new List<IParserComponent>()
@@ -202,6 +208,8 @@ namespace TRBot.Tests
         [TestCase("-q", new string[] { "q" }, new int[] { 0 })]
         [TestCase("-ab-rl", new string[] { "a", "b", "r", "l" }, new int[] { 0, 2 })]
         [TestCase("rwrew-w", new string[] { "q", "w", "e", "r" }, new int[] { 5 })]
+        [TestCase("--", new string[] { "-" }, new int[] { 0 })]
+        [TestCase("-----", new string[] { "----" }, new int[] { 0 })]
         public void TestRelease(string input, string[] inputList, int[] expectedReleaseIndices)
         {
             List<IParserComponent> components = new List<IParserComponent>()
@@ -223,15 +231,19 @@ namespace TRBot.Tests
             }
         }
 
+        //Note: Controller index is zero-based, but the syntax isn't
+        //Port 1 in the input means it's at index 0
+        //This test presumes the parser is doing this
         [TestCase("a", new string[] { "a" }, new int[] { 0 })]
-        [TestCase("&1a", new string[] { "a" }, new int[] { 1 })]
-        [TestCase("&0a&88r", new string[] { "a", "r" }, new int[] { 0, 88 })]
-        [TestCase("&2b", new string[] { "b" }, new int[] { 2 })]
-        [TestCase("&7b", new string[] { "b" }, new int[] { 7 })]
-        [TestCase("&777&21q", new string[] { "7", "q" }, new int[] { 77, 21 })]
-        [TestCase("&72b", new string[] { "2b" }, new int[] { 7 })]
-        [TestCase("&161a", new string[] { "1a" }, new int[] { 16 })]
-        [TestCase("&99b", new string[] { "b" }, new int[] { 99 })]
+        [TestCase("&1a", new string[] { "a" }, new int[] { 0 })]
+        [TestCase("&1a&88r", new string[] { "a", "r" }, new int[] { 0, 87 })]
+        [TestCase("&2b", new string[] { "b" }, new int[] { 1 })]
+        [TestCase("&7b", new string[] { "b" }, new int[] { 6 })]
+        [TestCase("&777&21q", new string[] { "7", "q" }, new int[] { 76, 20 })]
+        [TestCase("&72b", new string[] { "2b" }, new int[] { 6 })]
+        [TestCase("&161a", new string[] { "1a" }, new int[] { 15 })]
+        [TestCase("&99b", new string[] { "b" }, new int[] { 98 })]
+        [TestCase("&72&", new string[] { "&" }, new int[] { 71 })]
         public void TestPort(string input, string[] inputList, int[] expectedPorts)
         {
             List<IParserComponent> components = new List<IParserComponent>()
@@ -257,6 +269,8 @@ namespace TRBot.Tests
         [TestCase("a30%", new string[] { "a" }, new int[] { 30 })]
         [TestCase("r74%y37%b1%", new string[] { "b", "r", "y" }, new int[] { 74, 37, 1 })]
         [TestCase("r111%l222%r333%l444%", new string[] { "r1", "l2", "r3", "l4" }, new int[] { 11, 22, 33, 44 })]
+        [TestCase("%30%%%1%", new string[] { "%", "%%" }, new int[] { 30, 1 })]
+        [TestCase("1%1%%11%", new string[] { "1%", "%1" }, new int[] { 1, 1 })]
         public void TestPercent(string input, string[] inputList, int[] expectedPercents)
         {
             List<IParserComponent> components = new List<IParserComponent>()
@@ -355,6 +369,83 @@ namespace TRBot.Tests
             {
                 Assert.AreEqual(seq.Inputs[i][0].duration, expectedDurations[i]);
             }
+        }
+
+        [TestCase("__a", new string[] { "a" })]
+        [TestCase("b__r", new string[] { "r" })]
+        [TestCase("__n_q", new string[] { "n", "q" })]
+        [TestCase("33_", new string[] { "33" })]
+        [TestCase("___g", new string[] { "g" })]
+        public void TestHoldInvalid(string input, string[] inputList)
+        {
+            List<IParserComponent> components = new List<IParserComponent>()
+            {
+                new HoldParserComponent(),
+                new InputParserComponent(inputList),
+            };
+
+            StandardParser standardParser = new StandardParser(components);
+
+            ParsedInputSequence seq = standardParser.ParseInputs(input);
+
+            Assert.AreEqual(seq.Inputs, null);
+        }
+
+        [TestCase("--a", new string[] { "a" })]
+        [TestCase("b--r", new string[] { "r" })]
+        [TestCase("--n-q", new string[] { "n", "q" })]
+        [TestCase("33-", new string[] { "33" })]
+        [TestCase("---g", new string[] { "g" })]
+        public void TestReleaseInvalid(string input, string[] inputList)
+        {
+            List<IParserComponent> components = new List<IParserComponent>()
+            {
+                new ReleaseParserComponent(),
+                new InputParserComponent(inputList),
+            };
+
+            StandardParser standardParser = new StandardParser(components);
+
+            ParsedInputSequence seq = standardParser.ParseInputs(input);
+
+            Assert.AreEqual(seq.Inputs, null);
+        }
+
+        [TestCase("&a", new string[] { "a" }, 0)]
+        [TestCase("a&a", new string[] { "a" }, 0)]
+        [TestCase("&99b", new string[] { "b" }, 5)]
+        public void TestPortInvalid(string input, string[] inputList, int maxPort)
+        {
+            List<IParserComponent> components = new List<IParserComponent>()
+            {
+                new PortParserComponent(),
+                new InputParserComponent(inputList),
+            };
+
+            StandardParser standardParser = new StandardParser(components);
+            standardParser.MaxPortNum = maxPort;
+
+            ParsedInputSequence seq = standardParser.ParseInputs(input);
+
+            Assert.AreEqual(seq.ParsedInputResult, ParsedInputResults.Invalid);
+        }
+
+        [TestCase("a%", new string[] { "a" })]
+        [TestCase("b5%r%", new string[] { "b", "r" })]
+        [TestCase("y101%", new string[] { "y" })]
+        public void TestPercentInvalid(string input, string[] inputList)
+        {
+            List<IParserComponent> components = new List<IParserComponent>()
+            {
+                new InputParserComponent(inputList),
+                new PercentParserComponent(),
+            };
+
+            StandardParser standardParser = new StandardParser(components);
+
+            ParsedInputSequence seq = standardParser.ParseInputs(input);
+
+            Assert.AreEqual(seq.ParsedInputResult, ParsedInputResults.Invalid);
         }
 
         # region Utility
