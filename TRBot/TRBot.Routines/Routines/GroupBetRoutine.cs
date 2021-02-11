@@ -251,7 +251,9 @@ namespace TRBot.Routines
                     context.SaveChanges();
                 }
                 
-                DataContainer.MessageHandler.QueueMessage($"{winnerName} won the group bet and {total} {creditsName.Pluralize(false, total)} PogChamp! Nice!");
+                (int, int) leaderBoard = CreditsHelper.GetPositionOnLeaderboard(winnerName);
+
+                DataContainer.MessageHandler.QueueMessage($"{winnerName} won the group bet and {total} {creditsName.Pluralize(false, total)} and is now rank {leaderBoard.Item1}/{leaderBoard.Item2} on the leaderboard PogChamp! Nice!");
 
                 //If there's more than one minimum participants and no one else had enough credits, mention the disappointment
                 if (participants.Count == 1 && MinParticipants > 1)

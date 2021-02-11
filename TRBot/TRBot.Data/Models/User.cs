@@ -62,7 +62,12 @@ namespace TRBot.Data
         /// <summary>
         /// Tells if the user is opted out of stats.
         /// </summary>
-        public bool IsOptedOut => (Stats.OptedOut != 0);
+        public bool IsOptedOut => (Stats.OptedOut > 0);
+
+        /// <summary>
+        /// Tells if the user is ignoring memes.
+        /// </summary>
+        public bool IsIgnoringMemes => (Stats.IgnoreMemes > 0);
 
         public User()
         {
@@ -92,6 +97,15 @@ namespace TRBot.Data
         public void SetOptStatus(in bool optIntoStats)
         {
             Stats.OptedOut = (optIntoStats == true) ? 0L : 1L;
+        }
+
+        /// <summary>
+        /// Sets the user's status on ignoring memes.
+        /// </summary>
+        /// <param name="ignoreMemes">Whether to ignore memes.</param>
+        public void SetIgnoreMemes(in bool ignoreMemes)
+        {
+            Stats.IgnoreMemes = (ignoreMemes == true) ? 1L : 0L;
         }
 
         /// <summary>

@@ -66,7 +66,9 @@ namespace TRBot.Commands
 
             string creditsName = DataHelper.GetCreditsName();
 
-            QueueMessage($"{creditsUsername} has {creditsCount} {creditsName.Pluralize(false, creditsCount)}!");
+            (int, int) leaderBoard = CreditsHelper.GetPositionOnLeaderboard(creditsUsername);
+
+            QueueMessage($"{creditsUsername} has {creditsCount} {creditsName.Pluralize(false, creditsCount)} and is rank {leaderBoard.Item1}/{leaderBoard.Item2} on the leaderboard!");
         }
     }
 }
