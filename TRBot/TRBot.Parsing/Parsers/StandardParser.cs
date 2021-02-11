@@ -188,7 +188,7 @@ namespace TRBot.Parsing
                 if (match.Groups.TryGetValue(PortParserComponent.PORT_GROUP_NAME, out Group portGroup) == true
                     && portGroup.Success == true)
                 {
-                    Console.WriteLine($"Port group success: {portGroup.Success}");
+                    //Console.WriteLine($"Port group success: {portGroup.Success}");
 
                     //Find the number
                     if (match.Groups.TryGetValue(PortParserComponent.PORT_NUM_GROUP_NAME, out Group portNumGroup) == false
@@ -197,7 +197,7 @@ namespace TRBot.Parsing
                         return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Port number not specified.");
                     }
 
-                    Console.WriteLine($"Port num group success: {portNumGroup.Success}");
+                    //Console.WriteLine($"Port num group success: {portNumGroup.Success}");
 
                     string portNumStr = portNumGroup.Value;
                     if (int.TryParse(portNumStr, out input.controllerPort) == false)
@@ -250,6 +250,8 @@ namespace TRBot.Parsing
                 bool hasMs = match.Groups.TryGetValue(MillisecondParserComponent.MS_DUR_GROUP_NAME, out Group msGroup) && msGroup?.Success == true;
                 bool hasSec = match.Groups.TryGetValue(SecondParserComponent.SEC_DUR_GROUP_NAME, out Group secGroup) && secGroup?.Success == true;
 
+                //Console.WriteLine($"Has MS: {hasMs} | HasSec: {hasSec}");
+
                 //Can't have both durations
                 if (hasMs == true && hasSec == true)
                 {
@@ -272,6 +274,9 @@ namespace TRBot.Parsing
                     {
                         return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, "Parser error: Invalid duration.");
                     }
+
+                    input.duration_type = "ms";
+                    input.duration = durVal;
 
                     //If we have seconds, increase the duration and change the duration type
                     if (hasSec == true)

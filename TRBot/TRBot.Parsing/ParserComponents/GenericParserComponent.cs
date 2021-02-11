@@ -21,7 +21,7 @@ using System;
 namespace TRBot.Parsing
 {
     /// <summary>
-    /// Represents a generic component in the parser.
+    /// Represents a generic component in a parser.
     /// </summary>
     public class GenericParserComponent : IParserComponent
     {
