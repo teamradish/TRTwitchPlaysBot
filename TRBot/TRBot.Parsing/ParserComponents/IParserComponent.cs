@@ -28,6 +28,6 @@ namespace TRBot.Parsing
         /// <summary>
         /// The regex used in the parser component.
         /// </summary>
-        string Regex { get; }
+        string ComponentRegex { get; }
     }
 }

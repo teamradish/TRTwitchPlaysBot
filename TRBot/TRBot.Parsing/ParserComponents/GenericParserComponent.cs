@@ -25,11 +25,11 @@ namespace TRBot.Parsing
     /// </summary>
     public class GenericParserComponent : IParserComponent
     {
-        public string Regex { get; private set; } = string.Empty;
+        public string ComponentRegex { get; private set; } = string.Empty;
 
         public GenericParserComponent(string regex)
         {
-            Regex = regex;
+            ComponentRegex = regex;
         }
     }
 }

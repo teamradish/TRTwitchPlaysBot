@@ -25,11 +25,12 @@ namespace TRBot.Parsing
     /// </summary>
     public class MillisecondParserComponent : GenericParserComponent
     {
-        public const string MS_DUR_GROUP_NAME = "ms";
+        public const string MS_SYMBOL = "ms";
+        public const string MS_DUR_GROUP_NAME = "milsec";
         public const string DUR_NUM_GROUP_NAME = "dur";
 
         public MillisecondParserComponent()
-            : base(@"(?<" + MS_DUR_GROUP_NAME + @">(?<" + DUR_NUM_GROUP_NAME + @">\d+)ms)?")
+            : base(@"(?<" + MS_DUR_GROUP_NAME + @">(?<" + DUR_NUM_GROUP_NAME + @">\d+)" + MS_SYMBOL + @")?")
         {
             
         }

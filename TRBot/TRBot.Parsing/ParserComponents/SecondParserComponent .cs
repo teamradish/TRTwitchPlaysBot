@@ -25,11 +25,12 @@ namespace TRBot.Parsing
     /// </summary>
     public class SecondParserComponent : GenericParserComponent
     {
+        public const string SEC_SYMBOL = "s";
         public const string SEC_DUR_GROUP_NAME = "sec";
         public const string DUR_NUM_GROUP_NAME = "dur";
 
         public SecondParserComponent()
-            : base(@"(?<" + SEC_DUR_GROUP_NAME + @">(?<" + DUR_NUM_GROUP_NAME + @">\d+)s)?")
+            : base(@"(?<" + SEC_DUR_GROUP_NAME + @">(?<" + DUR_NUM_GROUP_NAME + @">\d+)" + SEC_SYMBOL + @")?")
         {
             
         }

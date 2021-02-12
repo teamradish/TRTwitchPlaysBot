@@ -21,6 +21,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace TRBot.Parsing
 {
@@ -31,7 +32,7 @@ namespace TRBot.Parsing
     {
         public const string INPUT_GROUP_NAME = "input";
 
-        public string Regex { get; private set; } = string.Empty;
+        public string ComponentRegex { get; private set; } = string.Empty;
 
         public InputParserComponent(IList<string> inputList)
         {
@@ -50,7 +51,7 @@ namespace TRBot.Parsing
             //Build the input regex
             foreach (string inputStr in sorted)
             {
-                strBuilder.Append(inputStr);
+                strBuilder.Append(Regex.Escape(inputStr));
                 strBuilder.Append('|');
             }
 
@@ -58,7 +59,7 @@ namespace TRBot.Parsing
 
             strBuilder.Append(endRegex);
 
-            Regex = strBuilder.ToString();
+            ComponentRegex = strBuilder.ToString();
         }
     }
 }

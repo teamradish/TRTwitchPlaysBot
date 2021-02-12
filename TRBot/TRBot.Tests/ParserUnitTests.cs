@@ -295,6 +295,7 @@ namespace TRBot.Tests
         [TestCase("b+r", new string[] { "b", "r" }, new int[] { 2 } )]
         [TestCase("aa+b+cr+b", new string[] { "a", "b", "c", "r" }, new int[] { 1, 3, 2 } )]
         [TestCase("11+r2+b3+n4+q5+76", new string[] { "11", "r2", "b3", "n4", "q5", "76" }, new int[] { 6 } )]
+        [TestCase("+++++++++++++++", new string[] { "+" }, new int[] { 8 } )]
         public void TestSimultaneous(string input, string[] inputList, int[] expectedSubsets)
         {
             List<IParserComponent> components = new List<IParserComponent>()
@@ -427,12 +428,13 @@ namespace TRBot.Tests
 
             ParsedInputSequence seq = standardParser.ParseInputs(input);
 
-            Assert.AreEqual(seq.ParsedInputResult, ParsedInputResults.Invalid);
+            Assert.AreNotEqual(seq.ParsedInputResult, ParsedInputResults.Valid);
         }
 
         [TestCase("a%", new string[] { "a" })]
         [TestCase("b5%r%", new string[] { "b", "r" })]
         [TestCase("y101%", new string[] { "y" })]
+        [TestCase("%1%%5%%1", new string[] { "%" })]
         public void TestPercentInvalid(string input, string[] inputList)
         {
             List<IParserComponent> components = new List<IParserComponent>()
@@ -445,7 +447,89 @@ namespace TRBot.Tests
 
             ParsedInputSequence seq = standardParser.ParseInputs(input);
 
+            Assert.AreNotEqual(seq.ParsedInputResult, ParsedInputResults.Valid);
+        }
+
+        [TestCase("j+", new string[] { "j" })]
+        [TestCase("w+wj+w+j+", new string[] { "j", "w" })]
+        [TestCase("r+v+d+d+v+r+v+ddrvvdr+v+", new string[] { "r", "v", "d" })]
+        public void TestSimultaneousInvalid(string input, string[] inputList)
+        {
+            List<IParserComponent> components = new List<IParserComponent>()
+            {
+                new InputParserComponent(inputList),
+                new SimultaneousParserComponent(),
+            };
+
+            StandardParser standardParser = new StandardParser(components);
+
+            ParsedInputSequence seq = standardParser.ParseInputs(input);
+
             Assert.AreEqual(seq.ParsedInputResult, ParsedInputResults.Invalid);
+        }
+
+        [TestCase("as", new string[] { "a" })]
+        [TestCase("bss", new string[] { "bs" })]
+        [TestCase("r7se2s", new string[] { "r", "e2" })]
+        public void TestSecondDurationInvalid(string input, string[] inputList)
+        {
+            List<IParserComponent> components = new List<IParserComponent>()
+            {
+                new InputParserComponent(inputList),
+                new SecondParserComponent(),
+            };
+
+            StandardParser standardParser = new StandardParser(components);
+
+            ParsedInputSequence seq = standardParser.ParseInputs(input);
+
+            Assert.AreNotEqual(seq.ParsedInputResult, ParsedInputResults.Valid);
+        }
+
+        [TestCase("ams", new string[] { "a" })]
+        [TestCase("mss1ms1", new string[] { "ms", "s" })]
+        [TestCase(";35msqq;ms", new string[] { "q", ";" })]
+        public void TestMillisecondDurationInvalid(string input, string[] inputList)
+        {
+            List<IParserComponent> components = new List<IParserComponent>()
+            {
+                new InputParserComponent(inputList),
+                new MillisecondParserComponent(),
+            };
+
+            StandardParser standardParser = new StandardParser(components);
+
+            ParsedInputSequence seq = standardParser.ParseInputs(input);
+
+            Assert.AreNotEqual(seq.ParsedInputResult, ParsedInputResults.Valid);
+        }
+
+        [TestCase("a1sb2570msr15s", new string[] { "a", "b", "r" }, new int[] { 1000, 2570, 15000 })]
+        [TestCase("s37msmsss37s", new string[] { "ms", "s" }, new int[] { 37, 200, 200, 37000 })]
+        [TestCase("aab35msab2sabb3s", new string[] { "ab", "a", "b" }, new int[] { 200, 35, 2000, 200, 3000 })]
+        public void TestAllDurationTypes(string input, string[] inputList, int[] expectedDurations)
+        {
+            List<IParserComponent> components = new List<IParserComponent>()
+            {
+                new InputParserComponent(inputList),
+                new MillisecondParserComponent(),
+                new SecondParserComponent(),
+            };
+
+            StandardParser standardParser = new StandardParser(components);
+            standardParser.CheckMaxDur = false;
+            standardParser.DefaultInputDuration = 200;
+
+            ParsedInputSequence seq = standardParser.ParseInputs(input);
+
+            System.Console.WriteLine(seq.Error);
+            
+            Assert.AreEqual(seq.ParsedInputResult, ParsedInputResults.Valid);
+
+            for (int i = 0; i < seq.Inputs.Count; i++)
+            {
+                Assert.AreEqual(seq.Inputs[i][0].duration, expectedDurations[i]);
+            }
         }
 
         # region Utility
