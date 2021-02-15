@@ -124,7 +124,7 @@ namespace TRBot.Parsing
                 }
             }
 
-            Console.WriteLine("REGEX: " + ParserRegex);
+            //Console.WriteLine("REGEX: " + ParserRegex);
 
             //Get all the matches from the regex
             MatchCollection matches = Regex.Matches(message, ParserRegex, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
@@ -136,7 +136,7 @@ namespace TRBot.Parsing
             //Store the previous index - if there's anything in between that's not picked up by the regex, it's an invalid input
             int prevIndex = 0;
 
-            Console.WriteLine($"Match count for \"{message}\" is {matches.Count}");
+            //Console.WriteLine($"Match count for \"{message}\" is {matches.Count}");
 
             //Create our input sequence and inputs
             ParsedInputSequence inputSequence = new ParsedInputSequence();
@@ -152,12 +152,12 @@ namespace TRBot.Parsing
             {
                 Match match = matches[i];
 
-                Console.WriteLine($"Match index: {match.Index} | Value: {match.Value} | Length: {match.Length}");
+                //Console.WriteLine($"Match index: {match.Index} | Value: {match.Value} | Length: {match.Length}");
                 
-                for (int j = 0; j < match.Groups.Count; j++)
-                {
-                    Console.WriteLine($"{j + 1} group match: \"{match.Groups[j].Name}\" | Index: {match.Groups[j].Index} | Value: {match.Groups[j].Value} | Length: {match.Groups[j].Length}");
-                }
+                //for (int j = 0; j < match.Groups.Count; j++)
+                //{
+                //    Console.WriteLine($"{j + 1} group match: \"{match.Groups[j].Name}\" | Index: {match.Groups[j].Index} | Value: {match.Groups[j].Value} | Length: {match.Groups[j].Length}");
+                //}
 
                 //If there's no match, it should be a normal message
                 if (match.Success == false)
@@ -168,12 +168,12 @@ namespace TRBot.Parsing
                 //If there's a gap in matches (Ex. "a34ms hi b300ms"), this isn't a valid input and is likely a normal message
                 if (match.Index != prevIndex)
                 {
-                    Console.WriteLine($"PrevIndex: {prevIndex} | Match Index: {match.Index}");
+                    //Console.WriteLine($"PrevIndex: {prevIndex} | Match Index: {match.Index}");
 
                     return new ParsedInputSequence(ParsedInputResults.NormalMsg, null, 0, "Parser: Message is a normal one, as the indexes don't match.");
                 }
 
-                Console.WriteLine($"Match value: {match.Value}");
+                //Console.WriteLine($"Match value: {match.Value}");
 
                 //Set up our input
                 ParsedInput input = new ParsedInput();
@@ -181,7 +181,7 @@ namespace TRBot.Parsing
                 //Set default controller port
                 input.controllerPort = DefaultPortNum;
 
-                Console.WriteLine($"Group count: {match.Groups.Count}");
+                //Console.WriteLine($"Group count: {match.Groups.Count}");
 
                 //Look for the input - this is the only required field
                 if (match.Groups.TryGetValue(InputParserComponent.INPUT_GROUP_NAME, out Group inpGroup) == false
@@ -192,12 +192,12 @@ namespace TRBot.Parsing
 
                 input.name = inpGroup.Value;
 
-                Console.WriteLine($"FOUND INPUT NAME: \"{input.name}\"");
+                //Console.WriteLine($"FOUND INPUT NAME: \"{input.name}\"");
 
                 bool hasHold = match.Groups.TryGetValue(HoldParserComponent.HOLD_GROUP_NAME, out Group holdGroup) && holdGroup?.Success == true;
                 bool hasRelease = match.Groups.TryGetValue(ReleaseParserComponent.RELEASE_GROUP_NAME, out Group releaseGroup) && releaseGroup?.Success == true;
 
-                Console.WriteLine($"HAS HOLD: {hasHold} | HAS RELEASE: {hasRelease}");
+                //Console.WriteLine($"HAS HOLD: {hasHold} | HAS RELEASE: {hasRelease}");
 
                 //Can't have both a hold and a release
                 if (hasHold == true && hasRelease == true)
@@ -214,7 +214,7 @@ namespace TRBot.Parsing
                 if (match.Groups.TryGetValue(PortParserComponent.PORT_GROUP_NAME, out Group portGroup) == true
                     && portGroup.Success == true)
                 {
-                    Console.WriteLine($"Port group success: {portGroup.Success} | I: {portGroup.Index} - L: {portGroup.Length}");
+                    //Console.WriteLine($"Port group success: {portGroup.Success} | I: {portGroup.Index} - L: {portGroup.Length}");
 
                     //Find the number
                     if (match.Groups.TryGetValue(PortParserComponent.PORT_NUM_GROUP_NAME, out Group portNumGroup) == false
@@ -223,7 +223,7 @@ namespace TRBot.Parsing
                         return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, $"Parser error: Controller port number not specified at index {portGroup.Index}.");
                     }
 
-                    Console.WriteLine($"Port num group success: {portNumGroup.Success} | I: {portNumGroup.Index} - L: {portNumGroup.Length}");
+                    //Console.WriteLine($"Port num group success: {portNumGroup.Success} | I: {portNumGroup.Index} - L: {portNumGroup.Length}");
 
                     string portNumStr = portNumGroup.Value;
                     if (int.TryParse(portNumStr, out int cPort) == false)
@@ -289,7 +289,7 @@ namespace TRBot.Parsing
                 bool hasMs = match.Groups.TryGetValue(MillisecondParserComponent.MS_DUR_GROUP_NAME, out Group msGroup) && msGroup?.Success == true;
                 bool hasSec = match.Groups.TryGetValue(SecondParserComponent.SEC_DUR_GROUP_NAME, out Group secGroup) && secGroup?.Success == true;
 
-                Console.WriteLine($"Has MS: {hasMs} | HasSec: {hasSec}");
+                //Console.WriteLine($"Has MS: {hasMs} | HasSec: {hasSec}");
 
                 //Can't have both durations
                 if (hasMs == true && hasSec == true)
@@ -355,12 +355,12 @@ namespace TRBot.Parsing
                     return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, $"Parser error: Input sequence exceeds max input duration at around index {match.Index}.");
                 }
 
-                Console.WriteLine("GOT PAST MAX DUR CHECK");
+                //Console.WriteLine("GOT PAST MAX DUR CHECK");
 
                 int prevPrev = prevIndex;
                 prevIndex = match.Index + match.Length;
 
-                Console.WriteLine($"PrevIndex WAS: {prevPrev} | NOW: {prevIndex}");
+                //Console.WriteLine($"PrevIndex WAS: {prevPrev} | NOW: {prevIndex}");
             }
 
             //We still have a subinput in the list, meaning a simultaneous input wasn't closed
@@ -374,7 +374,7 @@ namespace TRBot.Parsing
             //If there's more past what the regex caught, this isn't a valid input and is likely a normal message
             if (prevIndex != message.Length)
             {
-                Console.WriteLine($"PREVINDEX: {prevIndex} | MESSAGE LENGTH: {message.Length}");
+                //Console.WriteLine($"PREVINDEX: {prevIndex} | MESSAGE LENGTH: {message.Length}");
 
                 return new ParsedInputSequence(ParsedInputResults.NormalMsg, null, 0, "Parser: Message is a normal one.");
             }

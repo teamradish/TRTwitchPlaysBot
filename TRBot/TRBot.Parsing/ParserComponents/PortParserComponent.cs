@@ -29,7 +29,7 @@ namespace TRBot.Parsing
         public const string PORT_NUM_GROUP_NAME = "portnum";
 
         public PortParserComponent()
-            : base(@"(?<" + PORT_GROUP_NAME + @">\&(?<" + PORT_NUM_GROUP_NAME + @">[1-9]{1,2}))?")
+            : base(@"(?<" + PORT_GROUP_NAME + @">\&(?<" + PORT_NUM_GROUP_NAME + @">[0-9]{1,2}))?")
         {
             
         }
