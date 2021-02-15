@@ -36,13 +36,13 @@ namespace TRBot.Tests
             Assert.AreNotEqual(seq.ParsedInputResult, ParsedInputResults.Valid);
         }
 
-        [TestCase("_q", new string[] { "q" }, new int[] { 0 })]
-        [TestCase("_x_yxy", new string[] { "x", "y" }, new int[] { 0, 1 })]
-        [TestCase("_ab_rl", new string[] { "a", "b", "r", "l" }, new int[] { 0, 2} )]
-        [TestCase("b25_l3l_l", new string[] { "l3", "b25", "l" }, new int[] { 1, 3} )]
-        [TestCase("__", new string[] { "_" }, new int[] { 0 } )]
-        [TestCase("____", new string[] { "___" }, new int[] { 0 } )]
-        public void TestHold(string input, string[] inputList, int[] expectedHoldIndices)
+        [TestCase("_q", new string[] { "q" }, new bool[] { true })]
+        [TestCase("_x_yxy", new string[] { "x", "y" }, new bool[] { true, true, false, false })]
+        [TestCase("_ab_rl", new string[] { "a", "b", "r", "l" }, new bool[] { true, false, true, false} )]
+        [TestCase("b25_l3l_l", new string[] { "l3", "b25", "l" }, new bool[] { false, true, false, true } )]
+        [TestCase("__", new string[] { "_" }, new bool[] { true } )]
+        [TestCase("____", new string[] { "___" }, new bool[] { true } )]
+        public void TestHold(string input, string[] inputList, bool[] expectedHolds)
         {
             List<IParserComponent> components = new List<IParserComponent>()
             {
@@ -56,19 +56,18 @@ namespace TRBot.Tests
 
             Assert.AreEqual(seq.ParsedInputResult, ParsedInputResults.Valid);
 
-            for (int i = 0; i < expectedHoldIndices.Length; i++)
+            for (int i = 0; i < seq.Inputs.Count; i++)
             {
-                int holdIndex = expectedHoldIndices[i];
-                Assert.AreEqual(seq.Inputs[holdIndex][0].hold, true);
+                Assert.AreEqual(seq.Inputs[i][0].hold, expectedHolds[i]);
             }
         }
 
-        [TestCase("-q", new string[] { "q" }, new int[] { 0 })]
-        [TestCase("-ab-rl", new string[] { "a", "b", "r", "l" }, new int[] { 0, 2 })]
-        [TestCase("rwrew-w", new string[] { "q", "w", "e", "r" }, new int[] { 5 })]
-        [TestCase("--", new string[] { "-" }, new int[] { 0 })]
-        [TestCase("-----", new string[] { "----" }, new int[] { 0 })]
-        public void TestRelease(string input, string[] inputList, int[] expectedReleaseIndices)
+        [TestCase("-q", new string[] { "q" }, new bool[] { true })]
+        [TestCase("-ab-rl", new string[] { "a", "b", "r", "l" }, new bool[] { true, false, true, false })]
+        [TestCase("rwrew-w", new string[] { "q", "w", "e", "r" }, new bool[] { false, false, false, false, false, true })]
+        [TestCase("--", new string[] { "-" }, new bool[] { true })]
+        [TestCase("-----", new string[] { "----" }, new bool[] { true })]
+        public void TestRelease(string input, string[] inputList, bool[] expectedReleases)
         {
             List<IParserComponent> components = new List<IParserComponent>()
             {
@@ -82,10 +81,9 @@ namespace TRBot.Tests
 
             Assert.AreEqual(seq.ParsedInputResult, ParsedInputResults.Valid);
 
-            for (int i = 0; i < expectedReleaseIndices.Length; i++)
+            for (int i = 0; i < seq.Inputs.Count; i++)
             {
-                int releaseIndex = expectedReleaseIndices[i];
-                Assert.AreEqual(seq.Inputs[releaseIndex][0].release, true);
+                Assert.AreEqual(seq.Inputs[i][0].release, expectedReleases[i]);
             }
         }
 
