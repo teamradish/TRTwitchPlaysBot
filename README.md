@@ -34,7 +34,7 @@ The original Python version of the original parser was written by TwitchPlays_Ev
 TRBot's logo was designed by the talented [David Revoy](https://www.davidrevoy.com/), well-known for his Pepper & Carrot comic series.
 
 ## License
-Copyright © 2019-2020 Thomas "Kimimaru" Deeb
+Copyright © 2019-2021 Thomas "Kimimaru" Deeb
 
 [![AGPL](https://www.gnu.org/graphics/agplv3-155x51.png)](https://www.gnu.org/licenses/agpl-3.0.en.html)
 
