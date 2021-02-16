@@ -6,7 +6,7 @@ TRBot is software that lets you play games through text. If you type "right", th
 ## My inputs aren't doing anything in the game!
 Make sure the [virtual controllers are set up properly](./Setup-VController.md).
 
-If they still aren't working afterwards, make sure the game is using the virtual controllers as the input device. For emulators you can often choose the input device to use. For PC games this is more complex, as many games aren't flexible about input remapping. See more information on setting up PC games [here](./Setup-Misc.md#pc-games).
+If they still aren't working afterwards, make sure the game is using the virtual controllers as the input device. On emulators you can often choose the input device to use. On PC games this is more complex, as many games aren't flexible about input remapping. See more information on setting up PC games [here](./Setup-Misc.md#pc-games).
 
 ## My inputs are off! I press "a" but the game is pressing "b" instead!
 Each TRBot console has different button values for each button. Make sure you're using the correct console for your game (Ex. the N64 console for N64 games). You can view the current console and change consoles with the [`GetSetConsoleCommand`](../TRBot/TRBot.Commands/Commands/GetSetConsoleCommand.cs) (default: "!console").
@@ -45,7 +45,7 @@ Make sure you write or revert your changes to the database.
 When you make manual changes to the database, the database application (Ex. sqlitebrowser) places a lock on the database file, making it temporarily inaccessible to other applications to prevent corruption. The next time TRBot needs to read or write from the database, which will often be soon, it will have to wait for this lock to be released before it can continue. Release the lock by writing or reverting the changes in your database application.
 
 ## I WASN'T modifying the database manually, and my bot froze/crashed!
-This is a bug, so please [file an issue](https://github.com/teamradish/TRTwitchPlaysBot/issues/new/choose) and include details about your configuration and what led to the freeze/crash. If you can reliably reproduce the issue, it would be much easier and quicker to fix the bug!
+This is a bug, so please [file an issue](https://github.com/teamradish/TRTwitchPlaysBot/issues/new/choose) and include details about your configuration and what led to the freeze/crash. Submit any notable information from logs in the "Logs" and "CrashLogs" folder if applicable.  If you can reliably reproduce the issue, it would be much easier and quicker to fix the bug!
 
 ## How do I shut down the bot?
 Click the X to the console window or press Ctrl + C in the window to end the process.

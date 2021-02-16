@@ -4,6 +4,8 @@ TRBot is software that enables playing video games through text. It contains a c
 
 TRBot is inspired by TwitchPlays_Everything. The input syntax allows for great precision, making it well-suited for many types of games. You can use it for a variety of purposes, including, but not limited to, allowing others to play games remotely and automating tedious/repetitive tasks in your own playthroughs, such as mashing buttons or grinding levels in an RPG.
 
+Please see the [FAQ](./Wiki/FAQ.md) for answers to commonly asked questions.
+
 ## Features
 * [Simple yet expressive input syntax](./Wiki/Syntax-Walkthrough.md) - translate your text to game inputs easily. Make your inputs as simple or precise as you want!
 * Portable and game-agnostic - TRBot runs alongside your game and can be configured as you like. No complex installation required - just download and run it!
