@@ -265,7 +265,7 @@ namespace TRBot.Routines
 
             foreach (KeyValuePair<List<List<ParsedInput>>, long> kvPair in AllInputs)
             {
-                string inputName = kvPair.Key[0][0].name;
+                string inputName = kvPair.Key[0][0].Name;
 
                 //TRBotLogger.Logger.Information($"Iterating through input \"{inputName}\"");
 
@@ -302,7 +302,7 @@ namespace TRBot.Routines
             int defaultDur = (int)DataHelper.GetSettingInt(SettingsConstants.DEFAULT_INPUT_DURATION, 200L);
 
             ParsedInput pressedInput = ParsedInput.Default(defaultDur);
-            pressedInput.name = chosenInputName;
+            pressedInput.Name = chosenInputName;
 
             List<List<ParsedInput>> executedInputList = new List<List<ParsedInput>>(1);
             executedInputList.Add(new List<ParsedInput>(1) { pressedInput });

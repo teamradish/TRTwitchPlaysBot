@@ -21,20 +21,10 @@ using System;
 namespace TRBot.Parsing
 {
     /// <summary>
-    /// Represents an analog percentage component in the parser.
+    /// The possible types of durations for inputs.
     /// </summary>
-    public class PercentParserComponent : GenericParserComponent
+    public enum InputDurationTypes
     {
-        public const string PERCENT_SYMBOL = "%";
-        public const string PERCENT_GROUP_NAME = "percent";
-        public const string PERCENT_NUM_GROUP_NAME = "percentnum";
-        public const string PERCENT_DECIMAL_GROUP_NAME = "percentdec";
-
-        public PercentParserComponent()
-            //Allow a max of 3 digits of accuracy for decimal percentages
-            : base(@"(?<" + PERCENT_GROUP_NAME + @">(?<" + PERCENT_NUM_GROUP_NAME + @">\d+(?<" + PERCENT_DECIMAL_GROUP_NAME + @">\.\d{1,3})?)" + PERCENT_SYMBOL + ")?")
-        {
-            
-        }
+        Milliseconds, Seconds
     }
 }

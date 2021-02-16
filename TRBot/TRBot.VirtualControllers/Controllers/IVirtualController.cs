@@ -71,7 +71,7 @@ namespace TRBot.VirtualControllers
         void SetInputNamePressed(in string inputName);
         void SetInputNameReleased(in string inputName);
 
-        void PressAxis(in int axis, in double minAxisVal, in double maxAxisVal, in int percent);
+        void PressAxis(in int axis, in double minAxisVal, in double maxAxisVal, in double percent);
         void ReleaseAxis(in int axis);
 
         void PressButton(in uint buttonVal);
@@ -81,7 +81,7 @@ namespace TRBot.VirtualControllers
 
         ButtonStates GetButtonState(in uint buttonVal);
 
-        int GetAxisState(in int axisVal);
+        double GetAxisState(in int axisVal);
 
         /// <summary>
         /// Updates the virtual device by applying all changes.

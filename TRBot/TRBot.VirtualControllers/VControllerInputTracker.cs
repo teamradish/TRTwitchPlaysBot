@@ -35,8 +35,8 @@ namespace TRBot.VirtualControllers
         private ConcurrentDictionary<uint, ButtonStates> CurButtonStates = new ConcurrentDictionary<uint, ButtonStates>(Environment.ProcessorCount * 2, 32);
         private ConcurrentDictionary<uint, ButtonStates> TempButtonStates = new ConcurrentDictionary<uint, ButtonStates>(Environment.ProcessorCount * 2, 32);
 
-        private ConcurrentDictionary<int, int> CurAxesStates = new ConcurrentDictionary<int, int>(Environment.ProcessorCount * 2, 32);
-        private ConcurrentDictionary<int, int> TempAxesStates = new ConcurrentDictionary<int, int>(Environment.ProcessorCount * 2, 32);
+        private ConcurrentDictionary<int, double> CurAxesStates = new ConcurrentDictionary<int, double>(Environment.ProcessorCount * 2, 32);
+        private ConcurrentDictionary<int, double> TempAxesStates = new ConcurrentDictionary<int, double>(Environment.ProcessorCount * 2, 32);
 
         private IVirtualController virtualController = null;
 
@@ -124,9 +124,9 @@ namespace TRBot.VirtualControllers
             return ButtonStates.Released;
         }
 
-        public int GetAxisState(in int axisVal)
+        public double GetAxisState(in int axisVal)
         {
-            if (CurAxesStates.TryGetValue(axisVal, out int axisPercent) == true)
+            if (CurAxesStates.TryGetValue(axisVal, out double axisPercent) == true)
             {
                 return axisPercent;
             }
@@ -162,7 +162,7 @@ namespace TRBot.VirtualControllers
             //Console.WriteLine("Released button " + buttonVal);
         }
 
-        public void PressAxis(in int axisVal, in int percent)
+        public void PressAxis(in int axisVal, in double percent)
         {
             TempAxesStates[axisVal] = percent;
 

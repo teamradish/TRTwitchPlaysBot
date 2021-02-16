@@ -58,7 +58,7 @@ namespace TRBot.Tests
 
             for (int i = 0; i < seq.Inputs.Count; i++)
             {
-                Assert.AreEqual(seq.Inputs[i][0].hold, expectedHolds[i]);
+                Assert.AreEqual(seq.Inputs[i][0].Hold, expectedHolds[i]);
             }
         }
 
@@ -83,7 +83,7 @@ namespace TRBot.Tests
 
             for (int i = 0; i < seq.Inputs.Count; i++)
             {
-                Assert.AreEqual(seq.Inputs[i][0].release, expectedReleases[i]);
+                Assert.AreEqual(seq.Inputs[i][0].Release, expectedReleases[i]);
             }
         }
 
@@ -117,17 +117,18 @@ namespace TRBot.Tests
 
             for (int i = 0; i < seq.Inputs.Count; i++)
             {
-                Assert.AreEqual(seq.Inputs[i][0].controllerPort, expectedPorts[i]);
+                Assert.AreEqual(seq.Inputs[i][0].ControllerPort, expectedPorts[i]);
             }
         }
 
-        [TestCase("nmh", new string[] { "n", "m", "h" }, new int[] { 100, 100, 100 })]
-        [TestCase("a30%", new string[] { "a" }, new int[] { 30 })]
-        [TestCase("r74%y37%b1%", new string[] { "b", "r", "y" }, new int[] { 74, 37, 1 })]
-        [TestCase("r111%l222%r333%l444%", new string[] { "r1", "l2", "r3", "l4" }, new int[] { 11, 22, 33, 44 })]
-        [TestCase("%30%%%1%", new string[] { "%", "%%" }, new int[] { 30, 1 })]
-        [TestCase("1%1%%11%", new string[] { "1%", "%1" }, new int[] { 1, 1 })]
-        public void TestPercent(string input, string[] inputList, int[] expectedPercents)
+        [TestCase("nmh", new string[] { "n", "m", "h" }, new double[] { 100, 100, 100 })]
+        [TestCase("a30%", new string[] { "a" }, new double[] { 30 })]
+        [TestCase("l832.1%a80.27%b25.832%", new string[] { "l8", "a", "b" }, new double[] { 32.1d, 80.27d, 25.832d })]
+        [TestCase("r74%y37%b1%", new string[] { "b", "r", "y" }, new double[] { 74, 37, 1 })]
+        [TestCase("r111%l222%r333%l444%", new string[] { "r1", "l2", "r3", "l4" }, new double[] { 11, 22, 33, 44 })]
+        [TestCase("%30%%%1%", new string[] { "%", "%%" }, new double[] { 30, 1 })]
+        [TestCase("1%1%%11%", new string[] { "1%", "%1" }, new double[] { 1, 1 })]
+        public void TestPercent(string input, string[] inputList, double[] expectedPercents)
         {
             List<IParserComponent> components = new List<IParserComponent>()
             {
@@ -143,7 +144,7 @@ namespace TRBot.Tests
             
             for (int i = 0; i < seq.Inputs.Count; i++)
             {
-                Assert.AreEqual(seq.Inputs[i][0].percent, expectedPercents[i]);
+                Assert.AreEqual(seq.Inputs[i][0].Percent, expectedPercents[i]);
             }
         }
 
@@ -197,7 +198,7 @@ namespace TRBot.Tests
             
             for (int i = 0; i < seq.Inputs.Count; i++)
             {
-                Assert.AreEqual(seq.Inputs[i][0].duration, expectedDurations[i]);
+                Assert.AreEqual(seq.Inputs[i][0].Duration, expectedDurations[i]);
             }
         }
 
@@ -225,7 +226,7 @@ namespace TRBot.Tests
             
             for (int i = 0; i < seq.Inputs.Count; i++)
             {
-                Assert.AreEqual(seq.Inputs[i][0].duration, expectedDurations[i]);
+                Assert.AreEqual(seq.Inputs[i][0].Duration, expectedDurations[i]);
             }
         }
 
@@ -291,6 +292,8 @@ namespace TRBot.Tests
         [TestCase("a%", new string[] { "a" })]
         [TestCase("b5%r%", new string[] { "b", "r" })]
         [TestCase("y101%", new string[] { "y" })]
+        [TestCase("y100.001%", new string[] { "y" })]
+        [TestCase("h5.7821%", new string[] { "h" })]
         [TestCase("%1%%5%%1", new string[] { "%" })]
         public void TestPercentInvalid(string input, string[] inputList)
         {
@@ -383,14 +386,15 @@ namespace TRBot.Tests
 
             for (int i = 0; i < seq.Inputs.Count; i++)
             {
-                Assert.AreEqual(seq.Inputs[i][0].duration, expectedDurations[i]);
+                Assert.AreEqual(seq.Inputs[i][0].Duration, expectedDurations[i]);
             }
         }
 
-        [TestCase("a50%500ms", new string[] { "a" }, new int[] { 50 }, new int[] { 500 })]
-        [TestCase("b50%1sl32%5748ms", new string[] { "b", "l" }, new int[] { 50, 32 }, new int[] { 1000, 5748 })]
-        [TestCase("q34msba1sr30%l23%", new string[] { "q", "b", "a", "r", "l" }, new int[] { 100, 100, 100, 30, 23 }, new int[] { 34, 200, 1000, 200, 200 })]
-        public void TestPercentDurations(string input, string[] inputList, int[] expectedPercents, int[] expectedDurations)
+        [TestCase("a50%500ms", new string[] { "a" }, new double[] { 50 }, new int[] { 500 })]
+        [TestCase("b50%1sl32%5748ms", new string[] { "b", "l" }, new double[] { 50, 32 }, new int[] { 1000, 5748 })]
+        [TestCase("b50.75%1sl32.036%5748ms", new string[] { "b", "l" }, new double[] { 50.75, 32.036 }, new int[] { 1000, 5748 })]
+        [TestCase("q34msba1sr30%l23%", new string[] { "q", "b", "a", "r", "l" }, new double[] { 100, 100, 100, 30, 23 }, new int[] { 34, 200, 1000, 200, 200 })]
+        public void TestPercentDurations(string input, string[] inputList, double[] expectedPercents, int[] expectedDurations)
         {
             List<IParserComponent> components = new List<IParserComponent>()
             {
@@ -410,8 +414,8 @@ namespace TRBot.Tests
 
             for (int i = 0; i < seq.Inputs.Count; i++)
             {
-                Assert.AreEqual(seq.Inputs[i][0].percent, expectedPercents[i]);
-                Assert.AreEqual(seq.Inputs[i][0].duration, expectedDurations[i]);
+                Assert.AreEqual(seq.Inputs[i][0].Percent, expectedPercents[i]);
+                Assert.AreEqual(seq.Inputs[i][0].Duration, expectedDurations[i]);
             }
         }
 
@@ -439,19 +443,19 @@ namespace TRBot.Tests
 
             for (int i = 0; i < seq.Inputs.Count; i++)
             {
-                Assert.AreEqual(seq.Inputs[i][0].hold, expectedHolds[i]);
-                Assert.AreEqual(seq.Inputs[i][0].release, expectedReleases[i]);
+                Assert.AreEqual(seq.Inputs[i][0].Hold, expectedHolds[i]);
+                Assert.AreEqual(seq.Inputs[i][0].Release, expectedReleases[i]);
             }
         }
 
         //Test everything!
         [TestCase("a", new [] { "a" },
-            new [] { 0 }, new [] { false }, new [] { false }, new [] { 100 }, new [] { 200 }, new [] { 1 })]
-        [TestCase("&2_a8%34ms+&6-y99%13s&10-b30%3472ms", new [] { "a", "b", "y" },
+            new [] { 0 }, new [] { false }, new [] { false }, new double[] { 100 }, new [] { 200 }, new [] { 1 })]
+        [TestCase("&2_a8%34ms+&6-y99.9%13s&10-b30%3472ms", new [] { "a", "b", "y" },
             new [] { 1, 5, 9 }, new [] { true, false, false }, new [] { false, true, true },
-            new [] { 8, 99, 30 }, new [] { 34, 13000, 3472 }, new [] { 2, 1 })]
+            new double[] { 8, 99.9, 30 }, new [] { 34, 13000, 3472 }, new [] { 2, 1 })]
         public void TestFullSyntax(string input, string[] inputList,
-            int[] ports, bool[] holds, bool[] releases, int[] percents, int[] durations, int[] subsetCounts)
+            int[] ports, bool[] holds, bool[] releases, double[] percents, int[] durations, int[] subsetCounts)
         {
             List<IParserComponent> components = new List<IParserComponent>()
             {
@@ -487,11 +491,11 @@ namespace TRBot.Tests
                 {
                     ParsedInput parsedInp = seq.Inputs[i][j];
 
-                    Assert.AreEqual(parsedInp.controllerPort, ports[index]);
-                    Assert.AreEqual(parsedInp.hold, holds[index]);
-                    Assert.AreEqual(parsedInp.release, releases[index]);
-                    Assert.AreEqual(parsedInp.percent, percents[index]);
-                    Assert.AreEqual(parsedInp.duration, durations[index]);
+                    Assert.AreEqual(parsedInp.ControllerPort, ports[index]);
+                    Assert.AreEqual(parsedInp.Hold, holds[index]);
+                    Assert.AreEqual(parsedInp.Release, releases[index]);
+                    Assert.AreEqual(parsedInp.Percent, percents[index]);
+                    Assert.AreEqual(parsedInp.Duration, durations[index]);
 
                     index++;
                 }

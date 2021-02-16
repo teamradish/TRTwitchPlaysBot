@@ -485,18 +485,18 @@ namespace TRBot.Parsing
                 //Console.WriteLine(input.ToString());
 
                 //There's an error, so something went wrong
-                if (string.IsNullOrEmpty(input.error) == false)
+                if (string.IsNullOrEmpty(input.Error) == false)
                 {
                     inputSequence.ParsedInputResult = ParsedInputResults.Invalid;
-                    inputSequence.Error = input.error + " for: \"" + m.Value + "\"";
+                    inputSequence.Error = input.Error + " for: \"" + m.Value + "\"";
 
                     break;
                 }
 
                 //Check for the max sub-duration (Ex. "a300ms+b500ms" should be 500ms)
-                if (input.duration > maxSubDuration)
+                if (input.Duration > maxSubDuration)
                 {
-                    maxSubDuration = input.duration;
+                    maxSubDuration = input.Duration;
                 }
 
                 simultaneousInputs.Add(input);
@@ -566,12 +566,12 @@ namespace TRBot.Parsing
             const int plusIndex = 8;
 
             ParsedInput input = ParsedInput.Default(defaultInputDur);
-            input.controllerPort = defControllerPort;
+            input.ControllerPort = defControllerPort;
 
             //Check the top level success - if no matches at all or there's a gap, this isn't a valid input
             if (regexMatch.Success == false || regexMatch.Index != prevIndex)
             {
-                input.error = "ERR_INVALID_INPUT";
+                input.Error = "ERR_INVALID_INPUT";
                 return input;
             }
 
@@ -583,12 +583,12 @@ namespace TRBot.Parsing
 
                 if (int.TryParse(portNumStr, out int portnum) == false)
                 {
-                    input.error = "ERR_INVALID_CONTROLLER_PORT";
+                    input.Error = "ERR_INVALID_CONTROLLER_PORT";
                     return input;
                 }
 
                 //Set it to the port minus 1 (Ex. 1 returns port 0)
-                input.controllerPort = portnum - 1;
+                input.ControllerPort = portnum - 1;
             }
 
             //Hold or release modifier
@@ -596,9 +596,9 @@ namespace TRBot.Parsing
             if (holdSubGroup.Success == true)
             {
                 if (holdSubGroup.Value == Parser.DEFAULT_PARSE_REGEX_HOLD_INPUT)
-                    input.hold = true;
+                    input.Hold = true;
                 else if (holdSubGroup.Value == Parser.DEFAULT_PARSE_REGEX_RELEASE_INPUT)
-                    input.release = true;
+                    input.Release = true;
             }
 
             //Input name
@@ -606,11 +606,11 @@ namespace TRBot.Parsing
 
             if (inputGroup.Success == false || string.IsNullOrEmpty(inputGroup.Value) == true)
             {
-                input.error = "ERR_NO_INPUT";
+                input.Error = "ERR_NO_INPUT";
                 return input;
             }
 
-            input.name = inputGroup.Value;
+            input.Name = inputGroup.Value;
 
             Group percentGroup = regexMatch.Groups[percentIndex];
 
@@ -620,20 +620,20 @@ namespace TRBot.Parsing
                 string rawPercentStr = percentGroup.Value;
                 string percent = rawPercentStr.Substring(0, rawPercentStr.Length - Parser.DEFAULT_PARSE_REGEX_PERCENT_INPUT.Length);
                 
-                if (int.TryParse(percent, out int percentage) == false)
+                if (double.TryParse(percent, out double percentage) == false)
                 {
-                    input.error = "ERR_INVALID_PERCENTAGE";
+                    input.Error = "ERR_INVALID_PERCENTAGE";
                     return input;
                 }
 
                 //The percentage can't be less than 0 or greater than 100
                 if (percentage < 0 || percentage > 100)
                 {
-                    input.error = "ERR_INVALID_PERCENTAGE";
+                    input.Error = "ERR_INVALID_PERCENTAGE";
                     return input;
                 }
 
-                input.percent = percentage;
+                input.Percent = percentage;
             }
 
             Group durMsGroup = regexMatch.Groups[msIndex];
@@ -647,12 +647,12 @@ namespace TRBot.Parsing
                 
                 if (int.TryParse(msStr, out int msDur) == false)
                 {
-                    input.error = "ERR_INVALID_MS_DURATION";
+                    input.Error = "ERR_INVALID_MS_DURATION";
                     return input;
                 }
 
-                input.duration = msDur;
-                input.duration_type = DEFAULT_PARSE_REGEX_MILLISECONDS_INPUT;
+                input.Duration = msDur;
+                input.DurationType = InputDurationTypes.Milliseconds;
             }
             //Check seconds
             else if (durSecGroup.Success == true && string.IsNullOrEmpty(durSecGroup.Value) == false)
@@ -662,12 +662,12 @@ namespace TRBot.Parsing
 
                 if (int.TryParse(secStr, out int secDur) == false)
                 {
-                    input.error = "ERR_INVALID_SEC_DURATION";
+                    input.Error = "ERR_INVALID_SEC_DURATION";
                     return input;
                 }
 
-                input.duration = secDur * 1000;
-                input.duration_type = DEFAULT_PARSE_REGEX_SECONDS_INPUT;
+                input.Duration = secDur * 1000;
+                input.DurationType = InputDurationTypes.Seconds;
             }
 
             Group plusGroup = regexMatch.Groups[plusIndex];

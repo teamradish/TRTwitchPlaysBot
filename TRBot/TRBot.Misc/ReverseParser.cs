@@ -91,33 +91,33 @@ namespace TRBot.Misc
                     if (gameConsole.IsBlankInput(input) == false
                         && options.ShowPortType == ShowPortTypes.ShowAllPorts
                         || (options.ShowPortType == ShowPortTypes.ShowNonDefaultPorts 
-                            && input.controllerPort != options.DefaultPortNum))
+                            && input.ControllerPort != options.DefaultPortNum))
                     {
-                        strBuilder.Append(Parser.DEFAULT_PARSE_REGEX_PORT_INPUT).Append(input.controllerPort + 1);
+                        strBuilder.Append(Parser.DEFAULT_PARSE_REGEX_PORT_INPUT).Append(input.ControllerPort + 1);
                     }
 
                     //Add hold string
-                    if (input.hold == true)
+                    if (input.Hold == true)
                     {
                         strBuilder.Append(Parser.DEFAULT_PARSE_REGEX_HOLD_INPUT);
                     }
 
                     //Add release string
-                    if (input.release == true)
+                    if (input.Release == true)
                     {
                         strBuilder.Append(Parser.DEFAULT_PARSE_REGEX_RELEASE_INPUT);
                     }
 
-                    strBuilder.Append(input.name);
+                    strBuilder.Append(input.Name);
 
                     //Add percent if it's an axis or the percent isn't the default
-                    if (input.percent != Parser.PARSER_DEFAULT_PERCENT
+                    if (input.Percent != Parser.PARSER_DEFAULT_PERCENT
                         || gameConsole.IsAxis(input) == true)
                     {
-                        strBuilder.Append(input.percent).Append(Parser.DEFAULT_PARSE_REGEX_PERCENT_INPUT);
+                        strBuilder.Append(input.Percent).Append(Parser.DEFAULT_PARSE_REGEX_PERCENT_INPUT);
                     }
                     
-                    int duration = input.duration;
+                    int duration = input.Duration;
 
                     //Skip displaying the duration if we should show only non-default durations
                     //and the duration isn't the default
@@ -128,13 +128,13 @@ namespace TRBot.Misc
                         && options.DefaultDuration != duration))
                     {
                         //Divide by 1000 to display seconds properly
-                        if (input.duration_type == Parser.DEFAULT_PARSE_REGEX_SECONDS_INPUT)
+                        if (input.DurationType == InputDurationTypes.Seconds)
                         {
                             duration /= 1000;
                         }
 
                         strBuilder.Append(duration);
-                        strBuilder.Append(input.duration_type);
+                        strBuilder.Append(input.DurationType);
                     }
 
                     //Add plus string if there are more in the subsequence
@@ -192,13 +192,13 @@ namespace TRBot.Misc
                     bool isBlankInput = gameConsole.IsBlankInput(input);
 
                     //Handle hold
-                    if (input.hold == true)
+                    if (input.Hold == true)
                     {
                         if (i == 0 && j ==0) strBuilder.Append("Hold ");
                         else strBuilder.Append("hold ");
                     }
                     //Handle release
-                    else if (input.release == true)
+                    else if (input.Release == true)
                     {
                         if (i == 0 && j ==0) strBuilder.Append("Release ");
                         else strBuilder.Append("release ");
@@ -218,21 +218,21 @@ namespace TRBot.Misc
                     else
                     {
                         //Add input name
-                        strBuilder.Append('\"').Append(input.name).Append('\"').Append(' ');
+                        strBuilder.Append('\"').Append(input.Name).Append('\"').Append(' ');
 
                         //Add percent if it's an axis, the percent isn't the default, and not releasing
-                        if (input.release == false
-                            && (input.percent != Parser.PARSER_DEFAULT_PERCENT
+                        if (input.Release == false
+                            && (input.Percent != Parser.PARSER_DEFAULT_PERCENT
                             || gameConsole.IsAxis(input) == true))
                         {
-                            strBuilder.Append(input.percent).Append("% ");
+                            strBuilder.Append(input.Percent).Append("% ");
                         }
                     }
                     
                     //Divide by 1000 to display seconds properly
-                    int duration = input.duration;
+                    int duration = input.Duration;
                     string durTypeStr = "msec";
-                    if (input.duration_type == Parser.DEFAULT_PARSE_REGEX_SECONDS_INPUT)
+                    if (input.DurationType == InputDurationTypes.Seconds)
                     {
                         duration /= 1000;
                         durTypeStr = "sec";
@@ -251,9 +251,9 @@ namespace TRBot.Misc
                     //and the input's controller port is not the default port
                     if (isBlankInput == false && options.ShowPortType == ShowPortTypes.ShowAllPorts
                         || (options.ShowPortType == ShowPortTypes.ShowNonDefaultPorts 
-                            && input.controllerPort != options.DefaultPortNum))
+                            && input.ControllerPort != options.DefaultPortNum))
                     {
-                        strBuilder.Append(" on port ").Append(input.controllerPort + 1);
+                        strBuilder.Append(" on port ").Append(input.ControllerPort + 1);
                     }
 
                     //Add plus string if there are more in the subsequence

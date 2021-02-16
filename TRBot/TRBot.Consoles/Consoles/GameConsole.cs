@@ -254,7 +254,7 @@ namespace TRBot.Consoles
         /// <returns>true if the input is an enabled axis, otherwise false.</returns>
         public virtual bool GetAxis(in ParsedInput input, out InputAxis axis)
         {
-            ConsoleInputs.TryGetValue(input.name, out InputData inputData);
+            ConsoleInputs.TryGetValue(input.Name, out InputData inputData);
 
             if (inputData == null || inputData.Enabled == 0 || EnumUtility.HasEnumVal((long)inputData.InputType, (long)InputTypes.Axis) == false)
             {
@@ -262,7 +262,7 @@ namespace TRBot.Consoles
                 return false;
             }
 
-            if (input.percent <= inputData.MaxAxisPercent)
+            if (input.Percent <= inputData.MaxAxisPercent)
             {
                 axis = new InputAxis(inputData.AxisValue, inputData.MinAxisVal, inputData.MaxAxisVal, inputData.MaxAxisPercent);
                 return true;
@@ -289,7 +289,7 @@ namespace TRBot.Consoles
         /// <returns>true if the input is an enabled button, otherwise false.</returns>
         public virtual bool IsButton(in ParsedInput input)
         {
-            ConsoleInputs.TryGetValue(input.name, out InputData inputData);
+            ConsoleInputs.TryGetValue(input.Name, out InputData inputData);
 
             //Not a button if null or not enabled
             if (inputData == null || inputData.Enabled == 0)
@@ -312,7 +312,7 @@ namespace TRBot.Consoles
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsBlankInput(in ParsedInput input)
         {
-            ConsoleInputs.TryGetValue(input.name, out InputData inputData);
+            ConsoleInputs.TryGetValue(input.Name, out InputData inputData);
 
             //Not a blank input if null, disabled, or not Blank
             if (inputData == null || inputData.Enabled == 0 || inputData.InputType != (int)InputTypes.Blank)

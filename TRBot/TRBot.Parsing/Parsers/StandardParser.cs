@@ -62,7 +62,7 @@ namespace TRBot.Parsing
         /// <summary>
         /// The default percentage for inputs with unspecified percentages.
         /// </summary>
-        private int DefaultPercentage = 100;
+        private double DefaultPercentage = 100d;
 
         /// <summary>
         /// The parser components used to build the parser.
@@ -124,7 +124,7 @@ namespace TRBot.Parsing
                 }
             }
 
-            //Console.WriteLine("REGEX: " + ParserRegex);
+            Console.WriteLine("REGEX: " + ParserRegex);
 
             //Get all the matches from the regex
             MatchCollection matches = Regex.Matches(message, ParserRegex, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
@@ -136,7 +136,7 @@ namespace TRBot.Parsing
             //Store the previous index - if there's anything in between that's not picked up by the regex, it's an invalid input
             int prevIndex = 0;
 
-            //Console.WriteLine($"Match count for \"{message}\" is {matches.Count}");
+            Console.WriteLine($"Match count for \"{message}\" is {matches.Count}");
 
             //Create our input sequence and inputs
             ParsedInputSequence inputSequence = new ParsedInputSequence();
@@ -152,12 +152,12 @@ namespace TRBot.Parsing
             {
                 Match match = matches[i];
 
-                //Console.WriteLine($"Match index: {match.Index} | Value: {match.Value} | Length: {match.Length}");
+                Console.WriteLine($"Match index: {match.Index} | Value: {match.Value} | Length: {match.Length}");
                 
-                //for (int j = 0; j < match.Groups.Count; j++)
-                //{
-                //    Console.WriteLine($"{j + 1} group match: \"{match.Groups[j].Name}\" | Index: {match.Groups[j].Index} | Value: {match.Groups[j].Value} | Length: {match.Groups[j].Length}");
-                //}
+                for (int j = 0; j < match.Groups.Count; j++)
+                {
+                    Console.WriteLine($"{j + 1} group match: \"{match.Groups[j].Name}\" | Index: {match.Groups[j].Index} | Value: {match.Groups[j].Value} | Length: {match.Groups[j].Length}");
+                }
 
                 //If there's no match, it should be a normal message
                 if (match.Success == false)
@@ -179,7 +179,7 @@ namespace TRBot.Parsing
                 ParsedInput input = new ParsedInput();
                 
                 //Set default controller port
-                input.controllerPort = DefaultPortNum;
+                input.ControllerPort = DefaultPortNum;
 
                 //Console.WriteLine($"Group count: {match.Groups.Count}");
 
@@ -190,7 +190,7 @@ namespace TRBot.Parsing
                     return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, $"Parser error: Input is missing at around index {match.Index}.");
                 }
 
-                input.name = inpGroup.Value;
+                input.Name = inpGroup.Value;
 
                 //Console.WriteLine($"FOUND INPUT NAME: \"{input.name}\"");
 
@@ -207,8 +207,8 @@ namespace TRBot.Parsing
 
                 //Console.WriteLine("GOT PAST HOLD");
 
-                input.hold = hasHold;
-                input.release = hasRelease;
+                input.Hold = hasHold;
+                input.Release = hasRelease;
 
                 //Check if a port number exists
                 if (match.Groups.TryGetValue(PortParserComponent.PORT_GROUP_NAME, out Group portGroup) == true
@@ -233,16 +233,16 @@ namespace TRBot.Parsing
 
                     //Subtract 1 from the port
                     //While the input syntax isn't zero-based, the internal numbers are
-                    input.controllerPort = cPort - 1;
+                    input.ControllerPort = cPort - 1;
 
-                    if (input.controllerPort < 0)
+                    if (input.ControllerPort < 0)
                     {
                         return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, $"Parser error: Controller port number is too low at index {portNumGroup.Index}.");
                     }
                 }
 
                 //Controller port is greater than max port number
-                if (input.controllerPort > MaxPortNum)
+                if (input.ControllerPort > MaxPortNum)
                 {
                     return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, $"Parser error: Port number specified is greater than the max port at around index {portGroup.Index}.");
                 }
@@ -265,22 +265,22 @@ namespace TRBot.Parsing
                     string percentStr = percentNumGroup.Value;
 
                     //Validate this as a number
-                    if (int.TryParse(percentStr, out int percent) == false)
+                    if (double.TryParse(percentStr, out double percent) == false)
                     {
                         return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, $"Parser error: Percentage is invalid at index {percentNumGroup.Index}.");
                     }
 
                     //The percentage can't be less than 0 or greater than 100
-                    if (percent < 0 || percent > 100)
+                    if (percent < 0d || percent > 100d)
                     {
                         return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, $"Parser error: Percentage is less than 0 or greater than 100 at index {percentNumGroup.Index}.");
                     }
 
-                    input.percent = percent;
+                    input.Percent = percent;
                 }
                 else
                 {
-                    input.percent = DefaultPercentage;
+                    input.Percent = DefaultPercentage;
                 }
 
                 //Console.WriteLine("GOT PAST PERCENT");
@@ -319,20 +319,20 @@ namespace TRBot.Parsing
                         return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, $"Parser error: Invalid duration at index {durGroup.Index}.");
                     }
 
-                    input.duration_type = "ms";
-                    input.duration = durVal;
+                    input.DurationType = InputDurationTypes.Milliseconds;
+                    input.Duration = durVal;
 
                     //If we have seconds, increase the duration and change the duration type
                     if (hasSec == true)
                     {
-                        input.duration_type = "s";
-                        input.duration = durVal * 1000;
+                        input.DurationType = InputDurationTypes.Seconds;
+                        input.Duration = durVal * 1000;
                     }
                 }
                 else
                 {
-                    input.duration_type = "ms";
-                    input.duration = DefaultInputDuration;
+                    input.DurationType = InputDurationTypes.Milliseconds;
+                    input.Duration = DefaultInputDuration;
                 }
 
                 //Console.WriteLine("GOT PAST DURATION");
@@ -347,7 +347,7 @@ namespace TRBot.Parsing
                     subInputs = new List<ParsedInput>();
                 }
 
-                totalDur += input.duration;
+                totalDur += input.Duration;
 
                 //Exceeded duration
                 if (CheckMaxDur == true && totalDur > MaxInputDuration)
