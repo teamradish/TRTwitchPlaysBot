@@ -28,9 +28,10 @@ namespace TRBot.Parsing
         public const string PERCENT_SYMBOL = "%";
         public const string PERCENT_GROUP_NAME = "percent";
         public const string PERCENT_NUM_GROUP_NAME = "percentnum";
+        public const string PERCENT_DECIMAL_GROUP_NAME = "percentdec";
 
         public PercentParserComponent()
-            : base(@"(?<" + PERCENT_GROUP_NAME + @">(?<" + PERCENT_NUM_GROUP_NAME + @">\d+)" + PERCENT_SYMBOL + ")?")
+            : base(@"(?<" + PERCENT_GROUP_NAME + @">(?<" + PERCENT_NUM_GROUP_NAME + @">\d+(?<" + PERCENT_DECIMAL_GROUP_NAME + @">\.\d+)?)" + PERCENT_SYMBOL + ")?")
         {
             
         }
