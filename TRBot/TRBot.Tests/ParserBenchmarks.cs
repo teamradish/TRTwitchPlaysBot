@@ -34,7 +34,11 @@ namespace TRBot.Tests
         private IEnumerable<InputSynonym> Synonyms = null;
         private string[] ValidInputs = null;
 
-        //private string OldParserRegex = string.Empty;
+        private string OldParserCachedMessage = string.Empty;
+        private string OldParserRegex = string.Empty;
+
+        private string NewParserCachedMessage = string.Empty;
+        private List<IParserComponent> NewParserComponents = null;
 
         public ParserBenchmarks()
         {
@@ -53,7 +57,36 @@ namespace TRBot.Tests
 
             ValidInputs = new string[] { "a", "b", "r", "up", "#" };
 
-            //OldParserRegex = new Parser().BuildInputRegex(ValidInputs);
+            Parser p = new Parser();
+            OldParserRegex = p.BuildInputRegex(ValidInputs);
+            OldParserCachedMessage = p.PrepParse(Message, Macros, Synonyms);
+
+            List<IPreparser> Preparsers = new List<IPreparser>()
+            {
+                new InputMacroPreparser(Macros),
+                new InputSynonymPreparser(Synonyms),
+                new ExpandPreparser(),
+                new RemoveWhitespacePreparser()
+            };
+
+            NewParserCachedMessage = Message;
+
+            for (int i = 0; i < Preparsers.Count; i++)
+            {
+                NewParserCachedMessage = Preparsers[i].Preparse(NewParserCachedMessage);
+            }
+
+            NewParserComponents = new List<IParserComponent>()
+            {
+                new PortParserComponent(),
+                new HoldParserComponent(),
+                new ReleaseParserComponent(),
+                new InputParserComponent(ValidInputs),
+                new PercentParserComponent(),
+                new MillisecondParserComponent(),
+                new SecondParserComponent(),
+                new SimultaneousParserComponent()
+            };
         }
 
         [Benchmark]
@@ -91,6 +124,20 @@ namespace TRBot.Tests
 
             StandardParser standardParser = new StandardParser(preparsers, components, 0, 99, 200, 60000, false);
             standardParser.ParseInputs(Message);
+        }
+
+        [Benchmark]
+        public void TestOldParserCached()
+        {
+            Parser p = new Parser();
+            p.ParseInputs(OldParserCachedMessage, OldParserRegex, new ParserOptions(0, 200, false, 60000));
+        }
+
+        [Benchmark]
+        public void TestNewParserCached()
+        {
+            StandardParser standardParser = new StandardParser(NewParserComponents, 0, 99, 200, 60000, false);
+            standardParser.ParseInputs(NewParserCachedMessage);
         }
     }
 
