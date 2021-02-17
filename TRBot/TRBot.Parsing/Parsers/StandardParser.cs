@@ -124,7 +124,7 @@ namespace TRBot.Parsing
                 }
             }
 
-            Console.WriteLine("REGEX: " + ParserRegex);
+            //Console.WriteLine("REGEX: " + ParserRegex);
 
             //Get all the matches from the regex
             MatchCollection matches = Regex.Matches(message, ParserRegex, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
@@ -136,7 +136,7 @@ namespace TRBot.Parsing
             //Store the previous index - if there's anything in between that's not picked up by the regex, it's an invalid input
             int prevIndex = 0;
 
-            Console.WriteLine($"Match count for \"{message}\" is {matches.Count}");
+            //Console.WriteLine($"Match count for \"{message}\" is {matches.Count}");
 
             //Create our input sequence and inputs
             ParsedInputSequence inputSequence = new ParsedInputSequence();
@@ -152,12 +152,12 @@ namespace TRBot.Parsing
             {
                 Match match = matches[i];
 
-                Console.WriteLine($"Match index: {match.Index} | Value: {match.Value} | Length: {match.Length}");
+                //Console.WriteLine($"Match index: {match.Index} | Value: {match.Value} | Length: {match.Length}");
                 
-                for (int j = 0; j < match.Groups.Count; j++)
-                {
-                    Console.WriteLine($"{j + 1} group match: \"{match.Groups[j].Name}\" | Index: {match.Groups[j].Index} | Value: {match.Groups[j].Value} | Length: {match.Groups[j].Length}");
-                }
+                //for (int j = 0; j < match.Groups.Count; j++)
+                //{
+                //    Console.WriteLine($"{j + 1} group match: \"{match.Groups[j].Name}\" | Index: {match.Groups[j].Index} | Value: {match.Groups[j].Value} | Length: {match.Groups[j].Length}");
+                //}
 
                 //If there's no match, it should be a normal message
                 if (match.Success == false)
