@@ -137,23 +137,18 @@ namespace TRBot.Commands
 
             try
             {
-                string regexStr = usedConsole.InputRegex;
-
-                string readyMessage = string.Empty;
-
-                Parser parser = new Parser();
-
                 using (BotDBContext context = DatabaseManager.OpenContext())
                 {
                     //Get input synonyms for this console
                     IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.ConsoleID == lastConsoleID);
 
-                    //Prepare the message for parsing
-                    readyMessage = parser.PrepParse(argInputSequence, context.Macros, synonyms);
+                    //Parse inputs to get our parsed input sequence
+                    StandardParser standardParser = StandardParser.CreateStandard(context.Macros, synonyms,
+                        usedConsole.GetInputNames(), defaultPeriodicInpPort, DataContainer.ControllerMngr.ControllerCount - 1,
+                        defaultDur, maxDur, true);
+                    
+                    inputSequence = standardParser.ParseInputs(argInputSequence);
                 }
-
-                //Parse inputs to get our parsed input sequence
-                inputSequence = parser.ParseInputs(readyMessage, regexStr, new ParserOptions(defaultPeriodicInpPort, defaultDur, true, maxDur));
             }
             catch (Exception exception)
             {
@@ -199,9 +194,9 @@ namespace TRBot.Commands
                 }
             }
 
-            //Check for level permissions and ports
-            InputValidation validation = ParserPostProcess.ValidateInputLvlPermsAndPorts(userLevel, inputSequence,
-                DataContainer.ControllerMngr, usedConsole.ConsoleInputs);
+            //Check for level permissions
+            InputValidation validation = ParserPostProcess.ValidateInputLvlPerms(userLevel, inputSequence,
+                usedConsole.ConsoleInputs);
             if (validation.InputValidationType != InputValidationTypes.Valid)
             {
                 if (string.IsNullOrEmpty(validation.Message) == false)

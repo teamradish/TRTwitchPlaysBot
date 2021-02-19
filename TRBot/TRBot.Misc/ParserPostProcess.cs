@@ -345,6 +345,37 @@ namespace TRBot.Misc
             return new InputValidation(InputValidationTypes.Valid, string.Empty);
         }
 
+        /// <summary>
+        /// Validates whether the user has permission to perform an input sequence.
+        /// </summary>
+        /// <param name="userLevel">The level of the user.</param>
+        /// <param name="inputSequence">The input sequence to check.</param>
+        /// <param name="inputPermissionLevels">The dictionary of input permissions.</param>
+        /// <returns>An InputValidation object specifying the InputValidationType and a message, if any.</returns>
+        public static InputValidation ValidateInputLvlPerms(in long userLevel, in ParsedInputSequence inputSequence,
+            Dictionary<string, InputData> inputPermissionLevels)
+        {
+            List<List<ParsedInput>> inputs = inputSequence.Inputs;
+
+            for (int i = 0; i < inputs.Count; i++)
+            {
+                for (int j = 0; j < inputs[i].Count; j++)
+                {
+                    ParsedInput input = inputs[i][j];
+
+                    //Check if the user has permission to enter this input
+                    if (inputPermissionLevels.TryGetValue(input.Name, out InputData inputData) == true
+                        && userLevel < inputData.Level)
+                    {
+                        return new InputValidation(InputValidationTypes.InsufficientAccess,
+                            $"No permission to use input \"{input.Name}\", which requires at least level {inputData.Level}.");
+                    }
+                }
+            }
+
+            return new InputValidation(InputValidationTypes.Valid, string.Empty);
+        }
+
         private static bool InvalidComboContainsInputName(List<InvalidCombo> invalidCombo, string inputName)
         {
             for (int i = 0; i < invalidCombo.Count; i++)

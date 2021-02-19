@@ -56,8 +56,6 @@ namespace TRBot.Consoles
             Name = "wii";
 
             Initialize();
-
-            UpdateInputRegex();
         }
 
         private void Initialize()

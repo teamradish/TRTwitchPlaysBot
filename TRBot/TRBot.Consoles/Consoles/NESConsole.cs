@@ -34,8 +34,6 @@ namespace TRBot.Consoles
             Name = "nes";
 
             Initialize();
-
-            UpdateInputRegex();
         }
 
         private void Initialize()

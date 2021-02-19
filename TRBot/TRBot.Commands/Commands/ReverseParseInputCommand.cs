@@ -96,24 +96,18 @@ namespace TRBot.Commands
 
                 int defaultDur = (int)DataHelper.GetUserOrGlobalDefaultInputDur(userName);
                 int maxDur = (int)DataHelper.GetUserOrGlobalMaxInputDur(userName);
-                
-                string regexStr = usedConsole.InputRegex;
-
-                string readyMessage = string.Empty;
-
-                Parser parser = new Parser();
 
                 using (BotDBContext context = DatabaseManager.OpenContext())
                 {
                     //Get input synonyms for this console
                     IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.ConsoleID == lastConsoleID);
 
-                    //Prepare the message for parsing
-                    readyMessage = parser.PrepParse(input, context.Macros, synonyms);
+                    StandardParser standardParser = StandardParser.CreateStandard(context.Macros, synonyms,
+                        usedConsole.GetInputNames(), defaultPort, int.MaxValue, defaultDur, maxDur, true);
+                    
+                    //Parse inputs to get our parsed input sequence
+                    inputSequence = standardParser.ParseInputs(input);
                 }
-
-                //Parse inputs to get our parsed input sequence
-                inputSequence = parser.ParseInputs(readyMessage, regexStr, new ParserOptions(defaultPort, defaultDur, true, maxDur));
             }
             catch (Exception exception)
             {

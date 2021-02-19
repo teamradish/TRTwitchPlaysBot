@@ -33,8 +33,6 @@ namespace TRBot.Consoles
             Name = "blank";
 
             InvalidCombos = new List<InvalidCombo>();
-
-            UpdateInputRegex();
         }
     }
 }

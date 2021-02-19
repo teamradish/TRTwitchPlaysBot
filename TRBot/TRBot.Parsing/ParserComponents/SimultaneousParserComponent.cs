@@ -25,10 +25,11 @@ namespace TRBot.Parsing
     /// </summary>
     public class SimultaneousParserComponent : GenericParserComponent
     {
+        public const string SIMULTANEOUS_SYMBOL = @"+";
         public const string SIMULTANEOUS_GROUP_NAME = "simultaneous";
 
         public SimultaneousParserComponent()
-            : base(@"(?<" + SIMULTANEOUS_GROUP_NAME + @">\+)?")
+            : base(@"(?<" + SIMULTANEOUS_GROUP_NAME + @">\" + SIMULTANEOUS_SYMBOL + @")?")
         {
             
         }

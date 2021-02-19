@@ -292,21 +292,15 @@ namespace TRBot.Commands
 
             try
             {
-                string regexStr = console.InputRegex;
-
-                string readyMessage = string.Empty;
-
-                Parser parser = new Parser();
-
                 using (BotDBContext context = DatabaseManager.OpenContext())
                 {
-                    //Prepare the message for parsing
+                    //Parse inputs to get our parsed input sequence
                     //Ignore input synonyms and max duration
-                    readyMessage = parser.PrepParse(userInput, context.Macros, null);
-                }
+                    StandardParser standardParser = StandardParser.CreateStandard(context.Macros, null,
+                        console.GetInputNames(), 0, int.MaxValue, defaultInputDur, 0, false);
 
-                //Parse inputs to get our parsed input sequence
-                inputSequence = parser.ParseInputs(readyMessage, regexStr, new ParserOptions(0, defaultInputDur, false, 0));
+                    inputSequence = standardParser.ParseInputs(userInput);
+                }
             }
             catch (Exception e)
             {

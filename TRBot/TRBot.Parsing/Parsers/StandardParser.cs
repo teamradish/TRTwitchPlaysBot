@@ -19,6 +19,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -29,6 +30,11 @@ namespace TRBot.Parsing
     /// </summary>
     public class StandardParser : IParser
     {   
+        /// <summary>
+        /// The default percentage value for inputs if no percentage is specified.
+        /// </summary>
+        public const double DEFAULT_PERCENT_VAL = 100d;
+
         /// <summary>
         /// The default port number to use for inputs with unspecified ports.
         /// </summary>
@@ -62,7 +68,7 @@ namespace TRBot.Parsing
         /// <summary>
         /// The default percentage for inputs with unspecified percentages.
         /// </summary>
-        private double DefaultPercentage = 100d;
+        private double DefaultPercentage = DEFAULT_PERCENT_VAL;
 
         /// <summary>
         /// The parser components used to build the parser.
@@ -74,6 +80,10 @@ namespace TRBot.Parsing
         /// </summary>
         private List<IPreparser> Preparsers = null;
 
+        /// <summary>
+        /// Creates a parser with settings and utilizing given parser components.
+        /// </summary>
+        /// <param name="parserComponents">The parser components to use in this parser.</param>
         public StandardParser(List<IParserComponent> parserComponents)
         {
             ParserComponents = parserComponents;
@@ -89,6 +99,16 @@ namespace TRBot.Parsing
             ParserRegex = regex;
         }
 
+        /// <summary>
+        /// Creates a parser with settings and utilizing given parser components.
+        /// </summary>
+        /// <param name="parserComponents">The parser components to use in this parser.</param>
+        /// <param name="validInputs">The available valid inputs.</param>
+        /// <param name="defaultPortNum">The default controller port number.</param>
+        /// <param name="maxPortNum">The maximum controller port number.</param>
+        /// <param name="defaultInputDur">The default input duration for inputs, in milliseconds.</param>
+        /// <param name="maxInputDur">The maximum duration of an input sequence, in milliseconds.</param>
+        /// <param name="checkMaxDur">Whether to mark the input sequence as invalid if it surpasses the maximum duration.</param>
         public StandardParser(List<IParserComponent> parserComponents, in int defaultPortNum,
             in int maxPortNum, in int defaultInputDur, in int maxInputDur, in bool checkMaxDur)
                 : this(parserComponents)
@@ -100,6 +120,17 @@ namespace TRBot.Parsing
             CheckMaxDur = checkMaxDur;
         }
 
+        /// <summary>
+        /// Creates a parser with settings and utilizing given parser components and preparsers.
+        /// </summary>
+        /// <param name="preParsers">The preparsers to use to prepare the input message before parsing.</param>
+        /// <param name="parserComponents">The parser components to use in this parser.</param>
+        /// <param name="validInputs">The available valid inputs.</param>
+        /// <param name="defaultPortNum">The default controller port number.</param>
+        /// <param name="maxPortNum">The maximum controller port number.</param>
+        /// <param name="defaultInputDur">The default input duration for inputs, in milliseconds.</param>
+        /// <param name="maxInputDur">The maximum duration of an input sequence, in milliseconds.</param>
+        /// <param name="checkMaxDur">Whether to mark the input sequence as invalid if it surpasses the maximum duration.</param>
         public StandardParser(List<IPreparser> preParsers, List<IParserComponent> parserComponents,
             in int defaultPortNum, in int maxPortNum, in int defaultInputDur, in int maxInputDur,
             in bool checkMaxDur)
@@ -194,6 +225,7 @@ namespace TRBot.Parsing
 
                 //Console.WriteLine($"FOUND INPUT NAME: \"{input.name}\"");
 
+                //Check holds and releases
                 bool hasHold = match.Groups.TryGetValue(HoldParserComponent.HOLD_GROUP_NAME, out Group holdGroup) && holdGroup?.Success == true;
                 bool hasRelease = match.Groups.TryGetValue(ReleaseParserComponent.RELEASE_GROUP_NAME, out Group releaseGroup) && releaseGroup?.Success == true;
 
@@ -225,6 +257,7 @@ namespace TRBot.Parsing
 
                     //Console.WriteLine($"Port num group success: {portNumGroup.Success} | I: {portNumGroup.Index} - L: {portNumGroup.Length}");
 
+                    //Parse the number
                     string portNumStr = portNumGroup.Value;
                     if (int.TryParse(portNumStr, out int cPort) == false)
                     {
@@ -388,6 +421,48 @@ namespace TRBot.Parsing
             inputSequence.Error = string.Empty;
 
             return inputSequence;
+        }
+
+        /// <summary>
+        /// Creates a <see cref="StandardParser" /> with the standard parser configuration.
+        /// </summary>
+        /// <param name="macros">The InputMacro data to use.</param>
+        /// <param name="synonyms">The InputSynonym data to use.</param>
+        /// <param name="validInputs">The available valid inputs.</param>
+        /// <param name="defaultPortNum">The default controller port number.</param>
+        /// <param name="maxPortNum">The maximum controller port number.</param>
+        /// <param name="defaultInputDur">The default input duration for inputs, in milliseconds.</param>
+        /// <param name="maxInputDur">The maximum duration of an input sequence, in milliseconds.</param>
+        /// <param name="checkMaxDur">Whether to mark the input sequence as invalid if it surpasses the maximum duration.</param>
+        /// <returns>A <see cref="StandardParser" /> standard configuration, including preparsers and parser components.</returns>
+        public static StandardParser CreateStandard(IQueryable<InputMacro> macros, IEnumerable<InputSynonym> synonyms,
+            IList<string> validInputs, in int defaultPortNum, in int maxPortNum, in int defaultInputDur,
+            in int maxInputDur, in bool checkMaxDur)
+        {
+            List<IPreparser> preparsers = new List<IPreparser>()
+            {
+                new InputMacroPreparser(macros),
+                new InputSynonymPreparser(synonyms),
+                new ExpandPreparser(),
+                new RemoveWhitespacePreparser()
+            };
+
+            List<IParserComponent> components = new List<IParserComponent>()
+            {
+                new PortParserComponent(),
+                new HoldParserComponent(),
+                new ReleaseParserComponent(),
+                new InputParserComponent(validInputs),
+                new PercentParserComponent(),
+                new MillisecondParserComponent(),
+                new SecondParserComponent(),
+                new SimultaneousParserComponent()
+            };
+
+            StandardParser standardParser = new StandardParser(preparsers, components, defaultPortNum, maxPortNum,
+                defaultInputDur, maxInputDur, checkMaxDur);
+
+            return standardParser;
         }
     }
 }

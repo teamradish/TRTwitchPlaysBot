@@ -93,28 +93,28 @@ namespace TRBot.Misc
                         || (options.ShowPortType == ShowPortTypes.ShowNonDefaultPorts 
                             && input.ControllerPort != options.DefaultPortNum))
                     {
-                        strBuilder.Append(Parser.DEFAULT_PARSE_REGEX_PORT_INPUT).Append(input.ControllerPort + 1);
+                        strBuilder.Append(PortParserComponent.PORT_SYMBOL).Append(input.ControllerPort + 1);
                     }
 
                     //Add hold string
                     if (input.Hold == true)
                     {
-                        strBuilder.Append(Parser.DEFAULT_PARSE_REGEX_HOLD_INPUT);
+                        strBuilder.Append(HoldParserComponent.HOLD_SYMBOL);
                     }
 
                     //Add release string
                     if (input.Release == true)
                     {
-                        strBuilder.Append(Parser.DEFAULT_PARSE_REGEX_RELEASE_INPUT);
+                        strBuilder.Append(ReleaseParserComponent.RELEASE_SYMBOL);
                     }
 
                     strBuilder.Append(input.Name);
 
                     //Add percent if it's an axis or the percent isn't the default
-                    if (input.Percent != Parser.PARSER_DEFAULT_PERCENT
+                    if (input.Percent < StandardParser.DEFAULT_PERCENT_VAL
                         || gameConsole.IsAxis(input) == true)
                     {
-                        strBuilder.Append(input.Percent).Append(Parser.DEFAULT_PARSE_REGEX_PERCENT_INPUT);
+                        strBuilder.Append(input.Percent).Append(PercentParserComponent.PERCENT_SYMBOL);
                     }
                     
                     int duration = input.Duration;
@@ -134,13 +134,17 @@ namespace TRBot.Misc
                         }
 
                         strBuilder.Append(duration);
-                        strBuilder.Append(input.DurationType);
+
+                        //NOTE: This will need to be adjusted if different parsers are used
+                        //Ideally, we should have an IReverseParser interface to allow using different implementation
+                        //based on the parser we're using
+                        strBuilder.Append(ParserUtilities.GetInputDurationAbbreviation(input.DurationType));
                     }
 
                     //Add plus string if there are more in the subsequence
                     if (j < (inputList.Count - 1))
                     {
-                        strBuilder.Append(Parser.DEFAULT_PARSE_REGEX_PLUS_INPUT);
+                        strBuilder.Append(SimultaneousParserComponent.SIMULTANEOUS_SYMBOL);
                     }
                 }
 
@@ -222,7 +226,7 @@ namespace TRBot.Misc
 
                         //Add percent if it's an axis, the percent isn't the default, and not releasing
                         if (input.Release == false
-                            && (input.Percent != Parser.PARSER_DEFAULT_PERCENT
+                            && (input.Percent < StandardParser.DEFAULT_PERCENT_VAL
                             || gameConsole.IsAxis(input) == true))
                         {
                             strBuilder.Append(input.Percent).Append("% ");

@@ -25,11 +25,12 @@ namespace TRBot.Parsing
     /// </summary>
     public class PortParserComponent : GenericParserComponent
     {
+        public const string PORT_SYMBOL = @"&";
         public const string PORT_GROUP_NAME = "port";
         public const string PORT_NUM_GROUP_NAME = "portnum";
 
         public PortParserComponent()
-            : base(@"(?<" + PORT_GROUP_NAME + @">\&(?<" + PORT_NUM_GROUP_NAME + @">[0-9]{1,2}))?")
+            : base(@"(?<" + PORT_GROUP_NAME + @">\" + PORT_SYMBOL + @"(?<" + PORT_NUM_GROUP_NAME + @">[0-9]{1,2}))?")
         {
             
         }

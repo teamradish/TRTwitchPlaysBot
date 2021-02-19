@@ -66,9 +66,9 @@ namespace TRBot.Commands
                 return;
             }
 
-            if (memeName.StartsWith(Parser.DEFAULT_PARSER_REGEX_MACRO_INPUT) == true)
+            if (memeName.StartsWith(InputMacroPreparser.DEFAULT_MACRO_START) == true)
             {
-                QueueMessage($"Memes cannot start with \"{Parser.DEFAULT_PARSER_REGEX_MACRO_INPUT}\".");
+                QueueMessage($"Memes cannot start with \"{InputMacroPreparser.DEFAULT_MACRO_START}\".");
                 return;
             }
 

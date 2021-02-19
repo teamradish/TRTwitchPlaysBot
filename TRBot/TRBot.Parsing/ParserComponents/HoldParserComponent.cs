@@ -25,10 +25,11 @@ namespace TRBot.Parsing
     /// </summary>
     public class HoldParserComponent : GenericParserComponent
     {
+        public const string HOLD_SYMBOL = @"_";
         public const string HOLD_GROUP_NAME = "hold";
 
         public HoldParserComponent()
-            : base(@"(?<" + HOLD_GROUP_NAME + @">_)?")
+            : base(@"(?<" + HOLD_GROUP_NAME + @">" + HOLD_SYMBOL + @")?")
         {
             
         }

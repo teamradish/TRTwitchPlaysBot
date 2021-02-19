@@ -51,7 +51,7 @@ namespace TRBot.Commands
             typeof(Console).Assembly,
             typeof(List<int>).Assembly,
             typeof(ExecCommand).Assembly,
-            typeof(Parsing.Parser).Assembly,
+            typeof(Parsing.IParser).Assembly,
             typeof(GameConsole).Assembly,
             typeof(VirtualControllers.IVirtualController).Assembly,
             typeof(IClientService).Assembly,

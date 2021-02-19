@@ -34,8 +34,6 @@ namespace TRBot.Consoles
             Name = "switch";
 
             Initialize();
-
-            UpdateInputRegex();
         }
 
         private void Initialize()

@@ -37,7 +37,7 @@ namespace TRBot.Parsing
         /// <summary>
         /// Returns a default Input.
         /// </summary>
-        public static ParsedInput Default(in int defaultInputDur) => new ParsedInput(string.Empty, false, false, Parser.PARSER_DEFAULT_PERCENT, defaultInputDur, InputDurationTypes.Milliseconds, 0, string.Empty);
+        public static ParsedInput Default(in int defaultInputDur) => new ParsedInput(string.Empty, false, false, 100d, defaultInputDur, InputDurationTypes.Milliseconds, 0, string.Empty);
         
         public ParsedInput(string nme, in bool hld, in bool relse, in double percnt, in int dur, InputDurationTypes durType, in int contPort, in string err)
         {

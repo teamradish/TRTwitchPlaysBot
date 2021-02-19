@@ -34,8 +34,6 @@ namespace TRBot.Consoles
             Name = "ps4";
 
             Initialize();
-
-            UpdateInputRegex();
         }
 
         private void Initialize()

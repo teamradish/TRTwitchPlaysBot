@@ -34,6 +34,7 @@ namespace TRBot.Parsing
     /// Constant Regex expressions are compiled to increase performance of subsequent Match calls.
     /// This is favorable since we have only a few Regex expressions that are run many times.
     /// </remarks>
+    [Obsolete("This parser is deprecated. Please use the more flexible StandardParser or create your own implementing the IParser interface.", false)]
     public class Parser
     {
         public const string DEFAULT_PARSE_REGEX_PORT_INPUT = @"&";

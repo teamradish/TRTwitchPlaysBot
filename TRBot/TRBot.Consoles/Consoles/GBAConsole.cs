@@ -34,8 +34,6 @@ namespace TRBot.Consoles
             Name = "gba";
             
             Initialize();
-
-            UpdateInputRegex();
         }
 
         private void Initialize()

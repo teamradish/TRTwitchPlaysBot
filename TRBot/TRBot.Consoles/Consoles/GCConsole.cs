@@ -34,8 +34,6 @@ namespace TRBot.Consoles
             Name = "gc";
 
             Initialize();
-
-            UpdateInputRegex();
         }
 
         private void Initialize()

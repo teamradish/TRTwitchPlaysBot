@@ -47,5 +47,21 @@ namespace TRBot.Parsing
             //Replace all whitespace via regex
             return Regex.Replace(originalStr, @"\s+", string.Empty, RegexOptions.Compiled);
         }
+
+        /// <summary>
+        /// Returns an abbreviation for an input duration type.
+        /// </summary>
+        /// <param name="inputDurType">The input duration type.</param>
+        /// <returns>A string representing an abbreviation for the input duration type.</returns>
+        public static string GetInputDurationAbbreviation(in InputDurationTypes inputDurType)
+        {
+            switch (inputDurType)
+            {
+                case InputDurationTypes.Seconds:
+                    return "s";
+                case InputDurationTypes.Milliseconds:
+                default: return "ms";
+            }
+        }
     }
 }

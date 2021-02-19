@@ -34,8 +34,6 @@ namespace TRBot.Consoles
             Name = "genesis";
 
             Initialize();
-
-            UpdateInputRegex();
         }
 
         private void Initialize()

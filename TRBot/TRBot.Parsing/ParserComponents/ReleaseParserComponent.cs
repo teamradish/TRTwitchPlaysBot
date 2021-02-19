@@ -25,10 +25,11 @@ namespace TRBot.Parsing
     /// </summary>
     public class ReleaseParserComponent : GenericParserComponent
     {
+        public const string RELEASE_SYMBOL = @"-";
         public const string RELEASE_GROUP_NAME = "release";
         
         public ReleaseParserComponent()
-            : base(@"(?<" + RELEASE_GROUP_NAME + @">\-)?")
+            : base(@"(?<" + RELEASE_GROUP_NAME + @">\" + RELEASE_SYMBOL + @")?")
         {
             
         }
