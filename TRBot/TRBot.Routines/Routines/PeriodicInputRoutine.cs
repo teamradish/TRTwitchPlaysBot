@@ -1,6 +1,6 @@
-﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+﻿/* Copyright (C) 2019-2021 Thomas "Kimimaru" Deeb
  * 
- * This file is part of TRBot,software for playing games through text.
+ * This file is part of TRBot, software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -129,24 +129,19 @@ namespace TRBot.Routines
             {
                 int defaultDur = (int)DataHelper.GetUserOrGlobalDefaultInputDur(string.Empty);
                 int maxDur = (int)DataHelper.GetUserOrGlobalMaxInputDur(string.Empty);
-                
-                string regexStr = usedConsole.InputRegex;
-
-                string readyMessage = string.Empty;
-
-                Parser parser = new Parser();
 
                 using (BotDBContext context = DatabaseManager.OpenContext())
                 {
                     //Get input synonyms for this console
                     IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.ConsoleID == lastConsoleID);
     
-                    //Prepare the message for parsing
-                    readyMessage = parser.PrepParse(periodicInputValue, context.Macros, synonyms);
-                }
+                    StandardParser standardParser = StandardParser.CreateStandard(context.Macros, synonyms,
+                        usedConsole.GetInputNames(), 0, DataContainer.ControllerMngr.ControllerCount - 1,
+                        defaultDur, maxDur, true);
 
-                //Parse inputs to get our parsed input sequence
-                inputSequence = parser.ParseInputs(readyMessage, regexStr, new ParserOptions(0, defaultDur, true, maxDur));
+                    //Parse inputs to get our parsed input sequence
+                    inputSequence = standardParser.ParseInputs(periodicInputValue);
+                }
             }
             catch (Exception exception)
             {
@@ -173,22 +168,9 @@ namespace TRBot.Routines
             }
 
             /* Perform post-processing */
-            
-            //Validate controller ports
-            InputValidation validation = ParserPostProcess.ValidateInputPorts( inputSequence,
-                DataContainer.ControllerMngr);
-            if (validation.InputValidationType != InputValidationTypes.Valid)
-            {
-                if (string.IsNullOrEmpty(validation.Message) == false)
-                {
-                    DataContainer.MessageHandler.QueueMessage($"Failed periodic input: {validation.Message}");
-                }
-
-                return;
-            }
 
             //Check for invalid input combinations
-            validation = ParserPostProcess.ValidateInputCombos(inputSequence, usedConsole.InvalidCombos,
+            InputValidation validation = ParserPostProcess.ValidateInputCombos(inputSequence, usedConsole.InvalidCombos,
                 DataContainer.ControllerMngr, usedConsole);
             
             if (validation.InputValidationType != InputValidationTypes.Valid)

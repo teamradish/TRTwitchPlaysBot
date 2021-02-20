@@ -1,6 +1,6 @@
-/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+/* Copyright (C) 2019-2021 Thomas "Kimimaru" Deeb
  * 
- * This file is part of TRBot,software for playing games through text.
+ * This file is part of TRBot, software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,30 +25,30 @@ namespace TRBot.Parsing
     /// </summary>
     public struct ParsedInput
     {
-        public string name;
-        public bool hold;
-        public bool release;
-        public int percent;
-        public int duration;
-        public string duration_type;
-        public int controllerPort;
-        public string error;
+        public string Name;
+        public bool Hold;
+        public bool Release;
+        public double Percent;
+        public int Duration;
+        public InputDurationTypes DurationType;
+        public int ControllerPort;
+        public string Error;
 
         /// <summary>
         /// Returns a default Input.
         /// </summary>
-        public static ParsedInput Default(in int defaultInputDur) => new ParsedInput(string.Empty, false, false, Parser.PARSER_DEFAULT_PERCENT, defaultInputDur, Parser.PARSER_DEFAULT_DUR_TYPE, 0, string.Empty);
+        public static ParsedInput Default(in int defaultInputDur) => new ParsedInput(string.Empty, false, false, 100d, defaultInputDur, InputDurationTypes.Milliseconds, 0, string.Empty);
         
-        public ParsedInput(string nme, in bool hld, in bool relse, in int percnt, in int dur, string durType, in int contPort, in string err)
+        public ParsedInput(string nme, in bool hld, in bool relse, in double percnt, in int dur, InputDurationTypes durType, in int contPort, in string err)
         {
-            this.name = nme;
-            this.hold = hld;
-            this.release = relse;
-            this.percent = percnt;
-            this.duration = dur;
-            this.duration_type = durType;
-            this.controllerPort = contPort;
-            this.error = string.Empty;
+            this.Name = nme;
+            this.Hold = hld;
+            this.Release = relse;
+            this.Percent = percnt;
+            this.Duration = dur;
+            this.DurationType = durType;
+            this.ControllerPort = contPort;
+            this.Error = string.Empty;
         }
 
         public override bool Equals(object obj)
@@ -66,23 +66,23 @@ namespace TRBot.Parsing
             unchecked
             {
                 int hash = 19;
-                hash = (hash * 37) + ((name == null) ? 0 : name.GetHashCode());
-                hash = (hash * 37) + hold.GetHashCode();
-                hash = (hash * 37) + release.GetHashCode();
-                hash = (hash * 37) + percent.GetHashCode();
-                hash = (hash * 37) + duration.GetHashCode();
-                hash = (hash * 37) + ((duration_type == null) ? 0 : duration_type.GetHashCode());
-                hash = (hash * 37) + controllerPort.GetHashCode();
-                hash = (hash * 37) + ((error == null) ? 0 : error.GetHashCode());
+                hash = (hash * 37) + ((Name == null) ? 0 : Name.GetHashCode());
+                hash = (hash * 37) + Hold.GetHashCode();
+                hash = (hash * 37) + Release.GetHashCode();
+                hash = (hash * 37) + Percent.GetHashCode();
+                hash = (hash * 37) + Duration.GetHashCode();
+                hash = (hash * 37) + DurationType.GetHashCode();
+                hash = (hash * 37) + ControllerPort.GetHashCode();
+                hash = (hash * 37) + ((Error == null) ? 0 : Error.GetHashCode());
                 return hash;
             }
         }
 
         public static bool operator ==(ParsedInput a, ParsedInput b)
         {
-            return (a.hold == b.hold && a.release == b.release && a.percent == b.percent
-                    && a.duration_type == b.duration_type && a.duration_type == b.duration_type
-                    && a.name == b.name && a.controllerPort == b.controllerPort && a.error == b.error);
+            return (a.Hold == b.Hold && a.Release == b.Release && a.Percent == b.Percent
+                    && a.DurationType == b.DurationType && a.DurationType == b.DurationType
+                    && a.Name == b.Name && a.ControllerPort == b.ControllerPort && a.Error == b.Error);
         }
 
         public static bool operator !=(ParsedInput a, ParsedInput b)
@@ -92,7 +92,7 @@ namespace TRBot.Parsing
 
         public override string ToString()
         {
-            return $"\"{name}\" {duration}{duration_type} | H:{hold} | R:{release} | P:{percent} | CPort:{controllerPort} | Err: \"{error}\"";
+            return $"\"{Name}\" {Duration}{DurationType} | H:{Hold} | R:{Release} | P:{Percent} | CPort:{ControllerPort} | Err: \"{Error}\"";
         }
     }
 }

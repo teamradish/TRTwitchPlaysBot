@@ -1,6 +1,6 @@
-﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+﻿/* Copyright (C) 2019-2021 Thomas "Kimimaru" Deeb
  * 
- * This file is part of TRBot,software for playing games through text.
+ * This file is part of TRBot, software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -292,21 +292,15 @@ namespace TRBot.Commands
 
             try
             {
-                string regexStr = console.InputRegex;
-
-                string readyMessage = string.Empty;
-
-                Parser parser = new Parser();
-
                 using (BotDBContext context = DatabaseManager.OpenContext())
                 {
-                    //Prepare the message for parsing
+                    //Parse inputs to get our parsed input sequence
                     //Ignore input synonyms and max duration
-                    readyMessage = parser.PrepParse(userInput, context.Macros, null);
-                }
+                    StandardParser standardParser = StandardParser.CreateStandard(context.Macros, null,
+                        console.GetInputNames(), 0, int.MaxValue, defaultInputDur, 0, false);
 
-                //Parse inputs to get our parsed input sequence
-                inputSequence = parser.ParseInputs(readyMessage, regexStr, new ParserOptions(0, defaultInputDur, false, 0));
+                    inputSequence = standardParser.ParseInputs(userInput);
+                }
             }
             catch (Exception e)
             {
@@ -370,7 +364,7 @@ namespace TRBot.Commands
                     //For simplicity when comparing, if the user put a blank input, use the same one all the time
                     if (console.IsBlankInput(userInp) == true)
                     {
-                        userInp.name = COMMON_BLANK_INPUT;
+                        userInp.Name = COMMON_BLANK_INPUT;
                     }
 
                     if (excInp != userInp)
@@ -446,21 +440,21 @@ namespace TRBot.Commands
                 ParsedInput input = ParsedInput.Default(defaultInputDur);
 
                 int chosenInputIndex = Rand.Next(0, validInputs.Count);
-                input.name = validInputs[chosenInputIndex].Name;
+                input.Name = validInputs[chosenInputIndex].Name;
 
-                input.duration = Rand.Next(MIN_SECONDS_VAL, MAX_SECONDS_VAL);
+                input.Duration = Rand.Next(MIN_SECONDS_VAL, MAX_SECONDS_VAL);
                 bool useMilliseconds = (Rand.Next(0, 2) == 0);
 
                 //If using milliseconds instead of seconds, multiply by 100 for more multiples of 100
                 if (useMilliseconds == true)
                 {
-                    input.duration *= 100;
-                    input.duration_type = Parser.DEFAULT_PARSE_REGEX_MILLISECONDS_INPUT;
+                    input.Duration *= 100;
+                    input.DurationType = InputDurationTypes.Milliseconds;
                 }
                 else
                 {
-                    input.duration *= 1000;
-                    input.duration_type = Parser.DEFAULT_PARSE_REGEX_SECONDS_INPUT;
+                    input.Duration *= 1000;
+                    input.DurationType = InputDurationTypes.Seconds;
                 }
 
                 //Decide whether to hold or release this input if it's not a wait input
@@ -470,15 +464,15 @@ namespace TRBot.Commands
                     if (holdRelease == true)
                     {
                         //If already held, release this input
-                        if (heldInputs.Contains(input.name) == true)
+                        if (heldInputs.Contains(input.Name) == true)
                         {
-                            input.release = true;
-                            heldInputs.Remove(input.name);
+                            input.Release = true;
+                            heldInputs.Remove(input.Name);
                         }
                         else
                         {
-                            input.hold = true;
-                            heldInputs.Add(input.name);
+                            input.Hold = true;
+                            heldInputs.Add(input.Name);
                         }
                     }
 
@@ -486,7 +480,7 @@ namespace TRBot.Commands
                     if (options.ShowPortType != ReverseParser.ShowPortTypes.None)
                     {
                         int randPort = Rand.Next(0, MAX_PORTS);
-                        input.controllerPort = randPort;
+                        input.ControllerPort = randPort;
                     }
                 }
 
@@ -497,7 +491,7 @@ namespace TRBot.Commands
 
                     if (usePercent == true)
                     {
-                        input.percent = Rand.Next(MIN_PERCENT_VAL, MAX_PERCENT_VAL);
+                        input.Percent = Rand.Next(MIN_PERCENT_VAL, MAX_PERCENT_VAL);
                     }
                 }
 

@@ -1,6 +1,6 @@
-﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+﻿/* Copyright (C) 2019-2021 Thomas "Kimimaru" Deeb
  * 
- * This file is part of TRBot,software for playing games through text.
+ * This file is part of TRBot, software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -57,7 +57,7 @@ namespace TRBot.Misc
                 for (int j = 0; j < inputs.Count; j++)
                 {
                     ParsedInput parsedInput = inputs[i];
-                    string inputName = parsedInput.name;
+                    string inputName = parsedInput.Name;
 
                     //Check if this input is restricted
                     if (restrictedInputNames.ContainsKey(inputName) == true)
@@ -156,7 +156,7 @@ namespace TRBot.Misc
                     ParsedInput input = inputList[j];
 
                     //Get controller port and initialize
-                    int port = input.controllerPort;
+                    int port = input.ControllerPort;
 
                     //Ensure a currentcombo entry is available for this port
                     if (currentComboDict.ContainsKey(port) == false)
@@ -176,13 +176,13 @@ namespace TRBot.Misc
                     List<string> subCombo = subComboDict[port];
 
                     //Check if this input is in the invalid combo
-                    if (InvalidComboContainsInputName(invalidCombo, input.name) == true)
+                    if (InvalidComboContainsInputName(invalidCombo, input.Name) == true)
                     {
                         //If it's not a release input and isn't in the held or current inputs, add it
-                        if (input.release == false && subCombo.Contains(input.name) == false
-                            && currentCombo.Contains(input.name) == false)
+                        if (input.Release == false && subCombo.Contains(input.Name) == false
+                            && currentCombo.Contains(input.Name) == false)
                         {
-                            subCombo.Add(input.name);
+                            subCombo.Add(input.Name);
                             
                             //Check the count after adding
                             if ((subCombo.Count + currentCombo.Count) == invalidCombo.Count)
@@ -208,13 +208,13 @@ namespace TRBot.Misc
                         }
                         
                         //For holds, use the held combo
-                        if (input.hold == true)
+                        if (input.Hold == true)
                         {
-                            if (currentCombo.Contains(input.name) == false)
+                            if (currentCombo.Contains(input.Name) == false)
                             {
                                 //Remove from the subcombo to avoid duplicates
-                                currentCombo.Add(input.name);
-                                subCombo.Remove(input.name);
+                                currentCombo.Add(input.Name);
+                                subCombo.Remove(input.Name);
                                 
                                 if ((currentCombo.Count + subCombo.Count) == invalidCombo.Count)
                                 {
@@ -239,9 +239,9 @@ namespace TRBot.Misc
                             }
                         }
                         //If released, remove from the current combo
-                        else if (input.release == true)
+                        else if (input.Release == true)
                         {
-                            currentCombo.Remove(input.name);
+                            currentCombo.Remove(input.Name);
                         }
                     }
                 }
@@ -273,19 +273,19 @@ namespace TRBot.Misc
                     ParsedInput input = inputs[i][j];
 
                     //Check for a valid port
-                    if (input.controllerPort >= 0 && input.controllerPort < vControllerMngr.ControllerCount)
+                    if (input.ControllerPort >= 0 && input.ControllerPort < vControllerMngr.ControllerCount)
                     {
                         //Check if the controller is acquired
-                        IVirtualController controller = vControllerMngr.GetController(input.controllerPort);
+                        IVirtualController controller = vControllerMngr.GetController(input.ControllerPort);
                         if (controller.IsAcquired == false)
                         {
-                            return new InputValidation(InputValidationTypes.InvalidPort, $"ERROR: Joystick number {input.controllerPort + 1} with controller ID of {controller.ControllerID} has not been acquired! Ensure you, the streamer, have a virtual controller set up at this ID (double check permissions).");
+                            return new InputValidation(InputValidationTypes.InvalidPort, $"ERROR: Joystick number {input.ControllerPort + 1} with controller ID of {controller.ControllerID} has not been acquired! Ensure you, the streamer, have a virtual controller set up at this ID (double check permissions).");
                         }
                     }
                     //Invalid port
                     else
                     {
-                        return new InputValidation(InputValidationTypes.InvalidPort, $"ERROR: Invalid joystick number {input.controllerPort + 1}. # of joysticks: {vControllerMngr.ControllerCount}. Please change yours or your input's controller port to a valid number to perform inputs.");
+                        return new InputValidation(InputValidationTypes.InvalidPort, $"ERROR: Invalid joystick number {input.ControllerPort + 1}. # of joysticks: {vControllerMngr.ControllerCount}. Please change yours or your input's controller port to a valid number to perform inputs.");
                     }
                 }
             }
@@ -317,27 +317,58 @@ namespace TRBot.Misc
                     ParsedInput input = inputs[i][j];
 
                     //Check for a valid port
-                    if (input.controllerPort >= 0 && input.controllerPort < vControllerMngr.ControllerCount)
+                    if (input.ControllerPort >= 0 && input.ControllerPort < vControllerMngr.ControllerCount)
                     {
                         //Check if the controller is acquired
-                        IVirtualController controller = vControllerMngr.GetController(input.controllerPort);
+                        IVirtualController controller = vControllerMngr.GetController(input.ControllerPort);
                         if (controller.IsAcquired == false)
                         {
-                            return new InputValidation(InputValidationTypes.InvalidPort, $"ERROR: Joystick number {input.controllerPort + 1} with controller ID of {controller.ControllerID} has not been acquired! Ensure you, the streamer, have a virtual controller set up at this ID (double check permissions).");
+                            return new InputValidation(InputValidationTypes.InvalidPort, $"ERROR: Joystick number {input.ControllerPort + 1} with controller ID of {controller.ControllerID} has not been acquired! Ensure you, the streamer, have a virtual controller set up at this ID (double check permissions).");
                         }
                     }
                     //Invalid port
                     else
                     {
-                        return new InputValidation(InputValidationTypes.InvalidPort, $"ERROR: Invalid joystick number {input.controllerPort + 1}. # of joysticks: {vControllerMngr.ControllerCount}. Please change yours or your input's controller port to a valid number to perform inputs.");
+                        return new InputValidation(InputValidationTypes.InvalidPort, $"ERROR: Invalid joystick number {input.ControllerPort + 1}. # of joysticks: {vControllerMngr.ControllerCount}. Please change yours or your input's controller port to a valid number to perform inputs.");
                     }
 
                     //Check if the user has permission to enter this input
-                    if (inputPermissionLevels.TryGetValue(input.name, out InputData inputData) == true
+                    if (inputPermissionLevels.TryGetValue(input.Name, out InputData inputData) == true
                         && userLevel < inputData.Level)
                     {
                         return new InputValidation(InputValidationTypes.InsufficientAccess,
-                            $"No permission to use input \"{input.name}\", which requires at least level {inputData.Level}.");
+                            $"No permission to use input \"{input.Name}\", which requires at least level {inputData.Level}.");
+                    }
+                }
+            }
+
+            return new InputValidation(InputValidationTypes.Valid, string.Empty);
+        }
+
+        /// <summary>
+        /// Validates whether the user has permission to perform an input sequence.
+        /// </summary>
+        /// <param name="userLevel">The level of the user.</param>
+        /// <param name="inputSequence">The input sequence to check.</param>
+        /// <param name="inputPermissionLevels">The dictionary of input permissions.</param>
+        /// <returns>An InputValidation object specifying the InputValidationType and a message, if any.</returns>
+        public static InputValidation ValidateInputLvlPerms(in long userLevel, in ParsedInputSequence inputSequence,
+            Dictionary<string, InputData> inputPermissionLevels)
+        {
+            List<List<ParsedInput>> inputs = inputSequence.Inputs;
+
+            for (int i = 0; i < inputs.Count; i++)
+            {
+                for (int j = 0; j < inputs[i].Count; j++)
+                {
+                    ParsedInput input = inputs[i][j];
+
+                    //Check if the user has permission to enter this input
+                    if (inputPermissionLevels.TryGetValue(input.Name, out InputData inputData) == true
+                        && userLevel < inputData.Level)
+                    {
+                        return new InputValidation(InputValidationTypes.InsufficientAccess,
+                            $"No permission to use input \"{input.Name}\", which requires at least level {inputData.Level}.");
                     }
                 }
             }
@@ -425,9 +456,9 @@ namespace TRBot.Misc
 
                     //Check for the same duration for consistent behavior
                     //If the blank input lasts as long as another input, it should still add a delay
-                    if (curInput.duration >= longestDur)
+                    if (curInput.Duration >= longestDur)
                     {
-                        longestDur = curInput.duration;
+                        longestDur = curInput.Duration;
                         blankHasLongestDur = false;
 
                         if (gameConsole.IsBlankInput(curInput) == true)
@@ -442,7 +473,7 @@ namespace TRBot.Misc
                 //Add a delay input in between
                 if (blankHasLongestDur == false && lastIndexBlankLongestDur == false)
                 {
-                    ParsedInput newDelayInput = new ParsedInput(firstBlankInput.Name, false, false, 100, midInputDelay, Parser.DEFAULT_PARSE_REGEX_MILLISECONDS_INPUT, defaultPort, string.Empty);
+                    ParsedInput newDelayInput = new ParsedInput(firstBlankInput.Name, false, false, 100, midInputDelay, InputDurationTypes.Milliseconds, defaultPort, string.Empty);
                     
                     parsedInputs.Add(new List<ParsedInput>(1) { newDelayInput });
 

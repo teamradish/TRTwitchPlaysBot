@@ -24,7 +24,7 @@ namespace TRBot.Logging
         /// <summary>
         /// The path to the logs folder.
         /// </summary>
-        public static string LogFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LOGS_FOLDER_NAME);
+        public static readonly string LogFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LOGS_FOLDER_NAME);
 
         
     }

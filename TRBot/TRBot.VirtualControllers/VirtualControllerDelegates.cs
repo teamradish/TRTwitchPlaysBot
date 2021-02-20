@@ -1,6 +1,6 @@
-﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+﻿/* Copyright (C) 2019-2021 Thomas "Kimimaru" Deeb
  * 
- * This file is part of TRBot,software for playing games through text.
+ * This file is part of TRBot, software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,7 +30,7 @@ namespace TRBot.VirtualControllers
         public delegate void OnInputPressed(in string inputName);
         public delegate void OnInputReleased(in string inputName);
 
-        public delegate void OnAxisPressed(in int axis, in int percent);
+        public delegate void OnAxisPressed(in int axis, in double percent);
         public delegate void OnAxisReleased(in int axis);
 
         public delegate void OnButtonPressed(in uint buttonVal);
