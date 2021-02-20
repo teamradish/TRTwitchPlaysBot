@@ -46,6 +46,6 @@ namespace TRBot.Data
         /// <summary>
         /// The path to the data folder.
         /// </summary>
-        public static string DataFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, DATA_FOLDER_NAME);
+        public static readonly string DataFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, DATA_FOLDER_NAME);
     }
 }

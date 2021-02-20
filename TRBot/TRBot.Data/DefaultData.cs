@@ -261,6 +261,7 @@ namespace TRBot.Data
 
                 new CommandData("exec", "TRBot.Commands.ExecCommand", superAdminPerm, false, false),
                 new CommandData("exportbotdata", "TRBot.Commands.ExportBotDataCommand", superAdminPerm, true, true),
+                new CommandData("exportdataset", "TRBot.Commands.ExportDatasetToTextCommand", superAdminPerm, true, true),
                 new CommandData("forceinitdefaults", "TRBot.Commands.ForceInitDataCommand", superAdminPerm, true, true),
             };
 
