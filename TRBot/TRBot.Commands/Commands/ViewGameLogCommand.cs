@@ -33,9 +33,9 @@ namespace TRBot.Commands
     /// <summary>
     /// Views a game log.
     /// </summary>
-    public sealed class ViewGameLogCommand : BaseCommand
+    public class ViewGameLogCommand : BaseCommand
     {
-        private string UsageMessage = "Usage: \"recent log number (optional)\"";
+        private string UsageMessage = "Usage: \"recent game log number (optional)\"";
 
         public ViewGameLogCommand()
         {
@@ -66,7 +66,7 @@ namespace TRBot.Commands
                 string num = arguments[0];
                 if (int.TryParse(num, out logNum) == false)
                 {
-                    QueueMessage("Invalid log number!");
+                    QueueMessage("Invalid game log number!");
                     return;
                 }
 
@@ -81,27 +81,30 @@ namespace TRBot.Commands
 
             if (logNum < 0 || logNum >= gameLogs.Count)
             {
-                QueueMessage($"No log found!");
+                QueueMessage($"No game log found at number {logNum}!");
                 return;
             }
 
             GameLog gameLog = gameLogs[logNum];
 
-            string userName = string.Empty;
-
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
                 User logUser = DataHelper.GetUserNoOpen(gameLog.User, context);
 
-                //Don't display username if they opted out
-                if (logUser != null && logUser.IsOptedOut == false)
-                {
-                    QueueMessage($"{gameLog.LogDateTime} (UTC) --> {gameLog.User} : {gameLog.LogMessage}");
-                }
-                else
-                {
-                    QueueMessage($"{gameLog.LogDateTime} (UTC) --> {gameLog.LogMessage}");
-                }
+                PrintLog(gameLog, (logUser == null) ? false : logUser.IsOptedOut);
+            }
+        }
+
+        protected void PrintLog(GameLog gameLog, in bool optedOut)
+        {
+            //Don't display username if they opted out
+            if (optedOut == false)
+            {
+                QueueMessage($"{gameLog.LogDateTime} (UTC) --> {gameLog.User} : {gameLog.LogMessage}");
+            }
+            else
+            {
+                QueueMessage($"{gameLog.LogDateTime} (UTC) --> {gameLog.LogMessage}");
             }
         }
     }

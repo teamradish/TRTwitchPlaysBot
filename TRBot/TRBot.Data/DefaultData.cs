@@ -238,6 +238,7 @@ namespace TRBot.Data
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", whitelistedPerm, true, true),
                 new CommandData("addsyn", "TRBot.Commands.AddInputSynonymCommand", whitelistedPerm, true, true),
                 new CommandData("removesyn", "TRBot.Commands.RemoveInputSynonymCommand", whitelistedPerm, true, true),
+                new CommandData("viewmultilogs", "TRBot.Commands.ViewMultipleGameLogsCommand", whitelistedPerm, true, true),
 
                 new CommandData("setmessage", "TRBot.Commands.SetGameMessageCommand", vipPerm, true, true),
 
@@ -259,9 +260,10 @@ namespace TRBot.Data
                 new CommandData("setinputlevel", "TRBot.Commands.SetInputLevelCommand", adminPerm, true, true),
                 new CommandData("toggleinput", "TRBot.Commands.SetInputEnabledCommand", adminPerm, true, true),
 
-                new CommandData("exec", "TRBot.Commands.ExecCommand", superAdminPerm, false, false),
+                new CommandData("exec", "TRBot.Commands.ExecCommand", superAdminPerm, false, true),
                 new CommandData("exportbotdata", "TRBot.Commands.ExportBotDataCommand", superAdminPerm, true, true),
                 new CommandData("exportdataset", "TRBot.Commands.ExportDatasetToTextCommand", superAdminPerm, true, true),
+                new CommandData("cleardataset", "TRBot.Commands.ClearDatasetCommand", superAdminPerm, false, true),
                 new CommandData("forceinitdefaults", "TRBot.Commands.ForceInitDataCommand", superAdminPerm, true, true),
             };
 

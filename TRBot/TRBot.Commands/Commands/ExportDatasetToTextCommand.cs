@@ -81,12 +81,16 @@ namespace TRBot.Commands
 
             string tableName = arguments[0].ToLowerInvariant();
 
+            //Check if this table name exists
+            if (ExportDict.TryGetValue(tableName, out Action<BotDBContext> invokedAction) == false)
+            {
+                QueueMessage("Invalid table name!");
+                return;
+            }
+
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                if (ExportDict.TryGetValue(tableName, out Action<BotDBContext> val) == true)
-                {
-                    val.Invoke(context);
-                }
+                invokedAction.Invoke(context);
             }
         }
 
