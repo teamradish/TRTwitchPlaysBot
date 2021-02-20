@@ -15,7 +15,7 @@ Command line:
   * [RID](https://github.com/dotnet/runtime/blob/master/src/libraries/Microsoft.NETCore.Platforms/pkg/runtime.json) = usually "win-x64" or "linux-x64". See link for a full list of runtime identifiers.
   * Example: `dotnet publish -c Debug -o TRBot --self-contained --runtime linux-x64`
 
-**Note: TRBot runs on all major desktop operating systems, but virtual controller input works only on Windows (vJoy) and GNU/Linux (uinput) since virtual controllers are platform-specific. The virtual controller API is abstracted into an `IVirtualController` interface, making it simple to add new implementations. Please file an issue if your platform isn't supported.**
+**Note: TRBot runs on all major desktop operating systems, but virtual controller input works only on Windows (vJoy) and GNU/Linux (uinput) since virtual controllers are platform-specific. The virtual controller API is abstracted into an `IVirtualController` interface, making it possible to add new implementations. Please file an issue if your platform isn't supported.**
 
 ## Native code
 Some virtual controllers require native code. These will be in the ["Native" folder of `TRBot.VirtualControllers`](../TRBot/TRBot.VirtualControllers/Native). Below are steps on how to compile them. Note that these components are pre-compiled in source and binary releases of TRBot.
@@ -38,7 +38,9 @@ TRBot uses a SQLite database with Entity Framework Core to store and manage its 
 Afterwards, simply run TRBot to apply the new migrations and update the database.
 
 ## Running Tests
-All unit tests are in the **TRBot.Tests** project. Simply run `dotnet test` inside this directory to run the tests. Please add new tests for code when possible.
+All unit tests are in the **TRBot.Tests** project. Some of these tests include parser tests for correctness.
+
+Simply run `dotnet test` inside this directory to run the tests. Please add new tests for code when feasible.
 
 # Contributing
 If you find any problems with TRBot, please file an [issue](https://github.com/teamradish/TRTwitchPlaysBot/issues). [Pull requests](https://github.com/teamradish/TRTwitchPlaysBot/pulls) are encouraged if you'd like to make contributions.

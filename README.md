@@ -1,6 +1,8 @@
 # <img src="./Logo/TRBotLogo.png" alt="TRBot" height="43" width="42" align="top"/> TRBot
 
-TRBot is software that enables playing video games through text. It contains a comprehensive set of projects to facilitate text-based gameplay, some of which allow for setting up and managing community-oriented remote play, such as Twitch Plays. The goal of TRBot is to lower the barrier of entry for text-based gameplay, such as Twitch Plays, and provide avenues to improve the experience.
+TRBot is software that enables playing video games through text. In simple terms, if you type "a", the character in your game will jump.
+
+TRBot contains a comprehensive set of projects to facilitate text-based gameplay, some of which allow for setting up and managing community-oriented remote play, such as Twitch Plays. The goal of TRBot is to lower the barrier of entry for text-based gameplay, such as Twitch Plays, and provide avenues to improve the experience.
 
 TRBot is inspired by TwitchPlays_Everything. The input syntax allows for great precision, making it well-suited for many types of games. You can use it for a variety of purposes, including, but not limited to, allowing others to play games remotely and automating tedious/repetitive tasks in your own playthroughs, such as mashing buttons or grinding levels in an RPG.
 
@@ -62,7 +64,9 @@ If you have found TRBot useful, please spread the word by placing one of our pro
 ## Contributing
 Issues and pull requests are greatly encouraged! Please file an issue for a feature request, such as a new platform or service, or regarding any bugs you encounter.
 
-We also have an additional remote respository on Codeberg at: https://codeberg.org/kimimaru/TRBot
+We have the following two remotes for TRBot:
+* GitHub: https://github.com/teamradish/TRTwitchPlaysBot.git
+* Codeberg: https://codeberg.org/kimimaru/TRBot.git
 
 ### Support
 We are on Matrix at [#TRBot-Dev:matrix.org](https://matrix.to/#/!hTfcbsKMAuenQAetQm:matrix.org?via=matrix.org). Feel free to ask any questions or discuss development there!
