@@ -138,7 +138,7 @@ namespace TRBot.Misc
                         //NOTE: This will need to be adjusted if different parsers are used
                         //Ideally, we should have an IReverseParser interface to allow using different implementation
                         //based on the parser we're using
-                        strBuilder.Append(ParserUtilities.GetInputDurationAbbreviation(input.DurationType));
+                        strBuilder.Append((input.DurationType == InputDurationTypes.Seconds) ? "s" : "ms");
                     }
 
                     //Add plus string if there are more in the subsequence

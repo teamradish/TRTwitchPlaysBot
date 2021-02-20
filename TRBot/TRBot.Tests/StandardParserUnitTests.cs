@@ -198,6 +198,9 @@ namespace TRBot.Tests
         [TestCase("c0sq11sc2s", new string[] { "c", "q" }, new int[] { 0, 11000, 2000 })]
         [TestCase("111s8888s888888s", new string[] { "11", "888" }, new int[] { 1000, 8000, 888000 })]
         [TestCase("b443s", new string[] { "b" }, new int[] { 443000 })]
+        [TestCase("a0.5s", new string[] { "a" }, new int[] { 500 })]
+        [TestCase("r0.001s", new string[] { "r" }, new int[] { 1 })]
+        [TestCase("r28.821s", new string[] { "r" }, new int[] { 28821 })]
         public void TestSecondDuration(string input, string[] inputList, int[] expectedDurations)
         {
             List<IParserComponent> components = new List<IParserComponent>()
@@ -349,6 +352,7 @@ namespace TRBot.Tests
         [TestCase("as", new string[] { "a" })]
         [TestCase("bss", new string[] { "bs" })]
         [TestCase("r7se2s", new string[] { "r", "e2" })]
+        [TestCase("j1.3452s", new string[] { "j" })]
         public void TestSecondDurationInvalid(string input, string[] inputList)
         {
             List<IParserComponent> components = new List<IParserComponent>()
@@ -382,9 +386,9 @@ namespace TRBot.Tests
             Assert.AreNotEqual(seq.ParsedInputResult, ParsedInputResults.Valid);
         }
 
-        [TestCase("a1sb2570msr15s", new string[] { "a", "b", "r" }, new int[] { 1000, 2570, 15000 })]
+        [TestCase("a1.07sb2570msr15s", new string[] { "a", "b", "r" }, new int[] { 1070, 2570, 15000 })]
         [TestCase("s37msmsss37s", new string[] { "ms", "s" }, new int[] { 37, 200, 200, 37000 })]
-        [TestCase("aab35msab2sabb3s", new string[] { "ab", "a", "b" }, new int[] { 200, 35, 2000, 200, 3000 })]
+        [TestCase("aab35msab2sabb3.2s", new string[] { "ab", "a", "b" }, new int[] { 200, 35, 2000, 200, 3200 })]
         public void TestAllDurationTypes(string input, string[] inputList, int[] expectedDurations)
         {
             List<IParserComponent> components = new List<IParserComponent>()
@@ -469,9 +473,9 @@ namespace TRBot.Tests
         //Test everything!
         [TestCase("a", new [] { "a" },
             new [] { 0 }, new [] { false }, new [] { false }, new double[] { 100 }, new [] { 200 }, new [] { 1 })]
-        [TestCase("&2_a8%34ms+&6-y99.9%13s&10-b30%3472ms", new [] { "a", "b", "y" },
-            new [] { 1, 5, 9 }, new [] { true, false, false }, new [] { false, true, true },
-            new double[] { 8, 99.9, 30 }, new [] { 34, 13000, 3472 }, new [] { 2, 1 })]
+        [TestCase("&2_a8%34ms+&6-y99.9%13s&10-b30%3472ms&4#4%5.784s", new [] { "a", "b", "y", "#" },
+            new [] { 1, 5, 9, 3 }, new [] { true, false, false, false }, new [] { false, true, true, false },
+            new double[] { 8, 99.9, 30, 4 }, new [] { 34, 13000, 3472, 5784 }, new [] { 2, 1, 1 })]
         public void TestFullSyntax(string input, string[] inputList,
             int[] ports, bool[] holds, bool[] releases, double[] percents, int[] durations, int[] subsetCounts)
         {

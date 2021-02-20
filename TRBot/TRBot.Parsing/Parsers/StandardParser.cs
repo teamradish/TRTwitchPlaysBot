@@ -161,7 +161,7 @@ namespace TRBot.Parsing
             MatchCollection matches = Regex.Matches(message, ParserRegex, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
             if (matches.Count == 0)
             {
-                return new ParsedInputSequence(ParsedInputResults.NormalMsg, null, 0, "Parser: Message is a normal one.");
+                return new ParsedInputSequence(ParsedInputResults.NormalMsg, null, 0, "Parser: Message is a normal one, as there are no Regex matches.");
             }
 
             //Store the previous index - if there's anything in between that's not picked up by the regex, it's an invalid input
@@ -193,7 +193,7 @@ namespace TRBot.Parsing
                 //If there's no match, it should be a normal message
                 if (match.Success == false)
                 {
-                    return new ParsedInputSequence(ParsedInputResults.NormalMsg, null, 0, "Parser: Message is a normal one.");
+                    return new ParsedInputSequence(ParsedInputResults.NormalMsg, null, 0, "Parser: Message is a normal one, as there's no Regex match.");
                 }
 
                 //If there's a gap in matches (Ex. "a34ms hi b300ms"), this isn't a valid input and is likely a normal message
@@ -270,14 +270,14 @@ namespace TRBot.Parsing
 
                     if (input.ControllerPort < 0)
                     {
-                        return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, $"Parser error: Controller port number is too low at index {portNumGroup.Index}.");
+                        return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, $"Parser error: Controller port number is less than 0 at index {portNumGroup.Index}.");
                     }
                 }
 
                 //Controller port is greater than max port number
                 if (input.ControllerPort > MaxPortNum)
                 {
-                    return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, $"Parser error: Port number specified is greater than the max port at around index {portGroup.Index}.");
+                    return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, $"Parser error: Port number specified is greater than the max port of {MaxPortNum} at around index {portGroup.Index}.");
                 }
 
                 //Console.WriteLine("GOT PAST PORT");
@@ -347,19 +347,27 @@ namespace TRBot.Parsing
                     string durStr = durGroup.Value;
 
                     //Check for a duration
-                    if (int.TryParse(durStr, out int durVal) == false)
+                    if (double.TryParse(durStr, out double durVal) == false)
                     {
                         return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, $"Parser error: Invalid duration at index {durGroup.Index}.");
                     }
 
                     input.DurationType = InputDurationTypes.Milliseconds;
-                    input.Duration = durVal;
+                    input.Duration = (int)durVal;
 
                     //If we have seconds, increase the duration and change the duration type
                     if (hasSec == true)
                     {
-                        input.DurationType = InputDurationTypes.Seconds;
-                        input.Duration = durVal * 1000;
+                        input.Duration = (int)(durVal * 1000d);
+
+                        //If there's no extra decimal value, mark it as a seconds input
+                        //Otherwise, keep it as milliseconds
+                        int decInt = (int)durVal;
+
+                        if (durVal == decInt)
+                        {
+                            input.DurationType = InputDurationTypes.Seconds;
+                        }
                     }
                 }
                 else
@@ -385,7 +393,7 @@ namespace TRBot.Parsing
                 //Exceeded duration
                 if (CheckMaxDur == true && totalDur > MaxInputDuration)
                 {
-                    return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, $"Parser error: Input sequence exceeds max input duration at around index {match.Index}.");
+                    return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, $"Parser error: Input sequence exceeds max input duration of {MaxInputDuration} at around index {match.Index}.");
                 }
 
                 //Console.WriteLine("GOT PAST MAX DUR CHECK");
