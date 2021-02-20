@@ -136,12 +136,12 @@ namespace TRBot.Misc
                         strBuilder.Append(duration);
 
                         //NOTE: This will need to be adjusted if different parsers are used
-                        //Ideally, we should have an IReverseParser interface to allow using different implementation
-                        //based on the parser we're using
-                        strBuilder.Append((input.DurationType == InputDurationTypes.Seconds) ? "s" : "ms");
+                        //Think of a better way to handle this
+                        strBuilder.Append((input.DurationType == InputDurationTypes.Seconds)
+                            ? SecondParserComponent.SEC_SYMBOL : MillisecondParserComponent.MS_SYMBOL);
                     }
 
-                    //Add plus string if there are more in the subsequence
+                    //Add the simultaneous string if there are simultaneous inputs
                     if (j < (inputList.Count - 1))
                     {
                         strBuilder.Append(SimultaneousParserComponent.SIMULTANEOUS_SYMBOL);
