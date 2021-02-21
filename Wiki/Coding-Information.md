@@ -3,7 +3,9 @@ This document serves to highlight important information regarding TRBot developm
 
 We are on Matrix at [#TRBot-Dev:matrix.org](https://matrix.to/#/!hTfcbsKMAuenQAetQm:matrix.org?via=matrix.org). Feel free to ask any questions or discuss development there!
 
-We also have an additional remote respository on Codeberg at: https://codeberg.org/kimimaru/TRBot.git
+We have the following two remotes for TRBot:
+* GitHub: https://github.com/teamradish/TRTwitchPlaysBot.git
+* Codeberg: https://codeberg.org/kimimaru/TRBot.git
 
 # Data-Related
 - Most data-related code can be found in the `TRBot.Data` project.
@@ -13,16 +15,31 @@ We also have an additional remote respository on Codeberg at: https://codeberg.o
 - `DataHelper` contains many useful utility methods to obtain information from the database.
 - If you have a database context open, **do NOT** use the `DataHelper` methods that don't end with "NoOpen". This will cause it to re-open the database context and probably not do whatever you wanted it to do. In this case, use the "NoOpen" variants instead, **but remember to keep things concise**. I'll say it again and again!
 - `DataContainer` holds several important objects, such as the message handler and the current virtual controller manager. If you make a change to one of its objects, make sure to make the change with the `DataContainer`'s reference. This container is shared between the `TRBot.Main` application, all the commands, and all the bot routines, giving them access to the same crucial information.
--To add new default data, add them to `DefaultData.cs`. If you need to add a new category of data that isn't there, you will have to modify `DataHelper.InitDefaultData`. Make sure to add to the count of new entries, and don't add the entries if they already exist; this prevents overwriting data.
+-To add new default data, add them to `DefaultData.cs`. If you need to add a new category of data that isn't there, you will have to modify `DataHelper.InitDefaultData`. Make sure to add to the count of new entries, and don't add the entries if they already exist to prevent overwriting existing data.
 
 # Parsing Inputs
-- Parsing inputs is performed with `ParsedInputSequence ParseInputs(string message, string inputRegex, in ParserOptions parserOptions)` on a `TRBot.Parsing.Parser` instance.
-- The regex for the second argument can be easily obtained through `GameConsole.InputRegex` or by calling the static `Parser.BuildInputRegex` method with your inputs.
-- `Parser` has a lot of constants regarding the default regex. This includes the start regex, the end regex, and the symbols used for holds, releases, and etc.
+- Inputs are parsed through the `TRBot.Parsing.IParser` interface. There is currently only one implementation, `StandardParser`.
+- It's recommended to use the static `StandardParser.CreateStandard` method to create a parser configured consistently with the rest of the project. This may be revisited in the future if there end up being more parser implementations.
+- The `StandardParser` relies on `ParserComponents` to piece together the regex. The standard order of components is as follows:
+  1. `PortParserComponent`
+  2. `HoldParserComponent`
+  3. `ReleaseParserComponent`
+  4. `InputParserComponent`
+  5. `PercentParserComponent`
+  6. `MillisecondParserComponent`
+  7. `SecondParserComponent`
+  8. `SimultaneousParserComponent`
+- Call `ParsedInputSequence ParseInputs(string message)` with your `IParser` instance to get the parsed input sequence. If the `ParsedInputResult` is Valid, you're good to go. Otherwise, you can print the `Error` to get a detailed message on what went wrong with parsing. 
 
 ## Important Notes
-- Parsing inputs using `Parser.ParseInputs` is fairly simple, but the bulk of the work involves preparing the input string. On its own, `Parser.ParseInputs` will not populate macros, input synonyms, or remove whitespace, so to that end you'll want to call `Parser.PrepParse` with an opened database context.
-- Likewise, after parsing but before carrying out the input sequence, you'll want to perform some post-processing. Without this, there is no permission checks. More importantly, **post-processing should always be used** to validate controller ports. **Failure to do so can result in the bot crashing**, as attempting to access a virtual controller index out of range is not handled by default, since the virtual controller implementations and the input handler are built with performance in mind.
+- Parsing inputs using `IParser.ParseInputs` is fairly simple, but there is some work required to prepare the input string beforehand. These are done through `IPreparsers`, which can be passed into the constructor of a `StandardParser`. Their functions include removing whitespace, expanding repeated inputs, and populating macros. If you use `StandardParser.CreateStandard`, these will already be handled for you.
+- The standard order of `IPreparser`s is as follows:
+  1. `InputMacroPreparser`
+  2. `InputSynonymPreparser`
+  3. `ExpandPreparser`
+  4. `RemoveWhitespacePreparser`
+- It's recommended to parse inputs with an opened database context so you have all the information you need to create the standard parser configuration.
+- After parsing, but before carrying out the input sequence, you'll want to perform some post-processing. Without post-processing, there is no permission checks nor any mid input delay insertions.
 - Look at the static `ParserPostProcess` class in the `TRBot.Misc` project for various methods to help validate the input sequence.
 
 # Carrying Out Inputs
@@ -34,6 +51,11 @@ We also have an additional remote respository on Codeberg at: https://codeberg.o
 ## Important Notes
 - Before calling `InputHandler.CarryOutInput`, make sure to check if `InputHandler.InputsHalted` is false. If it's true, do not call `InputHandler.CarryOutInput`, as something important is going on, which may include changing the virtual controller implementation, changing the number of virtual controllers, or a player desiring all ongoing inputs to be stopped. Failure to do this may likely result in the bot crashing.
 - The console passed into `InputHandler.CarryOutInput` should be a **brand new instance** constructed from one in the database. This ensures that everything that was valid **at that time** will still be valid while executing the input. Basically, this guarantees that if someone removes an input, or even the current console, while executing an input sequence, nothing will go haywire.
+
+# Logging
+- Use the static `TRBotLogger` class for logging. By default, it logs to a file and the console. This class lives in the `TRBot.Logging` project.
+- Internally, TRBot uses Serilog for logging. Use the appropriate methods for the types of information - for example, `Information` should be for general logs whereas `Error` or `Fatal` should be used if something went wrong.
+- Keep in mind that even if logs aren't output based on the log settings, it will still be doing the work when it's constructing the string. If the work involved is expensive (Ex. parsing or reverse parsing) and exclusive to the log, consider commenting it out and uncommenting it when it's needed.
 
 # Contributing
 If you find any problems with TRBot, please file an [issue](https://github.com/teamradish/TRTwitchPlaysBot/issues). [Pull requests](https://github.com/teamradish/TRTwitchPlaysBot/pulls) are also highly encouraged!

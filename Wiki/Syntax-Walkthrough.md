@@ -119,7 +119,7 @@ Inputs typed:
 - &2right
 - _left+&2_right #250ms a1s+&2a1s
 
-Notice how we chose to explicitly make Luigi move right on the second input sequence. On the third input sequence, we chain Mario and Luigi's inputs together so they move at the same time. Pretty cool, huh?
+Notice how we chose to explicitly make Luigi move right on the second input sequence. On the third input sequence, we chain Mario and Luigi's inputs together so they move at the same time. As Nintendo would say, "Now you're playing with power!"
 
 You might be wondering why we don't have to specify player 1's inputs. That's because our default controller port is set to 1. If it was set to 2, we would control Luigi by default and have to type "&1" for Mario's inputs! You can view or change your controller port using the `ControllerPortCommand` (default: "!port").
 

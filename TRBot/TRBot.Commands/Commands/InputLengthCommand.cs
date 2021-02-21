@@ -1,6 +1,6 @@
-﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+﻿/* Copyright (C) 2019-2021 Thomas "Kimimaru" Deeb
  * 
- * This file is part of TRBot,software for playing games through text.
+ * This file is part of TRBot, software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -93,24 +93,18 @@ namespace TRBot.Commands
                 //Use user overrides if they exist, otherwise use the global values
                 int defaultDur = (int)DataHelper.GetUserOrGlobalDefaultInputDur(userName);
                 int maxDur = (int)DataHelper.GetUserOrGlobalMaxInputDur(userName);
-                
-                string regexStr = usedConsole.InputRegex;
-
-                string readyMessage = string.Empty;
-
-                Parser parser = new Parser();
-
+            
                 using (BotDBContext context = DatabaseManager.OpenContext())
                 {
                     //Get input synonyms for this console
                     IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.ConsoleID == lastConsoleID);
 
-                    //Prepare the message for parsing
-                    readyMessage = parser.PrepParse(input, context.Macros, synonyms);
-                }
+                    //Parse inputs to get our parsed input sequence
+                    StandardParser standardParser = StandardParser.CreateStandard(context.Macros, synonyms,
+                        usedConsole.GetInputNames(), 0, DataContainer.ControllerMngr.ControllerCount - 1, defaultDur, maxDur, true);
 
-                //Parse inputs to get our parsed input sequence
-                inputSequence = parser.ParseInputs(readyMessage, regexStr, new ParserOptions(0, defaultDur, true, maxDur));
+                    inputSequence = standardParser.ParseInputs(input);
+                }
             }
             catch (Exception exception)
             {

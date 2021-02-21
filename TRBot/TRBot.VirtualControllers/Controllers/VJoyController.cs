@@ -1,6 +1,6 @@
-﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+﻿/* Copyright (C) 2019-2021 Thomas "Kimimaru" Deeb
  * 
- * This file is part of TRBot,software for playing games through text.
+ * This file is part of TRBot, software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -235,7 +235,7 @@ namespace TRBot.VirtualControllers
             InputReleasedEvent?.Invoke(inputName);
         }
 
-        public void PressAxis(in int axis, in double minAxisVal, in double maxAxisVal, in int percent)
+        public void PressAxis(in int axis, in double minAxisVal, in double maxAxisVal, in double percent)
         {
             //Not a valid axis - defaulting to 0 results in the wrong axis being set
             if (AxisCodeMap.TryGetValue(axis, out int vJoyAxis) == false)
@@ -387,7 +387,7 @@ namespace TRBot.VirtualControllers
             return InputTracker.GetButtonState(buttonVal);
         }
 
-        public int GetAxisState(in int axisVal)
+        public double GetAxisState(in int axisVal)
         {
             return InputTracker.GetAxisState(axisVal);
         }

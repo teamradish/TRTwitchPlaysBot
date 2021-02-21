@@ -1,6 +1,6 @@
-﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+﻿/* Copyright (C) 2019-2021 Thomas "Kimimaru" Deeb
  * 
- * This file is part of TRBot,software for playing games through text.
+ * This file is part of TRBot, software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -224,7 +224,7 @@ namespace TRBot.Misc
                             continue;
                         }
 
-                        int port = input.controllerPort;
+                        int port = input.ControllerPort;
 
                         //Get the controller we're using
                         IVirtualController controller = vcMngr.GetController(port);
@@ -233,7 +233,7 @@ namespace TRBot.Misc
                         nonWaits[port] = 1;
                         usedControllerPorts[port] = 1;
 
-                        if (input.release == true)
+                        if (input.Release == true)
                         {
                             InputHelper.ReleaseInput(input, curConsole, controller);
                         }
@@ -285,7 +285,7 @@ namespace TRBot.Misc
                             ref ParsedInput input = ref inputs[indices[j]];
 
                             //Check how much time is remaining for this input's duration
-                            long diff = input.duration - sw.ElapsedMilliseconds;
+                            long diff = input.Duration - sw.ElapsedMilliseconds;
 
                             //If there's still time left, continue to the next input
                             if (diff > 0)
@@ -304,9 +304,9 @@ namespace TRBot.Misc
                             //TRBotLogger.Logger.Debug($"diff for \"{input.name}{input.duration}\": {diff}");
 
                             //Release if the input isn't held or released and isn't a blank input
-                            if (input.hold == false && input.release == false && curConsole.IsBlankInput(input) == false)
+                            if (input.Hold == false && input.Release == false && curConsole.IsBlankInput(input) == false)
                             {
-                                int port = input.controllerPort;
+                                int port = input.ControllerPort;
                                 
                                 //Get the controller we're using
                                 IVirtualController controller = vcMngr.GetController(port);
@@ -361,7 +361,7 @@ namespace TRBot.Misc
                         }
 
                         //Release if it isn't a wait
-                        IVirtualController controller = vcMngr.GetController(input.controllerPort);
+                        IVirtualController controller = vcMngr.GetController(input.ControllerPort);
                         InputHelper.ReleaseInput(input, curConsole, controller);
                     }
                 }

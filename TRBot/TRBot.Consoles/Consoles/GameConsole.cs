@@ -1,6 +1,6 @@
-﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+﻿/* Copyright (C) 2019-2021 Thomas "Kimimaru" Deeb
  * 
- * This file is part of TRBot,software for playing games through text.
+ * This file is part of TRBot, software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -64,8 +64,8 @@ namespace TRBot.Consoles
         /// <summary>
         /// The input regex for the console.
         /// Update this with <see cref="UpdateInputRegex"/> to warm the regex expression for the parser.
-        /// Modifying <see cref="ConsoleInputs"/> will also update this value.
         /// </summary>
+        [Obsolete("GameConsoles are no longer responsible for generating the input regex. See the InputParserComponent.", false)]
         public string InputRegex { get; private set; } = string.Empty;
 
         #endregion
@@ -113,8 +113,6 @@ namespace TRBot.Consoles
             
             InputList.Clear();
             InputList.AddRange(ConsoleInputs.Values.ToList());
-
-            UpdateInputRegex();
         }
 
         public void SetInputsFromList(List<InputData> inputList)
@@ -126,8 +124,6 @@ namespace TRBot.Consoles
                 InputData inputData = inputList[i];
                 ConsoleInputs[inputData.Name] = inputData;
             }
-
-            UpdateInputRegex();
         }
 
         /// <summary>
@@ -146,7 +142,6 @@ namespace TRBot.Consoles
             if (existed == false)
             {
                 InputList.Add(inputData);
-                UpdateInputRegex();
             }
             else
             {
@@ -172,8 +167,6 @@ namespace TRBot.Consoles
             {
                 int index = InputList.FindIndex((inpData) => inpData.Name == inputName);
                 InputList.RemoveAt(index);
-
-                UpdateInputRegex();
             }
 
             return removed;
@@ -243,7 +236,7 @@ namespace TRBot.Consoles
             return true;
         }
 
-        #region Virtual Methods
+        #region Methods
 
         /// <summary>
         /// A more efficient version of telling whether an input is an axis.
@@ -252,9 +245,9 @@ namespace TRBot.Consoles
         /// <param name="input">The input to check.</param>
         /// <param name="axis">The InputAxis value that is assigned. If no axis is found, the default value.</param>
         /// <returns>true if the input is an enabled axis, otherwise false.</returns>
-        public virtual bool GetAxis(in ParsedInput input, out InputAxis axis)
+        public bool GetAxis(in ParsedInput input, out InputAxis axis)
         {
-            ConsoleInputs.TryGetValue(input.name, out InputData inputData);
+            ConsoleInputs.TryGetValue(input.Name, out InputData inputData);
 
             if (inputData == null || inputData.Enabled == 0 || EnumUtility.HasEnumVal((long)inputData.InputType, (long)InputTypes.Axis) == false)
             {
@@ -262,7 +255,7 @@ namespace TRBot.Consoles
                 return false;
             }
 
-            if (input.percent <= inputData.MaxAxisPercent)
+            if (input.Percent <= inputData.MaxAxisPercent)
             {
                 axis = new InputAxis(inputData.AxisValue, inputData.MinAxisVal, inputData.MaxAxisVal, inputData.MaxAxisPercent);
                 return true;
@@ -277,7 +270,7 @@ namespace TRBot.Consoles
         /// </summary>
         /// <param name="input">The input to check.</param>
         /// <returns>true if the input is an enabled axis, otherwise false.</returns>
-        public virtual bool IsAxis(in ParsedInput input)
+        public bool IsAxis(in ParsedInput input)
         {
             return GetAxis(input, out InputAxis axis);
         }
@@ -287,9 +280,9 @@ namespace TRBot.Consoles
         /// </summary>
         /// <param name="input">The input to check.</param>
         /// <returns>true if the input is an enabled button, otherwise false.</returns>
-        public virtual bool IsButton(in ParsedInput input)
+        public bool IsButton(in ParsedInput input)
         {
-            ConsoleInputs.TryGetValue(input.name, out InputData inputData);
+            ConsoleInputs.TryGetValue(input.Name, out InputData inputData);
 
             //Not a button if null or not enabled
             if (inputData == null || inputData.Enabled == 0)
@@ -300,10 +293,6 @@ namespace TRBot.Consoles
             return (EnumUtility.HasEnumVal((long)inputData.InputType, (long)InputTypes.Button) == true && IsAxis(input) == false);
         }
 
-        #endregion
-
-        #region Methods
-
         /// <summary>
         /// Tells whether the input is a blank input, an input without any specially defined function.
         /// </summary>
@@ -312,7 +301,7 @@ namespace TRBot.Consoles
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsBlankInput(in ParsedInput input)
         {
-            ConsoleInputs.TryGetValue(input.name, out InputData inputData);
+            ConsoleInputs.TryGetValue(input.Name, out InputData inputData);
 
             //Not a blank input if null, disabled, or not Blank
             if (inputData == null || inputData.Enabled == 0 || inputData.InputType != (int)InputTypes.Blank)
@@ -324,8 +313,18 @@ namespace TRBot.Consoles
         }
 
         /// <summary>
+        /// Returns the names of all inputs for the console in a new array.
+        /// </summary>
+        /// <returns>A new array containing all the input names for the console.</returns>
+        public string[] GetInputNames()
+        {
+            return ConsoleInputs.Keys.ToArray();
+        }
+
+        /// <summary>
         /// Updates the input regex for the console. This excludes disabled inputs.
         /// </summary>
+        [Obsolete("GameConsoles are no longer responsible for generating the input regex. See the InputParserComponent.", false)]
         public void UpdateInputRegex()
         {
             List<string> validInputs = new List<string>(ConsoleInputs.Count);

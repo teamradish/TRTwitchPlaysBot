@@ -1,6 +1,6 @@
-﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+﻿/* Copyright (C) 2019-2021 Thomas "Kimimaru" Deeb
  * 
- * This file is part of TRBot,software for playing games through text.
+ * This file is part of TRBot, software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -51,7 +51,7 @@ namespace TRBot.Commands
 
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                User bettingUser = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
+                User bettingUser = DataHelper.GetUserNoOpen(userName, context);
 
                 if (bettingUser.HasEnabledAbility(PermissionConstants.BET_ABILITY) == false)
                 {
@@ -86,7 +86,7 @@ namespace TRBot.Commands
 
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                User bettingUser = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
+                User bettingUser = DataHelper.GetUserNoOpen(userName, context);
                 if (creditBet > bettingUser.Stats.Credits)
                 {
                     QueueMessage($"Bet amount is greater than {creditsName.Pluralize(false, 0)}!");
@@ -100,7 +100,7 @@ namespace TRBot.Commands
                 
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                User bettingUser = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
+                User bettingUser = DataHelper.GetUserNoOpen(userName, context);
                 
                 //Add or subtract credits based on the bet result
                 if (success)
@@ -116,7 +116,11 @@ namespace TRBot.Commands
 
                 context.SaveChanges();
             }
-                
+
+            (int, int) leaderBoard = CreditsHelper.GetPositionOnLeaderboard(userName);
+
+            message += $" and is rank {leaderBoard.Item1}/{leaderBoard.Item2} on the leaderboard!";
+
             QueueMessage(message);
         }
     }

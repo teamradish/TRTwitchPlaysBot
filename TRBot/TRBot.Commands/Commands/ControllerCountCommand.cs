@@ -1,6 +1,6 @@
-﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+﻿/* Copyright (C) 2019-2021 Thomas "Kimimaru" Deeb
  * 
- * This file is part of TRBot,software for playing games through text.
+ * This file is part of TRBot, software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -128,7 +128,7 @@ namespace TRBot.Commands
                 DataContainer.ControllerMngr.Initialize();
                 int acquiredCount = DataContainer.ControllerMngr.InitControllers(newJoystickCount);
 
-                QueueMessage($"Changed controller count from {curJoystickCount} to {newJoystickCount}, acquired {acquiredCount} controllers, and reset all running inputs!");
+                QueueMessage($"Changed controller count from {curJoystickCount} to {newJoystickCount}, acquired {acquiredCount} controller(s), and reset all running inputs!");
             }
             catch (Exception e)
             {

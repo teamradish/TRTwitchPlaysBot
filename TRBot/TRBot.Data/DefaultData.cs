@@ -1,6 +1,6 @@
-﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+﻿/* Copyright (C) 2019-2021 Thomas "Kimimaru" Deeb
  * 
- * This file is part of TRBot,software for playing games through text.
+ * This file is part of TRBot, software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -184,15 +184,16 @@ namespace TRBot.Data
                 new CommandData("help", "TRBot.Commands.ListCmdsCommand", userPerm, true, true),
                 new CommandData("controllercount", "TRBot.Commands.ControllerCountCommand", userPerm, true, true),
                 new CommandData("credits", "TRBot.Commands.CreditsCommand", userPerm, true, true),
-                new CommandData("highestcredits", "TRBot.Commands.HighestCreditsCommand", userPerm, true, true),
                 new CommandData("averagecredits", "TRBot.Commands.AverageCreditsCommand", userPerm, true, false),
                 new CommandData("mediancredits", "TRBot.Commands.MedianCreditsCommand", userPerm, true, false),
+                new CommandData("leaderboard", "TRBot.Commands.CreditLeaderboardCommand", userPerm, true, false),
                 new CommandData("time", "TRBot.Commands.TimeCommand", userPerm, true, true),
                 new CommandData("uptime", "TRBot.Commands.UptimeCommand", userPerm, true, true),
                 new CommandData("chat", "TRBot.Commands.ChatbotCommand", userPerm, true, false),
                 new CommandData("bingo", "TRBot.Commands.BingoCommand", userPerm, true, false),
                 new CommandData("port", "TRBot.Commands.ControllerPortCommand", userPerm, true, true),
                 new CommandData("optstats", "TRBot.Commands.OptStatsCommand", userPerm, true, true),
+                new CommandData("ignorememes", "TRBot.Commands.IgnoreMemesCommand", userPerm, true, true),
                 new CommandData("length", "TRBot.Commands.InputLengthCommand", userPerm, true, true),
                 new CommandData("clearstats", "TRBot.Commands.ClearUserStatsCommand", userPerm, true, true),
                 new CommandData("calculate", "TRBot.Commands.CalculateCommand", userPerm, true, true),
@@ -237,6 +238,7 @@ namespace TRBot.Data
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", whitelistedPerm, true, true),
                 new CommandData("addsyn", "TRBot.Commands.AddInputSynonymCommand", whitelistedPerm, true, true),
                 new CommandData("removesyn", "TRBot.Commands.RemoveInputSynonymCommand", whitelistedPerm, true, true),
+                new CommandData("viewmultilogs", "TRBot.Commands.ViewMultipleGameLogsCommand", whitelistedPerm, true, true),
 
                 new CommandData("setmessage", "TRBot.Commands.SetGameMessageCommand", vipPerm, true, true),
 
@@ -258,8 +260,10 @@ namespace TRBot.Data
                 new CommandData("setinputlevel", "TRBot.Commands.SetInputLevelCommand", adminPerm, true, true),
                 new CommandData("toggleinput", "TRBot.Commands.SetInputEnabledCommand", adminPerm, true, true),
 
-                new CommandData("exec", "TRBot.Commands.ExecCommand", superAdminPerm, false, false),
+                new CommandData("exec", "TRBot.Commands.ExecCommand", superAdminPerm, false, true),
                 new CommandData("exportbotdata", "TRBot.Commands.ExportBotDataCommand", superAdminPerm, true, true),
+                new CommandData("exportdataset", "TRBot.Commands.ExportDatasetToTextCommand", superAdminPerm, true, true),
+                new CommandData("cleardataset", "TRBot.Commands.ClearDatasetCommand", superAdminPerm, false, true),
                 new CommandData("forceinitdefaults", "TRBot.Commands.ForceInitDataCommand", superAdminPerm, true, true),
             };
 

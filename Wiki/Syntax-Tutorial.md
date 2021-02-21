@@ -14,16 +14,16 @@ This tutorial serves to demonstrate all the features of TRBot's input syntax.
 
 ## Overview
 
-TRBot's syntax takes the following form:
+TRBot's standard syntax takes the following form:
 
 (&#) (- or _) (input) (#%) (#ms or #s) 
 1. &# - This is the controller port number the input should apply to. | Optional. Example: "&1"
 2. _ or - - This is a hold/release modifier; - means to release the input, and _ means to hold the input until either the end of the sequence or a corresponding release input. | Optional. Examples: "_a", "-a"
 3. input - This is the actual input; think of the "A" or "B" buttons on many game controllers. | **Required.** Example: "start"
-4. #% - This is the percentage to press the input; this is commonly used on analog sticks. | Optional. Example: "50%" 
-5. #ms or #s - This is how long to hold the input for, in milliseconds or seconds, but not both. | Optional. Examples: "450ms", "2s"
+4. #% - This is the percentage to press the input; this is commonly used on analog sticks. Supports up to 3 decimal places. | Optional. Example: "50%", "4.782%"
+5. #ms or #s - This is how long to hold the input for, in milliseconds or seconds, but not both. Seconds supports up to 3 decimal places. | Optional. Examples: "450ms", "2s", "4.187s", "4187ms"
 
-Inputs are *not* case-sensitive and vary by the console in use. The valid input list can be viewed by running the `InputInfoCommand` (default: "!inputs"). A blank input, also known as a wait input, is usually available, with "#" as the default. Sometimes, "." will be a synonym for "#" (more on synonyms later below).
+Inputs are *not* case-sensitive and vary by the console in use. The valid input list can be viewed by running the `InputInfoCommand` (default: "!inputs"). A blank input, also known as a wait input, is usually available, with "#" as the default.
 
 If a duration isn't specified, it defaults to the [default_input_duration](./Settings-Documentation.md#default_input_duration) setting, which can be viewed with the `DefaultInputDurCommand` (default: "!defaultinputdur"). The default on a clean TRBot installation is 200 milliseconds.
 

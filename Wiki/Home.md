@@ -12,7 +12,7 @@ Welcome to the TRBot wiki! Choose the relevant section for your needs.
 * [Custom Consoles & Inputs](./Adding-ConsolesInputs.md) - Learn how to add new consoles and add/remove/modify available inputs.
 
 ### Other
-* [Chatbot Guide](./Setup-ChatterBot.md) - A quick guide to setting up your own chatbot for viewers to talk to.
+* [Chatbot Guide](./Setup-Chatterbot.md) - A quick guide to setting up your own chatbot for viewers to talk to.
 * [Supplementary Info](Setup-Misc.md) - Tools to enhance TRBot and your stream.
 * [Custom commands](./Custom-Commands.md) - Create your own custom commands to tackle tasks and problems on the fly.
 

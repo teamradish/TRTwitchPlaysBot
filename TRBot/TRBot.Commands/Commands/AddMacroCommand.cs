@@ -1,6 +1,6 @@
-﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+﻿/* Copyright (C) 2019-2021 Thomas "Kimimaru" Deeb
  * 
- * This file is part of TRBot,software for playing games through text.
+ * This file is part of TRBot, software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -73,9 +73,9 @@ namespace TRBot.Commands
                 return;
             }
 
-            if (macroName.StartsWith(Parser.DEFAULT_PARSER_REGEX_MACRO_INPUT) == false)
+            if (macroName.StartsWith(InputMacroPreparser.DEFAULT_MACRO_START) == false)
             {
-                QueueMessage($"Input macros must start with \"{Parser.DEFAULT_PARSER_REGEX_MACRO_INPUT}\".");
+                QueueMessage($"Input macros must start with \"{InputMacroPreparser.DEFAULT_MACRO_START}\".");
                 return;
             }
 
@@ -107,8 +107,6 @@ namespace TRBot.Commands
 
                 consoleInstance = new GameConsole(curConsole.Name, curConsole.InputList);
             }
-
-            Parser parser = new Parser();
 
             //Trim the macro name from the input sequence
             string macroVal = args.Command.ArgumentsAsString.Remove(0, macroName.Length + 1).ToLowerInvariant();
@@ -151,18 +149,17 @@ namespace TRBot.Commands
                     int defaultDur = (int)DataHelper.GetUserOrGlobalDefaultInputDur(userName);
                     int maxDur = (int)DataHelper.GetUserOrGlobalMaxInputDur(userName);
 
-                    string regexStr = consoleInstance.InputRegex;
-
-                    string readyMessage = string.Empty;
-
                     using (BotDBContext context = DatabaseManager.OpenContext())
                     {
                         IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.ConsoleID == curConsoleID);
     
-                        readyMessage = parser.PrepParse(macroVal, context.Macros, synonyms);
+                        StandardParser standardParser = StandardParser.CreateStandard(context.Macros, synonyms,
+                            consoleInstance.GetInputNames(), 0, DataContainer.ControllerMngr.ControllerCount - 1,
+                            defaultDur, maxDur, true);
+                        
+                        inputSequence = standardParser.ParseInputs(macroVal);
                     }
 
-                    inputSequence = parser.ParseInputs(readyMessage, regexStr, new ParserOptions(0, defaultDur, true, maxDur));
                     TRBotLogger.Logger.Debug(inputSequence.ToString());
 
                     if (inputSequence.ParsedInputResult != ParsedInputResults.Valid)

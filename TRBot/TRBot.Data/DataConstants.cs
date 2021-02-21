@@ -1,6 +1,6 @@
-﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+﻿/* Copyright (C) 2019-2021 Thomas "Kimimaru" Deeb
  * 
- * This file is part of TRBot,software for playing games through text.
+ * This file is part of TRBot, software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -46,6 +46,6 @@ namespace TRBot.Data
         /// <summary>
         /// The path to the data folder.
         /// </summary>
-        public static string DataFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, DATA_FOLDER_NAME);
+        public static readonly string DataFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, DATA_FOLDER_NAME);
     }
 }

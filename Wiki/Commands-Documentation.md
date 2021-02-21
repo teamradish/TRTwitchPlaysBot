@@ -148,9 +148,12 @@ You will need to reload data or restart TRBot to apply any changes in the **Comm
 ## Game Progress/Logging
 - [`AddGameLogCommand`](../TRBot/TRBot.Commands/Commands/AddGameLogCommand.cs) (default: "!addlog") - Adds a time-stamped game log to the database. This log is used to indicate others of game progress.
   - Example: "!addlog Beat King Bob-Omb! Currently at 8 Power Stars!"
-- [`ViewGameLogCommand`](../TRBot/TRBot.Commands/Commands/ViewGameLogCommand.cs) (default: "!viewlog") - Views a game log. You can supply an argument for how many logs back to check, with higher values being older. If the user who created this log is currently opted into bot stats, it will also display their so other users can ask them for more details about the log.
+- [`ViewGameLogCommand`](../TRBot/TRBot.Commands/Commands/ViewGameLogCommand.cs) (default: "!viewlog") - Views a game log. You can supply an argument for how many game logs back to check, with higher values being older. If the user who created this game log is currently opted into bot stats, it will also display their so other users can ask them for more details about the game log.
   - Example: "!viewlog" - Displays the most recent game log.
   - Example: "!viewlog 5" - Displays the fifth most recent game log.
+- [`ViewMultipleGameLogsCommand`](../TRBot/TRBot.Commands/Commands/ViewMultipleGameLogsCommand.cs) (default: "!viewmultilogs") - Views a number of game logs starting from the most recent. You can supply an argument for how many game logs to view. There is a short delay between printing each game log. To avoid spamming chat, this command will reject subsequent uses that attempt to view more game logs while it's already printing them. You can cancel it printing game logs by providing a special argument.
+  - Example: "!viewmultilogs 5" - Displays the 5 most recent game logs.
+  - Example: "!viewmultilogs cancel" - Cancels viewing game logs.
 - [`SetGameMessageCommand`](../TRBot/TRBot.Commands/Commands/SetGameMessageCommand.cs) (default: "!setmessage") - Sets a game message that can be displayed on stream if the streamer provided it. This is useful for informing others of the current objective in a game.
   - Example: "!setmessage Beat Phantom Ganon"
 
@@ -172,3 +175,5 @@ You will need to reload data or restart TRBot to apply any changes in the **Comm
 - [`EnterGroupBetCommand`](../TRBot/TRBot.Commands/Commands/EnterGroupBetCommand.cs) (default: "!groupbet") - Enters the group bet with a given bet. If you're already in the group bet, this will adjust your bet to the new value. If you entered the group bet and there are now enough participants, the group bet will begin.
   - Example: "!groupbet 500
 - [`LeaveGroupBetCommand`](../TRBot/TRBot.Commands/Commands/LeaveGroupBetCommand.cs) (default: "!exitgroupbet") - Leaves the group bet. If there are no longer enough participants for the group bet after leaving, the group bet will be cancelled.
+- [`IgnoreMemesCommand`](../TRBot/TRBot.Commands/Commands/LeaveGroupBetCommand.cs) (default: "!ignorememes") - Obtains your status for ignoring memes or sets it if an argument is provided. While ignoring memes, any phrases you say in chat will no longer trigger a message from the bot. For example, "hi" may be a meme that causes the bot to reply with "hello" when received in chat. Ignoring memes would cause no response from the bot.
+  - Example: "!ignorememes true"

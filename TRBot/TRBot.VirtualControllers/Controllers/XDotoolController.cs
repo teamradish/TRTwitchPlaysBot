@@ -1,6 +1,6 @@
-﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+﻿/* Copyright (C) 2019-2021 Thomas "Kimimaru" Deeb
  * 
- * This file is part of TRBot,software for playing games through text.
+ * This file is part of TRBot, software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -34,6 +34,8 @@ namespace TRBot.VirtualControllers
     /// </summary>
     public class XDotoolController : IVirtualController
     {
+        private readonly object StrBuilderLockObject = new object();
+
         private const string ProcessName = "xdotool";
         private const string MouseMoveRelArg = "mousemove_relative -- ";
         private const string MouseDownArg = "mousedown ";
@@ -50,7 +52,12 @@ namespace TRBot.VirtualControllers
             LClick, RClick, MClick,
             
             //Keyboard
-            Return, space, q, w, e, r, a, s, d, p
+            Return, space,
+            q, w, e, r, t, y, u, i, o, p,
+            a, s, d, f, g, h, j, k, l,
+            z, x, c, v, b, n, m,
+
+            Up, Down, Left, Right
         }
         
         /// <summary>
@@ -75,14 +82,40 @@ namespace TRBot.VirtualControllers
             { (int)GlobalButtonVals.BTN7,   (int)InputCodes.RClick },
             { (int)GlobalButtonVals.BTN8,   (int)InputCodes.Return },
             { (int)GlobalButtonVals.BTN9,   (int)InputCodes.space },
+            
             { (int)GlobalButtonVals.BTN10,  (int)InputCodes.q },
             { (int)GlobalButtonVals.BTN11,  (int)InputCodes.w },
             { (int)GlobalButtonVals.BTN12,  (int)InputCodes.e },
             { (int)GlobalButtonVals.BTN13,  (int)InputCodes.r },
-            { (int)GlobalButtonVals.BTN14,  (int)InputCodes.a },
-            { (int)GlobalButtonVals.BTN15,  (int)InputCodes.s },
-            { (int)GlobalButtonVals.BTN16,  (int)InputCodes.d },
-            { (int)GlobalButtonVals.BTN17,  (int)InputCodes.p }
+            { (int)GlobalButtonVals.BTN14,  (int)InputCodes.t },
+            { (int)GlobalButtonVals.BTN15,  (int)InputCodes.y },
+            { (int)GlobalButtonVals.BTN16,  (int)InputCodes.u },
+            { (int)GlobalButtonVals.BTN17,  (int)InputCodes.i },
+            { (int)GlobalButtonVals.BTN18,  (int)InputCodes.o },
+            { (int)GlobalButtonVals.BTN19,  (int)InputCodes.p },
+
+            { (int)GlobalButtonVals.BTN20,  (int)InputCodes.a },
+            { (int)GlobalButtonVals.BTN21,  (int)InputCodes.s },
+            { (int)GlobalButtonVals.BTN22,  (int)InputCodes.d },
+            { (int)GlobalButtonVals.BTN23,  (int)InputCodes.f },
+            { (int)GlobalButtonVals.BTN24,  (int)InputCodes.g },
+            { (int)GlobalButtonVals.BTN25,  (int)InputCodes.h },
+            { (int)GlobalButtonVals.BTN26,  (int)InputCodes.j },
+            { (int)GlobalButtonVals.BTN27,  (int)InputCodes.k },
+            { (int)GlobalButtonVals.BTN28,  (int)InputCodes.l },
+
+            { (int)GlobalButtonVals.BTN29,  (int)InputCodes.z },
+            { (int)GlobalButtonVals.BTN30,  (int)InputCodes.x },
+            { (int)GlobalButtonVals.BTN31,  (int)InputCodes.c },
+            { (int)GlobalButtonVals.BTN32,  (int)InputCodes.v },
+            { (int)GlobalButtonVals.BTN33,  (int)InputCodes.b },
+            { (int)GlobalButtonVals.BTN34,  (int)InputCodes.n },
+            { (int)GlobalButtonVals.BTN35,  (int)InputCodes.m },
+
+            { (int)GlobalButtonVals.BTN36,  (int)InputCodes.Up },
+            { (int)GlobalButtonVals.BTN37,  (int)InputCodes.Down },
+            { (int)GlobalButtonVals.BTN38,  (int)InputCodes.Left },
+            { (int)GlobalButtonVals.BTN39,  (int)InputCodes.Right },
         };
 
         /// <summary>
@@ -136,7 +169,7 @@ namespace TRBot.VirtualControllers
         /// <summary>
         /// The built argument list passed into xdotool.
         /// </summary>
-        private StringBuilder BuiltArgList = new StringBuilder(512);
+        private StringBuilder BuiltArgList = new StringBuilder(1024);
 
         public XDotoolController(in int controllerIndex)
         {
@@ -231,7 +264,7 @@ namespace TRBot.VirtualControllers
             InputReleasedEvent?.Invoke(inputName);
         }
 
-        public void PressAxis(in int axis, in double minAxisVal, in double maxAxisVal, in int percent)
+        public void PressAxis(in int axis, in double minAxisVal, in double maxAxisVal, in double percent)
         {
             //Not a valid axis - defaulting to 0 results in the wrong axis being set
             if (AxisCodeMap.TryGetValue(axis, out int inputAxis) == false)
@@ -288,6 +321,7 @@ namespace TRBot.VirtualControllers
             //Not a valid button - defaulting to 0 results in the wrong button being pressed/released
             if (InputCodeMap.TryGetValue((int)buttonVal, out int button) == false)
             {
+                Console.WriteLine($"Didn't find buttonValue {buttonVal}");
                 return;
             }
             
@@ -335,7 +369,7 @@ namespace TRBot.VirtualControllers
             return InputTracker.GetButtonState(buttonVal);
         }
 
-        public int GetAxisState(in int axisVal)
+        public double GetAxisState(in int axisVal)
         {
             return InputTracker.GetAxisState(axisVal);
         }
@@ -347,8 +381,13 @@ namespace TRBot.VirtualControllers
                 return;
             }
             
+            string argList = string.Empty;
+
             //Execute all the built up commands at once by passing them as arguments to xdotool
-            string argList = BuiltArgList.ToString();
+            lock (StrBuilderLockObject)
+            {
+                argList = BuiltArgList.ToString();
+            }
             
             //TRBotLogger.Logger.Information($"BUILT ARG LIST: \"{argList}\"");
             
@@ -365,7 +404,10 @@ namespace TRBot.VirtualControllers
                 TRBotLogger.Logger.Error($"Unable to carry out xdotool inputs: {e.Message}");
             }
             
-            BuiltArgList.Clear();
+            lock (StrBuilderLockObject)
+            {
+                BuiltArgList.Clear();
+            }
 
             ControllerUpdatedEvent?.Invoke();
         }
@@ -380,22 +422,34 @@ namespace TRBot.VirtualControllers
         
         private void HandleMouseUp(int mouseBtn)
         {
-            BuiltArgList.Append(MouseUpArg).Append(mouseBtn).Append(" ");
+            lock (StrBuilderLockObject)
+            {
+                BuiltArgList.Append(MouseUpArg).Append(mouseBtn).Append(" ");
+            }
         }
         
         private void HandleMouseMove(int moveLeft, int moveUp)
         {
-            BuiltArgList.Append(MouseMoveRelArg).Append(moveLeft).Append(" ").Append(moveUp).Append(" ");
+            lock (StrBuilderLockObject)
+            {
+                BuiltArgList.Append(MouseMoveRelArg).Append(moveLeft).Append(" ").Append(moveUp).Append(" ");
+            }
         }
         
         private void HandleProcessKeyDown(string key)
         {
-            BuiltArgList.Append(KeyDownArg).Append(key).Append(" ");
+            lock (StrBuilderLockObject)
+            {
+                BuiltArgList.Append(KeyDownArg).Append(key).Append(" ");
+            }
         }
         
         private void HandleProcessKeyUp(string key)
         {
-            BuiltArgList.Append(KeyUpArg).Append(key).Append(" ");
+            lock (StrBuilderLockObject)
+            {
+                BuiltArgList.Append(KeyUpArg).Append(key).Append(" ");
+            }
         }
     }
 }

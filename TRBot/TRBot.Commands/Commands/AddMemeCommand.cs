@@ -1,6 +1,6 @@
-﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+﻿/* Copyright (C) 2019-2021 Thomas "Kimimaru" Deeb
  * 
- * This file is part of TRBot,software for playing games through text.
+ * This file is part of TRBot, software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -66,9 +66,9 @@ namespace TRBot.Commands
                 return;
             }
 
-            if (memeName.StartsWith(Parser.DEFAULT_PARSER_REGEX_MACRO_INPUT) == true)
+            if (memeName.StartsWith(InputMacroPreparser.DEFAULT_MACRO_START) == true)
             {
-                QueueMessage($"Memes cannot start with \"{Parser.DEFAULT_PARSER_REGEX_MACRO_INPUT}\".");
+                QueueMessage($"Memes cannot start with \"{InputMacroPreparser.DEFAULT_MACRO_START}\".");
                 return;
             }
 

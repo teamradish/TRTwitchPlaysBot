@@ -1,6 +1,6 @@
-﻿/* Copyright (C) 2019-2020 Thomas "Kimimaru" Deeb
+﻿/* Copyright (C) 2019-2021 Thomas "Kimimaru" Deeb
  * 
- * This file is part of TRBot,software for playing games through text.
+ * This file is part of TRBot, software for playing games through text.
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -52,7 +52,6 @@ namespace TRBot.Main
 
         private IClientService ClientService = null;
 
-        private Parser InputParser = null;
         private CommandHandler CmdHandler = null;
         
         private BotMessageHandler MsgHandler = new BotMessageHandler();
@@ -249,9 +248,6 @@ namespace TRBot.Main
 
             //Initialize routines
             InitRoutines();
-
-            //Cache our parser
-            InputParser = new Parser();
 
             Initialized = true;
         }
@@ -525,10 +521,6 @@ namespace TRBot.Main
             try
             {
                 int maxDur = 60000;
-
-                string regexStr = usedConsole.InputRegex;
-
-                string readyMessage = string.Empty;
                 
                 //Get default and max input durations
                 //Use user overrides if they exist, otherwise use the global values
@@ -547,16 +539,19 @@ namespace TRBot.Main
                     //Get input synonyms for this console
                     IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.ConsoleID == lastConsoleID);
 
-                    //Prepare the message for parsing
-                    readyMessage = InputParser.PrepParse(e.UsrMessage.Message, context.Macros, synonyms);
+                    StandardParser standardParser = StandardParser.CreateStandard(context.Macros, synonyms,
+                        usedConsole.GetInputNames(), defaultPort, DataContainer.ControllerMngr.ControllerCount - 1,
+                        defaultDur, maxDur, true);
+
+                    //Parse inputs to get our parsed input sequence
+                    inputSequence = standardParser.ParseInputs(e.UsrMessage.Message);
                 }
 
-                //Parse inputs to get our parsed input sequence
-                inputSequence = InputParser.ParseInputs(readyMessage, regexStr, new ParserOptions(defaultPort, defaultDur, true, maxDur));
                 TRBotLogger.Logger.Debug(inputSequence.ToString());
                 TRBotLogger.Logger.Debug("Reverse Parsed (on parse): " + ReverseParser.ReverseParse(inputSequence, usedConsole,
                     new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.ShowNonDefaultPorts, defaultPort,
                     ReverseParser.ShowDurationTypes.ShowNonDefaultDurations, defaultDur)));
+                
             }
             catch (Exception exception)
             {
