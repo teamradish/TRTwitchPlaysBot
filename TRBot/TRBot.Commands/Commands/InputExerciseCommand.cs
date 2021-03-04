@@ -69,7 +69,7 @@ namespace TRBot.Commands
         private string[] InvalidExerciseInputNames = Array.Empty<string>();
         private readonly Random Rand = new Random();
 
-        private string UsageMessage = "Usage: (\"new\" \"difficulty - easy (default) or hard\") for new exercise, or \"input sequence\" to input exercise";
+        //private string UsageMessage = "Usage: (\"new\" \"difficulty - easy (default) or hard\") for new exercise, or \"input sequence\" to input exercise";
 
         public InputExerciseCommand()
         {

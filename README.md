@@ -71,8 +71,4 @@ We have the following two remotes for TRBot:
 ### Support
 We are on Matrix at [#TRBot-Dev:matrix.org](https://matrix.to/#/!hTfcbsKMAuenQAetQm:matrix.org?via=matrix.org). Feel free to ask any questions or discuss development there!
 
-Developing software takes considerable time and effort, and we have poured hundreds of hours of our spare time into making TRBot as powerful as it is and freely available to everyone. Kindly consider donating to us on Liberapay:
-
-https://liberapay.com/kimimaru/
-
-All donations go towards improving TRBot, and if enough donations have been met, working on it full-time.
+Developing software takes considerable time and effort, and we have poured hundreds of hours of our spare time into making TRBot as robust as it is and freely available to everyone. Kindly consider [buying us a coffee](https://ko-fi.com/kimimaru) or [donating on Liberapay](https://liberapay.com/kimimaru/).

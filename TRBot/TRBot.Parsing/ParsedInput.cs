@@ -81,8 +81,8 @@ namespace TRBot.Parsing
         public static bool operator ==(ParsedInput a, ParsedInput b)
         {
             return (a.Hold == b.Hold && a.Release == b.Release && a.Percent == b.Percent
-                    && a.DurationType == b.DurationType && a.DurationType == b.DurationType
-                    && a.Name == b.Name && a.ControllerPort == b.ControllerPort && a.Error == b.Error);
+                    && a.Duration == b.Duration && a.DurationType == b.DurationType
+                    && a.Name == b.Name && a.ControllerPort == b.ControllerPort);
         }
 
         public static bool operator !=(ParsedInput a, ParsedInput b)
