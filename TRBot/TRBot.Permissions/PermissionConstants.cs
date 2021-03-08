@@ -84,6 +84,13 @@ namespace TRBot.Permissions
         public const string SET_INPUT_MODE_ABILITY = "setinputmode";
         public const string VOTE_INPUT_MODE_ABILITY = "voteinputmode";
 
+        public const string ADD_INPUT_MACRO_ABILITY = "addinputmacro";
+        public const string REMOVE_INPUT_MACRO_ABILITY = "removeinputmacro";
+        public const string ADD_MEME_ABILITY = "addmeme";
+        public const string REMOVE_MEME_ABILITY = "removememe";
+        public const string ADD_INPUT_SYNONYM_ABILITY = "addinputsynonym";
+        public const string REMOVE_INPUT_SYNONYM_ABILITY = "removeinputsynonym";
+
         //Abilities for games/extras
         public const string BET_ABILITY = "bet";
         public const string DUEL_ABILITY = "duel";

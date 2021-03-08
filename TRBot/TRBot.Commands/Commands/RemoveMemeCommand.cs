@@ -26,6 +26,7 @@ using TRBot.Misc;
 using TRBot.Utilities;
 using TRBot.Consoles;
 using TRBot.Parsing;
+using TRBot.Permissions;
 using TRBot.Data;
 
 namespace TRBot.Commands
@@ -50,6 +51,19 @@ namespace TRBot.Commands
             {
                 QueueMessage(UsageMessage);
                 return;
+            }
+
+            string userName = args.Command.ChatMessage.Username;
+
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                User user = DataHelper.GetUserNoOpen(userName, context);
+
+                if (user != null && user.HasEnabledAbility(PermissionConstants.REMOVE_MEME_ABILITY) == false)
+                {
+                    QueueMessage("You do not have the ability to remove memes.");
+                    return;
+                }
             }
 
             string memeName = arguments[0].ToLowerInvariant();

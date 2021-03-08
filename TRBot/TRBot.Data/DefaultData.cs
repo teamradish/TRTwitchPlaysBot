@@ -311,6 +311,12 @@ namespace TRBot.Data
                 new PermissionAbility(TRANSFER_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
                 new PermissionAbility(SLOTS_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
                 new PermissionAbility(VOTE_INPUT_MODE_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(ADD_INPUT_MACRO_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(REMOVE_INPUT_MACRO_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(ADD_MEME_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(REMOVE_MEME_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(ADD_INPUT_SYNONYM_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(REMOVE_INPUT_SYNONYM_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
 
                 new PermissionAbility(SET_GAME_MESSAGE_ABILITY, PermissionLevels.VIP, PermissionLevels.VIP),
 
