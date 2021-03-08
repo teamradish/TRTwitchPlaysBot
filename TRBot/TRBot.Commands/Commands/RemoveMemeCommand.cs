@@ -47,7 +47,7 @@ namespace TRBot.Commands
         {
             List<string> arguments = args.Command.ArgumentsAsList;
 
-            if (arguments.Count != 1)
+            if (arguments.Count < 1)
             {
                 QueueMessage(UsageMessage);
                 return;
@@ -66,7 +66,7 @@ namespace TRBot.Commands
                 }
             }
 
-            string memeName = arguments[0].ToLowerInvariant();
+            string memeName = args.Command.ArgumentsAsString;
             
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
@@ -77,6 +77,8 @@ namespace TRBot.Commands
                 {
                     context.Memes.Remove(meme);
                     context.SaveChanges();
+
+                    QueueMessage($"Removed meme \"{memeName}\"!");
                 }
             }
         }

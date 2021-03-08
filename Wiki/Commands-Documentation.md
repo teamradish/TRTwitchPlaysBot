@@ -158,10 +158,12 @@ You will need to reload data or restart TRBot to apply any changes in the **Comm
   - Example: "!setmessage Beat Phantom Ganon"
 
 ## Games/Fun
-- [`AddMemeCommand`](../TRBot/TRBot.Commands/Commands/AddMemeCommand.cs) (default: "!addmeme") - Adds a meme to the database. If the meme already exists, it'll be updated.
+- [`AddMemeCommand`](../TRBot/TRBot.Commands/Commands/AddMemeCommand.cs) (default: "!addmeme") - Adds a meme to the database. If the meme already exists, it'll be updated. Enclose multi-word meme names in quotes.
   - Example: "!addmeme lol Kappa"
-- [`RemoveMemeCommand`](../TRBot/TRBot.Commands/Commands/RemoveMemeCommand.cs) (default: "!removememe") - Removes a meme from the database.
+  - Example: "!addmeme "this is a test" yup it is"
+- [`RemoveMemeCommand`](../TRBot/TRBot.Commands/Commands/RemoveMemeCommand.cs) (default: "!removememe") - Removes a meme from the database. Remove multi-word memes by specifying the entire phrase without quotes.
   - Example: "!removememe lol"
+  - Example: "!removememe this is a test"
 - [`ListMemesCommand`](../TRBot/TRBot.Commands/Commands/ListMemesCommand.cs) (default: "!memes") - Lists all memes.
 - [`CreditsCommand`](../TRBot/TRBot.Commands/Commands/DuelCommand.cs) (default: "!credits") - Lists the number of credits you have, or optionally the number of credits another user has.
   - Example: "!credits"

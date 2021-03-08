@@ -28,6 +28,7 @@ using TRBot.Consoles;
 using TRBot.Parsing;
 using TRBot.Permissions;
 using TRBot.Data;
+using TRBot.Logging;
 
 namespace TRBot.Commands
 {
@@ -41,7 +42,7 @@ namespace TRBot.Commands
         /// </summary>
         public const int MAX_MEME_NAME_LENGTH = 50;
 
-        private string UsageMessage = "Usage: \"memename\" \"memevalue\"";
+        private string UsageMessage = "Usage: \"memename (enclose in \" quotes for multi-word)\" \"memevalue\"";
 
         public AddMemeCommand()
         {
@@ -72,7 +73,59 @@ namespace TRBot.Commands
             }
 
             string memeName = arguments[0];
-            string memeValue = arguments[1];
+            int memeNameLength = memeName.Length;
+
+            int memeValArgStartIndex = 1;
+
+            //Check if it's a multi-word meme
+            if (memeName.StartsWith("\"") == true && arguments.Count > 2)
+            {
+                //Start with 1 to account for the space after the first argument
+                int additionalLength = 1;
+
+                //Look for arguments ending with quotes
+                for (int i = 1; i < arguments.Count; i++)
+                {
+                    string arg = arguments[i];
+                    
+                    //Add 1 to account for the space
+                    additionalLength += arg.Length + 1;
+
+                    //TRBotLogger.Logger.Information($"Additional length is: {additionalLength}");
+
+                    //We found the meme
+                    if (arg.EndsWith("\"") == true)
+                    {
+                        //The next index is the start of the meme value
+                        memeValArgStartIndex = i + 1;
+
+                        //Invalid - all arguments are surrounded in quotes
+                        if (memeValArgStartIndex >= arguments.Count)
+                        {
+                            QueueMessage("Please provide a value for the multi-word meme.");
+                            return;
+                        }
+
+                        //Adjust meme length and name
+                        //Account for spaces
+                        memeNameLength += additionalLength - 1;
+
+                        //Remove the start and end quotes from the meme's name
+                        memeName = args.Command.ArgumentsAsString.Substring(0, memeNameLength);
+                        memeName = memeName.Remove(0, 1);
+                        memeName = memeName.Remove(memeName.Length - 1, 1);
+
+                        //TRBotLogger.Logger.Information($"Meme name: \"{memeName}\"");
+                        //TRBotLogger.Logger.Information($"Meme Length: \"{memeNameLength}\"");
+
+                        break;
+                    }
+                }
+            }
+            
+            //TRBotLogger.Logger.Information($"Meme value starts at index: {memeValArgStartIndex}");
+
+            string memeValue = arguments[memeValArgStartIndex];
 
             if (memeName.ElementAt(0) == '/' || memeValue.ElementAt(0) == '/')
             {
@@ -104,18 +157,20 @@ namespace TRBot.Commands
             {
                 Meme meme = context.Memes.FirstOrDefault(m => m.MemeName == memeToLower);
 
-                string actualMemeValue = args.Command.ArgumentsAsString.Remove(0, memeName.Length + 1);
+                string actualMemeValue = args.Command.ArgumentsAsString.Remove(0, memeNameLength + 1);
 
                 if (meme != null)
                 {
                     meme.MemeValue = actualMemeValue;
 
-                    QueueMessage("Meme overwritten!");
+                    QueueMessage($"Meme \"{memeToLower}\" overwritten!");
                 }
                 else
                 {
                     Meme newMeme = new Meme(memeToLower, actualMemeValue);
                     context.Memes.Add(newMeme);
+
+                    QueueMessage($"Added meme \"{memeToLower}\"!");
                 }
 
                 context.SaveChanges();
