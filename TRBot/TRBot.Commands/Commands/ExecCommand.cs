@@ -51,13 +51,16 @@ namespace TRBot.Commands
             typeof(Console).Assembly,
             typeof(List<int>).Assembly,
             typeof(ExecCommand).Assembly,
-            typeof(Parsing.IParser).Assembly,
-            typeof(GameConsole).Assembly,
-            typeof(VirtualControllers.IVirtualController).Assembly,
             typeof(IClientService).Assembly,
-            typeof(TRBot.Misc.BotMessageHandler).Assembly,
+            typeof(GameConsole).Assembly,
             typeof(TRBot.Data.CommandData).Assembly,
-            typeof(TRBot.Utilities.EnumUtility).Assembly
+            typeof(TRBot.Logging.TRBotLogger).Assembly,
+            typeof(TRBot.Misc.BotMessageHandler).Assembly,
+            typeof(Parsing.IParser).Assembly,
+            typeof(TRBot.Permissions.PermissionAbility).Assembly,
+            typeof(TRBot.Routines.BaseRoutine).Assembly,
+            typeof(TRBot.Utilities.EnumUtility).Assembly,
+            typeof(VirtualControllers.IVirtualController).Assembly,
         };
 
         private readonly string[] Imports = new string[]
