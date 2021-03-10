@@ -171,6 +171,14 @@ namespace TRBot.Commands
                     args.Result = Hermite(val1, tang1, val2, tang2, amt);
                 }
             }
+
+            if (funcname == "average")
+            {
+                object[] arr = args.EvaluateParameters();
+                double[] doubleArr = Array.ConvertAll<object, double>(arr, element => Convert.ToDouble(element));
+
+                args.Result = Average(doubleArr);
+            }
         }
 
         private void Exp_EvaluateParameter(string name, ParameterArgs args)
@@ -206,6 +214,11 @@ namespace TRBot.Commands
             if (i <= 1) return 0;
 
             return Math.Log(i, 10) + LogFactorial(i - 1);
+        }
+
+        private double Average(double[] values)
+        {
+            return values.Sum() / values.Length;
         }
 
         private double Hermite(float value1, float tangent1, float value2, float tangent2, float amount)
