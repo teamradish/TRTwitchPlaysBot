@@ -29,6 +29,7 @@ using TRBot.Utilities;
 using TRBot.Consoles;
 using TRBot.Data;
 using TRBot.Routines;
+using TRBot.Logging;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 
@@ -120,6 +121,11 @@ namespace TRBot.Commands
             catch (CompilationErrorException exception)
             {
                 QueueMessage($"Compiler error: {exception.Message}", Serilog.Events.LogEventLevel.Warning);
+            }
+            catch (Exception otherExc)
+            {
+                QueueMessage($"Exec runtime error: {otherExc.Message}", Serilog.Events.LogEventLevel.Warning);
+                TRBotLogger.Logger.Warning($"Exec runtime error: {otherExc.Message} - at\n{otherExc.StackTrace}");
             }
         }
 
