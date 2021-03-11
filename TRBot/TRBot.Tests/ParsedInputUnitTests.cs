@@ -40,16 +40,40 @@ namespace TRBot.Tests
             Assert.AreEqual(a == b, true);
         }
 
-        [TestCase]
-        public void TestInequality()
+        [TestCase(50, 50)]
+        [TestCase(30.0001, 30)]
+        [TestCase(90.1, 90.1)]
+        [TestCase(64.15, 64.15)]
+        [TestCase(45.4321, 45.4328)]
+        [TestCase(76.23451332, 76.23483627)]
+        public void TestPercentageEquality(double percentage1, double percentage2)
         {
-            ParsedInput a = new ParsedInput("test", false, false, 100d, 200, InputDurationTypes.Milliseconds,
+            ParsedInput a = new ParsedInput("test", false, false, percentage1, 200, InputDurationTypes.Milliseconds,
                 0, string.Empty);
 
-            ParsedInput b = new ParsedInput("test", false, false, 100.1d, 200, InputDurationTypes.Milliseconds,
+            ParsedInput b = new ParsedInput("test", false, false, percentage2, 200, InputDurationTypes.Milliseconds,
                 0, string.Empty);
 
-            Assert.AreEqual(a != b, true);
+            Assert.AreEqual(a == b, true);
+        }
+
+        [TestCase(0, 100)]
+        [TestCase(97.1, 97.2)]
+        [TestCase(97.54, 97.55)]
+        [TestCase(46.549, 46.550)]
+        [TestCase(29.549, 9297.551)]
+        [TestCase(30.001, 30.002)]
+        [TestCase(45.4321, 45.4528)]
+        [TestCase(33.333, 33.334)]
+        public void TestPercentageInequality(double percentage1, double percentage2)
+        {
+            ParsedInput a = new ParsedInput("test", false, false, percentage1, 200, InputDurationTypes.Milliseconds,
+                0, string.Empty);
+
+            ParsedInput b = new ParsedInput("test", false, false, percentage2, 200, InputDurationTypes.Milliseconds,
+                0, string.Empty);
+
+            Assert.AreEqual(a == b, false);
         }
     }
 }

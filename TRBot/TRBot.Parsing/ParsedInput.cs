@@ -80,7 +80,8 @@ namespace TRBot.Parsing
 
         public static bool operator ==(ParsedInput a, ParsedInput b)
         {
-            return (a.Hold == b.Hold && a.Release == b.Release && a.Percent == b.Percent
+            //Approximate for percentage up to 3 decimal places to account for floating point inaccuracies
+            return (a.Hold == b.Hold && a.Release == b.Release && ParserUtilities.IsApproximate(a.Percent, b.Percent, 0.0009d)
                     && a.Duration == b.Duration && a.DurationType == b.DurationType
                     && a.Name == b.Name && a.ControllerPort == b.ControllerPort);
         }
