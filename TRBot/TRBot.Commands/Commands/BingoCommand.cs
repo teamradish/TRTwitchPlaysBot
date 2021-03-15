@@ -90,7 +90,7 @@ namespace TRBot.Commands
                 //Get relative path if we should
                 if (bingoPipePathIsRelative == 1)
                 {
-                    bingoPipePath = Path.Combine(DataConstants.DataFolderPath, fileName);
+                    bingoPipePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
                 }
 
                 TRBotLogger.Logger.Debug($"Full bingo path: {bingoPipePath}");

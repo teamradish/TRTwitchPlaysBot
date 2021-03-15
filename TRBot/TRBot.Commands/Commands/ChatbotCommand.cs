@@ -90,7 +90,7 @@ namespace TRBot.Commands
                 //Get relative path if we should
                 if (chatbotPipePathIsRelative == 1)
                 {
-                    chatbotPipePath = Path.Combine(DataConstants.DataFolderPath, fileName);
+                    chatbotPipePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
                 }
 
                 TRBotLogger.Logger.Debug($"Full chatbot path: {chatbotPipePath}");

@@ -104,7 +104,7 @@ Whether users can talk with a chatbot instance, such as [ChatterBot](../Suppleme
 The path to the socket for the chatbot, which TRBot uses to communicate.
 
 ### chatbot_socket_path_is_relative
-If 1, [chatbot_socket_path](#chatbot_socket_path) is a path relative to the Data folder, otherwise it's an absolute path.
+If 1, [chatbot_socket_path](#chatbot_socket_path) is a path relative to the TRBot executable, otherwise it's an absolute path.
 
 ### bingo_enabled
 Whether users can participate in bingo through an external application, such as [TRBotBingo](https://github.com/teamradish/TRBotBingo).
@@ -113,7 +113,7 @@ Whether users can participate in bingo through an external application, such as 
 The path to the socket for the bingo application, which TRBot uses to communicate.
 
 ### bingo_pipe_path_is_relative
-If 1, [bingo_pipe_path](#bingo_pipe_path) is a path relative to the Data folder, otherwise it's an absolute path.
+If 1, [bingo_pipe_path](#bingo_pipe_path) is a path relative to the TRBot executable, otherwise it's an absolute path.
 
 ### client_service_type
 The type of client service connection to use. 0 = Terminal, 1 = Twitch. **Requires restarting TRBot to apply.**
@@ -198,7 +198,7 @@ An internal value for the game message users set while playing. This isn't modif
 The path to the game message file used to display a message on stream.
 
 ### game_message_path_is_relative
-If 1, [game_message_path](#game_message_path) is a path relative to the Data folder, otherwise it's an absolute path.
+If 1, [game_message_path](#game_message_path) is a path relative to the TRBot executable, otherwise it's an absolute path.
 
 ### info_message
 An informational message about the current game or stream.

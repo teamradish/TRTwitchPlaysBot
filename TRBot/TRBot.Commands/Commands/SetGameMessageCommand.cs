@@ -78,7 +78,7 @@ namespace TRBot.Commands
             //Get relative path if we should
             if (msgPathRelative == 1)
             {
-                fullMsgPath = Path.Combine(DataConstants.DataFolderPath, msgFileName);
+                fullMsgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, msgFileName);
             }
 
             //Save the message to the file so it updates on OBS
