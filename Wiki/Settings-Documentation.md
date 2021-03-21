@@ -36,6 +36,7 @@ Table of Contents
 * [new_subscriber_message](#new_subscriber_message)
 * [resubscriber_message](#resubscriber_message)
 * [source_code_message](#source_code_message)
+* [periodic_message_rotation](#periodic_message_rotation)
 * [game_message](#game_message)
 * [game_message_path](#game_message_path)
 * [game_message_path_is_relative](#game_message_path_is_relative)
@@ -165,7 +166,7 @@ Indicates the time, in milliseconds, TRBot waits each time to reconnect to the c
 The interval, in milliseconds, for TRBot to output the [periodic_message](#periodic_message).
 
 ### periodic_message
-A message TRBot sends occasionally. The interval is determined by * [periodic_message_time](#periodic_message_time).
+A message TRBot may send occasionally.
 
 ### connect_message
 The message TRBot sends upon connecting to the service.
@@ -190,6 +191,9 @@ The message TRBot sends when someone re-subscribes to your channel. Used on Twit
 
 ### source_code_message
 The message showing where users can obtain the source code of this instance and their rights under the AGPL 3.0+. If you have a custom fork of TRBot's source code, you must modify this message to link to your fork.
+
+### periodic_message_rotation
+The set of messages TRBot rotates outputting every interval, which is determined by the [periodic_message_time](#periodic_message_time). Messages are separated by the '|' character and may also be database settings. This defaults to the [periodic_message](#periodic_message).
 
 ### game_message
 An internal value for the game message users set while playing. This isn't modified manually.
