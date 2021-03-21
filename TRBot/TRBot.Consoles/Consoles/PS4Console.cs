@@ -71,6 +71,7 @@ namespace TRBot.Consoles
                 { "dright",     InputData.CreateButton("dright", (int)GlobalButtonVals.BTN24) },
                 { "touchclick", InputData.CreateButton("touchclick", (int)GlobalButtonVals.BTN25) },
                 { "#",          InputData.CreateBlank("#") },
+                { ".",          InputData.CreateBlank(".") },
 
                 //Spare buttons
                 { "sb1",        InputData.CreateButton("sb1", (int)GlobalButtonVals.BTN26) },

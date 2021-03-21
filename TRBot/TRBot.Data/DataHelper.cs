@@ -659,23 +659,21 @@ namespace TRBot.Data
                     
                     using (BotDBContext context = DatabaseManager.OpenContext())
                     {
-                        if (context.Consoles.Count() < consoleData.Count)
+                        for (int i = 0; i < consoleData.Count; i++)
                         {
-                            for (int i = 0; i < consoleData.Count; i++)
+                            GameConsole console = consoleData[i];
+
+                            //See if the console exists
+                            GameConsole foundConsole = context.Consoles.FirstOrDefault((c) => c.Name == console.Name);
+                            
+                            if (foundConsole == null)
                             {
-                                GameConsole console = consoleData[i];
+                                //This console isn't in the database, so add it
+                                context.Consoles.Add(console);
 
-                                //See if the console exists
-                                GameConsole foundConsole = context.Consoles.FirstOrDefault((c) => c.Name == console.Name);
-                                if (foundConsole == null)
-                                {
-                                    //This console isn't in the database, so add it
-                                    context.Consoles.Add(console);
-
-                                    context.SaveChanges();
-
-                                    entriesAdded++;
-                                }
+                                context.SaveChanges();
+                                
+                                entriesAdded++;
                             }
                         }
                     }

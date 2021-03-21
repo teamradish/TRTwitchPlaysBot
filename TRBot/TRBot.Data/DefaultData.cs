@@ -282,7 +282,7 @@ namespace TRBot.Data
                 new NESConsole(),
                 new SNESConsole(),
                 new GenesisConsole(),
-                new N64Console(),
+                new N64Console(), new GBCConsole(),
                 new PS2Console(), new GCConsole(), new GBAConsole(),
                 new WiiConsole(), new PS4Console(),
                 new SwitchConsole(),

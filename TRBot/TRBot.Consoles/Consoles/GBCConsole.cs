@@ -25,13 +25,13 @@ using TRBot.VirtualControllers;
 namespace TRBot.Consoles
 {
     /// <summary>
-    /// The Game Boy Advance handheld.
+    /// The Game Boy Color handheld.
     /// </summary>
-    public sealed class GBAConsole : GameConsole
+    public sealed class GBCConsole : GameConsole
     {
-        public GBAConsole()
+        public GBCConsole()
         {
-            Name = "gba";
+            Name = "gbc";
             
             Initialize();
         }
@@ -60,8 +60,6 @@ namespace TRBot.Consoles
                 { "ls4", InputData.CreateButton("ls4", (int)GlobalButtonVals.BTN28) },
                 { "ls5", InputData.CreateButton("ls5", (int)GlobalButtonVals.BTN29) },
                 { "ls6", InputData.CreateButton("ls6", (int)GlobalButtonVals.BTN30) },
-                { "l", InputData.CreateButton("l", (int)GlobalButtonVals.BTN31) },
-                { "r", InputData.CreateButton("r", (int)GlobalButtonVals.BTN32) },
                 { "#", InputData.CreateBlank("#") },
                 { ".", InputData.CreateBlank(".") }
             });

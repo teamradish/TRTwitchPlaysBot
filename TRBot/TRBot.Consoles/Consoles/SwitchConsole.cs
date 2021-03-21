@@ -67,6 +67,7 @@ namespace TRBot.Consoles
                 { "rs", InputData.CreateButton("rs", (int)GlobalButtonVals.BTN16) },
 
                 { "#", InputData.CreateBlank("#") },
+                { ".", InputData.CreateBlank(".") },
 
                 //Spare buttons
                 { "sb1", InputData.CreateButton("sb1", (int)GlobalButtonVals.BTN17) },

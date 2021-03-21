@@ -71,7 +71,8 @@ namespace TRBot.Consoles
                 { "ls4",        InputData.CreateButton("ls4", (int)GlobalButtonVals.BTN28) },
                 { "ls5",        InputData.CreateButton("ls5", (int)GlobalButtonVals.BTN29) },
                 { "ls6",        InputData.CreateButton("ls6", (int)GlobalButtonVals.BTN30) },
-                { "#",          InputData.CreateBlank("#") }
+                { "#",          InputData.CreateBlank("#") },
+                { ".",          InputData.CreateBlank(".") }
             });
 
             InvalidCombos = new List<InvalidCombo>();
