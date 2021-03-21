@@ -70,7 +70,6 @@ namespace TRBot.Data
         public const string SOURCE_CODE_MESSAGE = "source_code_message";
         public const string PERIODIC_MESSAGE_ROTATION = "periodic_message_rotation";
 
-        public const string GAME_MESSAGE = "game_message";
         public const string GAME_MESSAGE_PATH = "game_message_path";
         public const string GAME_MESSAGE_PATH_IS_RELATIVE = "game_message_path_is_relative";
         public const string INFO_MESSAGE = "info_message";

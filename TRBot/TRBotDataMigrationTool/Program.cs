@@ -474,7 +474,6 @@ namespace TRBotDataMigrationTool
             /* Other changes */
             Console.WriteLine("Now importing remaining bot data...");
 
-            AddSettingStrHelper(SettingsConstants.GAME_MESSAGE, oldBotData.GameMessage);
             AddSettingStrHelper(SettingsConstants.INFO_MESSAGE, oldBotData.InfoMessage);
             AddSettingIntHelper(SettingsConstants.LAST_CONSOLE, oldBotData.LastConsole);
             AddSettingIntHelper(SettingsConstants.DEFAULT_INPUT_DURATION, oldBotData.DefaultInputDuration);

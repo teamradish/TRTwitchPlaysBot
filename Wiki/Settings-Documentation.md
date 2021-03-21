@@ -37,7 +37,6 @@ Table of Contents
 * [resubscriber_message](#resubscriber_message)
 * [source_code_message](#source_code_message)
 * [periodic_message_rotation](#periodic_message_rotation)
-* [game_message](#game_message)
 * [game_message_path](#game_message_path)
 * [game_message_path_is_relative](#game_message_path_is_relative)
 * [info_message](#info_message)
@@ -194,9 +193,6 @@ The message showing where users can obtain the source code of this instance and 
 
 ### periodic_message_rotation
 The set of messages TRBot rotates outputting every interval, which is determined by the [periodic_message_time](#periodic_message_time). Messages are separated by the '|' character and may also be database settings. This defaults to the [periodic_message](#periodic_message).
-
-### game_message
-An internal value for the game message users set while playing. This isn't modified manually.
 
 ### game_message_path
 The path to the game message file used to display a message on stream.

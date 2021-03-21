@@ -82,7 +82,6 @@ namespace TRBot.Data
                 SettingsHelper(RESUBSCRIBER_MESSAGE, "Thank you for subscribing for {1} months, {0} :D !!"),
                 SettingsHelper(SOURCE_CODE_MESSAGE, "This bot is free software licensed under the AGPL v3.0. The code repository and full license terms are at https://github.com/teamradish/TRTwitchPlaysBot - You have the right to obtain source code for the streamer's deployed version of the software."),
                 SettingsHelper(PERIODIC_MESSAGE_ROTATION, PERIODIC_MESSAGE),
-                SettingsHelper(GAME_MESSAGE, "This is a game message."),
                 SettingsHelper(GAME_MESSAGE_PATH, Path.Combine(DataConstants.DATA_FOLDER_NAME, "GameMessage.txt")),
                 SettingsHelper(GAME_MESSAGE_PATH_IS_RELATIVE, true),
                 SettingsHelper(INFO_MESSAGE, "Welcome to the channel! You can play games by submitting messages in chat. Type !inputs to see all available buttons."),
@@ -241,7 +240,7 @@ namespace TRBot.Data
                 new CommandData("removesyn", "TRBot.Commands.RemoveInputSynonymCommand", whitelistedPerm, true, true),
                 new CommandData("viewmultilogs", "TRBot.Commands.ViewMultipleGameLogsCommand", whitelistedPerm, true, true),
 
-                new CommandData("setmessage", "TRBot.Commands.SetGameMessageCommand", vipPerm, true, true),
+                new CommandData("setmessage", "TRBot.Commands.SetGameMessageCommand", vipPerm, true, true, SettingsConstants.GAME_MESSAGE_PATH),
 
                 new CommandData("reload", "TRBot.Commands.ReloadCommand", modPerm, true, true),
                 new CommandData("setlevel", "TRBot.Commands.SetUserLevelCommand", modPerm, true, true),

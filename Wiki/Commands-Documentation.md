@@ -154,7 +154,8 @@ You will need to reload data or restart TRBot to apply any changes in the **Comm
 - [`ViewMultipleGameLogsCommand`](../TRBot/TRBot.Commands/Commands/ViewMultipleGameLogsCommand.cs) (default: "!viewmultilogs") - Views a number of game logs starting from the most recent. You can supply an argument for how many game logs to view. There is a short delay between printing each game log. To avoid spamming chat, this command will reject subsequent uses that attempt to view more game logs while it's already printing them. You can cancel it printing game logs by providing a special argument.
   - Example: "!viewmultilogs 5" - Displays the 5 most recent game logs.
   - Example: "!viewmultilogs cancel" - Cancels viewing game logs.
-- [`SetGameMessageCommand`](../TRBot/TRBot.Commands/Commands/SetGameMessageCommand.cs) (default: "!setmessage") - Sets a game message that can be displayed on stream if the streamer provided it. This is useful for informing others of the current objective in a game.
+- [`SaveTextToFileCommand`](../TRBot/TRBot.Commands/Commands/SaveTextToFileCommand.cs) - Saves the arguments as text into a given file, determined by the `ValueStr` of the command in the database. The `ValueStr` can be a database setting or absolute file path. The text in this file can then be displayed on stream if the streamer provided it.
+- [`SetGameMessageCommand`](../TRBot/TRBot.Commands/Commands/SetGameMessageCommand.cs) (default: "!setmessage") - Sets a game message that can be displayed on stream if the streamer provided it. This is useful for informing others of the current objective in a game. Internally, this is a pre-configured [`SaveTextToFileCommand`](../TRBot/TRBot.Commands/Commands/SaveTextToFileCommand.cs).
   - Example: "!setmessage Beat Phantom Ganon"
 
 ## Games/Fun
