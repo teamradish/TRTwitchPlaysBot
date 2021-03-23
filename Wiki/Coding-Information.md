@@ -38,6 +38,7 @@ We have the following two remotes for TRBot:
   2. `InputSynonymPreparser`
   3. `ExpandPreparser`
   4. `RemoveWhitespacePreparser`
+  5. `LowercasePreparser`
 - It's recommended to parse inputs with an opened database context so you have all the information you need to create the standard parser configuration.
 - After parsing, but before carrying out the input sequence, you'll want to perform some post-processing. Without post-processing, there is no permission checks nor any mid input delay insertions.
 - Look at the static `ParserPostProcess` class in the `TRBot.Misc` project for various methods to help validate the input sequence.
