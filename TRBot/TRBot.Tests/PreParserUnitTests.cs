@@ -98,6 +98,18 @@ namespace TRBot.Tests
             Assert.AreEqual(output, expectedOutput);
         }
 
+        [TestCase("A", "a")]
+        [TestCase("_b+R700ms", "_b+r700ms")]
+        [TestCase("AaBbAbrARAmW", "aabbabraramw")]
+        public void TestLower(string input, string expectedOutput)
+        {
+            LowercasePreparser lp = new LowercasePreparser();
+
+            string output = lp.Preparse(input);
+
+            Assert.AreEqual(output, expectedOutput);
+        }
+
         private IQueryable<InputMacro> BuildMacroList(string[] macroNames, string[] macroValues)
         {
             List<InputMacro> inputMacros = new List<InputMacro>(macroNames.Length);
