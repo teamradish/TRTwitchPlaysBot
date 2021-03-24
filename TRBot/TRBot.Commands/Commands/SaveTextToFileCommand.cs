@@ -58,7 +58,7 @@ namespace TRBot.Commands
             //Validate the ValueStr path
             if (string.IsNullOrEmpty(ValueStr) == true)
             {
-                QueueMessage($"This command's {nameof(ValueStr)} is empty. The streamer should set this in the database to a valid file path. If this is {nameof(SetGameMessageCommand)} and you just upgraded TRBot, set {nameof(ValueStr)} to \"{SettingsConstants.GAME_MESSAGE_PATH}\".");
+                QueueMessage($"This command's {nameof(ValueStr)} is empty. The streamer should set this in the database to a valid file path. If this is {nameof(SetGameMessageCommand)} and you just upgraded TRBot, set {nameof(ValueStr)} to \"{SettingsConstants.GAME_MESSAGE_PATH}\" and run the reload command to apply the changes on the spot.");
                 return;
             }
 

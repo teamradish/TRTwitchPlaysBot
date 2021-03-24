@@ -259,6 +259,7 @@ namespace TRBot.Data
                 new CommandData("removeinput", "TRBot.Commands.RemoveInputCommand", adminPerm, true, true),
                 new CommandData("setinputlevel", "TRBot.Commands.SetInputLevelCommand", adminPerm, true, true),
                 new CommandData("toggleinput", "TRBot.Commands.SetInputEnabledCommand", adminPerm, true, true),
+                new CommandData("updateeveryoneabilities", "TRBot.Commands.UpdateEveryoneAbilitiesCommand", adminPerm, true, true),
 
                 new CommandData("exec", "TRBot.Commands.ExecCommand", superAdminPerm, false, true),
                 new CommandData("exportbotdata", "TRBot.Commands.ExportBotDataCommand", superAdminPerm, true, true),
