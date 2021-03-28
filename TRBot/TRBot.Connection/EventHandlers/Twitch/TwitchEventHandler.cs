@@ -25,7 +25,7 @@ using TwitchLib.Client.Models;
 using TwitchLib.Communication.Events;
 using static TRBot.Connection.EventDelegates;
 
-namespace TRBot.Connection
+namespace TRBot.Connection.Twitch
 {
     /// <summary>
     /// Helps handle events from Twitch.

@@ -27,6 +27,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TRBot.Parsing;
 using TRBot.Connection;
+using TRBot.Connection.Twitch;
 using TRBot.Consoles;
 using TRBot.VirtualControllers;
 using TRBot.Misc;
@@ -237,7 +238,10 @@ namespace TRBot.Main
 
             TRBotLogger.Logger.Information($"Setting up virtual controller {curVControllerType} and acquired {acquiredCount} controllers!");
 
-            CmdHandler = new CommandHandler();
+            CmdHandler = new CommandHandler(new System.Reflection.Assembly[]
+            { 
+                typeof(TRBot.Integrations.LiveSplitOne.LiveSplitOneSocketBehavior).Assembly
+            });
             CmdHandler.Initialize(DataContainer, RoutineHandler);
 
             DataReloader.SoftDataReloadedEvent -= OnSoftReload;
