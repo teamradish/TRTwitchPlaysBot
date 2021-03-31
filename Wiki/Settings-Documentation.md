@@ -189,7 +189,7 @@ The message TRBot sends when someone subscribes to your channel. Used on Twitch 
 The message TRBot sends when someone re-subscribes to your channel. Used on Twitch and other services. Arguments: "{0}" = Username, "{1}" = Number of months subscribed.
 
 ### source_code_message
-The message showing where users can obtain the source code of this instance and their rights under the AGPL 3.0+. If you have a custom fork of TRBot's source code, you must modify this message to link to your fork.
+The message showing where users can obtain the source code of this instance and their rights under the AGPL 3.0. If you have a custom fork of TRBot's source code, you must modify this message to link to your fork.
 
 ### periodic_message_rotation
 The set of messages TRBot rotates outputting every interval, which is determined by the [periodic_message_time](#periodic_message_time). Messages are separated by the '|' character and may also be database settings. This defaults to the [periodic_message](#periodic_message).
