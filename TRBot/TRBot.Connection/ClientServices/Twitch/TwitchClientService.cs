@@ -87,6 +87,9 @@ namespace TRBot.Connection.Twitch
             EventHandler = new TwitchEventHandler(twitchClient);
             EventHandler.Initialize();
 
+            EventHandler.OnConnectedEvent -= OnClientConnected;
+            EventHandler.OnConnectedEvent += OnClientConnected;
+
             EventHandler.OnJoinedChannelEvent -= OnClientJoinedChannel;
             EventHandler.OnJoinedChannelEvent += OnClientJoinedChannel;
         }
@@ -155,14 +158,31 @@ namespace TRBot.Connection.Twitch
             
             JoinedChannels = null;
 
+            EventHandler.OnConnectedEvent -= OnClientConnected;
             EventHandler.OnJoinedChannelEvent -= OnClientJoinedChannel;
 
             EventHandler.CleanUp();
         }
 
+        //This is a workaround for a TwitchLib regression that doesn't
+        //automatically rejoin the channel on reconnection
+        private void OnClientConnected(EvtConnectedArgs e)
+        {
+            //Refresh joined channels
+            PopulateJoinedChannels();
+
+            //Join the channel after connecting
+            twitchClient.JoinChannel(ChannelName);  
+        }
+
         private void OnClientJoinedChannel(EvtJoinedChannelArgs e)
         {
             //When joining a channel, set the joined channels list
+            PopulateJoinedChannels();
+        }
+
+        private void PopulateJoinedChannels()
+        {
             IReadOnlyList<JoinedChannel> twitchJoinedChannels = twitchClient.JoinedChannels;
 
             //Instantiate if needed
