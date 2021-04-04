@@ -50,6 +50,12 @@ namespace TRBot.Parsing
         /// <returns>A string containing the modified message.</returns>
         public string Preparse(string message)
         {
+            /* NOTE: There is a bug with this that we need to fix!
+             * For example, take a macro named "#b" with a value of "b300ms"
+             * A message of "# #b" will fail to parse since it expands out to "#b300ms" then keeps looping
+             * Finally, it will find "#b" as a macro again and will parse that out to "b300ms300ms", causing it to fail
+            */
+
             //There are no macros, so just return the original message
             if (MacroData == null || MacroData.Count() == 0)
             {
@@ -76,9 +82,11 @@ namespace TRBot.Parsing
                 List<DynamicMacroSub> subs = null;
                 foreach (Match p in macroMatches)
                 {
+                    //Console.WriteLine($"Match Value: {p.Value} | Index: {p.Index} | Len: {p.Length}");
+
                     string macroName = Regex.Replace(message.Substring(p.Index, p.Length), @"\(.*\)", string.Empty, regexOptions);
 
-                    //Console.WriteLine($"Macro name: {macro_name}");
+                    //Console.WriteLine($"Macro name: {macroName}");
 
                     string macroNameGeneric = string.Empty;
                     int argIndex = macroName.IndexOf("(");

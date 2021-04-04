@@ -90,6 +90,8 @@ namespace TRBot.Permissions
         public const string ADD_INPUT_SYNONYM_ABILITY = "addinputsynonym";
         public const string REMOVE_INPUT_SYNONYM_ABILITY = "removeinputsynonym";
 
+        public const string STOP_ALL_INPUTS_ABILITY = "stopallinputs";
+
         //Abilities for games/extras
         public const string BET_ABILITY = "bet";
         public const string DUEL_ABILITY = "duel";

@@ -317,6 +317,7 @@ namespace TRBot.Data
                 new PermissionAbility(REMOVE_MEME_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
                 new PermissionAbility(ADD_INPUT_SYNONYM_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
                 new PermissionAbility(REMOVE_INPUT_SYNONYM_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(STOP_ALL_INPUTS_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
 
                 new PermissionAbility(SET_GAME_MESSAGE_ABILITY, PermissionLevels.VIP, PermissionLevels.VIP),
 

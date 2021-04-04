@@ -147,6 +147,11 @@ Determines if the user can add an input synonym through the [`AddInputSynonymCom
 
 Determines if the user can remove an input synonym through the [`RemoveInputSynonymCommand`](../TRBot/TRBot.Commands/Commands/RemoveInputSynonymCommand.cs).
 
+### stopallinputs
+**Default level: User (0)**
+
+Determines if the user can stop all ongoing inputs with the [`StopAllInputsCommand`](../TRBot/TRBot.Commands/Commands/StopAllInputsCommand.cs).
+
 ### setgamemessage
 **Default level: VIP (20)**
 

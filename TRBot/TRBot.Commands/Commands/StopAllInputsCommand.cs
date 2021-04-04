@@ -25,6 +25,7 @@ using TRBot.Misc;
 using TRBot.Utilities;
 using TRBot.Data;
 using TRBot.Commands;
+using TRBot.Permissions;
 
 namespace TRBot.Commands
 {
@@ -40,6 +41,17 @@ namespace TRBot.Commands
 
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
+            //Check for sufficient permissions
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                User user = DataHelper.GetUserNoOpen(args.Command.ChatMessage.Username, context);
+                if (user == null || user.HasEnabledAbility(PermissionConstants.STOP_ALL_INPUTS_ABILITY) == false)
+                {
+                    QueueMessage("You do not have the ability to stop all running inputs!");
+                    return;
+                }
+            }
+
             InputHandler.StopThenResumeAllInputs();
 
             QueueMessage("Stopped all running inputs!");

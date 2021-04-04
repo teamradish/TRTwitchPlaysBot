@@ -222,7 +222,7 @@ namespace TRBot.Parsing
 
                 input.Name = inpGroup.Value;
 
-                //Console.WriteLine($"FOUND INPUT NAME: \"{input.name}\"");
+                //Console.WriteLine($"FOUND INPUT NAME: \"{input.Name}\"");
 
                 //Check holds and releases
                 bool hasHold = match.Groups.TryGetValue(HoldParserComponent.HOLD_GROUP_NAME, out Group holdGroup) && holdGroup?.Success == true;
@@ -448,6 +448,7 @@ namespace TRBot.Parsing
         {
             List<IPreparser> preparsers = new List<IPreparser>()
             {
+                new RemoveWhitespacePreparser(),
                 new InputMacroPreparser(macros),
                 new InputSynonymPreparser(synonyms),
                 new ExpandPreparser(),
