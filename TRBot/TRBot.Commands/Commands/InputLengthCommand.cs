@@ -128,7 +128,7 @@ namespace TRBot.Commands
                 }
                 else
                 {
-                    QueueMessage($"Invalid input: {inputSequence.Error}. {dyMacroLenErrorMsg}");
+                    QueueMessage($"Invalid input: {inputSequence.Error} - {dyMacroLenErrorMsg}");
                 }
                 
                 return;

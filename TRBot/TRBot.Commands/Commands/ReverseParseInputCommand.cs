@@ -129,7 +129,7 @@ namespace TRBot.Commands
                 }
                 else
                 {
-                    QueueMessage($"Invalid input: {inputSequence.Error}.");
+                    QueueMessage($"Invalid input: {inputSequence.Error}");
                 }
                 
                 return;

@@ -70,12 +70,7 @@ namespace TRBot.Commands
                 return;
             }
 
-            PermissionAbility permAbility = null;
-
-            using (BotDBContext context = DatabaseManager.OpenContext())
-            {
-                permAbility = context.PermAbilities.FirstOrDefault(p => p.Name == abilityName);
-            }
+            PermissionAbility permAbility = DataHelper.GetPermissionAbility(abilityName);
 
             if (permAbility == null)
             {
@@ -83,7 +78,7 @@ namespace TRBot.Commands
                 return;
             }
 
-            if (thisUser.Name != abilityUser.Name && thisUser.Level <= abilityUser.Level)
+            if (thisUser.ID != abilityUser.ID && thisUser.Level <= abilityUser.Level)
             {
                 QueueMessage("You cannot modify abilities for other users with levels greater than or equal to yours!");
                 return;
@@ -118,6 +113,13 @@ namespace TRBot.Commands
 
                 abilityUser = DataHelper.GetUserNoOpen(abilityUserName, context);
                 abilityUser.TryGetAbility(abilityName, out newUserAbility);
+
+                //Prevent overriding a higher-leveled ability grant
+                if (newUserAbility != null && newUserAbility.GrantedByLevel > thisUser.Level)
+                {
+                    QueueMessage($"A user at level {newUserAbility.GrantedByLevel}, {(PermissionLevels)newUserAbility.GrantedByLevel}, granted this ability, so you need to be at a level equal or higher to modify it.");
+                    return;
+                }
 
                 bool shouldAdd = false;
 

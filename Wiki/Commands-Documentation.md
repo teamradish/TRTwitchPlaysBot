@@ -1,10 +1,10 @@
-This page documents many common commands for TRBot. You will often use these commands either while playing on or managing a TRBot instance. To learn how to add custom commands, see the [custom commands](./Custom-Commands.md) page.
+This page documents many common commands for TRBot. You will often use these commands either while playing on or managing a TRBot instance. To learn how to add your own custom commands, see the [custom commands](./Custom-Commands.md) page.
 
 ## Database Fields
 In the database, each command in the **CommandData** table has the following fields:
 - `ID` - The ID of the command in the database. This is automatically determined, thus it's not recommended to set or modify it.
 - `Name` - The name of the command. This name is what you type into chat to invoke it (Ex. "tutorial").
-- `ClassName` - The name of the internal class containing the code this command runs when invoked (Ex. "TRBot.Commands.MessageCommand" for "info").
+- `ClassName` - The name of the internal class, with namespace, containing the code this command runs when invoked (Ex. "TRBot.Commands.MessageCommand" for "info").
 - `Level` - The access level required to invoke the command.
 - `Enabled` - Determines if the command is enabled and can be invoked (0 = disabled, 1 = enabled).
 - `DisplayInList` - Determines if the command is displayed in the help for `ListCmdsCommand`.
@@ -46,6 +46,9 @@ You will need to reload data or restart TRBot to apply any changes in the **Comm
 - [`ListUserAbilitiesCommand`](../TRBot.TRBot.Commands/Commands/ListUserAbilitiesCommand.cs) (default: "!userabilities") - Lists all user abilities on a given user, including their enabled state and the expiration date, if any.
   - Example: "!userabilities user1"
 - [`ListPermissionAbilitiesCommand`](../TRBot.TRBot.Commands/Commands/ListPermissionAbilitiesCommand.cs) (default: "!allabilities") - Lists all available permission abilities in the database. These are all the abilities that can be enabled or disabled on a given user.
+- [`GetSetUserAbilityLvlOverrideCommand`](../TRBot.TRBot.Commands/Commands/GetSetUserAbilityLvlOverrideCommand.cs) (default: "!userabilitylvloverride") - Displays the level override of a specific ability on a given user, or sets it if you supply an argument and have a level greater than or equal to the current level override. A value of -1 will disable the level override.
+  - Example: "!userabilitylvloverride user1 silenced"
+  - Example: "!userabilitylvloverride user1 silenced -1" - Sets the level override of the "silenced" ability on user1 to -1, disabling it.
 
 ## Input and Console-related
 - [`StopAllInputsCommand`](../TRBot/TRBot.Commands/Commands/StopAllInputsCommand.cs) (default: "!stopall") - Stops all ongoing inputs on all virtual controllers. While inputs are being stopped, new inputs will not be processed. Most machines will often stop all inputs and re-enable them within 50 milliseconds or less (likely less). This command is very useful to stop long or repetitive input sequences instead of waiting for them to finish.

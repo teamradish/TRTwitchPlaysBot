@@ -141,6 +141,51 @@ namespace TRBot.Data
         }
 
         /// <summary>
+        /// Tells if this user can add a given PermissionAbility to another user. 
+        /// </summary>
+        /// <param name="permAbility">The PermissionAbility.</param>
+        /// <param name="otherUser">The user to add the PermissionAbility to.</param>
+        /// <returns>true if this user can add the PermissionAbility to the given user, otherwise false.
+        public bool CanAddAbilityToUser(PermissionAbility permAbility, User otherUser)
+        {
+            //No ability or other user
+            if (permAbility == null || otherUser == null)
+            {
+                return false;
+            }
+
+            //Equal level with the other user (if not self) - can't grant
+            if (ID != otherUser.ID && Level <= otherUser.Level)
+            {
+                return false;
+            }
+
+            //Can't grant this ability as it's not available to your level
+            if ((long)permAbility.AutoGrantOnLevel > Level)
+            {
+                return false;
+            }
+
+            //Min level to grant is higher than level
+            if ((long)permAbility.MinLevelToGrant > Level)
+            {
+                return false;
+            }
+
+            //Get the user ability for additional checks
+            if (otherUser.TryGetAbility(permAbility.ID, out UserAbility otherUserAbility) == true)
+            {
+                //Can't grant this ability since it was granted by someone higher-leveled
+                if (otherUserAbility.GrantedByLevel > Level)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Adds a user ability if it doesn't already exist and updates one if it does.
         /// </summary>
         /// <param name="permAbility">The PermissionAbility.</param>
@@ -245,15 +290,17 @@ namespace TRBot.Data
             //Put all restricted inputs in a dictionary
             foreach (RestrictedInput rInput in restrictedInputs)
             {
+                string inputName = rInput.inputData.Name;
+
                 //Search by name
-                if (restrictedInpDict.TryGetValue(rInput.inputData.Name, out int val) == false)
+                if (restrictedInpDict.TryGetValue(inputName, out int val) == false)
                 {
-                    restrictedInpDict.Add(rInput.inputData.Name, 1);
+                    restrictedInpDict.Add(inputName, 1);
                     continue;
                 }
 
                 val += 1;
-                restrictedInpDict[rInput.inputData.Name] = val;
+                restrictedInpDict[inputName] = val;
             }
 
             return restrictedInpDict;

@@ -361,6 +361,19 @@ namespace TRBot.Data
         }
 
         /// <summary>
+        /// Obtains a PermissionAbility from the database.
+        /// </summary>
+        /// <param name="abilityName">The name of the PermissionAbility.</param>
+        /// <returns>A PermissionAbility object with the given <paramref name="abilityName">. null if not found.</returns>
+        public static PermissionAbility GetPermissionAbility(string abilityName)
+        {
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                return context.PermAbilities.FirstOrDefault(p => p.Name == abilityName);
+            }
+        }
+
+        /// <summary>
         /// Fully updates a user's available abilities based on their current level.
         /// </summary>
         /// <param name="userName">The name of the user to fetch.</param>
