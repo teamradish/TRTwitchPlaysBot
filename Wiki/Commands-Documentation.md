@@ -43,12 +43,17 @@ You will need to reload data or restart TRBot to apply any changes in the **Comm
 - [`UpdateUserAbilityCommand`](../TRBot/TRBot.Commands/Commands/UpdateUserAbilityCommand.cs) (default: "!toggleability") - Adds or updates a user ability on a given user for a given period of time. "null" indicate the ability is enabled or disabled for an indefinite time. This can be used to silence misbehaving users or give temporary access to a trusted individual to help moderate while you're away.
   - Example: "!toggleability user1 silenced true null 0 30d" - Silences user1 for 30 days, disallowing them from making inputs during this time.
   - Example: "!toggleability user2 duel false null 0 null" - Disables user2 from being able to duel others indefinitely.
-- [`ListUserAbilitiesCommand`](../TRBot.TRBot.Commands/Commands/ListUserAbilitiesCommand.cs) (default: "!userabilities") - Lists all user abilities on a given user, including their enabled state and the expiration date, if any.
+- [`ListUserAbilitiesCommand`](../TRBot/TRBot.Commands/Commands/ListUserAbilitiesCommand.cs) (default: "!userabilities") - Lists all user abilities on a given user, including their enabled state and the expiration date, if any.
   - Example: "!userabilities user1"
-- [`ListPermissionAbilitiesCommand`](../TRBot.TRBot.Commands/Commands/ListPermissionAbilitiesCommand.cs) (default: "!allabilities") - Lists all available permission abilities in the database. These are all the abilities that can be enabled or disabled on a given user.
-- [`GetSetUserAbilityLvlOverrideCommand`](../TRBot.TRBot.Commands/Commands/GetSetUserAbilityLvlOverrideCommand.cs) (default: "!userabilitylvloverride") - Displays the level override of a specific ability on a given user, or sets it if you supply an argument and have a level greater than or equal to the current level override. A value of -1 will disable the level override.
+- [`ListPermissionAbilitiesCommand`](../TRBot/TRBot.Commands/Commands/ListPermissionAbilitiesCommand.cs) (default: "!allabilities") - Lists all available permission abilities in the database. These are all the abilities that can be enabled or disabled on a given user.
+- [`GetSetUserAbilityLvlOverrideCommand`](../TRBot/TRBot.Commands/Commands/GetSetUserAbilityLvlOverrideCommand.cs) (default: "!userabilitylvloverride") - Displays the level override of a specific ability on a given user, or sets it if you supply an argument and have a level greater than or equal to the current level override. A value of -1 will disable the level override.
   - Example: "!userabilitylvloverride user1 silenced"
   - Example: "!userabilitylvloverride user1 silenced -1" - Sets the level override of the "silenced" ability on user1 to -1, disabling it.
+- [`SilenceUserCommand`](../TRBot/TRBot.Commands/Commands/SilenceUserCommand.cs) (default: "!silence") - Silences a given user, preventing them from making inputs. This is a convenience command that adds the silenced ability to the user.
+  - Example: "!silence user1"
+- [`UnsilenceUserCommand`](../TRBot/TRBot.Commands/Commands/UnsilenceUserCommand.cs) (default: "!unsilence") - Unsilences a given user, allowing them to make inputs again. This is a convenience command that removes the silenced ability from the user.
+  - Example: "!unsilence user1"
+- [`ListSilencedUsersCommand`](../TRBot/TRBot.Commands/Commands/ListSilencedUsersCommand.cs) (default: "!listsilenced") - Lists all silenced users in the database.
 
 ## Input and Console-related
 - [`StopAllInputsCommand`](../TRBot/TRBot.Commands/Commands/StopAllInputsCommand.cs) (default: "!stopall") - Stops all ongoing inputs on all virtual controllers. While inputs are being stopped, new inputs will not be processed. Most machines will often stop all inputs and re-enable them within 50 milliseconds or less (likely less). This command is very useful to stop long or repetitive input sequences instead of waiting for them to finish.

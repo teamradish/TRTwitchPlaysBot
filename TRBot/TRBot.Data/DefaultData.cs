@@ -235,6 +235,7 @@ namespace TRBot.Data
                 new CommandData("votecooldown", "TRBot.Commands.GetSetInputModeCooldownCommand", userPerm, true, false),
                 new CommandData("userdefaultinputdur", "TRBot.Commands.UserDefaultInputDurCommand", userPerm, true, false),
                 new CommandData("usermaxinputdur", "TRBot.Commands.UserMaxInputDurCommand", userPerm, true, false),
+                new CommandData("listsilenced", "TRBot.Commands.ListSilencedUsersCommand", userPerm, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", whitelistedPerm, true, true),
                 new CommandData("addsyn", "TRBot.Commands.AddInputSynonymCommand", whitelistedPerm, true, true),
@@ -251,6 +252,8 @@ namespace TRBot.Data
                 new CommandData("addinvalidcombo", "TRBot.Commands.AddInvalidInputComboCommand", modPerm, true, true),
                 new CommandData("removeinvalidcombo", "TRBot.Commands.RemoveInvalidInputComboCommand", modPerm, true, true),
                 new CommandData("userabilitylvloverride", "TRBot.Commands.GetSetUserAbilityLvlOverrideCommand", modPerm, true, true),
+                new CommandData("silence", "TRBot.Commands.SilenceUserCommand", modPerm, true, true),
+                new CommandData("unsilence", "TRBot.Commands.UnsilenceUserCommand", modPerm, true, true),
 
                 new CommandData("addcmd", "TRBot.Commands.AddCmdCommand", adminPerm, true, true),
                 new CommandData("removecmd", "TRBot.Commands.RemoveCmdCommand", adminPerm, true, true),

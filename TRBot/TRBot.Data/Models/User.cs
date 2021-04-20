@@ -251,6 +251,18 @@ namespace TRBot.Data
             return TryGetAbility(abilityName, out UserAbility ability);
         }
 
+        public bool HasEnabledAbility(int permAbilityID)
+        {
+            TryGetAbility(permAbilityID, out UserAbility ability);
+
+            if (ability == null)
+            {
+                return false;
+            }
+
+            return ability.IsEnabled;
+        }
+
         public bool HasEnabledAbility(string abilityName)
         {
             TryGetAbility(abilityName, out UserAbility ability);
