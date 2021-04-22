@@ -107,7 +107,7 @@ The path to the socket for the chatbot, which TRBot uses to communicate.
 If 1, [chatbot_socket_path](#chatbot_socket_path) is a path relative to the TRBot executable, otherwise it's an absolute path.
 
 ### bingo_enabled
-Whether users can participate in bingo through an external application, such as [TRBotBingo](https://github.com/teamradish/TRBotBingo).
+Whether users can participate in bingo through an external application, such as [TRBotBingo](https://codeberg.org/kimimaru/TRBotBingo).
 
 ### bingo_pipe_path
 The path to the socket for the bingo application, which TRBot uses to communicate.

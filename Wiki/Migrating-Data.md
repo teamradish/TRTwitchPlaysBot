@@ -48,7 +48,7 @@ Notes on migrating:
 - **LoginInfo.txt** has been renamed to **TwitchLoginSettings.txt**. The data is otherwise identical.
 - No other data files from your 1.8 install aside from **BotData.txt** and **Settings.txt** are required.
 
-For information on managing your new database, please see [Managing Data](./Managing-Data.md). If you experience errors migrating your data that the error messages don't help with, please [file an issue](https://github.com/teamradish/TRTwitchPlaysBot/issues/new/choose)!
+For information on managing your new database, please see [Managing Data](./Managing-Data.md). If you experience errors migrating your data that the error messages don't help with, please [file an issue](https://codeberg.org/kimimaru/TRBot/issues/new)!
 
 ## 2.x to later 2.x
-Simply run the newer version of TRBot with your existing database to automatically apply all migrations - that's it! If you encounter a problem, please [file an issue](https://github.com/teamradish/TRTwitchPlaysBot/issues/new/choose)!
+Simply run the newer version of TRBot with your existing database to automatically apply all migrations - that's it! If you encounter a problem, please [file an issue](https://codeberg.org/kimimaru/TRBot/issues/new)!

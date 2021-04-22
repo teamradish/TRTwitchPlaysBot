@@ -1,5 +1,5 @@
 # Getting TRBot
-* To get started immediately, download the latest release on the [releases page](https://github.com/teamradish/TRTwitchPlaysBot/releases). Keep in mind that there is no schedule for releases, so they may be far behind the latest on the [`develop` branch](https://github.com/teamradish/TRTwitchPlaysBot/tree/develop).
+* To get started immediately, download the latest release on the [releases page](https://codeberg.org/kimimaru/TRBot/releases). Keep in mind that there is no schedule for releases, so they may be far behind the latest on the [`develop` branch](https://codeberg.org/kimimaru/TRBot/src/branch/develop).
 * To build from source, please follow the [building guide](./Building.md).
 
 # Setting up TRBot

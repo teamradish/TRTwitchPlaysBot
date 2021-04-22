@@ -19,7 +19,7 @@ There may be several reasons an input didn't go through:
 1. You're silenced and thus denied from making inputs. Check your abilities with the [`ListUserAbilitiesCommand`](../TRBot/TRBot.Commands/Commands/ListUserAbilitiesCommand.cs) (default: "!userabilities") and see if the silenced ability is on the list and not disabled.
 2. Inputs are restricted to access levels higher than yours. View the global input access level through the [`GlobalInputPermissionsCommand`](../TRBot/TRBot.Commands/Commands/GlobalInputPermissionsCommand.cs) (default: "!inputperms") and your own access level through the [`LevelCommand`](../TRBot/TRBot.Commands/Commands/LevelCommand.cs) (default: "!level").
 3. You input a dynamic macro that does not parse correctly. Make sure the arguments you entered are valid.
-4. A dynamic macro **inside another** dynamic macro has a space between its arguments. For example, "#mash(a, b)" is invalid, while "#mash(a,b)" is correct.
+4. A dynamic macro **inside another** dynamic macro has a space between its arguments. For example, "#mash(a,b)" is correct, while "#mash(a, b)" is not!
 5. You forgot to specify the "*" or the number of repetitions in a repeated input. "[a]\*5" is valid, whereas "[a]5" and "[a]\*" are not!
 
 TRBot will output an error message in certain circumstances, such as when an input goes over the max input duration. The error messages are limited due to how TRBot parses the syntax through regex: when an input is invalid, the regex will often not pick it up at all, making it unable to determine the exact error.
@@ -42,10 +42,13 @@ You can remove the delay by changing the "true" argument to "false" to disable t
 ## Help! I was modifying the database manually, and now my bot froze!
 Make sure you write or revert your changes to the database.
 
-When you make manual changes to the database, the database application (Ex. sqlitebrowser) places a lock on the database file, making it temporarily inaccessible to other applications to prevent corruption. The next time TRBot needs to read or write from the database, which will often be soon, it will have to wait for this lock to be released before it can continue. Release the lock by writing or reverting the changes in your database application.
+When you make manual changes to the database, the database application (Ex. sqlitebrowser) places a lock on the database file, making it temporarily inaccessible to other applications to prevent corruption. The next time TRBot needs to read or write from the database, which will likely be soon, it will have to wait for this lock to be released before it can continue. Release the lock by writing or reverting the changes in your database application.
 
 ## I WASN'T modifying the database manually, and my bot froze/crashed!
-This is a bug, so please [file an issue](https://github.com/teamradish/TRTwitchPlaysBot/issues/new/choose) and include details about your configuration and what led to the freeze/crash. Submit any notable information from logs in the "Logs" and "CrashLogs" folder if applicable.  If you can reliably reproduce the issue, it would be much easier and quicker to fix the bug!
+This is a bug, so please [file an issue](https://codeberg.org/kimimaru/TRBot/issues/new) and include details about your configuration and what led to the freeze/crash. Submit any notable information from logs in the "Logs" and "CrashLogs" folder if applicable.  If you can reliably reproduce the issue, it would be much easier and quicker to fix the bug!
 
 ## How do I shut down the bot?
 Click the X to the console window or press Ctrl + C in the window to end the process.
+
+## Can you add feature X, Y, and Z?
+Please [file an issue](https://codeberg.org/kimimaru/TRBot/issues/new) for new feature requests.

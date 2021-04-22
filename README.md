@@ -62,13 +62,11 @@ If you have found TRBot useful, please spread the word by placing one of our pro
     ```
 
 ## Contributing
+Our main repository is on Codeberg: https://codeberg.org/kimimaru/TRBot.git
+
 Issues and pull requests are greatly encouraged! Please file an issue for a feature request, such as a new platform or service, or regarding any bugs you encounter.
 
-We have the following two remotes for TRBot:
-* GitHub: https://github.com/teamradish/TRTwitchPlaysBot.git
-* Codeberg: https://codeberg.org/kimimaru/TRBot.git
-
 ### Support
-We are on Matrix at [#TRBot-Dev:matrix.org](https://matrix.to/#/!hTfcbsKMAuenQAetQm:matrix.org?via=matrix.org). Feel free to ask any questions or discuss development there!
+Feel free to ask questions or discuss devleopment on our Matrix room at [#TRBot-Dev:matrix.org](https://matrix.to/#/!hTfcbsKMAuenQAetQm:matrix.org?via=matrix.org). You can also [contact us](mailto:trbot@posteo.de) for support. Paid setup and support options are also available.
 
-Developing software takes considerable time and effort, and we have poured hundreds of hours of our spare time into making TRBot as robust as it is and freely available to everyone. Kindly consider [buying us a coffee](https://ko-fi.com/kimimaru) or [donating on Liberapay](https://liberapay.com/kimimaru/).
+Developing software takes considerable time and effort, and we have poured hundreds of hours of our spare time into making TRBot what it is and freely available to everyone. Kindly consider [buying us a coffee](https://ko-fi.com/kimimaru) or [donating](https://liberapay.com/kimimaru/).

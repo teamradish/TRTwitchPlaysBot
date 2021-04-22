@@ -1,11 +1,9 @@
 # Coding Information
 This document serves to highlight important information regarding TRBot development.
 
-We are on Matrix at [#TRBot-Dev:matrix.org](https://matrix.to/#/!hTfcbsKMAuenQAetQm:matrix.org?via=matrix.org). Feel free to ask any questions or discuss development there!
+Our main repository is on Codeberg: https://codeberg.org/kimimaru/TRBot.git
 
-We have the following two remotes for TRBot:
-* GitHub: https://github.com/teamradish/TRTwitchPlaysBot.git
-* Codeberg: https://codeberg.org/kimimaru/TRBot.git
+We are also on Matrix at [#TRBot-Dev:matrix.org](https://matrix.to/#/!hTfcbsKMAuenQAetQm:matrix.org?via=matrix.org). Feel free to ask any questions or discuss development there!
 
 # Data-Related
 - Most data-related code can be found in the `TRBot.Data` project.
@@ -59,6 +57,6 @@ We have the following two remotes for TRBot:
 - Keep in mind that even if logs aren't output based on the log settings, it will still be doing the work when it's constructing the string. If the work involved is expensive (Ex. parsing or reverse parsing) and exclusive to the log, consider commenting it out and uncommenting it when it's needed.
 
 # Contributing
-If you find any problems with TRBot, please file an [issue](https://github.com/teamradish/TRTwitchPlaysBot/issues). [Pull requests](https://github.com/teamradish/TRTwitchPlaysBot/pulls) are also highly encouraged!
+If you find any problems with TRBot, please file an [issue](https://codeberg.org/kimimaru/TRBot/issues/new). [Pull requests](https://codeberg.org/kimimaru/TRBot/pulls) are also highly encouraged!
 
-TRBot is free software; as such, you can run, study, modify, and distribute it for any purpose under the terms of the GNU Affero General Public License v3.0 or (at your option) any later version. See the [License](../LICENSE) for more information and [Dependency Licenses](../Dependency%20Licenses) file for the licenses of third party libraries used by TRBot.
+TRBot is free software; as such, you can run, study, modify, and distribute it for any purpose under the terms of the GNU Affero General Public License v3.0. See the [License](../LICENSE) for more information and [Dependency Licenses](../Dependency%20Licenses) file for the licenses of third party libraries used by TRBot.
