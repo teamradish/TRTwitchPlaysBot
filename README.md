@@ -49,16 +49,16 @@ See the [LICENSE](./LICENSE) file for the full terms. See the [Dependency Licens
 ## Attribution Banner
 If you have found TRBot useful, please spread the word by placing one of our promo banners on your blog, video, or Twitch stream panel!
 
-[Link to large banner](https://raw.githubusercontent.com/teamradish/TRTwitchPlaysBot/develop/Logo/TRBotLogo_Promo.png)
+[Link to large banner](./Logo/TRBotLogo_Promo.png)
 - Markdown code:
     ```
-    ![Powered by TRBot](https://raw.githubusercontent.com/teamradish/TRTwitchPlaysBot/develop/Logo/TRBotLogo_Promo.png "TRBot Logo")
+    ![Powered by TRBot](https://codeberg.org/kimimaru/TRBot/raw/branch/master/Logo/TRBotLogo_Promo.png "TRBot Logo")
     ```
 
-[Link to small banner](https://raw.githubusercontent.com/teamradish/TRTwitchPlaysBot/develop/Logo/TRBotLogo_Promo_Small.png)
+[Link to small banner](./Logo/TRBotLogo_Promo_Small.png)
 - Markdown code: 
     ```
-    ![Powered by TRBot](https://raw.githubusercontent.com/teamradish/TRTwitchPlaysBot/develop/Logo/TRBotLogo_Promo_Small.png "TRBot Logo")
+    ![Powered by TRBot](https://codeberg.org/kimimaru/TRBot/raw/branch/master/Logo/TRBotLogo_Promo_Small.png "TRBot Logo")
     ```
 
 ## Contributing
