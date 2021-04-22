@@ -32,7 +32,7 @@ namespace TRBot.Utilities
         /// <summary>
         /// The version number of the application.
         /// </summary>
-        public const string VERSION_NUMBER = "2.2";
+        public const string VERSION_NUMBER = "2.2.1";
 
         /// <summary>
         /// The start time of the application.
