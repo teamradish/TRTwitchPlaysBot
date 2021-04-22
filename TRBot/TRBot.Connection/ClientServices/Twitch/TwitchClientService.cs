@@ -4,8 +4,7 @@
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation, version 3 of the License.
  *
  * TRBot is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,7 +23,7 @@ using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 
-namespace TRBot.Connection
+namespace TRBot.Connection.Twitch
 {
     /// <summary>
     /// Twitch client interaction.
@@ -87,6 +86,9 @@ namespace TRBot.Connection
 
             EventHandler = new TwitchEventHandler(twitchClient);
             EventHandler.Initialize();
+
+            EventHandler.OnConnectedEvent -= OnClientConnected;
+            EventHandler.OnConnectedEvent += OnClientConnected;
 
             EventHandler.OnJoinedChannelEvent -= OnClientJoinedChannel;
             EventHandler.OnJoinedChannelEvent += OnClientJoinedChannel;
@@ -156,14 +158,31 @@ namespace TRBot.Connection
             
             JoinedChannels = null;
 
+            EventHandler.OnConnectedEvent -= OnClientConnected;
             EventHandler.OnJoinedChannelEvent -= OnClientJoinedChannel;
 
             EventHandler.CleanUp();
         }
 
+        //This is a workaround for a TwitchLib regression that doesn't
+        //automatically rejoin the channel on reconnection
+        private void OnClientConnected(EvtConnectedArgs e)
+        {
+            //Refresh joined channels
+            PopulateJoinedChannels();
+
+            //Join the channel after connecting
+            twitchClient.JoinChannel(ChannelName);  
+        }
+
         private void OnClientJoinedChannel(EvtJoinedChannelArgs e)
         {
             //When joining a channel, set the joined channels list
+            PopulateJoinedChannels();
+        }
+
+        private void PopulateJoinedChannels()
+        {
             IReadOnlyList<JoinedChannel> twitchJoinedChannels = twitchClient.JoinedChannels;
 
             //Instantiate if needed

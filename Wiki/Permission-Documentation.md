@@ -117,6 +117,41 @@ Determines if the user can play the slots through the [`SlotsCommand`](../TRBot/
 
 Determines if the user can vote to change the input mode through the [`VoteForInputModeCommand`](../TRBot/TRBot.Commands/Commands/VoteForInputModeCommand.cs).
 
+### addinputmacro
+**Default level: User (0)**
+
+Determines if the user can add an input macro through the [`AddMacroCommand`](../TRBot/TRBot.Commands/Commands/AddMacroCommand.cs).
+
+### removeinputmacro
+**Default level: User (0)**
+
+Determines if the user can remove an input macro through the [`RemoveMacroCommand`](../TRBot/TRBot.Commands/Commands/RemoveMacroCommand.cs).
+
+### addmeme
+**Default level: User (0)**
+
+Determines if the user can add a meme through the [`AddMemeCommand`](../TRBot/TRBot.Commands/Commands/AddMemeCommand.cs).
+     
+### removememe
+**Default level: User (0)**
+
+Determines if the user can remove a meme through the [`RemoveMemeCommand`](../TRBot/TRBot.Commands/Commands/AddMemeCommand.cs).
+
+### addinputsynonym
+**Default level: User (0)**
+
+Determines if the user can add an input synonym through the [`AddInputSynonymCommand`](../TRBot/TRBot.Commands/Commands/AddInputSynonymCommand.cs).
+
+### removeinputsynonym
+**Default level: User (0)**
+
+Determines if the user can remove an input synonym through the [`RemoveInputSynonymCommand`](../TRBot/TRBot.Commands/Commands/RemoveInputSynonymCommand.cs).
+
+### stopallinputs
+**Default level: User (0)**
+
+Determines if the user can stop all ongoing inputs with the [`StopAllInputsCommand`](../TRBot/TRBot.Commands/Commands/StopAllInputsCommand.cs).
+
 ### setgamemessage
 **Default level: VIP (20)**
 

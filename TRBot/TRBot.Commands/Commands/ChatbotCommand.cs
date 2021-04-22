@@ -4,8 +4,7 @@
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation, version 3 of the License.
  *
  * TRBot is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -90,7 +89,7 @@ namespace TRBot.Commands
                 //Get relative path if we should
                 if (chatbotPipePathIsRelative == 1)
                 {
-                    chatbotPipePath = Path.Combine(DataConstants.DataFolderPath, fileName);
+                    chatbotPipePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
                 }
 
                 TRBotLogger.Logger.Debug($"Full chatbot path: {chatbotPipePath}");

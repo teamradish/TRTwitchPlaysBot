@@ -4,8 +4,7 @@
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation, version 3 of the License.
  *
  * TRBot is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,7 +32,7 @@ namespace TRBot.Utilities
         /// <summary>
         /// The version number of the application.
         /// </summary>
-        public const string VERSION_NUMBER = "2.2";
+        public const string VERSION_NUMBER = "2.2.1";
 
         /// <summary>
         /// The start time of the application.

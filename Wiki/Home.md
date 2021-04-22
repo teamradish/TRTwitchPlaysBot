@@ -10,6 +10,7 @@ Welcome to the TRBot wiki! Choose the relevant section for your needs.
 * [Migrating Data](./Migrating-Data.md) - A guide to migrating data from previous TRBot releases.
 * [Settings Documentation](./Settings-Documentation.md) - Documentation on the various settings.
 * [Custom Consoles & Inputs](./Adding-ConsolesInputs.md) - Learn how to add new consoles and add/remove/modify available inputs.
+* [LiveSplitOne Integration](./LiveSplitOne-Integration.md) - Learn to how control your LiveSplitOne timer through TRBot.
 
 ### Other
 * [Chatbot Guide](./Setup-Chatterbot.md) - A quick guide to setting up your own chatbot for viewers to talk to.

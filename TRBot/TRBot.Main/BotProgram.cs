@@ -4,8 +4,7 @@
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation, version 3 of the License.
  *
  * TRBot is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,6 +26,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TRBot.Parsing;
 using TRBot.Connection;
+using TRBot.Connection.Twitch;
 using TRBot.Consoles;
 using TRBot.VirtualControllers;
 using TRBot.Misc;
@@ -237,7 +237,10 @@ namespace TRBot.Main
 
             TRBotLogger.Logger.Information($"Setting up virtual controller {curVControllerType} and acquired {acquiredCount} controllers!");
 
-            CmdHandler = new CommandHandler();
+            CmdHandler = new CommandHandler(new System.Reflection.Assembly[]
+            { 
+                typeof(TRBot.Integrations.LiveSplitOne.LiveSplitOneSocketBehavior).Assembly
+            });
             CmdHandler.Initialize(DataContainer, RoutineHandler);
 
             DataReloader.SoftDataReloadedEvent -= OnSoftReload;

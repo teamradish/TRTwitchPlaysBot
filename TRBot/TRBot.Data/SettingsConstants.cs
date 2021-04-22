@@ -4,8 +4,7 @@
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation, version 3 of the License.
  *
  * TRBot is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -68,8 +67,8 @@ namespace TRBot.Data
         public const string NEW_SUBSCRIBER_MESSAGE = "new_subscriber_message";
         public const string RESUBSCRIBER_MESSAGE = "resubscriber_message";
         public const string SOURCE_CODE_MESSAGE = "source_code_message";
+        public const string PERIODIC_MESSAGE_ROTATION = "periodic_message_rotation";
 
-        public const string GAME_MESSAGE = "game_message";
         public const string GAME_MESSAGE_PATH = "game_message_path";
         public const string GAME_MESSAGE_PATH_IS_RELATIVE = "game_message_path_is_relative";
         public const string INFO_MESSAGE = "info_message";

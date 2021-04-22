@@ -4,8 +4,7 @@
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation, version 3 of the License.
  *
  * TRBot is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -362,6 +361,19 @@ namespace TRBot.Data
         }
 
         /// <summary>
+        /// Obtains a PermissionAbility from the database.
+        /// </summary>
+        /// <param name="abilityName">The name of the PermissionAbility.</param>
+        /// <returns>A PermissionAbility object with the given <paramref name="abilityName">. null if not found.</returns>
+        public static PermissionAbility GetPermissionAbility(string abilityName)
+        {
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                return context.PermAbilities.FirstOrDefault(p => p.Name == abilityName);
+            }
+        }
+
+        /// <summary>
         /// Fully updates a user's available abilities based on their current level.
         /// </summary>
         /// <param name="userName">The name of the user to fetch.</param>
@@ -659,23 +671,21 @@ namespace TRBot.Data
                     
                     using (BotDBContext context = DatabaseManager.OpenContext())
                     {
-                        if (context.Consoles.Count() < consoleData.Count)
+                        for (int i = 0; i < consoleData.Count; i++)
                         {
-                            for (int i = 0; i < consoleData.Count; i++)
+                            GameConsole console = consoleData[i];
+
+                            //See if the console exists
+                            GameConsole foundConsole = context.Consoles.FirstOrDefault((c) => c.Name == console.Name);
+                            
+                            if (foundConsole == null)
                             {
-                                GameConsole console = consoleData[i];
+                                //This console isn't in the database, so add it
+                                context.Consoles.Add(console);
 
-                                //See if the console exists
-                                GameConsole foundConsole = context.Consoles.FirstOrDefault((c) => c.Name == console.Name);
-                                if (foundConsole == null)
-                                {
-                                    //This console isn't in the database, so add it
-                                    context.Consoles.Add(console);
-
-                                    context.SaveChanges();
-
-                                    entriesAdded++;
-                                }
+                                context.SaveChanges();
+                                
+                                entriesAdded++;
                             }
                         }
                     }

@@ -4,8 +4,7 @@
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation, version 3 of the License.
  *
  * TRBot is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,6 +26,7 @@ using TRBot.Misc;
 using TRBot.Utilities;
 using TRBot.Consoles;
 using TRBot.Parsing;
+using TRBot.Permissions;
 using TRBot.Data;
 
 namespace TRBot.Commands
@@ -48,6 +48,19 @@ namespace TRBot.Commands
             {
                 QueueMessage(UsageMessage);
                 return;
+            }
+
+            string userName = args.Command.ChatMessage.Username;
+
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                User user = DataHelper.GetUserNoOpen(userName, context);
+
+                if (user != null && user.HasEnabledAbility(PermissionConstants.ADD_INPUT_SYNONYM_ABILITY) == false)
+                {
+                    QueueMessage("You do not have the ability to add input synonyms.");
+                    return;
+                }
             }
 
             string consoleName = arguments[0].ToLowerInvariant();

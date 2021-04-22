@@ -24,8 +24,9 @@ There are several options for displaying Twitch chat on your stream:
 * Many emulators support displaying inputs directly.
 * [Open Joystick Display](https://github.com/KernelZechs/open-joystick-display) is easy to use, supports many game controllers, and has a streaming mode, which displays only the controller.
 * Write your own input display using TRBot's virtual controller capabilities:
-  * `IVirtualController.GetInputState` can tell if a given input name is pressed on the controller.
-  * `IVirtualController.GetButtonState` can tell if a given button number is pressed on the controller.
+  * `IVirtualControllerManager.GetController` fetches a virtual controller by index.
+  * `IVirtualController.GetInputState` tells if a given input name is pressed on the controller.
+  * `IVirtualController.GetButtonState` tells if a given button number is pressed on the controller.
   * `IVirtualController.GetAxisState` tells the percentage a given axis is moved in. 
 
 # Timer Options
@@ -61,7 +62,7 @@ For games and consoles that sleep after a period of inactivity, you can enable p
 # Reset Prevention
 Some games and game consoles have a reset function performed by inputting a specific combination of buttons. One example is the Game Boy Advance, in which pressing "A", "B", "Start", and "Select" will reset the game.
 
-TRBot supports an invalid input combo for each console that can be used to prevent these combinations from being pressed to forbit players from resetting the game. Invalid input combos apply per controller port.
+TRBot supports an invalid input combo for each console that can be used to prevent these combinations from being pressed to forbid players from resetting the game. Invalid input combos apply per controller port.
 
 - The [`AddInvalidInputComboCommand`](../TRBot/TRBot.Commands/Commands/AddInvalidInputComboCommand.cs) (default: "!addinvalidcombo") can be used to add an input to the invalid input combo. The given input must already be a valid input on the console itself.
 - The [`RemoveInvalidInputComboCommand`](../TRBot/TRBot.Commands/Commands/RemoveInvalidInputComboCommand.cs) (default: "!removeinvalidcombo") can be used to remove an input from the invalid input combo.
@@ -70,6 +71,6 @@ TRBot supports an invalid input combo for each console that can be used to preve
 See the [Commands Documentation](./Commands-Documentation.md) for more information on these commands.
 
 # Contributing
-If you find any problems with TRBot, please file an [issue](https://github.com/teamradish/TRTwitchPlaysBot/issues). [Pull requests](https://github.com/teamradish/TRTwitchPlaysBot/pulls) are encouraged if you'd like to make contributions.
+If you find any problems with TRBot, please file an [issue](https://codeberg.org/kimimaru/TRBot/issues/new). [Pull requests](https://codeberg.org/kimimaru/TRBot/pulls) are encouraged if you'd like to make upstream contributions.
 
 TRBot is free software; as such, you can run, study, modify, and distribute it for any purpose. See the [License](../LICENSE) for more information.

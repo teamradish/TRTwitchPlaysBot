@@ -1,5 +1,5 @@
 # Building from source
-* Clone the repo with `git clone https://github.com/teamradish/TRTwitchPlaysBot.git`
+* Clone the repo with `git clone https://codeberg.org/kimimaru/TRBot.git`
   * Alternatively, download the zip.
 * [.NET 5.0 SDK and Runtime](https://dotnet.microsoft.com/download/dotnet/5.0)
   * Before installing, set the `DOTNET_CLI_TELEMETRY_OPTOUT` environment variable to 1 if you don't want dotnet CLI commands sending telemetry.
@@ -13,7 +13,7 @@ Command line:
   * config = "Debug" or "Release"
   * dir = output directory
   * [RID](https://github.com/dotnet/runtime/blob/master/src/libraries/Microsoft.NETCore.Platforms/pkg/runtime.json) = usually "win-x64" or "linux-x64". See link for a full list of runtime identifiers.
-  * Example: `dotnet publish -c Debug -o TRBot --self-contained --runtime linux-x64`
+  * Example: `dotnet publish -c Debug -o ~/Desktop/TRBot --self-contained --runtime linux-x64`
 
 **Note: TRBot runs on all major desktop operating systems, but virtual controller input works only on Windows (vJoy) and GNU/Linux (uinput) since virtual controllers are platform-specific. The virtual controller API is abstracted into an `IVirtualController` interface, making it possible to add new implementations. Please file an issue if your platform isn't supported.**
 
@@ -43,6 +43,6 @@ All unit tests are in the **TRBot.Tests** project. Some of these tests include p
 Simply run `dotnet test` inside this directory to run the tests. Please add new tests for code when feasible.
 
 # Contributing
-If you find any problems with TRBot, please file an [issue](https://github.com/teamradish/TRTwitchPlaysBot/issues). [Pull requests](https://github.com/teamradish/TRTwitchPlaysBot/pulls) are encouraged if you'd like to make contributions.
+If you find any problems with TRBot, please file an [issue](https://codeberg.org/kimimaru/TRBot/issues/new). [Pull requests](https://codeberg.org/kimimaru/TRBot/pulls) are encouraged if you'd like to make contributions.
 
 TRBot is free software; as such, you can run, study, modify, and distribute it for any purpose. See the [License](../LICENSE) for more information.

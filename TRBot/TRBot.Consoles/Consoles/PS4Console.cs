@@ -4,8 +4,7 @@
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation, version 3 of the License.
  *
  * TRBot is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -71,6 +70,7 @@ namespace TRBot.Consoles
                 { "dright",     InputData.CreateButton("dright", (int)GlobalButtonVals.BTN24) },
                 { "touchclick", InputData.CreateButton("touchclick", (int)GlobalButtonVals.BTN25) },
                 { "#",          InputData.CreateBlank("#") },
+                { ".",          InputData.CreateBlank(".") },
 
                 //Spare buttons
                 { "sb1",        InputData.CreateButton("sb1", (int)GlobalButtonVals.BTN26) },

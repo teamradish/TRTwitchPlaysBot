@@ -40,7 +40,7 @@ Copyright © 2019-2021 Thomas "Kimimaru" Deeb
 
 [![AGPL](https://www.gnu.org/graphics/agplv3-155x51.png)](https://www.gnu.org/licenses/agpl-3.0.en.html)
 
-TRBot is free software; you are free to run, study, modify, and redistribute it. Specifically, you can modify and/or redistribute TRBot under the terms of the GNU Affero General Public License v3.0 or (at your option) any later version.
+TRBot is free software; you are free to run, study, modify, and redistribute it. Specifically, you can modify and/or redistribute TRBot under the terms of the GNU Affero General Public License v3.0.
 
 In simple terms, if you give someone a copy of TRBot or deploy TRBot to an online service, you must provide a way to obtain the license and source code for that version of TRBot upon request. This includes modified versions of TRBot.
 
@@ -62,17 +62,11 @@ If you have found TRBot useful, please spread the word by placing one of our pro
     ```
 
 ## Contributing
+Our main repository is on Codeberg: https://codeberg.org/kimimaru/TRBot.git
+
 Issues and pull requests are greatly encouraged! Please file an issue for a feature request, such as a new platform or service, or regarding any bugs you encounter.
 
-We have the following two remotes for TRBot:
-* GitHub: https://github.com/teamradish/TRTwitchPlaysBot.git
-* Codeberg: https://codeberg.org/kimimaru/TRBot.git
-
 ### Support
-We are on Matrix at [#TRBot-Dev:matrix.org](https://matrix.to/#/!hTfcbsKMAuenQAetQm:matrix.org?via=matrix.org). Feel free to ask any questions or discuss development there!
+Feel free to ask questions or discuss devleopment on our Matrix room at [#TRBot-Dev:matrix.org](https://matrix.to/#/!hTfcbsKMAuenQAetQm:matrix.org?via=matrix.org). You can also [contact us](mailto:trbot@posteo.de) for support. Paid setup and support options are also available.
 
-Developing software takes considerable time and effort, and we have poured hundreds of hours of our spare time into making TRBot as powerful as it is and freely available to everyone. Kindly consider donating to us on Liberapay:
-
-https://liberapay.com/kimimaru/
-
-All donations go towards improving TRBot, and if enough donations have been met, working on it full-time.
+Developing software takes considerable time and effort, and we have poured hundreds of hours of our spare time into making TRBot what it is and freely available to everyone. Kindly consider [buying us a coffee](https://ko-fi.com/kimimaru) or [donating](https://liberapay.com/kimimaru/).

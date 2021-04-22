@@ -6,6 +6,7 @@ TRBot contains several different projects with the purpose of isolating function
 * **TRBot.Connection** - Handles sending and receiving events to and from client services and TRBot. You'll find the Twitch integration here.
 * **TRBot.Consoles** - The console infrastructure that TRBot uses as the foundation for its input system. Many pre-configured consoles are available.
 * **TRBot.Data** - Contains everything relating to data and the SQLite database, including the database context.
+* **TRBot.Integrations** - Integrations with third-party applications. This code is strictly separated from the other non-application projects.
 * **TRBot.Logging** - Handles logging messages.
 * **TRBot.Misc** - Shared code used by various other projects that doesn't fit neatly into any single other project. You'll find the crash handler here.
 * **TRBot.Parsing** - Strictly handles anything related to parsing. This transforms text into inputs that TRBot can read.
@@ -20,4 +21,4 @@ TRBot contains several different projects with the purpose of isolating function
 * **TRBot.Tests** - Unit tests and benchmarks for TRBot.
 
 ## Other
-* **Supplementary** - Contains resources and code not directly related to TRBot, such as a ChatterBot instance that users can talk to through TRBot.
+* **Supplementary** - Contains resources and code not directly related to TRBot, such as a ChatterBot instance that users can interact with through TRBot.

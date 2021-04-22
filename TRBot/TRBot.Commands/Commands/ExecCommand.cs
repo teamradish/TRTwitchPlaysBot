@@ -4,8 +4,7 @@
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation, version 3 of the License.
  *
  * TRBot is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,6 +28,7 @@ using TRBot.Utilities;
 using TRBot.Consoles;
 using TRBot.Data;
 using TRBot.Routines;
+using TRBot.Logging;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 
@@ -51,13 +51,16 @@ namespace TRBot.Commands
             typeof(Console).Assembly,
             typeof(List<int>).Assembly,
             typeof(ExecCommand).Assembly,
-            typeof(Parsing.IParser).Assembly,
-            typeof(GameConsole).Assembly,
-            typeof(VirtualControllers.IVirtualController).Assembly,
             typeof(IClientService).Assembly,
-            typeof(TRBot.Misc.BotMessageHandler).Assembly,
+            typeof(GameConsole).Assembly,
             typeof(TRBot.Data.CommandData).Assembly,
-            typeof(TRBot.Utilities.EnumUtility).Assembly
+            typeof(TRBot.Logging.TRBotLogger).Assembly,
+            typeof(TRBot.Misc.BotMessageHandler).Assembly,
+            typeof(Parsing.IParser).Assembly,
+            typeof(TRBot.Permissions.PermissionAbility).Assembly,
+            typeof(TRBot.Routines.BaseRoutine).Assembly,
+            typeof(TRBot.Utilities.EnumUtility).Assembly,
+            typeof(VirtualControllers.IVirtualController).Assembly,
         };
 
         private readonly string[] Imports = new string[]
@@ -117,6 +120,11 @@ namespace TRBot.Commands
             catch (CompilationErrorException exception)
             {
                 QueueMessage($"Compiler error: {exception.Message}", Serilog.Events.LogEventLevel.Warning);
+            }
+            catch (Exception otherExc)
+            {
+                QueueMessage($"Exec runtime error: {otherExc.Message}", Serilog.Events.LogEventLevel.Warning);
+                TRBotLogger.Logger.Warning($"Exec runtime error: {otherExc.Message} - at\n{otherExc.StackTrace}");
             }
         }
 

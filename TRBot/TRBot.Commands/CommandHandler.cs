@@ -4,8 +4,7 @@
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation, version 3 of the License.
  *
  * TRBot is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,6 +21,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
 using TRBot.Connection;
 using TRBot.Data;
 using TRBot.Misc;
@@ -41,9 +41,20 @@ namespace TRBot.Commands
         private DataContainer DataContainer = null;
         private BotRoutineHandler RoutineHandler = null;
 
+        /// <summary>
+        /// Additional assemblies to look in when adding commands.
+        /// This is useful if the command's Type is outside this assembly.
+        /// </summary>
+        private Assembly[] AdditionalAssemblies = Array.Empty<Assembly>();
+
         public CommandHandler()
         {
 
+        }
+
+        public CommandHandler(Assembly[] additionalAssemblies)
+        {
+            AdditionalAssemblies = additionalAssemblies;
         }
 
         public void Initialize(DataContainer dataContainer, BotRoutineHandler routineHandler)
@@ -58,8 +69,7 @@ namespace TRBot.Commands
 
             RoutineHandler = routineHandler;
 
-            PopulateCommandsFromDB();            
-            InitializeCommands();
+            PopulateCommandsFromDB();
         }
 
         public void CleanUp()
@@ -122,9 +132,26 @@ namespace TRBot.Commands
             in long level, in bool commandEnabled, in bool displayInHelp)
         {
             Type commandType = Type.GetType(commandTypeName, false, true);
+            if (commandType == null && AdditionalAssemblies?.Length > 0)
+            {
+                //Look for the type in our other assemblies
+                for (int i = 0; i < AdditionalAssemblies.Length; i++)
+                {
+                    Assembly asm = AdditionalAssemblies[i];
+
+                    commandType = asm.GetType(commandTypeName, false, true);
+                    
+                    if (commandType != null)
+                    {
+                        TRBotLogger.Logger.Debug($"Found \"{commandTypeName}\" in assembly \"{asm.GetName()}\"!");
+                        break;
+                    }
+                }                
+            }
+
             if (commandType == null)
             {
-                DataContainer.MessageHandler.QueueMessage($"Cannot find command type \"{commandTypeName}\" for command \"{commandName}\".");
+                DataContainer.MessageHandler.QueueMessage($"Cannot find command type \"{commandTypeName}\" for command \"{commandName}\" in all provided assemblies.");
                 return false;
             }
 
@@ -179,15 +206,6 @@ namespace TRBot.Commands
             return removed;
         }
 
-        private void InitializeCommands()
-        {
-            foreach (KeyValuePair<string, BaseCommand> cmd in AllCommands)
-            {
-                cmd.Value.SetRequiredData(this, DataContainer, RoutineHandler);
-                cmd.Value.Initialize();
-            }
-        }
-
         private void CleanUpCommands()
         {
             foreach (KeyValuePair<string, BaseCommand> cmd in AllCommands)
@@ -202,29 +220,7 @@ namespace TRBot.Commands
             {
                 foreach (CommandData cmdData in context.Commands)
                 {
-                    //Find the type corresponding to this class name
-                    Type commandType = Type.GetType(cmdData.ClassName, false, true);
-                    if (commandType == null)
-                    {
-                        DataContainer.MessageHandler.QueueMessage($"Cannot find command type \"{cmdData.ClassName}\" - skipping.");
-                        continue;
-                    }
-
-                    //Create the type
-                    try
-                    {
-                        BaseCommand baseCmd = (BaseCommand)Activator.CreateInstance(commandType, Array.Empty<object>());
-                        baseCmd.Enabled = cmdData.Enabled > 0;
-                        baseCmd.DisplayInHelp = cmdData.DisplayInList > 0;
-                        baseCmd.Level = (int)cmdData.Level;
-                        baseCmd.ValueStr = cmdData.ValueStr;
-
-                        AllCommands[cmdData.Name] = baseCmd;
-                    }
-                    catch (Exception e)
-                    {
-                        DataContainer.MessageHandler.QueueMessage($"Unable to create class type \"{cmdData.ClassName}\": {e.Message}");
-                    }
+                    AddCommand(cmdData.Name, cmdData.ClassName, cmdData.ValueStr, cmdData.Level, cmdData.Enabled > 0, cmdData.DisplayInList > 0);
                 }
             }
         }
@@ -241,9 +237,6 @@ namespace TRBot.Commands
             AllCommands.Clear();
 
             PopulateCommandsFromDB();
-
-            //Re-initialize all commands
-            InitializeCommands();
         }
 
         private void UpdateCommandsFromDB()

@@ -4,8 +4,7 @@
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation, version 3 of the License.
  *
  * TRBot is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -80,9 +79,10 @@ namespace TRBot.Parsing
 
         public static bool operator ==(ParsedInput a, ParsedInput b)
         {
-            return (a.Hold == b.Hold && a.Release == b.Release && a.Percent == b.Percent
-                    && a.DurationType == b.DurationType && a.DurationType == b.DurationType
-                    && a.Name == b.Name && a.ControllerPort == b.ControllerPort && a.Error == b.Error);
+            //Approximate for percentage up to 3 decimal places to account for floating point inaccuracies
+            return (a.Hold == b.Hold && a.Release == b.Release && ParserUtilities.IsApproximate(a.Percent, b.Percent, 0.0009d)
+                    && a.Duration == b.Duration && a.DurationType == b.DurationType
+                    && a.Name == b.Name && a.ControllerPort == b.ControllerPort);
         }
 
         public static bool operator !=(ParsedInput a, ParsedInput b)

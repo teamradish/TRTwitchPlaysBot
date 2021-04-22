@@ -4,8 +4,7 @@
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation, version 3 of the License.
  *
  * TRBot is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -83,6 +82,15 @@ namespace TRBot.Permissions
         public const string SET_INPUT_MODE_CHANGE_COOLDOWN_ABILITY = "setinputmodechangecooldown";
         public const string SET_INPUT_MODE_ABILITY = "setinputmode";
         public const string VOTE_INPUT_MODE_ABILITY = "voteinputmode";
+
+        public const string ADD_INPUT_MACRO_ABILITY = "addinputmacro";
+        public const string REMOVE_INPUT_MACRO_ABILITY = "removeinputmacro";
+        public const string ADD_MEME_ABILITY = "addmeme";
+        public const string REMOVE_MEME_ABILITY = "removememe";
+        public const string ADD_INPUT_SYNONYM_ABILITY = "addinputsynonym";
+        public const string REMOVE_INPUT_SYNONYM_ABILITY = "removeinputsynonym";
+
+        public const string STOP_ALL_INPUTS_ABILITY = "stopallinputs";
 
         //Abilities for games/extras
         public const string BET_ABILITY = "bet";

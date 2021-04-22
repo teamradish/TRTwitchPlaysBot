@@ -4,8 +4,7 @@
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation, version 3 of the License.
  *
  * TRBot is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -171,6 +170,14 @@ namespace TRBot.Commands
                     args.Result = Hermite(val1, tang1, val2, tang2, amt);
                 }
             }
+
+            if (funcname == "average")
+            {
+                object[] arr = args.EvaluateParameters();
+                double[] doubleArr = Array.ConvertAll<object, double>(arr, element => Convert.ToDouble(element));
+
+                args.Result = Average(doubleArr);
+            }
         }
 
         private void Exp_EvaluateParameter(string name, ParameterArgs args)
@@ -206,6 +213,11 @@ namespace TRBot.Commands
             if (i <= 1) return 0;
 
             return Math.Log(i, 10) + LogFactorial(i - 1);
+        }
+
+        private double Average(double[] values)
+        {
+            return values.Sum() / values.Length;
         }
 
         private double Hermite(float value1, float tangent1, float value2, float tangent2, float amount)

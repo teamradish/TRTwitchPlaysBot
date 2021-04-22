@@ -4,8 +4,7 @@
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation, version 3 of the License.
  *
  * TRBot is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -149,26 +148,28 @@ namespace TRBot.Connection
 
                 string line = Console.ReadLine();
 
+                string lineWSReplaced = Utilities.Helpers.ReplaceAllWhitespaceWithSpace(line);
+
                 //Send message event
                 EvtUserMessageArgs umArgs = new EvtUserMessageArgs()
                 {
                     UsrMessage = new EvtUserMsgData(TerminalUsername, TerminalUsername, TerminalUsername,
-                        string.Empty, line)
+                        string.Empty, lineWSReplaced)
                 };
 
                 UserSentMessageEvent?.Invoke(umArgs);
 
                 //Check for a command
-                if (line.Length > 0 && line[0] == CommandIdentifier)
+                if (lineWSReplaced.Length > 0 && lineWSReplaced[0] == CommandIdentifier)
                 {
                     //Build args list
-                    List<string> argsList = new List<string>(line.Split(' '));
+                    List<string> argsList = new List<string>(lineWSReplaced.Split(' '));
                     string argsAsStr = string.Empty;
 
                     //Remove the command itself and the space from the string
                     if (argsList.Count > 1)
                     {
-                        argsAsStr = line.Remove(0, argsList[0].Length + 1);
+                        argsAsStr = lineWSReplaced.Remove(0, argsList[0].Length + 1);
                     }
 
                     //Remove command identifier
@@ -179,7 +180,7 @@ namespace TRBot.Connection
 
                     EvtChatCommandArgs chatcmdArgs = new EvtChatCommandArgs();
                     EvtUserMsgData msgData = new EvtUserMsgData(TerminalUsername, TerminalUsername, TerminalUsername,
-                        string.Empty, line);
+                        string.Empty, lineWSReplaced);
 
                     chatcmdArgs.Command = new EvtChatCommandData(argsList, argsAsStr, msgData, CommandIdentifier, cmdText);
 

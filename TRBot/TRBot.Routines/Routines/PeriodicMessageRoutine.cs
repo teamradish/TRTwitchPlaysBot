@@ -4,8 +4,7 @@
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation, version 3 of the License.
  *
  * TRBot is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,7 +30,13 @@ namespace TRBot.Routines
     /// </summary>
     public class PeriodicMessageRoutine : BaseRoutine
     {
+        /// <summary>
+        /// The separator for each individual periodic message.
+        /// </summary>
+        public const char PERIODIC_MSG_SEPARATOR = '|';
+
         private DateTime CurMsgTime = default;
+        private int PeriodicMessageIndex = 0;
 
         public PeriodicMessageRoutine()
         {
@@ -50,20 +55,47 @@ namespace TRBot.Routines
             TimeSpan msgDiff = currentTimeUTC - CurMsgTime;
 
             long periodicMessageTime = DataHelper.GetSettingInt(SettingsConstants.PERIODIC_MSG_TIME, 1800000L);
-            string periodicMessage = DataHelper.GetSettingString(SettingsConstants.PERIODIC_MESSAGE, "This is your friendly Twitch Plays bot :D ! I hope you're enjoying the stream!");
 
-            if (msgDiff.TotalMilliseconds >= periodicMessageTime)
+            //If the time is surpassed, output the message
+            if (msgDiff.TotalMilliseconds < periodicMessageTime)
             {
-                if (DataContainer.MessageHandler.ClientService.IsConnected == true)
-                {
-                    if (string.IsNullOrEmpty(periodicMessage) == false)
-                    {
-                        DataContainer.MessageHandler.QueueMessage(periodicMessage);
-                    }
-                    
-                    CurMsgTime = currentTimeUTC;
-                }
+                return;
             }
+                
+            //If the service isn't connected, we can't send the message
+            if (DataContainer.MessageHandler.ClientService.IsConnected == false)
+            {
+                return;
+            }
+            
+            string periodicMessageRotation = DataHelper.GetSettingString(SettingsConstants.PERIODIC_MESSAGE_ROTATION, SettingsConstants.PERIODIC_MESSAGE);
+
+            //Print the message if it's not empty
+            if (string.IsNullOrEmpty(periodicMessageRotation) == false)
+            {
+                //Split the string and get the current index to output
+                string[] periodicMsgs = periodicMessageRotation.Split(PERIODIC_MSG_SEPARATOR, StringSplitOptions.TrimEntries);
+
+                //Make sure we don't go out of bounds
+                if (PeriodicMessageIndex >= periodicMsgs.Length)
+                {
+                    PeriodicMessageIndex = 0;
+                }
+
+                string curPeriodicMsg = periodicMsgs[PeriodicMessageIndex];
+
+                PeriodicMessageIndex++;
+
+                //Check if this message has a database entry
+                string databaseMsg = DataHelper.GetSettingString(curPeriodicMsg, string.Empty);
+
+                //If the database string exists, use it, otherwise use the string itself
+                string outputMsg = string.IsNullOrEmpty(databaseMsg) == false ? databaseMsg : curPeriodicMsg;
+
+                DataContainer.MessageHandler.QueueMessage(outputMsg);
+            }
+                    
+            CurMsgTime = currentTimeUTC;
         }
     }
 }

@@ -36,7 +36,7 @@ Table of Contents
 * [new_subscriber_message](#new_subscriber_message)
 * [resubscriber_message](#resubscriber_message)
 * [source_code_message](#source_code_message)
-* [game_message](#game_message)
+* [periodic_message_rotation](#periodic_message_rotation)
 * [game_message_path](#game_message_path)
 * [game_message_path_is_relative](#game_message_path_is_relative)
 * [info_message](#info_message)
@@ -104,16 +104,16 @@ Whether users can talk with a chatbot instance, such as [ChatterBot](../Suppleme
 The path to the socket for the chatbot, which TRBot uses to communicate.
 
 ### chatbot_socket_path_is_relative
-If 1, [chatbot_socket_path](#chatbot_socket_path) is a path relative to the Data folder, otherwise it's an absolute path.
+If 1, [chatbot_socket_path](#chatbot_socket_path) is a path relative to the TRBot executable, otherwise it's an absolute path.
 
 ### bingo_enabled
-Whether users can participate in bingo through an external application, such as [TRBotBingo](https://github.com/teamradish/TRBotBingo).
+Whether users can participate in bingo through an external application, such as [TRBotBingo](https://codeberg.org/kimimaru/TRBotBingo).
 
 ### bingo_pipe_path
 The path to the socket for the bingo application, which TRBot uses to communicate.
 
 ### bingo_pipe_path_is_relative
-If 1, [bingo_pipe_path](#bingo_pipe_path) is a path relative to the Data folder, otherwise it's an absolute path.
+If 1, [bingo_pipe_path](#bingo_pipe_path) is a path relative to the TRBot executable, otherwise it's an absolute path.
 
 ### client_service_type
 The type of client service connection to use. 0 = Terminal, 1 = Twitch. **Requires restarting TRBot to apply.**
@@ -165,7 +165,7 @@ Indicates the time, in milliseconds, TRBot waits each time to reconnect to the c
 The interval, in milliseconds, for TRBot to output the [periodic_message](#periodic_message).
 
 ### periodic_message
-A message TRBot sends occasionally. The interval is determined by * [periodic_message_time](#periodic_message_time).
+A message TRBot may send occasionally.
 
 ### connect_message
 The message TRBot sends upon connecting to the service.
@@ -189,16 +189,16 @@ The message TRBot sends when someone subscribes to your channel. Used on Twitch 
 The message TRBot sends when someone re-subscribes to your channel. Used on Twitch and other services. Arguments: "{0}" = Username, "{1}" = Number of months subscribed.
 
 ### source_code_message
-The message showing where users can obtain the source code of this instance and their rights under the AGPL 3.0+. If you have a custom fork of TRBot's source code, you must modify this message to link to your fork.
+The message showing where users can obtain the source code of this instance and their rights under the AGPL 3.0. If you have a custom fork of TRBot's source code, you must modify this message to link to your fork.
 
-### game_message
-An internal value for the game message users set while playing. This isn't modified manually.
+### periodic_message_rotation
+The set of messages TRBot rotates outputting every interval, which is determined by the [periodic_message_time](#periodic_message_time). Messages are separated by the '|' character and may also be database settings. This defaults to the [periodic_message](#periodic_message).
 
 ### game_message_path
 The path to the game message file used to display a message on stream.
 
 ### game_message_path_is_relative
-If 1, [game_message_path](#game_message_path) is a path relative to the Data folder, otherwise it's an absolute path.
+If 1, [game_message_path](#game_message_path) is a path relative to the TRBot executable, otherwise it's an absolute path.
 
 ### info_message
 An informational message about the current game or stream.

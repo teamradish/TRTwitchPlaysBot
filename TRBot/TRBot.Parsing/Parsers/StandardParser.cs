@@ -4,8 +4,7 @@
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation, version 3 of the License.
  *
  * TRBot is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -223,7 +222,7 @@ namespace TRBot.Parsing
 
                 input.Name = inpGroup.Value;
 
-                //Console.WriteLine($"FOUND INPUT NAME: \"{input.name}\"");
+                //Console.WriteLine($"FOUND INPUT NAME: \"{input.Name}\"");
 
                 //Check holds and releases
                 bool hasHold = match.Groups.TryGetValue(HoldParserComponent.HOLD_GROUP_NAME, out Group holdGroup) && holdGroup?.Success == true;
@@ -449,10 +448,12 @@ namespace TRBot.Parsing
         {
             List<IPreparser> preparsers = new List<IPreparser>()
             {
+                new RemoveWhitespacePreparser(),
                 new InputMacroPreparser(macros),
                 new InputSynonymPreparser(synonyms),
                 new ExpandPreparser(),
-                new RemoveWhitespacePreparser()
+                new RemoveWhitespacePreparser(),
+                new LowercasePreparser()
             };
 
             List<IParserComponent> components = new List<IParserComponent>()

@@ -4,8 +4,7 @@
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation, version 3 of the License.
  *
  * TRBot is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -94,6 +93,18 @@ namespace TRBot.Tests
             ExpandPreparser ep = new ExpandPreparser();
             
             string output = ep.Preparse(input);
+
+            Assert.AreEqual(output, expectedOutput);
+        }
+
+        [TestCase("A", "a")]
+        [TestCase("_b+R700ms", "_b+r700ms")]
+        [TestCase("AaBbAbrARAmW", "aabbabraramw")]
+        public void TestLower(string input, string expectedOutput)
+        {
+            LowercasePreparser lp = new LowercasePreparser();
+
+            string output = lp.Preparse(input);
 
             Assert.AreEqual(output, expectedOutput);
         }

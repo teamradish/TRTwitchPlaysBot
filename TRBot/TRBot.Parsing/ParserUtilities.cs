@@ -4,8 +4,7 @@
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation, version 3 of the License.
  *
  * TRBot is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -46,6 +45,21 @@ namespace TRBot.Parsing
 
             //Replace all whitespace via regex
             return Regex.Replace(originalStr, @"\s+", string.Empty, RegexOptions.Compiled);
+        }
+
+        /// <summary>
+        /// Tells if a double is approximately equal to another one.
+        /// </summary>
+        /// <param name="value">The value to check.</param>
+        /// <param name="comparison">The value to compare to.</param>
+        /// <param name="error">The threshold of error to account for.</param>
+        /// <returns>true if (<paramref name="value"/> - <paramref name="comparison"/>) is within <paramref name="error"/>.</returns>
+        public static bool IsApproximate(in double value, in double comparison, in double error)
+        {
+            double check = Math.Abs(value - comparison);
+            double absError = Math.Abs(error);
+
+            return (check <= absError);
         }
     }
 }

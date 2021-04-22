@@ -4,8 +4,7 @@
  *
  * TRBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation, version 3 of the License.
  *
  * TRBot is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -56,11 +55,11 @@ namespace TRBot.Data
                 SettingsHelper(GROUP_BET_TOTAL_TIME, 120000L),
                 SettingsHelper(GROUP_BET_MIN_PARTICIPANTS, 3L),
                 SettingsHelper(CHATBOT_ENABLED, false),
-                SettingsHelper(CHATBOT_SOCKET_PATH, "ChatterBotSocket"),
-                SettingsHelper(CHATBOT_SOCKET_PATH_IS_RELATIVE, true),
+                SettingsHelper(CHATBOT_SOCKET_PATH, Path.Combine(Path.GetTempPath(), "ChatterBotSocket")),
+                SettingsHelper(CHATBOT_SOCKET_PATH_IS_RELATIVE, false),
                 SettingsHelper(BINGO_ENABLED, false),
-                SettingsHelper(BINGO_PIPE_PATH, "BingoPipe"),
-                SettingsHelper(BINGO_PIPE_PATH_IS_RELATIVE, true),
+                SettingsHelper(BINGO_PIPE_PATH, Path.Combine(Path.GetTempPath(), "BingoPipe")),
+                SettingsHelper(BINGO_PIPE_PATH_IS_RELATIVE, false),
                 SettingsHelper(CLIENT_SERVICE_TYPE, (long)ClientServiceTypes.Twitch),
                 SettingsHelper(LOG_LEVEL, (long)Serilog.Events.LogEventLevel.Information),
                 SettingsHelper(AUTO_PROMOTE_ENABLED, true),
@@ -80,13 +79,13 @@ namespace TRBot.Data
                 SettingsHelper(BEING_HOSTED_MESSAGE, "Thank you for hosting, {0}!! You rock!"),
                 SettingsHelper(NEW_SUBSCRIBER_MESSAGE, "Thank you for subscribing, {0} :D !!"),
                 SettingsHelper(RESUBSCRIBER_MESSAGE, "Thank you for subscribing for {1} months, {0} :D !!"),
-                SettingsHelper(SOURCE_CODE_MESSAGE, "This bot is free software licensed under the AGPL v3.0. The code repository and full license terms are at https://github.com/teamradish/TRTwitchPlaysBot - You have the right to obtain source code for the streamer's deployed version of the software."),
-                SettingsHelper(GAME_MESSAGE, "This is a game message."),
-                SettingsHelper(GAME_MESSAGE_PATH, "GameMessage.txt"),
+                SettingsHelper(SOURCE_CODE_MESSAGE, "This bot is free software licensed under the AGPL v3.0. The code repository and full license terms are at https://codeberg.org/kimimaru/TRBot - You have the right to obtain source code for the streamer's deployed version of the software."),
+                SettingsHelper(PERIODIC_MESSAGE_ROTATION, PERIODIC_MESSAGE),
+                SettingsHelper(GAME_MESSAGE_PATH, Path.Combine(DataConstants.DATA_FOLDER_NAME, "GameMessage.txt")),
                 SettingsHelper(GAME_MESSAGE_PATH_IS_RELATIVE, true),
                 SettingsHelper(INFO_MESSAGE, "Welcome to the channel! You can play games by submitting messages in chat. Type !inputs to see all available buttons."),
-                SettingsHelper(TUTORIAL_MESSAGE, "Hi {0}, here's how to play: https://github.com/teamradish/TRTwitchPlaysBot/blob/master/Wiki/Syntax-Walkthrough.md"),
-                SettingsHelper(DOCUMENTATION_MESSAGE, "Hi {0}, here's documentation on TRBot: https://github.com/teamradish/TRTwitchPlaysBot/blob/master/Wiki/Home.md"),
+                SettingsHelper(TUTORIAL_MESSAGE, "Hi {0}, here's how to play: https://codeberg.org/kimimaru/TRBot/src/branch/master/Wiki/Syntax-Walkthrough.md"),
+                SettingsHelper(DOCUMENTATION_MESSAGE, "Hi {0}, here's documentation on TRBot: https://codeberg.org/kimimaru/TRBot/src/branch/master/Wiki/Home.md"),
                 SettingsHelper(DONATE_MESSAGE, "You can further support TRBot's development by donating to the developer. All donations go towards improving TRBot: https://liberapay.com/kimimaru/"),
                 SettingsHelper(SLOTS_BLANK_EMOTE, "FailFish"),
                 SettingsHelper(SLOTS_CHERRY_EMOTE, "Kappa"),
@@ -234,13 +233,16 @@ namespace TRBot.Data
                 new CommandData("vote", "TRBot.Commands.VoteForInputModeCommand", userPerm, true, true),
                 new CommandData("votetime", "TRBot.Commands.GetSetInputModeVoteTimeCommand", userPerm, true, false),
                 new CommandData("votecooldown", "TRBot.Commands.GetSetInputModeCooldownCommand", userPerm, true, false),
+                new CommandData("userdefaultinputdur", "TRBot.Commands.UserDefaultInputDurCommand", userPerm, true, false),
+                new CommandData("usermaxinputdur", "TRBot.Commands.UserMaxInputDurCommand", userPerm, true, false),
+                new CommandData("listsilenced", "TRBot.Commands.ListSilencedUsersCommand", userPerm, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", whitelistedPerm, true, true),
                 new CommandData("addsyn", "TRBot.Commands.AddInputSynonymCommand", whitelistedPerm, true, true),
                 new CommandData("removesyn", "TRBot.Commands.RemoveInputSynonymCommand", whitelistedPerm, true, true),
                 new CommandData("viewmultilogs", "TRBot.Commands.ViewMultipleGameLogsCommand", whitelistedPerm, true, true),
 
-                new CommandData("setmessage", "TRBot.Commands.SetGameMessageCommand", vipPerm, true, true),
+                new CommandData("setmessage", "TRBot.Commands.SetGameMessageCommand", vipPerm, true, true, SettingsConstants.GAME_MESSAGE_PATH),
 
                 new CommandData("reload", "TRBot.Commands.ReloadCommand", modPerm, true, true),
                 new CommandData("setlevel", "TRBot.Commands.SetUserLevelCommand", modPerm, true, true),
@@ -249,6 +251,9 @@ namespace TRBot.Data
                 new CommandData("unrestrictinput", "TRBot.Commands.RemoveRestrictedInputCommand", modPerm, true, true),
                 new CommandData("addinvalidcombo", "TRBot.Commands.AddInvalidInputComboCommand", modPerm, true, true),
                 new CommandData("removeinvalidcombo", "TRBot.Commands.RemoveInvalidInputComboCommand", modPerm, true, true),
+                new CommandData("userabilitylvloverride", "TRBot.Commands.GetSetUserAbilityLvlOverrideCommand", modPerm, true, true),
+                new CommandData("silence", "TRBot.Commands.SilenceUserCommand", modPerm, true, true),
+                new CommandData("unsilence", "TRBot.Commands.UnsilenceUserCommand", modPerm, true, true),
 
                 new CommandData("addcmd", "TRBot.Commands.AddCmdCommand", adminPerm, true, true),
                 new CommandData("removecmd", "TRBot.Commands.RemoveCmdCommand", adminPerm, true, true),
@@ -259,6 +264,7 @@ namespace TRBot.Data
                 new CommandData("removeinput", "TRBot.Commands.RemoveInputCommand", adminPerm, true, true),
                 new CommandData("setinputlevel", "TRBot.Commands.SetInputLevelCommand", adminPerm, true, true),
                 new CommandData("toggleinput", "TRBot.Commands.SetInputEnabledCommand", adminPerm, true, true),
+                new CommandData("updateeveryoneabilities", "TRBot.Commands.UpdateEveryoneAbilitiesCommand", adminPerm, true, true),
 
                 new CommandData("exec", "TRBot.Commands.ExecCommand", superAdminPerm, false, true),
                 new CommandData("exportbotdata", "TRBot.Commands.ExportBotDataCommand", superAdminPerm, true, true),
@@ -281,7 +287,7 @@ namespace TRBot.Data
                 new NESConsole(),
                 new SNESConsole(),
                 new GenesisConsole(),
-                new N64Console(),
+                new N64Console(), new GBCConsole(),
                 new PS2Console(), new GCConsole(), new GBAConsole(),
                 new WiiConsole(), new PS4Console(),
                 new SwitchConsole(),
@@ -311,6 +317,13 @@ namespace TRBot.Data
                 new PermissionAbility(TRANSFER_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
                 new PermissionAbility(SLOTS_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
                 new PermissionAbility(VOTE_INPUT_MODE_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(ADD_INPUT_MACRO_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(REMOVE_INPUT_MACRO_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(ADD_MEME_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(REMOVE_MEME_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(ADD_INPUT_SYNONYM_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(REMOVE_INPUT_SYNONYM_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(STOP_ALL_INPUTS_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
 
                 new PermissionAbility(SET_GAME_MESSAGE_ABILITY, PermissionLevels.VIP, PermissionLevels.VIP),
 

@@ -1,10 +1,10 @@
-This page documents many common commands for TRBot. You will often use these commands either while playing on or managing a TRBot instance. To learn how to add custom commands, see the [custom commands](./Custom-Commands.md) page.
+This page documents many common commands for TRBot. You will often use these commands either while playing on or managing a TRBot instance. To learn how to add your own custom commands, see the [custom commands](./Custom-Commands.md) page.
 
 ## Database Fields
 In the database, each command in the **CommandData** table has the following fields:
 - `ID` - The ID of the command in the database. This is automatically determined, thus it's not recommended to set or modify it.
 - `Name` - The name of the command. This name is what you type into chat to invoke it (Ex. "tutorial").
-- `ClassName` - The name of the internal class containing the code this command runs when invoked (Ex. "TRBot.Commands.MessageCommand" for "info").
+- `ClassName` - The name of the internal class, with namespace, containing the code this command runs when invoked (Ex. "TRBot.Commands.MessageCommand" for "info").
 - `Level` - The access level required to invoke the command.
 - `Enabled` - Determines if the command is enabled and can be invoked (0 = disabled, 1 = enabled).
 - `DisplayInList` - Determines if the command is displayed in the help for `ListCmdsCommand`.
@@ -43,9 +43,17 @@ You will need to reload data or restart TRBot to apply any changes in the **Comm
 - [`UpdateUserAbilityCommand`](../TRBot/TRBot.Commands/Commands/UpdateUserAbilityCommand.cs) (default: "!toggleability") - Adds or updates a user ability on a given user for a given period of time. "null" indicate the ability is enabled or disabled for an indefinite time. This can be used to silence misbehaving users or give temporary access to a trusted individual to help moderate while you're away.
   - Example: "!toggleability user1 silenced true null 0 30d" - Silences user1 for 30 days, disallowing them from making inputs during this time.
   - Example: "!toggleability user2 duel false null 0 null" - Disables user2 from being able to duel others indefinitely.
-- [`ListUserAbilitiesCommand`](../TRBot.TRBot.Commands/Commands/ListUserAbilitiesCommand.cs) (default: "!userabilities") - Lists all user abilities on a given user, including their enabled state and the expiration date, if any.
+- [`ListUserAbilitiesCommand`](../TRBot/TRBot.Commands/Commands/ListUserAbilitiesCommand.cs) (default: "!userabilities") - Lists all user abilities on a given user, including their enabled state and the expiration date, if any.
   - Example: "!userabilities user1"
-- [`ListPermissionAbilitiesCommand`](../TRBot.TRBot.Commands/Commands/ListPermissionAbilitiesCommand.cs) (default: "!allabilities") - Lists all available permission abilities in the database. These are all the abilities that can be enabled or disabled on a given user.
+- [`ListPermissionAbilitiesCommand`](../TRBot/TRBot.Commands/Commands/ListPermissionAbilitiesCommand.cs) (default: "!allabilities") - Lists all available permission abilities in the database. These are all the abilities that can be enabled or disabled on a given user.
+- [`GetSetUserAbilityLvlOverrideCommand`](../TRBot/TRBot.Commands/Commands/GetSetUserAbilityLvlOverrideCommand.cs) (default: "!userabilitylvloverride") - Displays the level override of a specific ability on a given user, or sets it if you supply an argument and have a level greater than or equal to the current level override. A value of -1 will disable the level override.
+  - Example: "!userabilitylvloverride user1 silenced"
+  - Example: "!userabilitylvloverride user1 silenced -1" - Sets the level override of the "silenced" ability on user1 to -1, disabling it.
+- [`SilenceUserCommand`](../TRBot/TRBot.Commands/Commands/SilenceUserCommand.cs) (default: "!silence") - Silences a given user, preventing them from making inputs. This is a convenience command that adds the silenced ability to the user.
+  - Example: "!silence user1"
+- [`UnsilenceUserCommand`](../TRBot/TRBot.Commands/Commands/UnsilenceUserCommand.cs) (default: "!unsilence") - Unsilences a given user, allowing them to make inputs again. This is a convenience command that removes the silenced ability from the user.
+  - Example: "!unsilence user1"
+- [`ListSilencedUsersCommand`](../TRBot/TRBot.Commands/Commands/ListSilencedUsersCommand.cs) (default: "!listsilenced") - Lists all silenced users in the database.
 
 ## Input and Console-related
 - [`StopAllInputsCommand`](../TRBot/TRBot.Commands/Commands/StopAllInputsCommand.cs) (default: "!stopall") - Stops all ongoing inputs on all virtual controllers. While inputs are being stopped, new inputs will not be processed. Most machines will often stop all inputs and re-enable them within 50 milliseconds or less (likely less). This command is very useful to stop long or repetitive input sequences instead of waiting for them to finish.
@@ -154,14 +162,17 @@ You will need to reload data or restart TRBot to apply any changes in the **Comm
 - [`ViewMultipleGameLogsCommand`](../TRBot/TRBot.Commands/Commands/ViewMultipleGameLogsCommand.cs) (default: "!viewmultilogs") - Views a number of game logs starting from the most recent. You can supply an argument for how many game logs to view. There is a short delay between printing each game log. To avoid spamming chat, this command will reject subsequent uses that attempt to view more game logs while it's already printing them. You can cancel it printing game logs by providing a special argument.
   - Example: "!viewmultilogs 5" - Displays the 5 most recent game logs.
   - Example: "!viewmultilogs cancel" - Cancels viewing game logs.
-- [`SetGameMessageCommand`](../TRBot/TRBot.Commands/Commands/SetGameMessageCommand.cs) (default: "!setmessage") - Sets a game message that can be displayed on stream if the streamer provided it. This is useful for informing others of the current objective in a game.
+- [`SaveTextToFileCommand`](../TRBot/TRBot.Commands/Commands/SaveTextToFileCommand.cs) - Saves the arguments as text into a given file, determined by the `ValueStr` of the command in the database. The `ValueStr` can be a database setting or absolute file path. The text in this file can then be displayed on stream if the streamer provided it.
+- [`SetGameMessageCommand`](../TRBot/TRBot.Commands/Commands/SetGameMessageCommand.cs) (default: "!setmessage") - Sets a game message that can be displayed on stream if the streamer provided it. This is useful for informing others of the current objective in a game. Internally, this is a pre-configured [`SaveTextToFileCommand`](../TRBot/TRBot.Commands/Commands/SaveTextToFileCommand.cs).
   - Example: "!setmessage Beat Phantom Ganon"
 
 ## Games/Fun
-- [`AddMemeCommand`](../TRBot/TRBot.Commands/Commands/AddMemeCommand.cs) (default: "!addmeme") - Adds a meme to the database. If the meme already exists, it'll be updated.
+- [`AddMemeCommand`](../TRBot/TRBot.Commands/Commands/AddMemeCommand.cs) (default: "!addmeme") - Adds a meme to the database. If the meme already exists, it'll be updated. Enclose multi-word meme names in quotes.
   - Example: "!addmeme lol Kappa"
-- [`RemoveMemeCommand`](../TRBot/TRBot.Commands/Commands/RemoveMemeCommand.cs) (default: "!removememe") - Removes a meme from the database.
+  - Example: "!addmeme "this is a test" yup it is"
+- [`RemoveMemeCommand`](../TRBot/TRBot.Commands/Commands/RemoveMemeCommand.cs) (default: "!removememe") - Removes a meme from the database. Remove multi-word memes by specifying the entire phrase without quotes.
   - Example: "!removememe lol"
+  - Example: "!removememe this is a test"
 - [`ListMemesCommand`](../TRBot/TRBot.Commands/Commands/ListMemesCommand.cs) (default: "!memes") - Lists all memes.
 - [`CreditsCommand`](../TRBot/TRBot.Commands/Commands/DuelCommand.cs) (default: "!credits") - Lists the number of credits you have, or optionally the number of credits another user has.
   - Example: "!credits"
