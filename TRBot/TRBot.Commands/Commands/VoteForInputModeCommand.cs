@@ -108,6 +108,8 @@ namespace TRBot.Commands
                 return;
             }
 
+            bool canStartInputModeVote = false;
+
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
                 //Check if the user has the ability to vote
@@ -118,6 +120,9 @@ namespace TRBot.Commands
                     QueueMessage("You don't have the ability to vote for a new input mode!");
                     return;
                 }
+
+                //Check if the user can start a vote if the need arises
+                canStartInputModeVote = (user != null && user.HasEnabledAbility(PermissionConstants.START_VOTE_INPUT_MODE_ABILITY));
             }
 
             //Check if the cooldown is up
@@ -154,6 +159,13 @@ namespace TRBot.Commands
             //Add the routine if it doesn't exist
             if (inputModeVoteRoutine == null)
             {
+                //Deny if the user doesn't have permission to start it up
+                if (canStartInputModeVote == false)
+                {
+                    QueueMessage("You don't have the ability to start a vote for a new input mode!");
+                    return;
+                }
+
                 long voteDur = DataHelper.GetSettingInt(SettingsConstants.INPUT_MODE_VOTE_TIME, 60000L);
                 inputModeVoteRoutine = new InputModeVoteRoutine(voteDur);
                 RoutineHandler.AddRoutine(inputModeVoteRoutine);
