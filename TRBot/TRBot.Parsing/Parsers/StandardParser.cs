@@ -174,6 +174,9 @@ namespace TRBot.Parsing
 
             //Track the total duration of the input sequence
             int totalDur = 0;
+            
+            //Track the longest subsequence duration
+            int longestSubDur = 0;
 
             //The current parsed subsequence
             List<ParsedInput> subInputs = new List<ParsedInput>();
@@ -377,6 +380,12 @@ namespace TRBot.Parsing
 
                 //Console.WriteLine("GOT PAST DURATION");
 
+                //Check if this input is the longest in the subsequence
+                if (input.Duration > longestSubDur)
+                {
+                    longestSubDur = input.Duration;
+                }
+
                 subInputs.Add(input);
 
                 //If there's no simultaneous input, set up a new list
@@ -385,12 +394,14 @@ namespace TRBot.Parsing
                 {
                     parsedInputList.Add(subInputs);
                     subInputs = new List<ParsedInput>();
+
+                    //Add the longest subsequence duration to the total
+                    totalDur += longestSubDur;
+                    longestSubDur = 0;
                 }
 
-                totalDur += input.Duration;
-
                 //Exceeded duration
-                if (CheckMaxDur == true && totalDur > MaxInputDuration)
+                if (CheckMaxDur == true && (totalDur + longestSubDur) > MaxInputDuration)
                 {
                     return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, $"Parser error: Input sequence exceeds max input duration of {MaxInputDuration} at around index {match.Index}.");
                 }

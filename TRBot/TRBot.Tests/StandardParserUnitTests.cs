@@ -411,6 +411,36 @@ namespace TRBot.Tests
             }
         }
 
+        [TestCase("a", new string[] { "a" }, 200, 200)]
+        [TestCase("ab", new string[] { "a", "b" }, 200, 400)]
+        [TestCase("a+b", new string[] { "a", "b" }, 400, 400)]
+        [TestCase("x500ms+x+x350ms+x10ms", new string[] { "x" }, 200, 500)]
+        [TestCase("q350ms+l12250ms+l2550ms+r11s+r222ms", new string[] { "q", "l1", "l2", "r1", "r2" }, 200, 2250)]
+        [TestCase("x500ms+y", new string[] { "x", "y" }, 200, 500)]
+        [TestCase("x+y50ms+z34ms", new string[] { "x", "y", "z" }, 100, 100)]
+        [TestCase("y350ms+xr700ms+y", new string[] { "x", "y", "r" }, 200, 1050)]
+        [TestCase("y+x100msr+y300ms", new string[] { "x", "y", "r" }, 200, 500)]
+        public void TestTotalDuration(string input, string[] inputList, int defaultDuration, int expectedTotalDuration)
+        {
+            List<IParserComponent> components = new List<IParserComponent>()
+            {
+                new InputParserComponent(inputList),
+                new MillisecondParserComponent(),
+                new SecondParserComponent(),
+                new SimultaneousParserComponent(),
+            };
+
+            StandardParser standardParser = new StandardParser(components);
+            standardParser.CheckMaxDur = false;
+            standardParser.DefaultInputDuration = defaultDuration;
+
+            ParsedInputSequence seq = standardParser.ParseInputs(input);
+            
+            Assert.AreEqual(seq.ParsedInputResult, ParsedInputResults.Valid);
+
+            Assert.AreEqual(seq.TotalDuration, expectedTotalDuration);
+        }
+
         [TestCase("a50%500ms", new string[] { "a" }, new double[] { 50 }, new int[] { 500 })]
         [TestCase("b50%1sl32%5748ms", new string[] { "b", "l" }, new double[] { 50, 32 }, new int[] { 1000, 5748 })]
         [TestCase("b50.75%1sl32.036%5748ms", new string[] { "b", "l" }, new double[] { 50.75, 32.036 }, new int[] { 1000, 5748 })]
