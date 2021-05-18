@@ -62,6 +62,16 @@ namespace TRBot.Utilities
             }
         }
 
+        /// <summary>
+        /// Gets the length of an Enum of a particular type.
+        /// Calling this will also cache the array of Enum values associated with the type.
+        /// </summary>
+        /// <typeparam name="T">The Enum type.</typeparam>
+        public static int GetEnumLength<T>() where T : Enum
+        {
+            return GetValues<T>.EnumValues.Length;
+        }
+
         /* Adding flags: flag1 |= flag2            ; 10 | 01 = 11
          * Checking flags: (flag1 & flag2) != 0    ; 11 & 10 = 10
          * Removing flags: (flag1 & (~flag2))      ; 1111 & (~0010) = 1111 & 1101 = 1101
