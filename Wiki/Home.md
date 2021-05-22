@@ -20,9 +20,10 @@ Welcome to the TRBot wiki! Choose the relevant section for your needs.
 ## Players/Moderation
 * [Syntax Walkthrough](./Syntax-Walkthrough.md) - A beginner-friendly guide to TRBot's input syntax, with visuals.
 * [Syntax Tutorial](./Syntax-Tutorial.md) - A more in-depth tutorial covering TRBot's robust input syntax.
+* [Examples](./Play-Examples.md) - Short and sweet examples showing how to play with TRBot.
 * [Permission Documentation](./Permission-Documentation.md) - Learn how TRBot can help you moderate your stream.
 * [Commands Documentation](./Commands-Documentation.md) - Documentation on various TRBot commands to help manage and interact with the stream.
-* [Usage Examples](./Real-Usage-Examples.md) - See what players have done with TRBot on real streams!
+* [Real-world Usage](./Real-Usage-Examples.md) - See what players have done with TRBot on actual streams!
 
 ## Developers
 * [Building from source](./Building.md) - How to build TRBot from source.
