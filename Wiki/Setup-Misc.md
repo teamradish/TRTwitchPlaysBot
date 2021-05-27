@@ -13,7 +13,7 @@ TRBot has an optional game message that can be set with the `SetGameMessageComma
 2. Check the box labeled "Read from file"
 3. Browse and select the text file.
 
-Now the message should be displayed on screen for all your viewers to see. Whenever the message is changed through the bot, it will be updated in the file and subsequently on screen. Consult the `SetGameMessageCommand` reference in the [commands documentation](./Commands-Documentation.md) for more information.
+Now the message should be displayed on screen for all your viewers to see. Whenever the message is changed through the bot, it will be updated in the file and subsequently on screen. Consult the `SetGameMessageCommand` reference in the [commands documentation](./Commands-Documentation.md#game-progress-logging) for more information.
 
 # Displaying Twitch Chat
 There are several options for displaying Twitch chat on your stream:
