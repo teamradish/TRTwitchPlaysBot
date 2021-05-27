@@ -26,7 +26,7 @@ TRBot internally uses [TwitchLib](https://github.com/TwitchLib/TwitchLib) to han
 ## Running via Terminal (optional)
 If you'd like to run TRBot locally directly through the terminal, open **TRBotData.db** in the **Data** folder in SQLite or a database viewer, and change the `ValueInt` column of the `client_service_type` setting to 0, save your changes, then restart TRBot if it's already running. Set it back to 1 if you'd like to connect to Twitch once again.
 
-When running TRBot through the terminal, **TwitchLoginSettings.txt** isn't used or required at all. Instead, it uses a static user named "terminalUser".
+When running TRBot through the terminal, **TwitchLoginSettings.txt** isn't used or required at all. Instead, it prompts you for a username to use while the bot is running. This can be an existing user in the database. If no username is specified, it defaults to a user named "terminaluser".
 
 In this mode, TRBot will read all lines you input to the terminal. Simply press Enter/Return after typing what you want to process it.
 
