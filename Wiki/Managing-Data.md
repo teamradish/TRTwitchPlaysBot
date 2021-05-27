@@ -27,11 +27,12 @@ The tables you see in the database are, in short, the categories of data TRBot s
 - **Macros** - Contains all available input macros.
 - **Memes** - Contains all available memes.
 - **PermissionAbilities** - Contains all available abilities that can be granted or revoked to users. Typically, this does not change much over time.
+- **RecentInputs** - Contains a specific number of recent inputs made by each player if opted into bot stats.
 - **RestrictedInputs** - References inputs that each user is restricted from performing.
 - **Settings** - Contains a myriad of bot settings.
 - **UserAbilities** - Contains all granted abilities and which users they belong to.
 - **UserStats** - Contains all user-specific stats, such as valid input and message count.
-- **Users** - Contains all user data.
+- **Users** - Contains all user data, including name, level, and controller port.
 
 The **sqlite_sequence** and **__EFMigrationsHistory** tables are automatically generated and should not be modified.
 
@@ -49,7 +50,7 @@ Unless noted otherwise, all of the following settings are under the "Settings" t
 
 - [`main_thread_sleep`](./Settings-Documentation.md#main_thread_sleep) - Indicates how much time, in milliseconds, to sleep the main thread. This is used to throttle TRBot's main loop so it doesn't use up as much CPU time on your machine. Values too high may noticeably delay the execution of bot routines and messages.
 - [`first_launch`](./Settings-Documentation.md#first_launch) - Indicates the first ever launch of TRBot. This sets up all the default game consoles. Starts at 0 then gets set to 1.
-- [`force_init_defaults`](./Settings-Documentation.md#force_init_defaults) - If 1, initializes all default values, including default commands, permissions, and settings, if the don't already exist.
+- [`force_init_defaults`](./Settings-Documentation.md#force_init_defaults) - If 1, initializes all default values, including default commands, permissions, and settings, if they don't already exist.
 - [`data_version`](./Settings-Documentation.md#data_version) - The version for TRBot's data. If this is behind the bot version being used, it will automatically set force_init_defaults to 1 and add missing data.
 - [`client_service_type`](./Settings-Documentation.md#client_service_type) - The type of client service connection to use. 0 = Terminal, 1 = Twitch. **Requires restarting TRBot to apply.**
 - [`joystick_count`](./Settings-Documentation.md#joystick_count) - The number of virtual controllers to use.
@@ -60,7 +61,7 @@ Unless noted otherwise, all of the following settings are under the "Settings" t
 For more information on settings, view the [settings documentation](./Settings-Documentation.md).
 
 # Reloading data
-TRBot comes with a [`ReloadCommand`](../TRBot/TRBot.Commands/Commands/ReloadCommand.cs), mapped to "reload" by default, to reload data. Some data cannot be applied to TRBot until it is reloaded for technical reasons. There are two types of reloads: soft and hard. Hard reloads typically destroy in-memory objects then recreate them using data from the database, while soft reloads typically only apply the changes. Pass "soft" or "hard" as an argument to this command to choose how to reload (Ex. "!reload hard").
+TRBot comes with a [`ReloadCommand`](../TRBot/TRBot.Commands/Commands/ReloadCommand.cs) (default: "!reload") to reload data. Some data cannot be applied to TRBot until it is reloaded for technical reasons. There are two types of reloads: soft and hard. Hard reloads typically destroy in-memory objects then recreate them using data from the database, while soft reloads typically apply only the changes. Pass "soft" or "hard" as an argument to this command to choose how to reload (Ex. "!reload hard").
 
 # Data requiring reloads/restarts
 
