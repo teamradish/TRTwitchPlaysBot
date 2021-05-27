@@ -3,14 +3,17 @@ Here you'll find supplementary information that can be used to enhance TRBot!
 # Chatbot
 See the [chatbot guide](./Setup-Chatterbot.md) for setting up a chatbot that your viewers can talk to!
 
+# Split Timer
+Check out the [guide to integrating LiveSplitOne](./LiveSplitOne-Integration.md) for a speedrun timer with splits.
+
 # Game Message
-TRBot has an optional game message that can be set with the `SetMessageCommand`. An example of such a message may be "Beat level 1". Once set, the message is saved into a file specified by the **game_message_path** setting in the database (the default is a **GameMessage.txt** file in the **Data** folder). You can display this message on screen using OBS via the following steps:
+TRBot has an optional game message that can be set with the `SetGameMessageCommand`. An example of such a message may be "Beat level 1". Once set, the message is saved into a file specified by the **game_message_path** setting in the database (the default is a **GameMessage.txt** file in the **Data** folder). You can display this message on screen using OBS via the following steps:
 
 1. Create Text (GDI+, FreeType2, etc.)
 2. Check the box labeled "Read from file"
 3. Browse and select the text file.
 
-Now the message should be displayed on screen for all your viewers to see. Whenever the message is changed through the bot, it will be updated in the file and subsequently on screen.
+Now the message should be displayed on screen for all your viewers to see. Whenever the message is changed through the bot, it will be updated in the file and subsequently on screen. Consult the `SetGameMessageCommand` reference in the [commands documentation](./Commands-Documentation.md) for more information.
 
 # Displaying Twitch Chat
 There are several options for displaying Twitch chat on your stream:
@@ -36,7 +39,7 @@ There are several options for displaying Twitch chat on your stream:
 # PC Games
 Inputs should work for PC games that can recognize the virtual controllers. Some games using the SDL library may need an input mapping string to recognize the controllers. You can put this input mapping as an environment variable if there are no options for inserting them directly into a file for the game itself. For more information, [see this SDL mapping tool](https://generalarcade.com/gamepadtool/).
 
-There is also experimental keyboard and mouse controls accessible on GNU/Linux systems running X11 if [`xdotool`](https://www.semicomplete.com/projects/xdotool/) is installed.
+There is also experimental keyboard and mouse controls accessible on GNU/Linux systems running X11 if [`xdotool`](https://www.semicomplete.com/projects/xdotool/) is installed. To use this, switch the virtual controller to `xdotool` with the [`VirtualControllerCommand`]((../TRBot/TRBot.Commands/Commands/VirtualControllerCommand.cs) (default: "!vcontroller").
 
 ## PC Game Precautions
 **Be very careful when playing PC games!** Make sure that players can't exit the game, access files or perform any other malicious activities, such as shutting down the system. If you're streaming a PC game, highly consider capturing only the window with the game and not the entire display; this way if players manage to exit the game, they won't be able to see anything else on your computer. This is easier to accomplish by playing the game in windowed mode.
