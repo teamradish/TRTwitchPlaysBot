@@ -53,6 +53,25 @@ namespace TRBot.Tests
             Assert.AreEqual(output, expectedOutput);
         }
 
+        #region New Macro Preparser
+
+        [TestCase("#pressa", new string[] { "#press", "#pressa" }, new string[] { "b", "a" }, "a")]
+        //[TestCase("#pressa r b", new string[] { "#pressa" }, new string[] { "a" }, "a r b")]
+        //[TestCase("#jumpup . .b750ms", new string[] { "#jumpup" }, new string[] { "_upa500ms" }, "_upa500ms . .b750ms")]
+        public void TestNormalMacrosNew(string input, string[] macroNames, string[] macroValues, string expectedOutput)
+        {
+            Assert.AreEqual(macroNames.Length, macroValues.Length);
+
+            IQueryable<InputMacro> macros = BuildMacroList(macroNames, macroValues);
+
+            InputMacroPreparserNew imp = new InputMacroPreparserNew(macros.AsQueryable());
+            string output = imp.Preparse(input);
+
+            Assert.AreEqual(output, expectedOutput);
+        }
+
+        #endregion
+
         [TestCase("#press(a)", new string[] { "#press(*)" }, new string[] { "<0>" }, "a")]
         [TestCase("#press(abcdefg)", new string[] { "#press(*)" }, new string[] { "<0>" }, "abcdefg")]
         [TestCase("#press(35,b)", new string[] { "#press(*,*)" }, new string[] { "<0>ms _<1>" }, "35ms _b")]
