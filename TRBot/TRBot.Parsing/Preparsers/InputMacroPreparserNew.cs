@@ -40,7 +40,7 @@ namespace TRBot.Parsing
         private int MaxRecursions = 10;
 
         private readonly string MacroRegex = @"(?<"+ MACRO_GROUP_NAME + @">\" + DEFAULT_MACRO_START +
-            @"[^\#\(\s]*)(?<"+ MACRO_DYNAMIC_GROUP_NAME +
+            @"[^\#\(\s]+)(?<"+ MACRO_DYNAMIC_GROUP_NAME +
             @">\((?<"+ MACRO_DYNAMIC_ARGS_GROUP_NAME + @">([^,\s],?)+)\))?";
 
         public InputMacroPreparserNew(IQueryable<InputMacro> macroData)
@@ -115,17 +115,36 @@ namespace TRBot.Parsing
 
                 Console.WriteLine($"Found \"{MACRO_GROUP_NAME}\" group with value \"{macroNameMatch}\"");
 
-                //Find the longest macro with this name
-                InputMacro longestMacro = MacroData
-                .Where((m) => m.MacroName.StartsWith(macroNameMatch))
-                .OrderBy(inpMacro => inpMacro.MacroName.Length).FirstOrDefault();
+                //Get the first character in the macro
+                string macroStart = macroNameMatch.Substring(0, 2);
 
-                //Console.WriteLine($"Count for starting: {longestMacro.Count()}");
+                //Find the longest macro with this name
+                //Filter by macros equal or shorter in length than the picked up macro name, along with
+                //macros that start with the first two characters found, using ordinal comparison for better performance
+                //Sort by macro length in descending order to find longer macros first
+                IQueryable<InputMacro> matchingMacros = MacroData
+                .Where((m) => m.MacroName.Length <= macroNameMatch.Length && m.MacroName.StartsWith(macroStart, StringComparison.OrdinalIgnoreCase))
+                .OrderByDescending(inpMacro => inpMacro.MacroName.Length);
+
+                Console.WriteLine($"Looking for macro starting with: {macroStart}");
+
+                InputMacro longestMacro = null;
+
+                //Search for the longest macro that the match name starts with
+                //For example, this would pick up "#hello" over "#he" in "#hello123" 
+                foreach (InputMacro macro in matchingMacros)
+                {
+                    if (macroNameMatch.StartsWith(macro.MacroName, StringComparison.OrdinalIgnoreCase) == true)
+                    {
+                        longestMacro = macro;
+                        break;
+                    }
+                }
 
                 //Macro not found
                 if (longestMacro == null)
                 {
-                    Console.WriteLine($"Macro with name \"{macroNameMatch}\" not found!");
+                    Console.WriteLine($"Macro in name \"{macroNameMatch}\" not found!");
                     continue;
                 }
 
@@ -165,7 +184,7 @@ namespace TRBot.Parsing
                 //Adjust start index to account for replacements in the string
                 int adjustedStartIndex = origStartIndex - (origLength - curLength);
 
-                Console.WriteLine($"Replacing {longestMacro.MacroName} with {parsedMacroVal} at {adjustedStartIndex} for count {parsedMacroVal.Length}"); 
+                Console.WriteLine($"Replacing {longestMacro.MacroName.Length} characters in {longestMacro.MacroName} with {parsedMacroVal} starting at index {adjustedStartIndex}"); 
 
                 strBuilder.Replace(longestMacro.MacroName, parsedMacroVal, adjustedStartIndex, longestMacro.MacroName.Length);
 
