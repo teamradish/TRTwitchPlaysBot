@@ -56,6 +56,9 @@ namespace TRBot.Tests
         #region New Macro Preparser
 
         [TestCase("#pressa", new string[] { "#press", "#pressa" }, new string[] { "b", "a" }, "a")]
+        [TestCase("#pressa", new string[] { "#press", "#pressa" }, new string[] { "b", "superathing" }, "superathing")]
+        [TestCase("#mymacro #mymacro2", new string[] { "#mymacro", "#mymacro2" }, new string[] { "_left b up500ms", "_right down left1.5s" }, "_left b up500ms _right down left1.5s")]
+        [TestCase("#nestedmacro", new string[] { "#nestedmacro", "#macro", "#nested" }, new string[] { "#nested #macro", "up350ms", "right a" }, "right a up350ms")]
         //[TestCase("#pressa r b", new string[] { "#pressa" }, new string[] { "a" }, "a r b")]
         //[TestCase("#jumpup . .b750ms", new string[] { "#jumpup" }, new string[] { "_upa500ms" }, "_upa500ms . .b750ms")]
         public void TestNormalMacrosNew(string input, string[] macroNames, string[] macroValues, string expectedOutput)
