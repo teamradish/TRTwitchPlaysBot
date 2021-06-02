@@ -61,6 +61,7 @@ namespace TRBot.Tests
         [TestCase("#nestedmacro", new string[] { "#nestedmacro", "#macro", "#nested" }, new string[] { "#nested #macro", "up350ms", "right a" }, "right a up350ms")]
         [TestCase("##b", new string[] { "#b" }, new string[] { "b300ms" }, "#b300ms")]
         [TestCase("#hello#helabr", new string[] { "#hello", "#he" }, new string[] { "right750msup", "left" }, "right750msupleftlabr")]
+        [TestCase("#hello#helabr", new string[] { "#hello", "#he", "#hela", "#helab" }, new string[] { "right750msup", "left", "right", "up" }, "right750msupupr")]
         public void TestNormalMacrosNew(string input, string[] macroNames, string[] macroValues, string expectedOutput)
         {
             Assert.AreEqual(macroNames.Length, macroValues.Length);
