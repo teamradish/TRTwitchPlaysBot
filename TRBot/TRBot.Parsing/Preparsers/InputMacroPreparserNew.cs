@@ -70,8 +70,6 @@ namespace TRBot.Parsing
 
             string parsedMacroMsg = ParseMacros(message, regexOptions, 0);
 
-            
-            
             //sw.Stop();
             //Console.WriteLine($"SW MS for PopulateMacros: {sw.ElapsedMilliseconds}");
 
@@ -85,6 +83,7 @@ namespace TRBot.Parsing
             //Stop parsing if the recursion is too deep or the message is invalid
             if (recursionDepth >= MaxRecursions || string.IsNullOrEmpty(parsedMsg) == true)
             {
+                Console.WriteLine($"Recursed {MaxRecursions} times; exiting early");
                 return parsedMsg;
             }
 
@@ -277,18 +276,6 @@ namespace TRBot.Parsing
             }
 
             return parsedMsg;
-        }
-
-        private string PopulateVariables(string macroContents, List<string> macroVariables)
-        {
-            int count = macroVariables.Count;
-            for (int i = 0; i < count; i++)
-            {
-                string v = macroVariables[i];
-                macroContents = Regex.Replace(macroContents, "<" + i + ">", v);
-                //Console.WriteLine($"Macro Contents: {macroContents}");
-            }
-            return macroContents;
         }
     }
 }

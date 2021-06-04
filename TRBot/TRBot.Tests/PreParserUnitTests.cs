@@ -62,6 +62,8 @@ namespace TRBot.Tests
         [TestCase("##b", new string[] { "#b" }, new string[] { "b300ms" }, "#b300ms")]
         [TestCase("#hello#helabr", new string[] { "#hello", "#he" }, new string[] { "right750msup", "left" }, "right750msupleftlabr")]
         [TestCase("#hello#helabr", new string[] { "#hello", "#he", "#hela", "#helab" }, new string[] { "right750msup", "left", "right", "up" }, "right750msupupr")]
+        [TestCase("#friend#free", new string[] { "#friend", "#free" }, new string[] { "#free", "#friend" }, "#friend#free" )]
+        [TestCase("#friendf#friend#free", new string[] { "#friendf", "#friend", "#free", "#test" }, new string[] { "#test", "#free", "#friend", "up450ms" }, "up450ms#friend#free" )]
         public void TestNormalMacrosNew(string input, string[] macroNames, string[] macroValues, string expectedOutput)
         {
             Assert.AreEqual(macroNames.Length, macroValues.Length);
@@ -83,6 +85,23 @@ namespace TRBot.Tests
             }, "[_up47%17ms#5ms_right47%17ms#5ms-up17ms#5ms_down47%17ms#5ms-right17ms#5ms_left47%17ms#5ms-down17ms#5ms_up47%17ms#5ms-left17ms]*10")]
         //[TestCase("#dy(#test(q,b))", new string[] { "#dy(*)", "#test(*,*)" }, new string[] { "<0>500ms", "[<0>34ms<1>250ms]*2 r" }, "[q34msb250ms]*2 r500ms")]
         public void TestDynamicMacrosNew(string input, string[] macroNames, string[] macroValues, string expectedOutput)
+        {
+            Assert.AreEqual(macroNames.Length, macroValues.Length);
+
+            IQueryable<InputMacro> macros = BuildMacroList(macroNames, macroValues);
+
+            InputMacroPreparserNew imp = new InputMacroPreparserNew(macros.AsQueryable());
+            string output = imp.Preparse(input);
+
+            Assert.AreEqual(output, expectedOutput);
+        }
+
+        [TestCase("#press(a)#press", new string[] { "#press(*)", "#press" }, new string[] { "<0>", "b" }, "ab")]
+        [TestCase("#press(#press)", new string[] { "#press(*)", "#press" }, new string[] { "<0>", "b" }, "b")]
+        [TestCase("#mash(#ma,#mb)", new string[] { "#m", "#mash(*,*)", "#ma", "#mb" }, new string[] { "r", "[<0>34ms#34ms<1>34ms]*10", "a10%", "b20%" }, "[a10%34ms#34msb20%34ms]*10")]
+        [TestCase("#mash(#ma,#mb)", new string[] { "#m", "#mash(*)", "#mash(*,*)", "#mash(*,*,*)", "#ma", "#mb" }, new string[] { "r", "<0>100ms", "[<0>34ms#34ms<1>34ms]*10", "<0>20ms<1>50ms<2>40ms", "a10%", "b20%" }, "[a10%34ms#34msb20%34ms]*10")]
+        [TestCase("#press(#mash(b))", new string[] { "#press(*)", "#mash(*)" }, new string[] { "<0>", "[<0>#400ms]*15" }, "[b#400ms]*15")]
+        public void TestNormalAndDynamicMacrosNew(string input, string[] macroNames, string[] macroValues, string expectedOutput)
         {
             Assert.AreEqual(macroNames.Length, macroValues.Length);
 
