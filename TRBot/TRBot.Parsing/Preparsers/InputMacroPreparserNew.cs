@@ -41,7 +41,7 @@ namespace TRBot.Parsing
 
         private readonly string MacroRegex = @"(?<"+ MACRO_GROUP_NAME + @">\" + DEFAULT_MACRO_START +
             @"[^\#\(\s]+)(?<"+ MACRO_DYNAMIC_GROUP_NAME +
-            @">\((?<"+ MACRO_DYNAMIC_ARGS_GROUP_NAME + @">([^,\s],?)+)\))?";
+            @">\((?<"+ MACRO_DYNAMIC_ARGS_GROUP_NAME + @">([^,],?)+)\))?";
 
         public InputMacroPreparserNew(IQueryable<InputMacro> macroData)
         {
@@ -129,10 +129,23 @@ namespace TRBot.Parsing
                         continue;
                     }
 
-                    string[] splitArgs = dynamicArgsGroup.Value.Split(',');
+                    string dynamicArgVal = dynamicArgsGroup.Value;
 
-                    //Get the generic form of the macro (Ex. generic form of "#mash(a,b)" is "#mash(*,*)")
-                    StringBuilder dynamicMacroFull = new StringBuilder(macroNameMatch).Append('(');
+                    Console.WriteLine($"Starting dynamic arg val: {dynamicArgVal}");
+
+                    //Parse arguments to catch normal and dynamic macros inside them
+                    //If the macro fails to parse (Ex. doesn't exist, hits recursion limit) then this input won't be valid anyway
+                    string dynamicArgsParsed = ParseMacros(dynamicArgVal, regexOptions, recursionDepth + 1);
+
+                    string[] splitArgs = dynamicArgsParsed.Split(',');
+
+                    //Get the generic form of the macro (Ex. generic form of "#mash(up,down)" is "#mash(*,*)")
+                    //The length of the string here is: macro name length + the split count + 3
+                    //The 3 comes from the two parenthesis and the additional match
+                    //NOTE: We might be able to use String.Create here or a stackalloc char for better performance + less memory
+                    StringBuilder dynamicMacroFull = new StringBuilder(macroNameMatch.Length + (splitArgs.Length + 1) + 2);
+                    dynamicMacroFull.Append(macroNameMatch);
+                    dynamicMacroFull.Append('(');
 
                     int lastInd = splitArgs.Length - 1;
 
@@ -188,13 +201,10 @@ namespace TRBot.Parsing
 
                     int origStartIndex = match.Index;
 
-                    //#pressa#b = 9
-                    //a#b = 3
-                    //aaaaaaaa#b = 10
-
                     //Adjust start index to account for replacements in the string
                     int adjustedStartIndex = origStartIndex - (origLength - curLength);
 
+                    //Replace the entire match as it's picked up
                     int replaceLength = match.Value.Length;
 
                     Console.WriteLine($"Replacing {replaceLength} characters in {bestMacroMatch.MacroName} with {parsedMacroVal} starting at index {adjustedStartIndex}"); 
@@ -267,6 +277,7 @@ namespace TRBot.Parsing
                     Console.WriteLine($"Cur string: {strBuilder.ToString()}");
                 }
  
+                //Set new length
                 curLength = strBuilder.Length;
             }
 

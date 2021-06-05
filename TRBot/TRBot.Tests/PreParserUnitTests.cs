@@ -80,10 +80,27 @@ namespace TRBot.Tests
         [TestCase("#press(abcdefg)", new string[] { "#press(*)" }, new string[] { "<0>" }, "abcdefg")]
         [TestCase("#press(35,b)", new string[] { "#press(*,*)" }, new string[] { "<0>ms _<1>" }, "35ms _b")]
         [TestCase("#mash(a,20)", new string[] { "#mash(*,*)" }, new string[] { "[<0>34ms #34ms]*<1>" }, "[a34ms #34ms]*20")]
-        [TestCase("#pspin(5,10,47)", new string[] { "#pspin(*,*,*)" }, new string[]
+        [TestCase(
+            "#pspin(5,10,47)",
+            new string[] { "#pspin(*,*,*)" },
+            new string[]
             { "[_up<2>%17ms#<0>ms_right<2>%17ms#<0>ms-up17ms#<0>ms_down<2>%17ms#<0>ms-right17ms#<0>ms_left<2>%17ms#<0>ms-down17ms#<0>ms_up<2>%17ms#<0>ms-left17ms]*<1>"
-            }, "[_up47%17ms#5ms_right47%17ms#5ms-up17ms#5ms_down47%17ms#5ms-right17ms#5ms_left47%17ms#5ms-down17ms#5ms_up47%17ms#5ms-left17ms]*10")]
-        //[TestCase("#dy(#test(q,b))", new string[] { "#dy(*)", "#test(*,*)" }, new string[] { "<0>500ms", "[<0>34ms<1>250ms]*2 r" }, "[q34msb250ms]*2 r500ms")]
+            },
+            "[_up47%17ms#5ms_right47%17ms#5ms-up17ms#5ms_down47%17ms#5ms-right17ms#5ms_left47%17ms#5ms-down17ms#5ms_up47%17ms#5ms-left17ms]*10"
+        )]
+        [TestCase("#dy(#test(q,b))", new string[] { "#dy(*)", "#test(*,*)" }, new string[] { "<0>500ms", "[<0>34ms<1>250ms]*2 r" }, "[q34msb250ms]*2 r500ms")]
+        [TestCase(
+            "#dy(#dy,#t(n,r,#dy(b, n)))",
+            new string[] { "#dy", "#dy(*,*)", "#t(*,*,*)" },
+            new string[] { "l320%", "<0>4ms<1>", "<0>1s <1>2s #dy(<1>, <2>)" },
+            "l320%4msn1s r2s r4ms b4ms n"
+        )]
+        [TestCase(
+            "#bow(x)",
+            new string[] { "#item(*,*,*)", "#bow(*)" },
+            new string[] { "dup #500ms [<0>100ms #100ms]*<1> <2> #300ms b", "#item(right,2,<0>)" },
+            "dup #500ms [right100ms #100ms]*2 x #300ms b"
+        )]
         public void TestDynamicMacrosNew(string input, string[] macroNames, string[] macroValues, string expectedOutput)
         {
             Assert.AreEqual(macroNames.Length, macroValues.Length);
