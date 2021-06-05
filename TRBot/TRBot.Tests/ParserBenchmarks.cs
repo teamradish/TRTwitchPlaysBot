@@ -28,6 +28,7 @@ using TRBot.Parsing;
 
 namespace TRBot.Tests
 {
+    [MemoryDiagnoser]
     public class ParserBenchmarks
     {
         private string Message = string.Empty;

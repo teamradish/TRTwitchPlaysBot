@@ -26,7 +26,7 @@ using System.Diagnostics;
 namespace TRBot.Parsing
 {
     /// <summary>
-    /// A pre-parser that populates macros based on given information.
+    /// A pre-parser that expands macros into their input values.
     /// </summary>
     public class InputMacroPreparserNew : IPreparser
     {
@@ -41,19 +41,25 @@ namespace TRBot.Parsing
         public const string MACRO_DYNAMIC_ARG_VARIABLE_START = "<";
         public const string MACRO_DYNAMIC_ARG_VARIABLE_END = ">";
 
-        private IQueryable<InputMacro> MacroData = null;
-        private int MaxRecursions = 10;
-
         // Full Regex
         // (?<macro>\#[^\#\(\s]+)(?<dynamic>\((?<args>([^,\(\)](\(.*\))?,?)+)\))?
-        private readonly string MacroRegex = @"(?<"+ MACRO_GROUP_NAME + @">\" + DEFAULT_MACRO_START +
+        public readonly string MacroRegex = @"(?<"+ MACRO_GROUP_NAME + @">\" + DEFAULT_MACRO_START +
             @"[^\" + DEFAULT_MACRO_START + @"\(\s]+)(?<"+ MACRO_DYNAMIC_GROUP_NAME +
             @">\((?<"+ MACRO_DYNAMIC_ARGS_GROUP_NAME + @">([^" + MACRO_DYNAMIC_ARG_SEPARATOR + @"\(\)](\(.*\))?"
             + MACRO_DYNAMIC_ARG_SEPARATOR + @"?)+)\))?";
 
+        private IQueryable<InputMacro> MacroData = null;
+        private int MaxRecursions = 10;
+
         public InputMacroPreparserNew(IQueryable<InputMacro> macroData)
         {
             MacroData = macroData;
+        }
+
+        public InputMacroPreparserNew(IQueryable<InputMacro> macroData, in int maxRecursions)
+            : this(macroData)
+        {
+            MaxRecursions = maxRecursions;
         }
 
         /// <summary>
@@ -85,6 +91,8 @@ namespace TRBot.Parsing
         private string ParseMacros(string message, in RegexOptions regexOptions, in int recursionDepth)
         {
             string parsedMsg = message;
+
+            //Console.WriteLine($"Recursion depth is {recursionDepth} for \"{parsedMsg}\""); 
 
             //Stop parsing if the recursion is too deep or the message is invalid
             if (recursionDepth >= MaxRecursions || string.IsNullOrEmpty(parsedMsg) == true)

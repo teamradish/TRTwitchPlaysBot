@@ -53,7 +53,21 @@ namespace TRBot.Tests
             Assert.AreEqual(output, expectedOutput);
         }
 
-        #region New Macro Preparser
+        [TestCase("#press(a)", new string[] { "#press(*)" }, new string[] { "<0>" }, "a")]
+        [TestCase("#press(abcdefg)", new string[] { "#press(*)" }, new string[] { "<0>" }, "abcdefg")]
+        [TestCase("#press(35,b)", new string[] { "#press(*,*)" }, new string[] { "<0>ms _<1>" }, "35ms _b")]
+        [TestCase("#mash(a,20)", new string[] { "#mash(*,*)" }, new string[] { "[<0>34ms #34ms]*<1>" }, "[a34ms #34ms]*20")]
+        public void TestDynamicMacros(string input, string[] macroNames, string[] macroValues, string expectedOutput)
+        {
+            Assert.AreEqual(macroNames.Length, macroValues.Length);
+
+            IQueryable<InputMacro> macros = BuildMacroList(macroNames, macroValues);
+
+            InputMacroPreparser imp = new InputMacroPreparser(macros.AsQueryable());
+            string output = imp.Preparse(input);
+
+            Assert.AreEqual(output, expectedOutput);
+        }
 
         [TestCase("#pressa", new string[] { "#press", "#pressa" }, new string[] { "b", "a" }, "a")]
         [TestCase("#pressa", new string[] { "#press", "#pressa" }, new string[] { "b", "superathing" }, "superathing")]
@@ -104,8 +118,8 @@ namespace TRBot.Tests
         [TestCase(
             "#bow(x) #item(left,2,z)",
             new string[] { "#item(*,*,*)", "#bow(*)" },
-            new string[] { "dup #500ms [<0>100ms #100ms]*<1> <2> #300ms b", "#item(right,2,<0>)" },
-            "dup #500ms [right100ms #100ms]*2 x #300ms b dup #500ms [left100ms #100ms]*2 z #300ms b"
+            new string[] { "dup #0.5s [<0>100ms #100ms]*<1> <2> #300ms b", "#item(right,2,<0>)" },
+            "dup #0.5s [right100ms #100ms]*2 x #300ms b dup #0.5s [left100ms #100ms]*2 z #300ms b"
         )]
         public void TestDynamicMacrosNew(string input, string[] macroNames, string[] macroValues, string expectedOutput)
         {
@@ -137,19 +151,19 @@ namespace TRBot.Tests
             Assert.AreEqual(output, expectedOutput);
         }
 
-        #endregion
-
-        [TestCase("#press(a)", new string[] { "#press(*)" }, new string[] { "<0>" }, "a")]
-        [TestCase("#press(abcdefg)", new string[] { "#press(*)" }, new string[] { "<0>" }, "abcdefg")]
-        [TestCase("#press(35,b)", new string[] { "#press(*,*)" }, new string[] { "<0>ms _<1>" }, "35ms _b")]
-        [TestCase("#mash(a,20)", new string[] { "#mash(*,*)" }, new string[] { "[<0>34ms #34ms]*<1>" }, "[a34ms #34ms]*20")]
-        public void TestDynamicMacros(string input, string[] macroNames, string[] macroValues, string expectedOutput)
+        [TestCase("#mymacro(#jump)", new string[] { "#mymacro(*)", "#jump" }, new string[] { "right400ms <0>", "a400ms" }, 0, "#mymacro(#jump)")]
+        [TestCase("#mymacro(#jump)", new string[] { "#mymacro(*)", "#jump" }, new string[] { "right400ms <0>", "a400ms" }, 1, "right400ms #jump")]
+        [TestCase("#mymacro(#jump)", new string[] { "#mymacro(*)", "#jump" }, new string[] { "right400ms <0>", "a400ms" }, 2, "right400ms a400ms")]
+        [TestCase("#mymacro(#jump)", new string[] { "#mymacro(*)", "#jump", "#atk", "#defend" }, new string[] { "right400ms <0>", "#atk", "#defend", "b3.0s" }, 2, "right400ms #defend")]
+        [TestCase("#mymacro", new string[] { "#mymacro", "#jump(*)", "#atk", "#defend", "#def" }, new string[] { "#jump(n)", "<0>+#atk", "#defend", "#def", "r12%1.25s" }, 5, "n+r12%1.25s")]
+        [TestCase("#recursive", new string[] { "#recursive", "#recursive2" }, new string[] { "#recursive2", "#recursive" }, 26, "#recursive")]
+        public void TestMacroMaxRecursion(string input, string[] macroNames, string[] macroValues, int maxRecursion, string expectedOutput)
         {
             Assert.AreEqual(macroNames.Length, macroValues.Length);
 
             IQueryable<InputMacro> macros = BuildMacroList(macroNames, macroValues);
 
-            InputMacroPreparser imp = new InputMacroPreparser(macros.AsQueryable());
+            InputMacroPreparserNew imp = new InputMacroPreparserNew(macros.AsQueryable(), maxRecursion);
             string output = imp.Preparse(input);
 
             Assert.AreEqual(output, expectedOutput);
