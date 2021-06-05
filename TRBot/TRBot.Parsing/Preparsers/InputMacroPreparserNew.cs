@@ -36,12 +36,20 @@ namespace TRBot.Parsing
         public const string MACRO_DYNAMIC_GROUP_NAME = "dynamic";
         public const string MACRO_DYNAMIC_ARGS_GROUP_NAME = "args";
 
+        public const string MACRO_DYNAMIC_GENERIC_PLACEHOLDER = "*";
+        public const string MACRO_DYNAMIC_ARG_SEPARATOR = ",";
+        public const string MACRO_DYNAMIC_ARG_VARIABLE_START = "<";
+        public const string MACRO_DYNAMIC_ARG_VARIABLE_END = ">";
+
         private IQueryable<InputMacro> MacroData = null;
         private int MaxRecursions = 10;
 
+        // Full Regex
+        // (?<macro>\#[^\#\(\s]+)(?<dynamic>\((?<args>([^,\(\)](\(.*\))?,?)+)\))?
         private readonly string MacroRegex = @"(?<"+ MACRO_GROUP_NAME + @">\" + DEFAULT_MACRO_START +
-            @"[^\#\(\s]+)(?<"+ MACRO_DYNAMIC_GROUP_NAME +
-            @">\((?<"+ MACRO_DYNAMIC_ARGS_GROUP_NAME + @">([^,\(\)](\(.*\))?,?)+)\))?";
+            @"[^\" + DEFAULT_MACRO_START + @"\(\s]+)(?<"+ MACRO_DYNAMIC_GROUP_NAME +
+            @">\((?<"+ MACRO_DYNAMIC_ARGS_GROUP_NAME + @">([^" + MACRO_DYNAMIC_ARG_SEPARATOR + @"\(\)](\(.*\))?"
+            + MACRO_DYNAMIC_ARG_SEPARATOR + @"?)+)\))?";
 
         public InputMacroPreparserNew(IQueryable<InputMacro> macroData)
         {
@@ -138,7 +146,7 @@ namespace TRBot.Parsing
                     //If the macro fails to parse (Ex. doesn't exist, hits recursion limit) then this input won't be valid anyway
                     string dynamicArgsParsed = ParseMacros(dynamicArgVal, regexOptions, recursionDepth + 1);
 
-                    string[] splitArgs = dynamicArgsParsed.Split(',');
+                    string[] splitArgs = dynamicArgsParsed.Split(MACRO_DYNAMIC_ARG_SEPARATOR);
 
                     //Get the generic form of the macro (Ex. generic form of "#mash(up,down)" is "#mash(*,*)")
                     //The length of the string here is: macro name length + the split count + 3
@@ -157,11 +165,11 @@ namespace TRBot.Parsing
 
                         if (i < lastInd)
                         {
-                            dynamicMacroFull.Append('*').Append(',');
+                            dynamicMacroFull.Append(MACRO_DYNAMIC_GENERIC_PLACEHOLDER).Append(MACRO_DYNAMIC_ARG_SEPARATOR);
                         }
                         else
                         {
-                            dynamicMacroFull.Append('*');
+                            dynamicMacroFull.Append(MACRO_DYNAMIC_GENERIC_PLACEHOLDER);
                         }
                     }
 
@@ -187,7 +195,7 @@ namespace TRBot.Parsing
                     for (int i = 0; i < splitArgs.Length; i++)
                     {
                         //Replace the instance in the string with this new value
-                        dynamicMacroValue = dynamicMacroValue.Replace("<" + i + ">", splitArgs[i]);
+                        dynamicMacroValue = dynamicMacroValue.Replace(MACRO_DYNAMIC_ARG_VARIABLE_START + i + MACRO_DYNAMIC_ARG_VARIABLE_END, splitArgs[i]);
                     }
 
                     //Console.WriteLine($"Dynamic macro value after arguments: \"{dynamicMacroValue}\"");

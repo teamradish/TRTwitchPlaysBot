@@ -120,6 +120,7 @@ namespace TRBot.Tests
         }
 
         [TestCase("#press(a)#press", new string[] { "#press(*)", "#press" }, new string[] { "<0>", "b" }, "ab")]
+        [TestCase("#press(a)#press(b)#press#press(ba)", new string[] { "#press(*)", "#press" }, new string[] { "<0>", "c" }, "abcba")]
         [TestCase("#press(#press)", new string[] { "#press(*)", "#press" }, new string[] { "<0>", "b" }, "b")]
         [TestCase("#mash(#ma,#mb)", new string[] { "#m", "#mash(*,*)", "#ma", "#mb" }, new string[] { "r", "[<0>34ms#34ms<1>34ms]*10", "a10%", "b20%" }, "[a10%34ms#34msb20%34ms]*10")]
         [TestCase("#mash(#ma,#mb)", new string[] { "#m", "#mash(*)", "#mash(*,*)", "#mash(*,*,*)", "#ma", "#mb" }, new string[] { "r", "<0>100ms", "[<0>34ms#34ms<1>34ms]*10", "<0>20ms<1>50ms<2>40ms", "a10%", "b20%" }, "[a10%34ms#34msb20%34ms]*10")]
