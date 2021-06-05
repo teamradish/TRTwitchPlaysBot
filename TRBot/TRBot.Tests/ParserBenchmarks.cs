@@ -15,6 +15,8 @@
  * along with TRBot.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#if false
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
@@ -148,3 +150,5 @@ namespace TRBot.Tests
         }
     }
 }
+
+#endif

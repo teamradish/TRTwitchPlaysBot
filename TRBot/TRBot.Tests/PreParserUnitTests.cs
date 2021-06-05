@@ -101,6 +101,12 @@ namespace TRBot.Tests
             new string[] { "dup #500ms [<0>100ms #100ms]*<1> <2> #300ms b", "#item(right,2,<0>)" },
             "dup #500ms [right100ms #100ms]*2 x #300ms b"
         )]
+        [TestCase(
+            "#bow(x) #item(left,2,z)",
+            new string[] { "#item(*,*,*)", "#bow(*)" },
+            new string[] { "dup #500ms [<0>100ms #100ms]*<1> <2> #300ms b", "#item(right,2,<0>)" },
+            "dup #500ms [right100ms #100ms]*2 x #300ms b dup #500ms [left100ms #100ms]*2 z #300ms b"
+        )]
         public void TestDynamicMacrosNew(string input, string[] macroNames, string[] macroValues, string expectedOutput)
         {
             Assert.AreEqual(macroNames.Length, macroValues.Length);

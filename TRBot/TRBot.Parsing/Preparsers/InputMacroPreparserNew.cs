@@ -41,7 +41,7 @@ namespace TRBot.Parsing
 
         private readonly string MacroRegex = @"(?<"+ MACRO_GROUP_NAME + @">\" + DEFAULT_MACRO_START +
             @"[^\#\(\s]+)(?<"+ MACRO_DYNAMIC_GROUP_NAME +
-            @">\((?<"+ MACRO_DYNAMIC_ARGS_GROUP_NAME + @">([^,],?)+)\))?";
+            @">\((?<"+ MACRO_DYNAMIC_ARGS_GROUP_NAME + @">([^,\(\)](\(.*\))?,?)+)\))?";
 
         public InputMacroPreparserNew(IQueryable<InputMacro> macroData)
         {
@@ -61,10 +61,10 @@ namespace TRBot.Parsing
                 return message;
             }
 
-            foreach (var thing in MacroData)
-            {
-                Console.WriteLine($"MACRO = {thing.MacroName}");
-            }
+            //foreach (var thing in MacroData)
+            //{
+            //    Console.WriteLine($"MACRO = {thing.MacroName}");
+            //}
 
             const RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.IgnoreCase;
 
@@ -83,7 +83,7 @@ namespace TRBot.Parsing
             //Stop parsing if the recursion is too deep or the message is invalid
             if (recursionDepth >= MaxRecursions || string.IsNullOrEmpty(parsedMsg) == true)
             {
-                Console.WriteLine($"Recursed {MaxRecursions} times; exiting early");
+                //Console.WriteLine($"Recursed {MaxRecursions} times; exiting early");
                 return parsedMsg;
             }
 
@@ -92,7 +92,7 @@ namespace TRBot.Parsing
             //No matches, so return the original message
             if (matches.Count == 0)
             {
-                Console.WriteLine($"No matches found in \"{parsedMsg}\".");
+                //Console.WriteLine($"No matches found in \"{parsedMsg}\".");
                 return parsedMsg;
             }
             
@@ -106,7 +106,7 @@ namespace TRBot.Parsing
                 if (match.Groups.TryGetValue(MACRO_GROUP_NAME, out Group matchGroup) == false
                     || matchGroup.Success == false)
                 {
-                    Console.WriteLine($"No match with group \"{MACRO_GROUP_NAME}\" found.");
+                    //Console.WriteLine($"No match with group \"{MACRO_GROUP_NAME}\" found.");
                     continue;
                 }
 
@@ -117,21 +117,21 @@ namespace TRBot.Parsing
 
                 bool isDynamic = (foundDynamic == true && dynamicGroup?.Success == true);
 
-                Console.WriteLine($"Found \"{MACRO_GROUP_NAME}\" group with value \"{macroNameMatch}\"");
-                Console.WriteLine($"Dynamic macro = {isDynamic}");
+                //Console.WriteLine($"Found \"{MACRO_GROUP_NAME}\" group with value \"{macroNameMatch}\"");
+                //Console.WriteLine($"Dynamic macro = {isDynamic}");
 
                 //Dynamic macro - find the match and replace arguments
                 if (isDynamic == true)
                 {
                     if (foundDynamicArgs == false || dynamicArgsGroup.Success == false)
                     {
-                        Console.WriteLine("Found a dynamic macro but no arguments! Invalid macro!");
+                        //Console.WriteLine("Found a dynamic macro but no arguments! Invalid macro!");
                         continue;
                     }
 
                     string dynamicArgVal = dynamicArgsGroup.Value;
 
-                    Console.WriteLine($"Starting dynamic arg val: {dynamicArgVal}");
+                    //Console.WriteLine($"Starting dynamic arg val: {dynamicArgVal}");
 
                     //Parse arguments to catch normal and dynamic macros inside them
                     //If the macro fails to parse (Ex. doesn't exist, hits recursion limit) then this input won't be valid anyway
@@ -152,7 +152,7 @@ namespace TRBot.Parsing
                     //Build generic form
                     for (int i = 0; i < splitArgs.Length; i++)
                     {
-                        Console.WriteLine($"Found argument \"{splitArgs[i]}\" in dynamic macro {macroNameMatch}");
+                        //Console.WriteLine($"Found argument \"{splitArgs[i]}\" in dynamic macro {macroNameMatch}");
 
                         if (i < lastInd)
                         {
@@ -168,16 +168,16 @@ namespace TRBot.Parsing
 
                     string dynamicMacroGenericStr = dynamicMacroFull.ToString();
 
-                    Console.WriteLine($"Dynamic macro generic form = \"{dynamicMacroGenericStr}\"");
+                    //Console.WriteLine($"Dynamic macro generic form = \"{dynamicMacroGenericStr}\"");
 
                     InputMacro bestMacroMatch = MacroData.FirstOrDefault(inpMacro => inpMacro.MacroName == dynamicMacroGenericStr);
                     if (bestMacroMatch == null)
                     {
-                        Console.WriteLine($"Dynamic macro named \"{dynamicMacroGenericStr}\" not found!");
+                        //Console.WriteLine($"Dynamic macro named \"{dynamicMacroGenericStr}\" not found!");
                         continue;
                     }
 
-                    Console.WriteLine($"Found dynamic macro \"{bestMacroMatch.MacroName}\"");
+                    //Console.WriteLine($"Found dynamic macro \"{bestMacroMatch.MacroName}\"");
 
                     string dynamicMacroValue = bestMacroMatch.MacroValue;
 
@@ -188,7 +188,7 @@ namespace TRBot.Parsing
                         dynamicMacroValue = dynamicMacroValue.Replace("<" + i + ">", splitArgs[i]);
                     }
 
-                    Console.WriteLine($"Dynamic macro value after arguments: \"{dynamicMacroValue}\"");
+                    //Console.WriteLine($"Dynamic macro value after arguments: \"{dynamicMacroValue}\"");
 
                     //Create StringBuilder if it doesn't exist - prevents allocations if we find no matches
                     if (strBuilder == null)
@@ -207,11 +207,11 @@ namespace TRBot.Parsing
                     //Replace the entire match as it's picked up
                     int replaceLength = match.Value.Length;
 
-                    Console.WriteLine($"Replacing {replaceLength} characters in {bestMacroMatch.MacroName} with {parsedMacroVal} starting at index {adjustedStartIndex}"); 
+                    //Console.WriteLine($"Replacing {replaceLength} characters in {bestMacroMatch.MacroName} with {parsedMacroVal} starting at index {adjustedStartIndex}"); 
 
                     strBuilder.Replace(match.Value, parsedMacroVal, adjustedStartIndex, replaceLength);
 
-                    Console.WriteLine($"Cur string: {strBuilder.ToString()}");
+                    //Console.WriteLine($"Cur string: {strBuilder.ToString()}");
                 }
                 else
                 {
@@ -226,7 +226,7 @@ namespace TRBot.Parsing
                     .Where(m => m.MacroName.Length <= macroNameMatch.Length && m.MacroName.StartsWith(macroStart, StringComparison.Ordinal))
                     .OrderByDescending(inpMacro => inpMacro.MacroName.Length);
 
-                    Console.WriteLine($"Looking for macro starting with: {macroStart}");
+                    //Console.WriteLine($"Looking for macro starting with: {macroStart}");
 
                     InputMacro longestMacro = null;
 
@@ -234,7 +234,7 @@ namespace TRBot.Parsing
                     //For example, this would pick up "#hello" over "#he" in "#hello123" 
                     foreach (InputMacro macro in matchingMacros)
                     {
-                        Console.WriteLine($"Looking at macro {macro.MacroName} for match");
+                        //Console.WriteLine($"Looking at macro {macro.MacroName} for match");
 
                         if (macroNameMatch.StartsWith(macro.MacroName, StringComparison.Ordinal) == true)
                         {
@@ -246,11 +246,11 @@ namespace TRBot.Parsing
                     //Macro not found
                     if (longestMacro == null)
                     {
-                        Console.WriteLine($"Macro in name \"{macroNameMatch}\" not found!");
+                        //Console.WriteLine($"Macro in name \"{macroNameMatch}\" not found!");
                         continue;
                     }
 
-                    Console.WriteLine($"Found longest macro named \"{longestMacro.MacroName}\" with value \"{longestMacro.MacroValue}\"!");
+                    //Console.WriteLine($"Found longest macro named \"{longestMacro.MacroName}\" with value \"{longestMacro.MacroValue}\"!");
 
                     //Create StringBuilder if it doesn't exist - prevents allocations if we find no matches
                     if (strBuilder == null)
@@ -270,11 +270,11 @@ namespace TRBot.Parsing
                     //Adjust start index to account for replacements in the string
                     int adjustedStartIndex = origStartIndex - (origLength - curLength);
 
-                    Console.WriteLine($"Replacing {longestMacro.MacroName.Length} characters in {longestMacro.MacroName} with {parsedMacroVal} starting at index {adjustedStartIndex}"); 
+                    //Console.WriteLine($"Replacing {longestMacro.MacroName.Length} characters in {longestMacro.MacroName} with {parsedMacroVal} starting at index {adjustedStartIndex}"); 
 
                     strBuilder.Replace(longestMacro.MacroName, parsedMacroVal, adjustedStartIndex, longestMacro.MacroName.Length);
 
-                    Console.WriteLine($"Cur string: {strBuilder.ToString()}");
+                    //Console.WriteLine($"Cur string: {strBuilder.ToString()}");
                 }
  
                 //Set new length
