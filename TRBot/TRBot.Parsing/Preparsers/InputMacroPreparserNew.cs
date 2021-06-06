@@ -43,7 +43,7 @@ namespace TRBot.Parsing
 
         // Full Regex
         // (?<macro>\#[^\#\(\s]+)(?<dynamic>\((?<args>([^,\(\)](\(.*\))?,?)+)\))?
-        public readonly string MacroRegex = @"(?<"+ MACRO_GROUP_NAME + @">\" + DEFAULT_MACRO_START +
+        public const string MACRO_REGEX = @"(?<"+ MACRO_GROUP_NAME + @">\" + DEFAULT_MACRO_START +
             @"[^\" + DEFAULT_MACRO_START + @"\(\s]+)(?<"+ MACRO_DYNAMIC_GROUP_NAME +
             @">\((?<"+ MACRO_DYNAMIC_ARGS_GROUP_NAME + @">([^" + MACRO_DYNAMIC_ARG_SEPARATOR + @"\(\)](\(.*\))?"
             + MACRO_DYNAMIC_ARG_SEPARATOR + @"?)+)\))?";
@@ -72,6 +72,7 @@ namespace TRBot.Parsing
             //There are no macros, so just return the original message
             if (MacroData == null || MacroData.Count() == 0)
             {
+                //Console.WriteLine("No macros available");
                 return message;
             }
 
@@ -101,7 +102,7 @@ namespace TRBot.Parsing
                 return parsedMsg;
             }
 
-            MatchCollection matches = Regex.Matches(parsedMsg, MacroRegex, regexOptions);
+            MatchCollection matches = Regex.Matches(parsedMsg, MACRO_REGEX, regexOptions);
 
             //No matches, so return the original message
             if (matches.Count == 0)
@@ -218,10 +219,10 @@ namespace TRBot.Parsing
 
                     //Find the longest macro with this name
                     //Filter by macros equal or shorter in length than the picked up macro name, along with
-                    //macros that start with the first two characters found, using ordinal comparison for better performance
+                    //macros that start with the first two characters found
                     //Sort by macro length in descending order to find longer macros first
                     IQueryable<InputMacro> matchingMacros = MacroData
-                    .Where(m => m.MacroName.Length <= macroNameMatch.Length && m.MacroName.StartsWith(macroStart, StringComparison.Ordinal))
+                    .Where(m => m.MacroName.Length <= macroNameMatch.Length && m.MacroName.StartsWith(macroStart))
                     .OrderByDescending(inpMacro => inpMacro.MacroName.Length);
 
                     //Console.WriteLine($"Looking for macro starting with: {macroStart}");
