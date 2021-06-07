@@ -24,6 +24,7 @@ namespace TRBot.Parsing
     /// <summary>
     /// Represents a dynamic macro substitution.
     /// </summary>
+    [Obsolete("This is used in the InputMacroPreparser, which is deprecated. See that class for more details.", false)]
     public struct DynamicMacroSub
     {
         public string MacroName;

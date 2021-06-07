@@ -48,8 +48,21 @@ namespace TRBot.Parsing
             @">\((?<"+ MACRO_DYNAMIC_ARGS_GROUP_NAME + @">([^" + MACRO_DYNAMIC_ARG_SEPARATOR + @"\(\)](\(.*\))?"
             + MACRO_DYNAMIC_ARG_SEPARATOR + @"?)+)\))?";
 
+        /// <summary>
+        /// The macro data to use when parsing.
+        /// </summary>
         private IQueryable<InputMacro> MacroData = null;
+
+        /// <summary>
+        /// The max depth to recurse when parsing macros.
+        /// This prevents infinite recursion for recursive macros.
+        /// </summary>
         private int MaxRecursions = 10;
+
+        /// <summary>
+        /// Options to use when parsing dynamic macros.
+        /// </summary>
+        private DynamicMacroArgOptions DynamicMacroOptions = DynamicMacroArgOptions.FillArgs;
 
         public InputMacroPreparserNew(IQueryable<InputMacro> macroData)
         {
@@ -60,6 +73,13 @@ namespace TRBot.Parsing
             : this(macroData)
         {
             MaxRecursions = maxRecursions;
+        }
+
+        public InputMacroPreparserNew(IQueryable<InputMacro> macroData, in int maxRecursions,
+            in DynamicMacroArgOptions dynamicMacroOptions)
+            : this(macroData, maxRecursions)
+        {
+            DynamicMacroOptions = dynamicMacroOptions;
         }
 
         /// <summary>
@@ -200,11 +220,15 @@ namespace TRBot.Parsing
 
                     string dynamicMacroValue = bestMacroMatch.MacroValue;
 
-                    //Now parse each argument separately
-                    for (int i = 0; i < splitArgs.Length; i++)
+                    //Replace arguments only if the options are set to do so
+                    if (DynamicMacroOptions == DynamicMacroArgOptions.FillArgs)
                     {
-                        //Replace the instance in the string with this new value
-                        dynamicMacroValue = dynamicMacroValue.Replace(MACRO_DYNAMIC_ARG_VARIABLE_START + i + MACRO_DYNAMIC_ARG_VARIABLE_END, splitArgs[i]);
+                        //Now parse each argument separately
+                        for (int i = 0; i < splitArgs.Length; i++)
+                        {
+                            //Replace the instance in the string with this new value
+                            dynamicMacroValue = dynamicMacroValue.Replace(MACRO_DYNAMIC_ARG_VARIABLE_START + i + MACRO_DYNAMIC_ARG_VARIABLE_END, splitArgs[i]);
+                        }
                     }
 
                     //Console.WriteLine($"Dynamic macro value after arguments: \"{dynamicMacroValue}\"");
