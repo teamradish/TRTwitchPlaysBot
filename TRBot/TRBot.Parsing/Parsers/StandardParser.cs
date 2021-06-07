@@ -460,7 +460,7 @@ namespace TRBot.Parsing
             List<IPreparser> preparsers = new List<IPreparser>()
             {
                 new RemoveWhitespacePreparser(),
-                new InputMacroPreparser(macros),
+                new InputMacroPreparserNew(macros),
                 new InputSynonymPreparser(synonyms),
                 new ExpandPreparser(),
                 new RemoveWhitespacePreparser(),
