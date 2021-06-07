@@ -114,15 +114,15 @@ Macros can be a very powerful asset, especially in more complex games such as 3D
 
 Further expanding on macros are dynamic macros, which can accept variable inputs and use them as they see fit. They come in the generic form of "#macroname(\*,...)" with "\*" representing the arguments.
 
-While being defined, the input arguments come in the form of "<#>" with "#" as the argument number, starting from 0. For example, "#mash(\*)" accepts one argument and can be "[<0>34ms #34ms]\*20". If using this macro, you can type "#mash(a)", which will replace "<0>" with "a", resulting in "[a34ms #34ms]\*20". Substituting "a" for "b" or any other input is also valid in this context.
+While being defined, the values of the dynamic macro arguments come in the form of "<#>" with "#" as the argument number, starting from 0. For example, "#mash(\*)" accepts one argument and can be "[<0>34ms #34ms]\*20". If using this macro, you can type "#mash(a)", which will replace "<0>" with "a", resulting in "[a34ms #34ms]\*20". Substituting "a" for "b" or any other input is also valid in this context.
 
 **Examples:** "#mash(y)", "#mash(b)", "mashalternate(left, right)" ([Demonstration](https://clips.twitch.tv/VainFurtiveCoffeeStoneLightning))
 
 It's possible to expand the earlier example further with an additional argument: "#mash(\*,\*)". If the new macro was then "[<0>34ms #34ms]\*<1>", calling the macro with "#mash(y,30)" will result in "[y34ms #34ms]\*30".
 
-Dynamic macros are referred to by their generic form when used for other purposes, such as when adding or removing them, or viewing them with the `ShowMacroCommand` (default: "!showmacro"). For the example above, the generic form is "#mash(\*,\*)".
+Dynamic macros are referred to by their generic form when used for general purposes, such as adding or removing them, or viewing them with the `ShowMacroCommand` (default: "!showmacro"). For the example above, the generic form is "#mash(\*,\*)".
 
-**Note that due to the nature of dynamic macros and the liberties with their syntax, the parser cannot validate them upon creation.** It is up to the players to verify that the dynamic macro works. Inputting a dynamic macro that doesn't parse will simply result in the input failing with no special error message. **Watch out for spaces between arguments while calling dynamic macros inside other macros!**
+**Note that due to the nature of dynamic macros and the liberties with their syntax, the parser cannot validate them upon creation.** It is up to the players to verify that the dynamic macro works. Inputting a dynamic macro that doesn't parse will simply result in the input failing with no special error message.
 
 ## Input Synonyms
 
@@ -132,4 +132,4 @@ For example, in a game where the "a" button makes the character jump, one can ma
 
 It's also possible to make more complex synonyms: for example, "slide" can be "_down a". This gives input synonyms a similar quality to macros, but they are not designed for such a purpose; thus, it's recommended to keep input synonyms as simple as possible.
 
-Input synonyms will directly replace any match, which can break inputs. For example, if "triangle" is an input, with "a" being an input synonym, the final output would be "tritrianglengle", which is likely not a valid input. In these instances, it's recommended to instead add a new input with the same button and/or axis value so it parses correctly. You can view all input synonyms with the `ListInputSynonymsCommand` (default: "!listsyn").
+Input synonyms will directly replace any match, which can break inputs. For example, if "triangle" is an input, with "a" being an input synonym, the final output would be "tritrianglengle", which is likely not a valid input. In these instances, it's recommended to instead add a new input with a different name but the same button and/or axis value so it parses correctly. You can view all input synonyms with the `ListInputSynonymsCommand` (default: "!listsyn").
