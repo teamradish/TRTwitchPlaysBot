@@ -4,7 +4,9 @@ TRBot is software that enables playing video games through text. In simple terms
 
 TRBot contains a comprehensive set of projects to facilitate text-based gameplay, some of which allow for setting up and managing community-oriented remote play, including Twitch Plays. The goal of TRBot is to lower the barrier of entry for text-based gameplay, such as Twitch Plays, and provide avenues to improve the experience.
 
-TRBot is inspired by the bot used on the TwitchPlays_Everything channel. The input syntax allows for great precision, making it well-suited for many types of games, whether it's an RPG or a 3D platformer. You can use TRBot for many purposes, including, but not limited to, allowing others to play games remotely and automating tedious tasks, such as mashing buttons or grinding levels in an RPG.
+TRBot is inspired by the bot used on the TwitchPlays_Everything channel. The input syntax allows for great precision, making it well-suited for many types of games, whether it's an RPG or a 3D platformer. You can use TRBot for many purposes, including collaborative remote play and automating tedious tasks, such as mashing buttons or grinding levels in an RPG.
+
+The core application, `TRBot.Main`, connects all the projects of TRBot together to form a fully functional bot with input handling, commands, service connectivity, and more!
 
 ## Documentation, setup, building from source, playing
 - See the [wiki home](./Wiki/Home.md) for your use-case(s).
@@ -14,7 +16,7 @@ TRBot is inspired by the bot used on the TwitchPlays_Everything channel. The inp
 - [Simple yet expressive input syntax](./Wiki/Syntax-Walkthrough.md) - translate your text to game inputs easily. Make your inputs as simple or precise as you want!
 - Portable and game-agnostic - TRBot runs alongside your game and can be configured as you like. No complex installation required - just download and run!
 - Cross-platform - Runs on Windows (vJoy) and GNU/Linux (uinput).
-- Virtual gamepads - Use analog inputs and set custom button mappings in games.
+- Virtual gamepads - Use analog inputs for precision and set custom button mappings in games to play how you prefer.
 - Run locally or through Twitch - TRBot is also set up for integrating other services.
 - Emulator support - NES, SNES, N64, GCN, and more. Several [emulator controller config files](./Controller%20Configs) are available.
 - Multiplayer support - Control [multiple players](./Wiki/Syntax-Walkthrough.md#multi-controller-inputs) separately or simultaneously.
@@ -22,8 +24,8 @@ TRBot is inspired by the bot used on the TwitchPlays_Everything channel. The inp
 - Flexible "console" infrastructure - change inputs, add new inputs, or even add a new console with a different set of inputs, on the fly.
 - Twitch Plays quality-of-life enhancements - macros, game logs, user silencing (without timeout/ban), stop all ongoing inputs, and switch consoles readily.
 - Pluggable virtual controller architecture - add your own virtual controller implementation to support more platforms.
-- Modular - TRBot is separated into parts, allowing those parts to be used as libraries. The core application, `TRBot.Main`, functions this way.
-- Commands - Interact with and manipulate TRBot through commands entered as text. Commands can be simple, such as [`SayCommand`](./TRBot/TRBot.Commands/Commands/SayCommand.cs), or more complex, such as [`AddInputCommand`](./TRBot/TRBot.Commands/Commands/AddInputCommand.cs). You can even [add your own commands](./Wiki/Custom-Commands.md) while TRBot is running. 
+- Modular - TRBot is separated into parts, allowing those parts to be used as libraries.
+- Commands - Interact with and manipulate TRBot through commands entered as text. [Add your own commands](./Wiki/Custom-Commands.md) to extend TRBot's capabilities, even **while** it's running!
 - SQLite database containing all data and settings, including access levels, commands, virtual controller count, and more. Data changes are immediately reflected in TRBot.
 - Sleep prevention - prevent games and consoles from going to sleep with a periodic input and interval of your choosing.
 - Reset prevention - forbid players from hitting button combos to reset the game.
