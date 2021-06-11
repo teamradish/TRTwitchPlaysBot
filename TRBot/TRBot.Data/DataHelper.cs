@@ -542,6 +542,7 @@ namespace TRBot.Data
             if (result < 0)
             {
                 TRBotLogger.Logger.Information($"Data version {dataVersionStr} is less than bot version {Application.VERSION_NUMBER}. Updating version number and forcing database initialization for missing entries.");
+                TRBotLogger.Logger.Information($"IMPORTANT: Run the UpdateEveryoneAbilitiesCommand (default: \"!updateeveryoneabilities\") to update all user abilities! Failure to do so may result in users being unable to perform actions that now have permissions.");
                 newDataVersion = Application.VERSION_NUMBER;
 
                 forceInit = 1L;

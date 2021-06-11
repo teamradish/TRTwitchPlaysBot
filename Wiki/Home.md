@@ -7,7 +7,7 @@ Welcome to the TRBot wiki! Choose the relevant section for your needs.
 ### Setup
 * [Setting up TRBot](./Setup-Init.md) - Initial steps setting up TRBot.
 * [Virtual Controllers](./Setup-VController.md) - Set up virtual controllers that TRBot presses buttons on for your games.
-* [Migrating Data](./Migrating-Data.md) - A guide to migrating data from previous TRBot releases.
+* [Updating TRBot](./Migrating-Data.md) - A guide to updating TRBot and migrating data from previous releases.
 * [Settings Documentation](./Settings-Documentation.md) - Documentation on the various settings.
 * [Custom Consoles & Inputs](./Adding-ConsolesInputs.md) - Learn how to add new consoles and add/remove/modify available inputs.
 * [LiveSplitOne Integration](./LiveSplitOne-Integration.md) - Learn to how control your LiveSplitOne timer through TRBot.

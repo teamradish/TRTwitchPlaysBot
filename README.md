@@ -11,6 +11,7 @@ The core application, `TRBot.Main`, connects all the projects of TRBot together 
 ## Documentation, setup, building from source, playing
 - See the [wiki home](./Wiki/Home.md) for your use-case(s).
 - See the [FAQ](./Wiki/FAQ.md) for answers to commonly asked questions.
+- Want to see examples? [We've got your back](./Wiki/Play-Examples.md).
 
 ## Features
 - [Simple yet expressive input syntax](./Wiki/Syntax-Walkthrough.md) - translate your text to game inputs easily. Make your inputs as simple or precise as you want!
