@@ -371,6 +371,12 @@ namespace TRBot.Parsing
                             input.DurationType = InputDurationTypes.Seconds;
                         }
                     }
+
+                    //Account for overflow
+                    if (input.Duration < 0 && durVal >= 0d)
+                    {
+                        return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, $"Parser error: Input duration integer overflow at index {durGroup.Index}. The max duration for a single input is {int.MaxValue} milliseconds.");
+                    }
                 }
                 else
                 {
@@ -398,6 +404,14 @@ namespace TRBot.Parsing
                     //Add the longest subsequence duration to the total
                     totalDur += longestSubDur;
                     longestSubDur = 0;
+
+                    //Handle overflow when adding very large numbers
+                    if (totalDur < 0)
+                    {
+                        return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, $"Parser error: Total input sequence duration integer overflow at around index {match.Index}. The absolute max duration for an input sequence is {int.MaxValue} milliseconds.");
+                    }
+
+                    //Console.WriteLine($"Current total dur: {totalDur}");
                 }
 
                 //Exceeded duration
