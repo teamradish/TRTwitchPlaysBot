@@ -134,7 +134,7 @@ namespace TRBot.Misc
         public bool SendNextQueuedMessage()
         {
             //Ensure the client service has joined a channel, otherwise we can't send the message 
-            if (ClientMessages.Count == 0 || ClientService.IsConnected == false || ClientService.JoinedChannels?.Count <= 0)
+            if (ClientMessages.Count == 0 || ClientService.IsConnected == false || ClientService.CanSendMessages == true)
             {
                 return false;
             }

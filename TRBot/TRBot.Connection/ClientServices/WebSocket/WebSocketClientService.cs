@@ -19,25 +19,15 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using TRBot.Logging;
-using TwitchLib.Client;
-using TwitchLib.Client.Events;
-using TwitchLib.Client.Models;
+using WebSocketSharp;
 
-namespace TRBot.Connection.Twitch
+namespace TRBot.Connection.WebSocket
 {
     /// <summary>
-    /// Twitch client interaction.
+    /// Read inputs through a WebSocket.
     /// </summary>
-    public class TwitchClientService : IClientService
+    public class WebSocketClientService : IClientService
     {
-        private TwitchClient twitchClient = null;
-
-        private ConnectionCredentials Credentials = null;
-        private string ChannelName = string.Empty;
-        private char ChatCommandIdentifier = '!';
-        private char WhisperCommandIdentifier = '!';
-        private bool AutoRelistenOnExceptions = true;
-
         /// <summary>
         /// The event handler associated with the service.
         /// </summary>
@@ -46,12 +36,12 @@ namespace TRBot.Connection.Twitch
         /// <summary>
         /// Tells if the client is initialized.
         /// </summary>
-        public bool IsInitialized => (twitchClient?.IsInitialized == true);
+        public bool IsInitialized => Initialized;
 
         /// <summary>
         /// Tells if the client is connected.
         /// </summary>
-        public bool IsConnected => (twitchClient?.IsConnected == true);
+        public bool IsConnected => (Socket != null && Socket.ReadyState == WebSocketState.Open && Socket.IsAlive == true);
 
         /// <summary>
         /// Whether the client is able to send messages.
@@ -63,16 +53,19 @@ namespace TRBot.Connection.Twitch
         /// </summary>
         public List<string> JoinedChannels { get; private set; } = new List<string>(8);
 
-        public TwitchClientService(ConnectionCredentials credentials, string channelName, in char chatCommandIdentifier,
-            in char whisperCommandIdentifier, in bool autoRelistenOnExceptions)
-        {
-            twitchClient = new TwitchClient();
+        private bool Initialized = false;
 
-            Credentials = credentials;
-            ChannelName = channelName;
-            ChatCommandIdentifier = chatCommandIdentifier;
-            WhisperCommandIdentifier = whisperCommandIdentifier;
-            AutoRelistenOnExceptions = autoRelistenOnExceptions;
+        private char CommandIdentifier = '!';
+        private string ConnectURL = string.Empty;
+        private string BotName = string.Empty;
+
+        private WebSocketSharp.WebSocket Socket = null;
+
+        public WebSocketClientService(string connectURL, char commandIdentifier, string botName)
+        {
+            ConnectURL = connectURL;
+            CommandIdentifier = commandIdentifier;
+            BotName = botName;
         }
 
         /// <summary>
@@ -80,18 +73,14 @@ namespace TRBot.Connection.Twitch
         /// </summary>
         public void Initialize()
         {
-            twitchClient.Initialize(Credentials, ChannelName, ChatCommandIdentifier,
-                WhisperCommandIdentifier, AutoRelistenOnExceptions);
-            twitchClient.OverrideBeingHostedCheck = true;
-
-            EventHandler = new TwitchEventHandler(twitchClient);
+            Socket = new WebSocketSharp.WebSocket(ConnectURL);
+            EventHandler = new WebSocketEventHandler(Socket, CommandIdentifier, BotName);
             EventHandler.Initialize();
-
-            EventHandler.OnConnectedEvent -= OnClientConnected;
-            EventHandler.OnConnectedEvent += OnClientConnected;
 
             EventHandler.OnJoinedChannelEvent -= OnClientJoinedChannel;
             EventHandler.OnJoinedChannelEvent += OnClientJoinedChannel;
+
+            Initialized = true;
         }
 
         /// <summary>
@@ -99,13 +88,13 @@ namespace TRBot.Connection.Twitch
         /// </summary>
         public void Connect()
         {
-            if (twitchClient.IsConnected == true)
+            if (IsConnected == true)
             {
                 TRBotLogger.Logger.Warning("Attempting to connect while already connected!");
                 return;
             }
-            
-            twitchClient.Connect();
+
+            Socket.Connect();
         }
 
         /// <summary>
@@ -113,13 +102,13 @@ namespace TRBot.Connection.Twitch
         /// </summary>
         public void Disconnect()
         {
-            if (twitchClient.IsConnected == false)
+            if (IsConnected == false)
             {
                 TRBotLogger.Logger.Warning("Attempting to disconnect while not connected!");
                 return;
             }
 
-            twitchClient.Disconnect();
+            Socket.Close(CloseStatusCode.Normal);
             JoinedChannels?.Clear();
         }
 
@@ -128,13 +117,13 @@ namespace TRBot.Connection.Twitch
         /// </summary>
         public void Reconnect()
         {
-            if (twitchClient.IsConnected == false)
+            if (IsConnected == false)
             {
                 TRBotLogger.Logger.Warning("Attempting to reconnect while not connected!");
                 return;
             }
 
-            twitchClient.Reconnect();
+            Socket.Connect();
         }
 
         /// <summary>
@@ -142,7 +131,7 @@ namespace TRBot.Connection.Twitch
         /// </summary>
         public void SendMessage(string channel, string message)
         {
-            twitchClient.SendMessage(channel, message);
+            Socket.Send(message);
         }
 
         /// <summary>
@@ -150,50 +139,29 @@ namespace TRBot.Connection.Twitch
         /// </summary>
         public void CleanUp()
         {
-            if (twitchClient.IsConnected == true)
-                twitchClient.Disconnect();
-            
+            if (IsConnected == true)
+            {
+                Socket.Close(CloseStatusCode.Normal);
+            }
+
             JoinedChannels = null;
 
-            EventHandler.OnConnectedEvent -= OnClientConnected;
             EventHandler.OnJoinedChannelEvent -= OnClientJoinedChannel;
 
             EventHandler.CleanUp();
         }
 
-        //This is a workaround for a TwitchLib regression that doesn't
-        //automatically rejoin the channel on reconnection
-        private void OnClientConnected(EvtConnectedArgs e)
-        {
-            //Refresh joined channels
-            PopulateJoinedChannels();
-
-            //Join the channel after connecting
-            twitchClient.JoinChannel(ChannelName);  
-        }
-
         private void OnClientJoinedChannel(EvtJoinedChannelArgs e)
         {
             //When joining a channel, set the joined channels list
-            PopulateJoinedChannels();
-        }
-
-        private void PopulateJoinedChannels()
-        {
-            IReadOnlyList<JoinedChannel> twitchJoinedChannels = twitchClient.JoinedChannels;
-
-            //Instantiate if needed
             if (JoinedChannels == null)
             {
-                JoinedChannels = new List<string>(twitchJoinedChannels.Count);
+                JoinedChannels = new List<string>(1);
             }
             
             JoinedChannels.Clear();
 
-            foreach (JoinedChannel channel in twitchJoinedChannels)
-            {
-                JoinedChannels.Add(channel.Channel);
-            }
+            JoinedChannels.Add(e.Channel);
         }
     }
 }

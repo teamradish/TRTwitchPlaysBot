@@ -27,6 +27,7 @@ using System.Threading.Tasks;
 using TRBot.Parsing;
 using TRBot.Connection;
 using TRBot.Connection.Twitch;
+using TRBot.Connection.WebSocket;
 using TRBot.Consoles;
 using TRBot.VirtualControllers;
 using TRBot.Misc;
@@ -865,6 +866,29 @@ namespace TRBot.Main
                 TwitchClient client = new TwitchClient();
                 ConnectionCredentials credentials = ConnectionHelper.MakeCredentialsFromTwitchLogin(twitchSettings);
                 ClientService = new TwitchClientService(credentials, twitchSettings.ChannelName, DataConstants.COMMAND_IDENTIFIER, DataConstants.COMMAND_IDENTIFIER, true);
+            }
+            else if (clientServiceType == ClientServiceTypes.WebSocket)
+            {
+                WebSocketConnectSettings wsConnectSettings = ConnectionHelper.ValidateWebSocketCredentialsPresent(DataConstants.DataFolderPath,
+                    WebSocketConstants.CONNECTION_SETTINGS_FILENAME);
+
+                //If the connection field is empty, the data is invalid
+                if (string.IsNullOrEmpty(wsConnectSettings.ConnectURL) == true)
+                {
+                    TRBotLogger.Logger.Error($"WebSocket connection settings are invalid; there's no given URL to connect to. Please modify the data in the \"{WebSocketConstants.CONNECTION_SETTINGS_FILENAME}\" file.");
+                    return;
+                }
+
+                const string wsProtocolStart = @"ws://";
+
+                //The connection URL must start with the WebSocket protocol
+                if (wsConnectSettings.ConnectURL.StartsWith(wsProtocolStart, StringComparison.Ordinal) == false)
+                {
+                    TRBotLogger.Logger.Error($"WebSocket connection URL does not start with \"{wsProtocolStart}\". Note that secure WebSockets (\"wss://\") are not yet supported.");
+                    return;
+                }
+
+                ClientService = new WebSocketClientService(wsConnectSettings.ConnectURL, DataConstants.COMMAND_IDENTIFIER, wsConnectSettings.BotName);
             }
 
             //Initialize service

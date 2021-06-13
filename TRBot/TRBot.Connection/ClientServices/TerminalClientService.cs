@@ -38,19 +38,14 @@ namespace TRBot.Connection
         public bool IsInitialized => Initialized;
 
         /// <summary>
-        /// Tells the client's operation type.
-        /// </summary>
-        public OperationTypes OperationType => OperationTypes.Offline;
-
-        /// <summary>
         /// Tells if the client is connected.
         /// </summary>
         public bool IsConnected => Connected;
 
         /// <summary>
-        /// The channels the client has joined.
+        /// Whether the client is able to send messages.
         /// </summary>
-        public List<string> JoinedChannels { get; private set; } = new List<string>(8);
+        public bool CanSendMessages => Connected;
 
         private bool Initialized = false;
         private bool Connected = false;
@@ -68,9 +63,6 @@ namespace TRBot.Connection
         public void Initialize()
         {
             EventHandler = new TerminalEventHandler(CommandIdentifier);
-
-            EventHandler.OnJoinedChannelEvent -= OnClientJoinedChannel;
-            EventHandler.OnJoinedChannelEvent += OnClientJoinedChannel;
 
             Initialized = true;
         }
@@ -90,7 +82,6 @@ namespace TRBot.Connection
         /// </summary>
         public void Disconnect()
         {
-            JoinedChannels?.Clear();
             Connected = false;
         }
 
@@ -115,24 +106,7 @@ namespace TRBot.Connection
         /// </summary>
         public void CleanUp()
         {
-            JoinedChannels = null;
-
-            EventHandler.OnJoinedChannelEvent -= OnClientJoinedChannel;
-
             EventHandler.CleanUp();
-        }
-
-        private void OnClientJoinedChannel(EvtJoinedChannelArgs e)
-        {
-            //When joining a channel, set the joined channels list
-            if (JoinedChannels == null)
-            {
-                JoinedChannels = new List<string>(1);
-            }
-            
-            JoinedChannels.Clear();
-
-            JoinedChannels.Add(e.Channel);
         }
     }
 }

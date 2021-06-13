@@ -18,25 +18,15 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using TwitchLib.Client;
-using TwitchLib.Client.Events;
-using TwitchLib.Communication.Events;
 
-namespace TRBot.Connection
+namespace TRBot.Data
 {
     /// <summary>
-    /// The types of connections for client services.
+    /// Connection settings for the WebSocket.
     /// </summary>
-    public enum OperationTypes
+    public sealed class WebSocketConnectSettings
     {
-        /// <summary>
-        /// This client service operates offline.
-        /// </summary>
-        Offline = 0,
-        
-        /// <summary>
-        /// This client service operates online and requires an active internet connection to function.
-        /// </summary>
-        Online = 1
+        public string BotName = string.Empty;
+        public string ConnectURL = string.Empty;
     }
 }

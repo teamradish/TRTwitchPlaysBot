@@ -19,15 +19,16 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace TRBot.Connection
+namespace TRBot.Data
 {
     /// <summary>
-    /// The types of client services available.
+    /// Constants regarding WebSockets.
     /// </summary>
-    public enum ClientServiceTypes
+    public static class WebSocketConstants
     {
-        Terminal = 0,
-        Twitch = 1,
-        WebSocket = 2
+        /// <summary>
+        /// The file storing WebSocket connection settings.
+        /// </summary>
+        public const string CONNECTION_SETTINGS_FILENAME = "WebSocketConnectionSettings.txt";
     }
 }
