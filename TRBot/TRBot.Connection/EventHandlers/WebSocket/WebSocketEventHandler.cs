@@ -212,7 +212,7 @@ namespace TRBot.Connection.WebSocket
 
                 EvtChatCommandArgs chatcmdArgs = new EvtChatCommandArgs();
                 EvtUserMsgData msgData = new EvtUserMsgData(userName, userName, userName,
-                    string.Empty, msgWSReplaced);
+                    EvtSocket.Url.AbsoluteUri, msgWSReplaced);
 
                 chatcmdArgs.Command = new EvtChatCommandData(argsList, argsAsStr, msgData, CmdIdentifier, cmdText);
 
