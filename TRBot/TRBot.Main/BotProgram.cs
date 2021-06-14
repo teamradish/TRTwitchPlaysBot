@@ -406,14 +406,14 @@ namespace TRBot.Main
                     user = DataHelper.GetUserNoOpen(userName, context);
                     
                     //Increment message count and save
-                    if (user.IsOptedOut == false)
+                    if (user != null && user.IsOptedOut == false)
                     {
                         user.Stats.TotalMessageCount++;
                         context.SaveChanges();
                     }
 
                     //Check for memes if the user isn't ignoring them
-                    if (user.Stats.IgnoreMemes == 0)
+                    if (user != null && user.Stats.IgnoreMemes == 0)
                     {
                         string possibleMeme = e.UsrMessage.Message.ToLower();
                         Meme meme = context.Memes.FirstOrDefault((m) => m.MemeName == possibleMeme);
@@ -530,8 +530,11 @@ namespace TRBot.Main
                 //Use user overrides if they exist, otherwise use the global values
                 User user = DataHelper.GetUser(userName);
 
-                //Get default controller port
-                defaultPort = (int)user.ControllerPort;
+                if (user != null)
+                {
+                    //Get default controller port
+                    defaultPort = (int)user.ControllerPort;
+                }
 
                 defaultDur = (int)DataHelper.GetUserOrGlobalDefaultInputDur(userName);
                 maxDur = (int)DataHelper.GetUserOrGlobalMaxInputDur(userName);
@@ -551,11 +554,10 @@ namespace TRBot.Main
                     inputSequence = standardParser.ParseInputs(e.UsrMessage.Message);
                 }
 
-                TRBotLogger.Logger.Debug(inputSequence.ToString());
-                TRBotLogger.Logger.Debug("Reverse Parsed (on parse): " + ReverseParser.ReverseParse(inputSequence, usedConsole,
-                    new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.ShowNonDefaultPorts, defaultPort,
-                    ReverseParser.ShowDurationTypes.ShowNonDefaultDurations, defaultDur)));
-                
+                //TRBotLogger.Logger.Debug(inputSequence.ToString());
+                //TRBotLogger.Logger.Debug("Reverse Parsed (on parse): " + ReverseParser.ReverseParse(inputSequence, usedConsole,
+                //    new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.ShowNonDefaultPorts, defaultPort,
+                //    ReverseParser.ShowDurationTypes.ShowNonDefaultDurations, defaultDur)));
             }
             catch (Exception exception)
             {
@@ -593,20 +595,23 @@ namespace TRBot.Main
                 User user = DataHelper.GetUserNoOpen(e.UsrMessage.Username, context);
 
                 //Check if the user is silenced and ignore the message if so
-                if (user.HasEnabledAbility(PermissionConstants.SILENCED_ABILITY) == true)
+                if (user != null && user.HasEnabledAbility(PermissionConstants.SILENCED_ABILITY) == true)
                 {
                     return;
                 }
             
                 //Ignore based on user level and permissions
-                if (user.Level < globalInputPermLevel)
+                if (user != null && user.Level < globalInputPermLevel)
                 {
                     MsgHandler.QueueMessage($"Inputs are restricted to levels {(PermissionLevels)globalInputPermLevel} and above.");
                     return;
                 }
 
-                userControllerPort = (int)user.ControllerPort;
-                userLevel = user.Level;
+                if (user != null)
+                {
+                    userControllerPort = (int)user.ControllerPort;
+                    userLevel = user.Level;
+                }
             }
 
             //First, add delays between inputs if we should
@@ -633,8 +638,10 @@ namespace TRBot.Main
             {
                 User user = DataHelper.GetUserNoOpen(userName, context);
 
+                Dictionary<string, int> userRestrictedInputs = (user != null) ? user.GetRestrictedInputs() : new Dictionary<string, int>(1);
+
                 //Check for restricted inputs on this user
-                validation = ParserPostProcess.InputSequenceContainsRestrictedInputs(inputSequence, user.GetRestrictedInputs());
+                validation = ParserPostProcess.InputSequenceContainsRestrictedInputs(inputSequence, userRestrictedInputs);
 
                 if (validation.InputValidationType != InputValidationTypes.Valid)
                 {
@@ -689,9 +696,9 @@ namespace TRBot.Main
 
             bool addedInputCount = false;
             
-            TRBotLogger.Logger.Debug($"Reverse Parsed (post-process): " + ReverseParser.ReverseParse(inputSequence, usedConsole,
-                    new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.ShowNonDefaultPorts, defaultPort,
-                    ReverseParser.ShowDurationTypes.ShowNonDefaultDurations, defaultDur)));
+            //TRBotLogger.Logger.Debug($"Reverse Parsed (post-process): " + ReverseParser.ReverseParse(inputSequence, usedConsole,
+            //        new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.ShowNonDefaultPorts, defaultPort,
+            //        ReverseParser.ShowDurationTypes.ShowNonDefaultDurations, defaultDur)));
 
             //Get the max recorded inputs per-user
             long maxUserRecInps = DataHelper.GetSettingInt(SettingsConstants.MAX_USER_RECENT_INPUTS, 0L);
@@ -703,7 +710,7 @@ namespace TRBot.Main
                 User user = DataHelper.GetUserNoOpen(e.UsrMessage.Username, context);
 
                 //Ignore if the user is opted out
-                if (user.IsOptedOut == false)
+                if (user != null && user.IsOptedOut == false)
                 {
                     user.Stats.ValidInputCount++;
                     addedInputCount = true;
@@ -753,7 +760,7 @@ namespace TRBot.Main
                     
                     //Check if the user was already autopromoted, autopromote is enabled,
                     //and if the user reached the autopromote input count requirement
-                    if (user.Stats.AutoPromoted == 0 && autoPromoteEnabled > 0
+                    if (user != null && user.Stats.AutoPromoted == 0 && autoPromoteEnabled > 0
                         && user.Stats.ValidInputCount >= autoPromoteInputReq)
                     {
                         //Only autopromote if this is a valid permission level
