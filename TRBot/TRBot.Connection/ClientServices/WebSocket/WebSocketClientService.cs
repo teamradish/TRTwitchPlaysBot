@@ -18,6 +18,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Net;
+using System.Net.Security;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 using TRBot.Logging;
 using WebSocketSharp;
 
@@ -74,11 +78,17 @@ namespace TRBot.Connection.WebSocket
         public void Initialize()
         {
             Socket = new WebSocketSharp.WebSocket(ConnectURL);
+            Socket.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls12;
+
             EventHandler = new WebSocketEventHandler(Socket, CommandIdentifier, BotName);
             EventHandler.Initialize();
 
             EventHandler.OnJoinedChannelEvent -= OnClientJoinedChannel;
             EventHandler.OnJoinedChannelEvent += OnClientJoinedChannel;
+
+            //Subscribe to validate SSL certificates for secure websockets
+            ServicePointManager.ServerCertificateValidationCallback -= WebSocketSSLCertValidation;
+            ServicePointManager.ServerCertificateValidationCallback += WebSocketSSLCertValidation;
 
             Initialized = true;
         }
@@ -149,6 +159,8 @@ namespace TRBot.Connection.WebSocket
             EventHandler.OnJoinedChannelEvent -= OnClientJoinedChannel;
 
             EventHandler.CleanUp();
+
+            ServicePointManager.ServerCertificateValidationCallback -= WebSocketSSLCertValidation;
         }
 
         private void OnClientJoinedChannel(EvtJoinedChannelArgs e)
@@ -162,6 +174,16 @@ namespace TRBot.Connection.WebSocket
             JoinedChannels.Clear();
 
             JoinedChannels.Add(e.Channel);
+        }
+
+        private bool WebSocketSSLCertValidation(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            //Since this can connect to any server, simply return true if there are no SSL errors
+            return sslPolicyErrors == SslPolicyErrors.None;
+
+            //If you intend to use this with a specific set of servers, modify this
+            //There are many ways to do this - one option is to validate against a set of certificate hashes
+            //that can either be hardcoded or read from disk
         }
     }
 }

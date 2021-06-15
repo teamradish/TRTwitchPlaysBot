@@ -30,5 +30,15 @@ namespace TRBot.Data
         /// The file storing WebSocket connection settings.
         /// </summary>
         public const string CONNECTION_SETTINGS_FILENAME = "WebSocketConnectionSettings.txt";
+
+        /// <summary>
+        /// The protocol string for WebSocket connections.
+        /// </summary>
+        public const string WEBSOCKET_PROTOCOL = @"ws://";
+
+        /// <summary>
+        /// The protocol string for secure WebSocket connections.
+        /// </summary>
+        public const string WEBSOCKET_SECURE_PROTOCOL = @"wss://";
     }
 }

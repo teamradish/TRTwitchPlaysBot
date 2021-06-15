@@ -886,12 +886,13 @@ namespace TRBot.Main
                     return;
                 }
 
-                const string wsProtocolStart = @"ws://";
+                string connectURL = wsConnectSettings.ConnectURL;
 
                 //The connection URL must start with the WebSocket protocol
-                if (wsConnectSettings.ConnectURL.StartsWith(wsProtocolStart, StringComparison.Ordinal) == false)
+                if (connectURL.StartsWith(WebSocketConstants.WEBSOCKET_PROTOCOL, StringComparison.Ordinal) == false
+                    && connectURL.StartsWith(WebSocketConstants.WEBSOCKET_SECURE_PROTOCOL, StringComparison.Ordinal) == false)
                 {
-                    TRBotLogger.Logger.Error($"WebSocket connection URL does not start with \"{wsProtocolStart}\". Note that secure WebSockets (\"wss://\") are not yet supported.");
+                    TRBotLogger.Logger.Error($"WebSocket connection URL does not start with \"{WebSocketConstants.WEBSOCKET_PROTOCOL}\" or \"{WebSocketConstants.WEBSOCKET_SECURE_PROTOCOL}\".");
                     return;
                 }
 
