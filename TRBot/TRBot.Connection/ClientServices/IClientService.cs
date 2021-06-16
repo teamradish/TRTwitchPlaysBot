@@ -40,19 +40,14 @@ namespace TRBot.Connection
         bool IsInitialized { get; }
 
         /// <summary>
-        /// Tells the client's operation type.
-        /// </summary>
-        OperationTypes OperationType { get; }
-
-        /// <summary>
         /// Tells if the client is connected.
         /// </summary>
         bool IsConnected { get; }
 
         /// <summary>
-        /// The channels the client joined.
+        /// Whether the client is able to send messages.
         /// </summary>
-        List<string> JoinedChannels { get; }
+        bool CanSendMessages { get; }
 
         /// <summary>
         /// Initializes the client.

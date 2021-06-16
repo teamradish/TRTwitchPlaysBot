@@ -116,7 +116,13 @@ The path to the socket for the bingo application, which TRBot uses to communicat
 If 1, [bingo_pipe_path](#bingo_pipe_path) is a path relative to the TRBot executable, otherwise it's an absolute path.
 
 ### client_service_type
-The type of client service connection to use. 0 = Terminal, 1 = Twitch. **Requires restarting TRBot to apply.**
+The type of client service connection to use.
+
+- 0 = Terminal
+- 1 = Twitch
+- 2 = WebSocket
+
+**Requires restarting TRBot to apply.**
 
 ## log_level
 The minimum logging level of the bot's logger. This determines which types of logs get output to the log file and in the console. TRBot uses [Serilog](https://github.com/serilog/serilog) for logging, thus this value is directly linked to Serilog's [LogEventLevel enum](https://github.com/serilog/serilog/blob/dev/src/Serilog/Events/LogEventLevel.cs).
