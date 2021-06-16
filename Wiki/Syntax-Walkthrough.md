@@ -155,6 +155,6 @@ Here are a few final tips and tricks that may be useful during your playthroughs
 - Factor in the state of the playable character while playing. If your character is in the air or a lengthy animation, chances are they can't jump or take another action until they're back on their feet or finished with what they were doing. Time your delays accordingly! 
 - Reaction-based parts of games, such as real-time combat, are often surprisingly difficult to play through text. Most games have a way to slow the game down in some way, including pausing it (hint, hint). Pause buffering, which involves unpausing, entering your actions, then pausing again, is one way to deal with these situations. Another can be to tackle it with the longest, most awesome macro you can come up with to complete the whole thing in one go (these are often clip-worthy)!
 
-What comes next? Give TRBot a try and [set up your own](./Setup-Init.md), or play through an instance deployed on a Twitch stream. Players have achieved great feats using TRBot in [past game playthroughs](./Real-Usage-Examples.md)!
+What comes next? [See more examples](./Play-Examples.md) and give TRBot a try! [Set up your own](./Setup-Init.md), or play through an instance deployed on a Twitch stream. [Players have achieved great feats with TRBot](./Real-Usage-Examples.md)!
 
 For even more details on the input syntax, including dynamic macros and how to specify percentages for analog inputs, read the more technical [syntax tutorial](./Syntax-Tutorial.md).

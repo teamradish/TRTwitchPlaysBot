@@ -7,7 +7,7 @@ Welcome to the TRBot wiki! Choose the relevant section for your needs.
 ### Setup
 * [Setting up TRBot](./Setup-Init.md) - Initial steps setting up TRBot.
 * [Virtual Controllers](./Setup-VController.md) - Set up virtual controllers that TRBot presses buttons on for your games.
-* [Migrating Data](./Migrating-Data.md) - A guide to migrating data from previous TRBot releases.
+* [Updating TRBot](./Migrating-Data.md) - A guide to updating TRBot and migrating data from previous releases.
 * [Settings Documentation](./Settings-Documentation.md) - Documentation on the various settings.
 * [Custom Consoles & Inputs](./Adding-ConsolesInputs.md) - Learn how to add new consoles and add/remove/modify available inputs.
 * [LiveSplitOne Integration](./LiveSplitOne-Integration.md) - Learn to how control your LiveSplitOne timer through TRBot.
@@ -20,9 +20,10 @@ Welcome to the TRBot wiki! Choose the relevant section for your needs.
 ## Players/Moderation
 * [Syntax Walkthrough](./Syntax-Walkthrough.md) - A beginner-friendly guide to TRBot's input syntax, with visuals.
 * [Syntax Tutorial](./Syntax-Tutorial.md) - A more in-depth tutorial covering TRBot's robust input syntax.
+* [Examples](./Play-Examples.md) - Short and sweet examples showing how to play with TRBot.
 * [Permission Documentation](./Permission-Documentation.md) - Learn how TRBot can help you moderate your stream.
 * [Commands Documentation](./Commands-Documentation.md) - Documentation on various TRBot commands to help manage and interact with the stream.
-* [Usage Examples](./Real-Usage-Examples.md) - See what players have done with TRBot on real streams!
+* [Real-world Usage](./Real-Usage-Examples.md) - See what players have done with TRBot on actual streams!
 
 ## Developers
 * [Building from source](./Building.md) - How to build TRBot from source.

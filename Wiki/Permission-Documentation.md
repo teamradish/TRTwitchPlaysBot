@@ -115,7 +115,7 @@ Determines if the user can play the slots through the [`SlotsCommand`](../TRBot/
 ### voteinputmode
 **Default level: User (0)**
 
-Determines if the user can vote to change the input mode through the [`VoteForInputModeCommand`](../TRBot/TRBot.Commands/Commands/VoteForInputModeCommand.cs).
+Determines if the user can vote to change the input mode through the [`VoteForInputModeCommand`](../TRBot/TRBot.Commands/Commands/VoteForInputModeCommand.cs). This permission applies when a vote is already started.
 
 ### addinputmacro
 **Default level: User (0)**
@@ -215,6 +215,11 @@ Attempting to set this causes the command to undergo steps to validate that the 
 Determines if the user can set the max number of recent inputs stored per user through the [`GetSetMaxUserRecentInputsCommand`](../TRBot/TRBot.Commands/Commands/GetSetMaxUserRecentInputsCommand.cs).
 
 A value of 0 will essentially disable the feature. Any excess recent inputs stored above the limit will be removed next time a new one is added.
+
+### startvoteinputmode
+**Default level: Moderator (30)**
+
+Determines if the user can start a vote to change the input mode through the [`VoteForInputModeCommand`](../TRBot/TRBot.Commands/Commands/VoteForInputModeCommand.cs). This permission applies only when starting a vote.
 
 ### updateotheruserabilities
 **Default level: Admin (40)**

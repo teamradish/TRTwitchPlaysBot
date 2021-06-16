@@ -13,15 +13,15 @@ TRBot uses vJoy on Windows to send inputs to the game. While TRBot has no troubl
 ## Testing Virtual Controller Configuration
 Your virtual controllers should be set up and good to go right now. Run TRBot and check the console window to see if it's able to acquire those virtual controllers. If everything looks good, you should next test out how the inputs work.
 
-**IMPORTANT: The default console for TRBot is NES, which has no analog inputs. If you wish to test analog inputs, switch to a console with them, such as the GameCube, with the [`GetSetConsoleCommand`](../TRBot/TRBot.Commands/Commands/GetSetConsoleCommand.cs) (default: "!console") via "!console gc". You will need an access level of Moderator (30) by default to switch the console (covered in [Setting up TRBot](#setting-up-trbot)).**
+**IMPORTANT: The default console for TRBot is NES, which has no analog inputs. If you wish to test analog inputs, switch to a console with them, such as the GameCube, with the [`GetSetConsoleCommand`](../TRBot/TRBot.Commands/Commands/GetSetConsoleCommand.cs) (default: "!console") via "!console gc". You will need an access level of Moderator (30) by default to switch the console (see the [initial tutorial](./Setup-Init.md#connecting)).**
 
-A simple way to test actual inputs is on the [Dolphin](https://dolphin-emu.org/) emulator using the [provided vJoy or uinput controller profiles in this repository](../Emulator%20Controller%20Configs/Dolphin). You can set the mappings in the emulator using text inputs through TRBot. After setting each mapping, you can test it out by typing the same input again. For vJoy, the *"vJoy Feeder (Demo)"* program can also be used to press buttons and axes on the virtual controllers. If everything was configured correctly, you should see buttons being pressed and axes being moved in Dolphin's controller configuration screen after typing the associated inputs in the bot.
+A simple way to test actual inputs is on the [Dolphin](https://dolphin-emu.org/) emulator using the [provided vJoy or uinput controller profiles in this repository](../Controller%20Configs/Dolphin). You can set the mappings in the emulator using text inputs through TRBot. After setting each mapping, you can test it out by typing the same input again. For vJoy, the *"vJoy Feeder (Demo)"* program can also be used to press buttons and axes on the virtual controllers. If everything was configured correctly, you should see buttons being pressed and axes being moved in Dolphin's controller configuration screen after typing the associated inputs in the bot.
 
 Alternatively, you can use another application to test joystick inputs. One such application on GNU/Linux is **jstest-gtk**.
 
 **NOTE: Make sure background input is enabled in the emulator, as this will make things much easier! If you don't see an option in the menus, check any config files. For instance, BizHawk has it in its config file as `AcceptBackgroundInput`.**
 
-If everything looks okay at this point, viewers should now be capable of playing games through your chat!
+If everything looks good at this point, viewers should now be capable of playing games through your chat!
 
 # Next step - Miscellaneous
 Done with this step? Check the [next section](./Setup-Misc.md) for additional settings, tools for displaying chat on stream, and more!

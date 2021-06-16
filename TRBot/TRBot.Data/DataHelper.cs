@@ -156,6 +156,11 @@ namespace TRBot.Data
         /// <returns>A user object with the given userName. null if not found.</returns>
         public static User GetUser(string userName)
         {
+            if (string.IsNullOrEmpty(userName) == true)
+            {
+                return null;
+            }
+
             string userNameLowered = userName.ToLowerInvariant();
 
             using (BotDBContext context = DatabaseManager.OpenContext())
@@ -166,13 +171,22 @@ namespace TRBot.Data
 
         /// <summary>
         /// Obtains a user object from the database.
-        //  If the user isn't found, a new one will be added to the database.
+        /// If the user isn't found, a new one will be added to the database.
+        ///
+        /// If the user can't be added due to an invalid name, this will return null.
         /// </summary>        
         /// <param name="userName">The name of the user.</param>
         /// <param name="added">Whether a new user was added to the database.</param>
-        /// <returns>A user object with the given userName.</returns>
+        /// <returns>A user object with the given userName. If an invalid string is found, null.</returns>
         public static User GetOrAddUser(string userName, out bool added)
         {
+            //We can't return a user since there's no valid name
+            if (string.IsNullOrEmpty(userName) == true)
+            {
+                added = false;
+                return null;
+            }
+
             //Add the lowered version of their name to simplify retrieval
             string userNameLowered = userName.ToLowerInvariant();
 
@@ -235,6 +249,11 @@ namespace TRBot.Data
         /// <returns>A user object with the given userName. null if not found.</returns>
         public static User GetUserNoOpen(string userName, BotDBContext context)
         {
+            if (string.IsNullOrEmpty(userName) == true)
+            {
+                return null;
+            }
+
             string userNameLowered = userName.ToLowerInvariant();
 
             return context.Users.FirstOrDefault(u => u.Name == userNameLowered);
@@ -542,6 +561,7 @@ namespace TRBot.Data
             if (result < 0)
             {
                 TRBotLogger.Logger.Information($"Data version {dataVersionStr} is less than bot version {Application.VERSION_NUMBER}. Updating version number and forcing database initialization for missing entries.");
+                TRBotLogger.Logger.Information($"IMPORTANT: Run the UpdateEveryoneAbilitiesCommand (default: \"!updateeveryoneabilities\") to update all user abilities! Failure to do so may result in users being unable to perform actions that now have permissions.");
                 newDataVersion = Application.VERSION_NUMBER;
 
                 forceInit = 1L;

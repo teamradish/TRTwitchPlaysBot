@@ -82,6 +82,7 @@ namespace TRBot.Permissions
         public const string SET_INPUT_MODE_CHANGE_COOLDOWN_ABILITY = "setinputmodechangecooldown";
         public const string SET_INPUT_MODE_ABILITY = "setinputmode";
         public const string VOTE_INPUT_MODE_ABILITY = "voteinputmode";
+        public const string START_VOTE_INPUT_MODE_ABILITY = "startvoteinputmode";
 
         public const string ADD_INPUT_MACRO_ABILITY = "addinputmacro";
         public const string REMOVE_INPUT_MACRO_ABILITY = "removeinputmacro";

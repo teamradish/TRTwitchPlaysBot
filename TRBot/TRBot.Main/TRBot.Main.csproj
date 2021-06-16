@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -39,5 +39,11 @@
   <PropertyGroup>
     <DefaultItemExcludes>$(DefaultItemExcludes)</DefaultItemExcludes>
   </PropertyGroup>
+
+  <ItemGroup>
+	  <None Include="..\..\LICENSE">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
 
 </Project>

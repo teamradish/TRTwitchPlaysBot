@@ -96,8 +96,9 @@ namespace TRBot.Commands
 
         protected void PrintLog(GameLog gameLog, in bool optedOut)
         {
-            //Don't display username if they opted out
-            if (optedOut == false)
+            //Don't display username if they opted out or the name isn't valid
+            //The latter is possibly only through the WebSocket client service
+            if (optedOut == false && string.IsNullOrEmpty(gameLog.User) == false)
             {
                 QueueMessage($"{gameLog.LogDateTime} (UTC) --> {gameLog.User} : {gameLog.LogMessage}");
             }

@@ -107,10 +107,17 @@ namespace TRBot.Commands
                     return;
                 }
 
+                long userLevel = 0L;
+
                 //Check if the user has permission to perform this command
                 User user = DataHelper.GetUser(args.Command.ChatMessage.Username);
                 
-                if (user != null && user.Level < command.Level)
+                if (user != null)
+                {
+                    userLevel = user.Level;
+                }
+
+                if (userLevel < command.Level)
                 {
                     DataContainer.MessageHandler.QueueMessage($"You need at least level {command.Level} ({(PermissionLevels)command.Level}) to perform that command!");
                     return;

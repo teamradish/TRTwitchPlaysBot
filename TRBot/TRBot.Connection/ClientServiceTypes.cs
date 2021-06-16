@@ -27,6 +27,7 @@ namespace TRBot.Connection
     public enum ClientServiceTypes
     {
         Terminal = 0,
-        Twitch = 1
+        Twitch = 1,
+        WebSocket = 2
     }
 }

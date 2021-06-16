@@ -115,7 +115,7 @@ namespace TRBot.Commands
                 //Handle parsing exceptions
                 inputSequence.ParsedInputResult = ParsedInputResults.Invalid;
 
-                QueueMessage($"Invalid input: {excMsg}");
+                QueueMessage($"Invalid input. {excMsg}");
                 return;
             }
 
@@ -129,7 +129,7 @@ namespace TRBot.Commands
                 }
                 else
                 {
-                    QueueMessage($"Invalid input: {inputSequence.Error}");
+                    QueueMessage($"Invalid input. {inputSequence.Error}");
                 }
                 
                 return;

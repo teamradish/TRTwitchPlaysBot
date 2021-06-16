@@ -133,8 +133,8 @@ namespace TRBot.Misc
         /// <returns>true if the message was successfully sent. false if the client service is disconnected or the message fails to send.</returns>
         public bool SendNextQueuedMessage()
         {
-            //Ensure the client service has joined a channel, otherwise we can't send the message 
-            if (ClientMessages.Count == 0 || ClientService.IsConnected == false || ClientService.JoinedChannels?.Count <= 0)
+            //Ensure the client service is connected and can send messages 
+            if (ClientMessages.Count == 0 || ClientService.IsConnected == false || ClientService.CanSendMessages == false)
             {
                 return false;
             }

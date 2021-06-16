@@ -28,6 +28,7 @@ namespace TRBot.Parsing
     /// <summary>
     /// A pre-parser that populates macros based on given information.
     /// </summary>
+    [Obsolete("This preparser is deprecated. Use InputMacroPreparserNew for a more performant and accurate macro preparser.", false)]
     public class InputMacroPreparser : IPreparser
     {
         public const string DEFAULT_MACRO_START = @"#";

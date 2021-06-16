@@ -49,14 +49,14 @@ namespace TRBot.Connection.Twitch
         public bool IsInitialized => (twitchClient?.IsInitialized == true);
 
         /// <summary>
-        /// Tells the client's operation type.
-        /// </summary>
-        public OperationTypes OperationType => OperationTypes.Online;
-
-        /// <summary>
         /// Tells if the client is connected.
         /// </summary>
         public bool IsConnected => (twitchClient?.IsConnected == true);
+
+        /// <summary>
+        /// Whether the client is able to send messages.
+        /// </summary>
+        public bool CanSendMessages => (IsConnected == true && JoinedChannels?.Count > 0);
 
         /// <summary>
         /// The channels the client has joined.
@@ -142,10 +142,7 @@ namespace TRBot.Connection.Twitch
         /// </summary>
         public void SendMessage(string channel, string message)
         {
-            if (twitchClient.IsConnected == true && JoinedChannels?.Count > 0)
-            {
-                twitchClient.SendMessage(channel, message);
-            }
+            twitchClient.SendMessage(channel, message);
         }
 
         /// <summary>

@@ -338,6 +338,7 @@ namespace TRBot.Data
                 new PermissionAbility(SET_PERIODIC_INPUT_TIME_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
                 new PermissionAbility(SET_PERIODIC_INPUT_SEQUENCE_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
                 new PermissionAbility(SET_MAX_USER_RECENT_INPUTS_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
+                new PermissionAbility(START_VOTE_INPUT_MODE_ABILITY, PermissionLevels.Moderator, PermissionLevels.Moderator),
 
                 new PermissionAbility(UPDATE_OTHER_USER_ABILITES, PermissionLevels.Admin, PermissionLevels.Admin),
                 new PermissionAbility(SET_GLOBAL_INPUT_LEVEL_ABILITY, PermissionLevels.Admin, PermissionLevels.Admin),

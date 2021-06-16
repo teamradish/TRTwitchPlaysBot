@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TRBot.Connection;
 using TRBot.Misc;
@@ -78,16 +79,16 @@ namespace TRBot.Commands
 
             string macroName = arguments[0].ToLowerInvariant();
 
-            //Make sure the first argument has at least a minimum number of characters
+            //Make sure the first argument has a minimum number of characters
             if (macroName.Length < MIN_MACRO_NAME_LENGTH)
             {
                 QueueMessage($"Input macros need to be at least {MIN_MACRO_NAME_LENGTH} characters long.");
                 return;
             }
 
-            if (macroName.StartsWith(InputMacroPreparser.DEFAULT_MACRO_START) == false)
+            if (macroName.StartsWith(InputMacroPreparserNew.DEFAULT_MACRO_START) == false)
             {
-                QueueMessage($"Input macros must start with \"{InputMacroPreparser.DEFAULT_MACRO_START}\".");
+                QueueMessage($"Input macros must start with \"{InputMacroPreparserNew.DEFAULT_MACRO_START}\".");
                 return;
             }
 
@@ -124,30 +125,71 @@ namespace TRBot.Commands
             string macroVal = args.Command.ArgumentsAsString.Remove(0, macroName.Length + 1).ToLowerInvariant();
             //Console.WriteLine(macroVal);
 
-            bool isDynamic = false;
+            bool macroExists = false;
 
-            //Check for a dynamic macro
-            int openParenIndex = macroName.IndexOf('(', 0);
-            if (openParenIndex >= 0)
+            //Find an existing macro with this name
+            using (BotDBContext context = DatabaseManager.OpenContext())
             {
-                //If we found the open parenthesis, check for the asterisk
-                //This is not comprehensive, but it should smooth out a few issues
-                if (openParenIndex == (macroName.Length - 1) || macroName[openParenIndex + 1] != '*')
-                {
-                    QueueMessage("Invalid input macro. Dynamic macro arguments must be specified with \"*\".");
-                    return;
-                }
-
-                if (macroName[macroName.Length - 1] != ')')
-                {
-                    QueueMessage("Invalid input macro. Dynamic macros must end with \")\".");
-                    return;
-                }
-
-                isDynamic = true;
+                InputMacro inputMacro = context.Macros.FirstOrDefault(m => m.MacroName == macroName);
+                macroExists = (inputMacro != null);
             }
 
-            //Validate input if not dynamic
+            //Validate the macro name
+            Match macroMatch = Regex.Match(macroName, InputMacroPreparserNew.MACRO_REGEX, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+            if (macroMatch.Success == false)
+            {
+                QueueMessage($"Invalid input macro name! Input macros must start with \"{InputMacroPreparserNew.DEFAULT_MACRO_START}\".");
+                return;
+            }
+
+            bool isDynamic = macroMatch.Groups.TryGetValue(InputMacroPreparserNew.MACRO_DYNAMIC_GROUP_NAME,
+                out Group dynamicGroup) == true && dynamicGroup?.Success == true;
+
+            //Validate the macro name
+            string tempMacroName = macroName;
+
+            //If it's dynamic, ensure it has arguments
+            if (isDynamic == true)
+            {
+                if (macroMatch.Groups.TryGetValue(InputMacroPreparserNew.MACRO_DYNAMIC_ARGS_GROUP_NAME,
+                    out Group dynamicArgsGroup) == false || dynamicArgsGroup.Success == false)
+                {
+                    QueueMessage("Dynamic input macros must have arguments! Specify them in generic form, such as \"#mash(*)\".");
+                    return;
+                }
+            }
+
+            InputMacro tempMacro = new InputMacro(tempMacroName, macroVal);
+
+            //Run the macro through the preparser
+            IQueryable<InputMacro> tempMacroData = new List<InputMacro>(1) { tempMacro }.AsQueryable();
+
+            //Run it through the preparser to ensure it returns the same value as the macro value specified
+            //Do this by specifying a max recursion of 1 and not filling dynamic macro arguments
+            //This is a simple and effective way to validate the macro 
+            InputMacroPreparserNew macroPreparser = new InputMacroPreparserNew(tempMacroData, 1, DynamicMacroArgOptions.DontFillArgs);
+
+            string preparsed = macroPreparser.Preparse(tempMacroName);
+
+            //If the values aren't the same, the macro name isn't valid
+            if (preparsed != macroVal)
+            {
+                //TRBotLogger.Logger.Information($"Value: {macroVal} | Parsed: {preparsed}");
+
+                string failedMsg = $"Macro \"{macroName}\" is invalid since the parser didn't retrieve the same macro value specified.";
+
+                if (isDynamic == true)
+                {
+                    failedMsg += " Ensure dynamic macros are in generic form (Ex. \"#mash(a,b)\" -> \"#mash(*,*)\"). Input macro values should specify the argument they correspond to. (Ex. In \"#mash(a,b)\", \"<0>\" is replaced with \"a\" and \"<1>\" is replaced with \"b\").";
+                }
+
+                QueueMessage(failedMsg);
+                return;
+            }
+
+            //Everything is good to go regarding the macro name at this point
+            //Validate the inputs if not a dynamic macro
             if (isDynamic == false)
             {
                 ParsedInputSequence inputSequence = default;
@@ -163,7 +205,13 @@ namespace TRBot.Commands
                     {
                         IQueryable<InputSynonym> synonyms = context.InputSynonyms.Where(syn => syn.ConsoleID == curConsoleID);
     
-                        StandardParser standardParser = StandardParser.CreateStandard(context.Macros, synonyms,
+                        //Copy the existing macro list and add the new macro for parsing
+                        List<InputMacro> newMacroList = new List<InputMacro>(context.Macros);
+                        newMacroList.Add(new InputMacro(macroName, macroVal));
+                        
+                        IQueryable<InputMacro> newMacroData = newMacroList.AsQueryable();
+
+                        StandardParser standardParser = StandardParser.CreateStandard(newMacroData, synonyms,
                             consoleInstance.GetInputNames(), 0, DataContainer.ControllerMngr.ControllerCount - 1,
                             defaultDur, maxDur, true);
                         
@@ -195,6 +243,7 @@ namespace TRBot.Commands
 
             string message = string.Empty;
 
+            //Everything is verified; add the macro to the database or update it
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
                 InputMacro inputMacro = context.Macros.FirstOrDefault(m => m.MacroName == macroName);

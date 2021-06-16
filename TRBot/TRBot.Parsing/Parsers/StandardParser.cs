@@ -174,6 +174,9 @@ namespace TRBot.Parsing
 
             //Track the total duration of the input sequence
             int totalDur = 0;
+            
+            //Track the longest subsequence duration
+            int longestSubDur = 0;
 
             //The current parsed subsequence
             List<ParsedInput> subInputs = new List<ParsedInput>();
@@ -368,6 +371,12 @@ namespace TRBot.Parsing
                             input.DurationType = InputDurationTypes.Seconds;
                         }
                     }
+
+                    //Account for overflow
+                    if (input.Duration < 0 && durVal >= 0d)
+                    {
+                        return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, $"Parser error: Input duration integer overflow at index {durGroup.Index}. The max duration for a single input is {int.MaxValue} milliseconds.");
+                    }
                 }
                 else
                 {
@@ -377,6 +386,12 @@ namespace TRBot.Parsing
 
                 //Console.WriteLine("GOT PAST DURATION");
 
+                //Check if this input is the longest in the subsequence
+                if (input.Duration > longestSubDur)
+                {
+                    longestSubDur = input.Duration;
+                }
+
                 subInputs.Add(input);
 
                 //If there's no simultaneous input, set up a new list
@@ -385,12 +400,22 @@ namespace TRBot.Parsing
                 {
                     parsedInputList.Add(subInputs);
                     subInputs = new List<ParsedInput>();
+
+                    //Add the longest subsequence duration to the total
+                    totalDur += longestSubDur;
+                    longestSubDur = 0;
+
+                    //Handle overflow when adding very large numbers
+                    if (totalDur < 0)
+                    {
+                        return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, $"Parser error: Total input sequence duration integer overflow at around index {match.Index}. The absolute max duration for an input sequence is {int.MaxValue} milliseconds.");
+                    }
+
+                    //Console.WriteLine($"Current total dur: {totalDur}");
                 }
 
-                totalDur += input.Duration;
-
                 //Exceeded duration
-                if (CheckMaxDur == true && totalDur > MaxInputDuration)
+                if (CheckMaxDur == true && (totalDur + longestSubDur) > MaxInputDuration)
                 {
                     return new ParsedInputSequence(ParsedInputResults.Invalid, null, 0, $"Parser error: Input sequence exceeds max input duration of {MaxInputDuration} at around index {match.Index}.");
                 }
@@ -449,7 +474,7 @@ namespace TRBot.Parsing
             List<IPreparser> preparsers = new List<IPreparser>()
             {
                 new RemoveWhitespacePreparser(),
-                new InputMacroPreparser(macros),
+                new InputMacroPreparserNew(macros),
                 new InputSynonymPreparser(synonyms),
                 new ExpandPreparser(),
                 new RemoveWhitespacePreparser(),
