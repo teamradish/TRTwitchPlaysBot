@@ -84,7 +84,7 @@ namespace TRBot.Commands
             if (newInterval < MIN_INTERVAL_VAL)
             {
                 string timePluralized = "milliseconds";
-                timePluralized = timePluralized.Pluralize(false, MIN_INTERVAL_VAL);
+                timePluralized = timePluralized.Pluralize(MIN_INTERVAL_VAL);
 
                 QueueMessage($"The interval cannot be below {MIN_INTERVAL_VAL} {timePluralized}!");
                 return;
@@ -105,7 +105,7 @@ namespace TRBot.Commands
             }
 
             string intervalPluralized = "milliseconds";
-            intervalPluralized = intervalPluralized.Pluralize(false, newInterval);
+            intervalPluralized = intervalPluralized.Pluralize(newInterval);
 
             QueueMessage($"Set the periodic input interval to {newInterval} {intervalPluralized}!");
             

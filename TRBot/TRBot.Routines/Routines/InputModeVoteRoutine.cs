@@ -218,7 +218,7 @@ namespace TRBot.Routines
                 context.SaveChanges();
             }
 
-            string voteStr = "vote".Pluralize(false, highestCount);
+            string voteStr = "vote".Pluralize(highestCount);
 
             DataContainer.MessageHandler.QueueMessage($"Voting has ended and {chosenMode} came out on top with {highestCount} {voteStr}! The next round of voting to change the input mode can start again at {nextVoteAvailable}.");
 

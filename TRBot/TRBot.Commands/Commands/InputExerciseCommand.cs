@@ -250,7 +250,7 @@ namespace TRBot.Commands
                         user.Stats.Credits += creditReward;
                         context.SaveChanges();
 
-                        QueueMessage($"Correct input! Awesome job! You've earned your {creditReward} {creditsName.Pluralize(false, creditReward)}!");
+                        QueueMessage($"Correct input! Awesome job! You've earned your {creditReward} {creditsName.Pluralize(creditReward)}!");
                     }
                     else
                     {

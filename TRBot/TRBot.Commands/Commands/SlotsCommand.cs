@@ -182,7 +182,7 @@ namespace TRBot.Commands
 
             if (buyInAmount > curUserCredits)
             {
-                QueueMessage($"Buy-in amount is greater than {creditsName.Pluralize(false, 0)}!");
+                QueueMessage($"Buy-in amount is greater than {creditsName.Pluralize(0)}!");
                 return;
             }
 
@@ -221,10 +221,10 @@ namespace TRBot.Commands
                     strBuilder.Append(userName).Append(" didn't win BibleThump Better luck next time!");
                     break;
                 case SlotResults.Standard:
-                    strBuilder.Append(userName).Append(" won ").Append(reward).Append(' ').Append(creditsName.Pluralize(false, reward)).Append(", nice! SeemsGood");
+                    strBuilder.Append(userName).Append(" won ").Append(reward).Append(' ').Append(creditsName.Pluralize(reward)).Append(", nice! SeemsGood");
                     break;
                 case SlotResults.Jackpot:
-                    strBuilder.Append(userName).Append(" hit the JACKPOT and won ").Append(reward).Append(' ').Append(creditsName.Pluralize(false, reward)).Append("!! Congratulations!! PogChamp PogChamp PogChamp");
+                    strBuilder.Append(userName).Append(" hit the JACKPOT and won ").Append(reward).Append(' ').Append(creditsName.Pluralize(reward)).Append("!! Congratulations!! PogChamp PogChamp PogChamp");
                     break;
             }
 

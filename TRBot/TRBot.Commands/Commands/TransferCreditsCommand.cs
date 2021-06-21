@@ -75,7 +75,7 @@ namespace TRBot.Commands
             string receiverName = arguments[0].ToLowerInvariant();
             if (giverName == receiverName)
             {
-                QueueMessage($"You cannot transfer {creditsName.Pluralize(false, 0)} to yourself!");
+                QueueMessage($"You cannot transfer {creditsName.Pluralize(0)} to yourself!");
                 return;
             }
 
@@ -112,7 +112,7 @@ namespace TRBot.Commands
 
             if (transferAmount > giverCredits)
             {
-                QueueMessage($"Transfer amount is greater than {creditsName.Pluralize(false, 0)}!");
+                QueueMessage($"Transfer amount is greater than {creditsName.Pluralize(0)}!");
                 return;
             }
 
@@ -128,7 +128,7 @@ namespace TRBot.Commands
                 context.SaveChanges();
             }
 
-            QueueMessage($"{giverName} has transferred {transferAmount} {creditsName.Pluralize(false, transferAmount)} to {receiverName} :D !");
+            QueueMessage($"{giverName} has transferred {transferAmount} {creditsName.Pluralize(transferAmount)} to {receiverName} :D !");
         }
     }
 }

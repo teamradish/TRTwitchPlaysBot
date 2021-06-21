@@ -63,7 +63,7 @@ namespace TRBot.Commands
                 median = orderedCredits[medianIndex].Stats.Credits;
             }
 
-            QueueMessage($"The median number of {creditsName.Pluralize(false, 0)} in the database is {median}!");
+            QueueMessage($"The median number of {creditsName.Pluralize(0)} in the database is {median}!");
         }
     }
 }

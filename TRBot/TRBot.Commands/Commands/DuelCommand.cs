@@ -185,7 +185,7 @@ namespace TRBot.Commands
             bool success = long.TryParse(betStr, out betAmount);
             if (success == false || betAmount <= 0)
             {
-                QueueMessage($"Please specify a positive whole number of {creditsName.Pluralize(false, 0)} greater than 0!");
+                QueueMessage($"Please specify a positive whole number of {creditsName.Pluralize(0)} greater than 0!");
                 return;
             }
 
@@ -197,7 +197,7 @@ namespace TRBot.Commands
                 //Validate credit amounts
                 if (thisUser.Stats.Credits < betAmount || opponentUser.Stats.Credits < betAmount)
                 {
-                    QueueMessage($"Either you or the one you're dueling does not have enough {creditsName.Pluralize(false, 0)} for this duel!");
+                    QueueMessage($"Either you or the one you're dueling does not have enough {creditsName.Pluralize(0)} for this duel!");
                     return;
                 }
             }
@@ -207,7 +207,7 @@ namespace TRBot.Commands
 
             TimeSpan totalTime = TimeSpan.FromMilliseconds(duelTimeout);
 
-            QueueMessage($"{userName} has requested to duel {opponentArg} for {betAmount} {creditsName.Pluralize(false, betAmount)}! Pass \"{ACCEPT_DUEL_ARG}\" as an argument to duel or \"{DENY_DUEL_ARG}\" as an argument to refuse. The duel expires in {totalTime.TotalMinutes} minute(s), {totalTime.Seconds} second(s)!");
+            QueueMessage($"{userName} has requested to duel {opponentArg} for {betAmount} {creditsName.Pluralize(betAmount)}! Pass \"{ACCEPT_DUEL_ARG}\" as an argument to duel or \"{DENY_DUEL_ARG}\" as an argument to refuse. The duel expires in {totalTime.TotalMinutes} minute(s), {totalTime.Seconds} second(s)!");
         }
 
         private void AcceptDenyDuel(string thisUserName, string argument)
@@ -239,7 +239,7 @@ namespace TRBot.Commands
             //If the duel is denied, exit early
             if (argument == DENY_DUEL_ARG)
             {
-                QueueMessage($"{thisUserName} has denied to duel with {data.UserDueling} and miss out on a potential {data.BetAmount} {creditsName.Pluralize(false, data.BetAmount)}!");
+                QueueMessage($"{thisUserName} has denied to duel with {data.UserDueling} and miss out on a potential {data.BetAmount} {creditsName.Pluralize(data.BetAmount)}!");
                 return;
             }
 
@@ -259,7 +259,7 @@ namespace TRBot.Commands
                 //First confirm both users have enough credits for the duel, as they could've lost some in that time
                 if (thisUser.Stats.Credits < betAmount || opponentUser.Stats.Credits < betAmount)
                 {
-                    QueueMessage($"At least one user involved in the duel no longer has enough {creditsName.Pluralize(false, 0)} for the duel. The duel is off!");
+                    QueueMessage($"At least one user involved in the duel no longer has enough {creditsName.Pluralize(0)} for the duel. The duel is off!");
                     return;
                 }
 
@@ -279,7 +279,7 @@ namespace TRBot.Commands
                     thisUser.Stats.Credits += betAmount;
                     opponentUser.Stats.Credits -= betAmount;
 
-                    message = $"{thisUser.Name} won the bet against {dueled} for {betAmount} {creditsName.Pluralize(false, betAmount)}!";
+                    message = $"{thisUser.Name} won the bet against {dueled} for {betAmount} {creditsName.Pluralize(betAmount)}!";
                 }
                 //The opponent won
                 else
@@ -287,7 +287,7 @@ namespace TRBot.Commands
                     thisUser.Stats.Credits -= betAmount;
                     opponentUser.Stats.Credits += betAmount;
 
-                    message = $"{dueled} won the bet against {thisUser.Name} for {betAmount} {creditsName.Pluralize(false, betAmount)}!";
+                    message = $"{dueled} won the bet against {thisUser.Name} for {betAmount} {creditsName.Pluralize(betAmount)}!";
                 }
 
                 //Save the outcome of the duel

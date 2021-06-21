@@ -88,7 +88,7 @@ namespace TRBot.Commands
                 User bettingUser = DataHelper.GetUserNoOpen(userName, context);
                 if (creditBet > bettingUser.Stats.Credits)
                 {
-                    QueueMessage($"Bet amount is greater than {creditsName.Pluralize(false, 0)}!");
+                    QueueMessage($"Bet amount is greater than {creditsName.Pluralize(0)}!");
                     return;
                 }
             }
@@ -105,12 +105,12 @@ namespace TRBot.Commands
                 if (success)
                 {
                     bettingUser.Stats.Credits += creditBet;
-                    message = $"{bettingUser.Name} won {creditBet} {creditsName.Pluralize(false, creditBet)} PogChamp";
+                    message = $"{bettingUser.Name} won {creditBet} {creditsName.Pluralize(creditBet)} PogChamp";
                 }
                 else
                 {
                     bettingUser.Stats.Credits -= creditBet;
-                    message = $"{bettingUser.Name} lost {creditBet} {creditsName.Pluralize(false, creditBet)} BibleThump";
+                    message = $"{bettingUser.Name} lost {creditBet} {creditsName.Pluralize(creditBet)} BibleThump";
                 }
 
                 context.SaveChanges();

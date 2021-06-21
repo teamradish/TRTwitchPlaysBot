@@ -90,14 +90,48 @@ namespace TRBot.Utilities
             }
         }
 
+        // <summary>
+        /// Makes a string singular or plural based on the context.
+        /// </summary>
+        /// <param name="str">The string to pluralize.</param>
+        /// <param name="count">A given number, used to indicate if the string should be singular or plural.</param>
+        /// <returns>A pluralized string.</returns>
+        public static string Pluralize(this string str, in long count)
+        {
+            string newStr = str;
+
+            char lastChar = str[str.Length - 1];
+
+            if (count == 1)
+            {
+                //If the string ends with a plural, remove it
+                //This doesn't cover all possible plural forms
+                if ((lastChar == 's' || lastChar == 'S') && newStr.Length > 1)
+                {
+                    newStr = newStr.Remove(str.Length - 1, 1);
+                }
+            }
+            else
+            {
+                //If the string is singular, make it plural
+                //This doesn't cover all possible plural forms
+                if (lastChar != 's')
+                {
+                    newStr = newStr + "s";
+                }
+            }
+
+            return newStr;
+        }
+
         /// <summary>
         /// Makes a string singular or plural and lowercase or capitalized based on the context.
         /// </summary>
         /// <param name="str">The string to pluralize.</param>
         /// <param name="capital">Whether the string should be capitalized. false means lowercase.</param>
         /// <param name="count">A given number, used to indicate if the string should be singular or plural.</param>
-        /// <returns>A pluralized string.</returns>
-        public static string Pluralize(this string str, in bool capital, in long count)
+        /// <returns>A pluralized and capitalized string.</returns>
+        public static string PluralizeCapitalize(this string str, in bool capital, in long count)
         {
             //We can't do anything for an empty or null string
             if (string.IsNullOrEmpty(str) == true)
