@@ -7,16 +7,16 @@ If you installed a pre-built binary, run `TRBot` (Ex. `TRBot.exe` on Windows, `.
 
 After running TRBot once, it will create a **Data** folder in the same folder you ran it from along with a **TRBotData.db** database file, which holds all your settings. It's highly recommended to first go through the [tutorial on managing TRBot's data](./Managing-Data.md) to learn how to view and modify this data.
 
+For security reasons, no user is a Superadmin by default. You will have to set yourself to a Superadmin to change some settings and use specific commands. To set a user as an Admin or Superadmin, open up the **TRBotData.db** file in SQLite or a database viewer, find the user under the **Users** table, and manually change their level to 40 (Admin) or 50 (Superadmin), then save your changes.
+
 # Connecting
 
 ## Twitch
 By default, TRBot connects to Twitch. This is defined by a `client_service_type` of **1** in the **TRBotData.db** database. If you are connecting through Twitch, TRBot will also create a template file for the login information in this folder. Open the **TwitchLoginSettings.txt** file and fill out the login information for your bot. The settings are described below:
 
-*BotName* = Username of your bot.<br />
-*Password* = OAuth token for your bot account. **This HAS to be an OAuth token and cannot be your raw password!** You can generate an OAuth token [here](https://twitchapps.com/tmi/) or [here](https://twitchtokengenerator.com/).<br />
-*ChannelName* = The name of the channel to have the bot connect to. Multiple channels are currently not supported.
-
-For security reasons, no user is an Admin or Superadmin by default. To set a user as an Admin or Superadmin, open up the **TRBotData.db** file in SQLite or a database viewer, find the user under the "Users" table, and manually change their level to 40 (Admin) or 50 (Superadmin), then save your changes. If the user is not there
+*BotName* = Username of the Twitch account for the bot to connect as. This must be a valid Twitch account.<br />
+*Password* = OAuth token for your Twitch account. **This HAS to be an OAuth token and cannot be your raw password!** You can generate an OAuth token [here](https://twitchapps.com/tmi/) or [here](https://twitchtokengenerator.com/).<br />
+*ChannelName* = The name of the Twitch channel to have the bot connect to. Multiple channels are currently not supported.
 
 After these are set, run TRBot again and you should see it connect to the channel.
 <br />***IMPORTANT:*** If you don't see the bot's connection message on the channel, make sure the channel doesn't have chat restrictions, such as Followers-only, or have the bot account adhere to the restrictions so it can chat.

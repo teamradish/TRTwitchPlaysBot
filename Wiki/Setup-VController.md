@@ -23,5 +23,7 @@ Alternatively, you can use another application to test joystick inputs. One such
 
 If everything looks good at this point, viewers should now be capable of playing games through your chat!
 
+**NOTE: For PC games, the "PC" console is typically reserved for the experimental xdotool virtual controller on GNU/Linux. It's recommended to [create a new console with custom inputs or modify an existing one](./Adding-ConsolesInputs.md) catered to your specific game.**
+
 # Next step - Miscellaneous
 Done with this step? Check the [next section](./Setup-Misc.md) for additional settings, tools for displaying chat on stream, and more!

@@ -39,7 +39,7 @@ There are several options for displaying Twitch chat on your stream:
 # PC Games
 Inputs should work for PC games that can recognize the virtual controllers. Some games using the SDL library may need an input mapping string to recognize the controllers. You can put this input mapping as an environment variable if there are no options for inserting them directly into a file for the game itself. For more information, [see this SDL mapping tool](https://generalarcade.com/gamepadtool/).
 
-There is also experimental keyboard and mouse controls accessible on GNU/Linux systems running X11 if [`xdotool`](https://www.semicomplete.com/projects/xdotool/) is installed. To use this, switch the virtual controller to `xdotool` with the [`VirtualControllerCommand`]((../TRBot/TRBot.Commands/Commands/VirtualControllerCommand.cs) (default: "!vcontroller").
+There is also experimental keyboard and mouse controls accessible on GNU/Linux systems running X11 if [`xdotool`](https://www.semicomplete.com/projects/xdotool/) is installed. To use this, switch the virtual controller to `xdotool` with the [`VirtualControllerCommand`]((../TRBot/TRBot.Commands/Commands/VirtualControllerCommand.cs) (default: "!vcontroller"). The "PC" console is typically used specifically for `xdotool`.
 
 ## PC Game Precautions
 **Be very careful when playing PC games!** Make sure that players can't exit the game, access files or perform any other malicious activities, such as shutting down the system. If you're streaming a PC game, highly consider capturing only the window with the game and not the entire display; this way if players manage to exit the game, they won't be able to see anything else on your computer. This is easier to accomplish by playing the game in windowed mode.
