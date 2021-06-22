@@ -78,17 +78,22 @@ namespace TRBot.Connection.WebSocket
         public void Initialize()
         {
             Socket = new WebSocketSharp.WebSocket(ConnectURL);
-            Socket.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls12;
+
+            //Specify SSL configuration on a secure WebSocket
+            if (Socket.IsSecure == true)
+            {
+                Socket.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls12;
+
+                //Subscribe to validate SSL certificates for secure websockets
+                ServicePointManager.ServerCertificateValidationCallback -= WebSocketSSLCertValidation;
+                ServicePointManager.ServerCertificateValidationCallback += WebSocketSSLCertValidation;
+            }
 
             EventHandler = new WebSocketEventHandler(Socket, CommandIdentifier, BotName);
             EventHandler.Initialize();
 
             EventHandler.OnJoinedChannelEvent -= OnClientJoinedChannel;
             EventHandler.OnJoinedChannelEvent += OnClientJoinedChannel;
-
-            //Subscribe to validate SSL certificates for secure websockets
-            ServicePointManager.ServerCertificateValidationCallback -= WebSocketSSLCertValidation;
-            ServicePointManager.ServerCertificateValidationCallback += WebSocketSSLCertValidation;
 
             Initialized = true;
         }

@@ -120,7 +120,7 @@ namespace TRBot.Commands
                 User user = DataHelper.GetUserNoOpen(userName, context);
                 if (user == null)
                 {
-                    QueueMessage("Huh, looks like you're not in the database!");
+                    QueueMessage("You're not in the database, so you can't perform exercises. Sorry!");
                     return;
                 }
 

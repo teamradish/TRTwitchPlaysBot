@@ -49,7 +49,7 @@ namespace TRBot.Commands
             {
                 if (user == null)
                 {
-                    QueueMessage("Somehow, you're an invalid user not in the database, so I can't display your controller port.", Serilog.Events.LogEventLevel.Error);
+                    QueueMessage("You're not in the database, so I can't display your controller port.", Serilog.Events.LogEventLevel.Error);
                 }
                 else
                 {

@@ -91,7 +91,10 @@ namespace TRBot.Commands
                 //Use user overrides if they exist, otherwise use the global values
                 User user = DataHelper.GetUser(userName);
                 
-                defaultPort = (int)user.ControllerPort;
+                if (user != null)
+                {
+                    defaultPort = (int)user.ControllerPort;
+                }
 
                 int defaultDur = (int)DataHelper.GetUserOrGlobalDefaultInputDur(userName);
                 int maxDur = (int)DataHelper.GetUserOrGlobalMaxInputDur(userName);
