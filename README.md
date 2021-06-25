@@ -70,6 +70,6 @@ Our main repository is on Codeberg: https://codeberg.org/kimimaru/TRBot.git
 Issues and pull requests are greatly encouraged! Please file an issue if you encounter any bugs or have a feature request.
 
 ### Support
-Feel free to ask questions or discuss development on our Matrix room at [#TRBot-Dev:matrix.org](https://matrix.to/#/!hTfcbsKMAuenQAetQm:matrix.org?via=matrix.org). You can also [contact us](mailto:trbot@posteo.de) for support. Paid setup and support options are also available.
+Feel free to ask questions or discuss development on our Matrix room at [#TRBot-Dev:matrix.org](https://matrix.to/#/!hTfcbsKMAuenQAetQm:matrix.org?via=matrix.org). You can also [contact us](mailto:trbot (at) posteo (dot) de) for support. Paid setup and support options are also available.
 
 Developing software takes considerable time and effort, and we have poured hundreds of hours of our spare time into making TRBot as powerful and feature-rich as it is and freely available to everyone. Kindly consider [buying us a coffee](https://ko-fi.com/kimimaru) or [donating](https://liberapay.com/kimimaru/).

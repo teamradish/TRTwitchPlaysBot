@@ -24,6 +24,8 @@ Inputs typed:
 - right
 - a
 
+TRBot's inputs are **case-insensitive**, meaning these inputs would still work if we were to replace "a" with "A" and "right" with "RiGhT".
+
 ## Input Duration
 
 Now let's make Mario walk farther to the right in a single command. You can specify a duration for how long to press an input, in either milliseconds (ms) or seconds (s). Notice how Mario walks farther and jumps higher when we specify longer durations.
@@ -39,7 +41,7 @@ Inputs typed:
 
 ## Input Sequences
 
-That wasn't good enough, so let's make Mario do more! Let's have him run right, jump, then move left mid-jump.
+That wasn't cool enough, so let's make Mario do more! Let's have him run right, jump, then move left mid-jump.
 
 You can type more than one input in a single line and have them complete in order. Once an input is completed, the next will follow. This is known as an input sequence. Notice how Mario jumps after moving right, then soon afterwards veers to the left.
 

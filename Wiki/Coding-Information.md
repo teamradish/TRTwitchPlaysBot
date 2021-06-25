@@ -32,11 +32,13 @@ We are also on Matrix at [#TRBot-Dev:matrix.org](https://matrix.to/#/!hTfcbsKMAu
 ## Important Notes
 - Parsing inputs using `IParser.ParseInputs` is fairly simple, but there is some work required to prepare the input string beforehand. These are done through `IPreparsers`, which can be passed into the constructor of a `StandardParser`. Their functions include removing whitespace, expanding repeated inputs, and populating macros. If you use `StandardParser.CreateStandard`, these will already be handled for you.
 - The standard order of `IPreparser`s is as follows:
-  1. `InputMacroPreparser`
-  2. `InputSynonymPreparser`
-  3. `ExpandPreparser`
-  4. `RemoveWhitespacePreparser`
-  5. `LowercasePreparser`
+  1. `RemoveWhitespacePreparser`
+  2. `LowercasePreparser`
+  3. `InputMacroPreparserNew`
+  4. `InputSynonymPreparser`
+  5. `ExpandPreparser`
+  6. `RemoveWhitespacePreparser`
+  7. `LowercasePreparser`
 - It's recommended to parse inputs with an opened database context so you have all the information you need to create the standard parser configuration.
 - After parsing, but before carrying out the input sequence, you'll want to perform some post-processing. Without post-processing, there is no permission checks nor any mid input delay insertions.
 - Look at the static `ParserPostProcess` class in the `TRBot.Misc` project for various methods to help validate the input sequence.

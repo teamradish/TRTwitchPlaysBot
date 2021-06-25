@@ -474,6 +474,7 @@ namespace TRBot.Parsing
             List<IPreparser> preparsers = new List<IPreparser>()
             {
                 new RemoveWhitespacePreparser(),
+                new LowercasePreparser(),
                 new InputMacroPreparserNew(macros),
                 new InputSynonymPreparser(synonyms),
                 new ExpandPreparser(),
