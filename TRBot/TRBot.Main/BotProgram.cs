@@ -174,6 +174,9 @@ namespace TRBot.Main
             long msgThrottleCount = DataHelper.GetSettingInt(SettingsConstants.MESSAGE_THROTTLE_COUNT, 20L);
             MsgHandler.SetMessageThrottling(msgThrottleOption, new MessageThrottleData(msgCooldown, msgThrottleCount));
 
+            string messagePrefix = DataHelper.GetSettingString(SettingsConstants.MESSAGE_PREFIX, string.Empty);
+            MsgHandler.SetMessagePrefix(messagePrefix);
+
             //Subscribe to events
             UnsubscribeEvents();
             SubscribeEvents();
@@ -987,6 +990,15 @@ namespace TRBot.Main
             }
 
             MsgHandler.SetMessageThrottling(msgThrottle, new MessageThrottleData(msgTime, msgThrottleCount));
+
+            //Handle message prefix changes
+            string msgPrefix = DataHelper.GetSettingString(SettingsConstants.MESSAGE_PREFIX, string.Empty);
+            if (msgPrefix != MsgHandler.MessagePrefix)
+            {
+                TRBotLogger.Logger.Information("Detected change in message prefix - changing message prefix.");
+            }
+
+            MsgHandler.SetMessagePrefix(msgPrefix);
         }
 
         private bool LastVControllerTypeChanged()

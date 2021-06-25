@@ -56,6 +56,7 @@ namespace TRBot.Data
         public const string MESSAGE_THROTTLE_TYPE = "message_throttle_type";
         public const string MESSAGE_COOLDOWN = "message_cooldown";
         public const string MESSAGE_THROTTLE_COUNT = "message_throttle_count";
+        public const string MESSAGE_PREFIX = "message_prefix";
         public const string RECONNECT_TIME = "reconnect_time";
 
         public const string CONNECT_MESSAGE = "connect_message";

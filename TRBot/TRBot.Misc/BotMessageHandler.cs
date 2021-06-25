@@ -49,6 +49,11 @@ namespace TRBot.Misc
         private string ChannelName = string.Empty;
 
         /// <summary>
+        /// The string to prepend to each message.
+        /// </summary>
+        public string MessagePrefix { get; private set; } = string.Empty;
+
+        /// <summary>
         /// The message throttler that restricts how often messages are sent.
         /// </summary>
         public BotMessageThrottler MessageThrottler { get; private set; } = NoThrottleInstance;
@@ -81,6 +86,11 @@ namespace TRBot.Misc
         public void SetChannelName(string channelName)
         {
             ChannelName = channelName;
+        }
+
+        public void SetMessagePrefix(string messagePrefix)
+        {
+            MessagePrefix = messagePrefix;
         }
 
         public void SetMessageThrottling(in MessageThrottlingOptions msgThrottleOption,
@@ -145,12 +155,20 @@ namespace TRBot.Misc
             //There's a chance the bot could be disconnected from the channel between the conditional and now
             try
             {
+                string sentMsg = queuedMsg.Message;
+
+                //Prepend the prefix if it exists
+                if (string.IsNullOrEmpty(MessagePrefix) == false)
+                {
+                    sentMsg = MessagePrefix + sentMsg;
+                }
+
                 //Send the message
-                ClientService.SendMessage(ChannelName, queuedMsg.Message);
+                ClientService.SendMessage(ChannelName, sentMsg);
 
                 if (LogToLogger == true)
                 {
-                    TRBotLogger.Logger.Write(queuedMsg.LogLevel, queuedMsg.Message);
+                    TRBotLogger.Logger.Write(queuedMsg.LogLevel, sentMsg);
                 }
 
                 //Remove from queue

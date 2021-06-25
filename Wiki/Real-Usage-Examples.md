@@ -39,3 +39,5 @@ Here are some more examples of TRBot in action:
   * Part 2: https://clips.twitch.tv/AuspiciousBoringArugulaUncleNox
   * Part 3: https://clips.twitch.tv/ElatedVenomousAlbatrossKappaWealth
   * Part 4: https://clips.twitch.tv/DelightfulCulturedBeefLitty
+* **Prison 2 Speedrun Sub-57 (Katana ZERO)**
+  * https://clips.twitch.tv/ExquisiteDeterminedBubbleteaKeyboardCat-X_nurQac_VsYqfjG

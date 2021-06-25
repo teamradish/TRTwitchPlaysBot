@@ -26,6 +26,7 @@ Table of Contents
 * [message_throttle_type](#message_throttle_type)
 * [message_cooldown](#message_cooldown)
 * [message_throttle_count](#message_throttle_count)
+* [message_prefix](#message_prefix)
 * [reconnect_time](#reconnect_time)
 * [connect_message](#connect_message)
 * [reconnected_message](#reconnected_message)
@@ -163,6 +164,9 @@ Indicates the time used in message throttling. See [message_throttle_type](#mess
 
 ### message_throttle_count
 Indicates the number of messages that can be sent in a given time interval. See [message_throttle_type](#message_throttle_type) for more information. This defaults to 20, the default for Twitch bots.
+
+### message_prefix
+Indicates the string to prepend to each bot message. If null or empty, the option is disabled. This defaults to an empty string. Requires reloading to apply changes while the bot is running.
 
 ### reconnect_time
 Indicates the time, in milliseconds, TRBot waits each time to reconnect to the client service after it loses connection. This applies only to online client services. This defaults to 5000, or 5 seconds. Requires reloading to apply changes while the bot is running.

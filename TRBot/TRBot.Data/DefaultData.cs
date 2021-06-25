@@ -70,6 +70,7 @@ namespace TRBot.Data
                 SettingsHelper(MESSAGE_THROTTLE_TYPE, (long)MessageThrottlingOptions.MsgCountPerInterval),
                 SettingsHelper(MESSAGE_COOLDOWN, 30000L),
                 SettingsHelper(MESSAGE_THROTTLE_COUNT, 20L),
+                SettingsHelper(MESSAGE_PREFIX, string.Empty),
                 SettingsHelper(RECONNECT_TIME, 5000L),
                 SettingsHelper(CONNECT_MESSAGE, "Your friendly Twitch Plays bot has connected :D ! Use !inputs for all buttons, !tutorial to learn how to play, and !help for a list of bot commands! Original input parser by Jdog, aka TwitchPlays_Everything, rewritten and improved over time by the community."),
                 SettingsHelper(RECONNECTED_MESSAGE, "Successfully reconnected to chat!"),
