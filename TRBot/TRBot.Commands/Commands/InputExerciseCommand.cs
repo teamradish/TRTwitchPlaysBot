@@ -166,7 +166,7 @@ namespace TRBot.Commands
             string creditsName = DataHelper.GetCreditsName();
             int botCharLimit = (int)DataHelper.GetSettingInt(SettingsConstants.BOT_MSG_CHAR_LIMIT, 500L);
 
-            ReverseParser.ReverseParserOptions parseOptions = new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.None, (int)userControllerPort);
+            ReverseParser.ReverseParserOptions parseOptions = new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.ShowNonDefaultPorts, (int)userControllerPort);
 
             //Handle no arguments
             if (arguments.Count == 0)
@@ -337,7 +337,7 @@ namespace TRBot.Commands
             {
                 TRBotLogger.Logger.Debug($"COUNT DISPARITY {userInputs.Count} vs {exerciseInputs.Count}");
 
-                QueueMessage("Incorrect input! Try again!");
+                QueueMessage("Count disparity in input sequence! Try again!");
                 return false;
             }
 
@@ -350,7 +350,7 @@ namespace TRBot.Commands
                 {
                     TRBotLogger.Logger.Debug($"SUBINPUT COUNT DISPARITY AT {i}: {userSubInputs.Count} vs {exerciseSubInputs.Count}");
 
-                    QueueMessage("Incorrect input! Try again!");
+                    QueueMessage("Count disparity in input subsequence! Try again!");
                     return false;
                 }
 

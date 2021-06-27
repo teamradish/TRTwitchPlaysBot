@@ -87,8 +87,7 @@ namespace TRBot.Misc
                     //Show the port number if it's not a blank input,
                     //we should show all ports, or we should show a non-default port
                     //and the input's controller port is not the default port
-                    if (gameConsole.IsBlankInput(input) == false
-                        && options.ShowPortType == ShowPortTypes.ShowAllPorts
+                    if (options.ShowPortType == ShowPortTypes.ShowAllPorts
                         || (options.ShowPortType == ShowPortTypes.ShowNonDefaultPorts 
                             && input.ControllerPort != options.DefaultPortNum))
                     {
