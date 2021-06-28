@@ -60,8 +60,6 @@ namespace TRBot.Commands
 
         private const string NO_EXERCISE_FOUND_MSG = "No input exercise found. Generate a new one with \"" + GENERATE_NEW_ARG + "\" as an argument to this command, optionally with a difficulty level: \"" + EASY_DIFFICULTY_ARG + "\" or \"" + HARD_DIFFICULTY_ARG + "\".";
 
-        private const string COMMON_BLANK_INPUT = "#";
-
         private const char SPLIT_CHAR = ',';
 
         private ConcurrentDictionary<string, InputExercise> UserExercises = null;
@@ -112,7 +110,6 @@ namespace TRBot.Commands
         {
             List<string> arguments = args.Command.ArgumentsAsList;
             string userName = args.Command.ChatMessage.Username.ToLowerInvariant();
-            long userControllerPort = 0;
             long userLevel = 0;
 
             using (BotDBContext context = DatabaseManager.OpenContext())
@@ -130,7 +127,6 @@ namespace TRBot.Commands
                     return;
                 }
 
-                userControllerPort = user.ControllerPort;
                 userLevel = user.Level;
             }
 
@@ -166,7 +162,8 @@ namespace TRBot.Commands
             string creditsName = DataHelper.GetCreditsName();
             int botCharLimit = (int)DataHelper.GetSettingInt(SettingsConstants.BOT_MSG_CHAR_LIMIT, 500L);
 
-            ReverseParser.ReverseParserOptions parseOptions = new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.ShowNonDefaultPorts, (int)userControllerPort);
+            //Since the default controller port for input exercises is port 1, use the same value for the display
+            ReverseParser.ReverseParserOptions parseOptions = new ReverseParser.ReverseParserOptions(ReverseParser.ShowPortTypes.ShowNonDefaultPorts, 0);
 
             //Handle no arguments
             if (arguments.Count == 0)
@@ -337,7 +334,7 @@ namespace TRBot.Commands
             {
                 TRBotLogger.Logger.Debug($"COUNT DISPARITY {userInputs.Count} vs {exerciseInputs.Count}");
 
-                QueueMessage("Count disparity in input sequence! Try again!");
+                QueueMessage("Incorrect input! Try again!");
                 return false;
             }
 
@@ -350,7 +347,7 @@ namespace TRBot.Commands
                 {
                     TRBotLogger.Logger.Debug($"SUBINPUT COUNT DISPARITY AT {i}: {userSubInputs.Count} vs {exerciseSubInputs.Count}");
 
-                    QueueMessage("Count disparity in input subsequence! Try again!");
+                    QueueMessage("Incorrect input! Try again!");
                     return false;
                 }
 
@@ -360,10 +357,11 @@ namespace TRBot.Commands
                     ParsedInput excInp = exerciseSubInputs[j];
                     ParsedInput userInp = userSubInputs[j];
 
-                    //For simplicity when comparing, if the user put a blank input, use the same one all the time
-                    if (console.IsBlankInput(userInp) == true)
+                    //For simplicity when comparing, if the user put a blank input where the exercise is expecting it,
+                    //use the same blank input as the exercise so it's not marked as incorrect
+                    if (console.IsBlankInput(excInp) == true && console.IsBlankInput(userInp) == true)
                     {
-                        userInp.Name = COMMON_BLANK_INPUT;
+                        userInp.Name = excInp.Name;
                     }
 
                     if (excInp != userInp)
