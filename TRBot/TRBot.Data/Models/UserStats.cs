@@ -38,6 +38,8 @@ namespace TRBot.Data
         public long AutoPromoted { get; set; } = 0;
         public long OptedOut { get; set; } = 0;
         public long IgnoreMemes { get; set; } = 0;
+        public string SimulateHistory { get; set; } = string.Empty;
+        public long OptedInSimulate { get; set; } = 0;
 
         /// <summary>
         /// The User associated with the user stats.

@@ -425,6 +425,52 @@ namespace TRBot.Main
                             MsgHandler.QueueMessage(meme.MemeValue);
                         }
                     }
+
+                    bool isCommand = e.UsrMessage.Message.StartsWith(DataConstants.COMMAND_IDENTIFIER);
+                    bool isNullOrWhitespace = string.IsNullOrWhiteSpace(e.UsrMessage.Message);
+
+                    //Handle simulate data for the user if the message doesn't start with a command
+                    //Also ensure the user is opted into both bot stats and simulate data
+                    if (isCommand == false && isNullOrWhitespace == false
+                        && user != null && user.IsOptedOut == false && user.IsOptedIntoSimulate == true)
+                    {
+                        string simulateHistory = user.Stats.SimulateHistory;
+
+                        string msgWhitespace = Helpers.ReplaceAllWhitespaceWithSpace(e.UsrMessage.Message);
+
+                        //No history - use this value
+                        if (string.IsNullOrEmpty(simulateHistory) == true)
+                        {
+                            user.Stats.SimulateHistory = msgWhitespace;
+                            context.SaveChanges();
+                        }
+                        //Has history
+                        else
+                        {
+                            int curLength = simulateHistory.Length;
+                            int msgLength = msgWhitespace.Length;
+
+                            int maxLength = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.MAX_USER_SIMULATE_STRING_LENGTH, context, 10000L);
+
+                            //Check if we're above the max simulate history length
+                            //Add 1 to account for the extra space we add between each entry
+                            int diff = (maxLength - (msgLength + curLength + 1));
+
+                            //Greater than max simulate history length - remove from the start
+                            if (diff < 0)
+                            {
+                                simulateHistory = simulateHistory.Remove(0, -diff);
+                            }
+
+                            //Append a space followed by the user's message
+                            simulateHistory += " " + msgWhitespace;
+
+                            //Set and save
+                            user.Stats.SimulateHistory = simulateHistory;
+
+                            context.SaveChanges();
+                        }
+                    }
                 }
             }
 

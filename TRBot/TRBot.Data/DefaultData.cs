@@ -107,6 +107,8 @@ namespace TRBot.Data
                 SettingsHelper(GLOBAL_MID_INPUT_DELAY_ENABLED, 0L),
                 SettingsHelper(GLOBAL_MID_INPUT_DELAY_TIME, 34L),
                 SettingsHelper(MAX_USER_RECENT_INPUTS, 5L),
+                SettingsHelper(MAX_USER_SIMULATE_STRING_LENGTH, 30000L),
+                SettingsHelper(USER_SIMULATE_CREDIT_COST, 1000L),
                 SettingsHelper(DEMOCRACY_VOTE_TIME, 10000L),
                 SettingsHelper(DEMOCRACY_RESOLUTION_MODE, (long)DemocracyResolutionModes.ExactSequence),
                 SettingsHelper(INPUT_MODE_VOTE_TIME, 60000L),
@@ -237,6 +239,7 @@ namespace TRBot.Data
                 new CommandData("userdefaultinputdur", "TRBot.Commands.UserDefaultInputDurCommand", userPerm, true, false),
                 new CommandData("usermaxinputdur", "TRBot.Commands.UserMaxInputDurCommand", userPerm, true, false),
                 new CommandData("listsilenced", "TRBot.Commands.ListSilencedUsersCommand", userPerm, true, true),
+                new CommandData("simulate", "TRBot.Commands.UserSimulateCommand", userPerm, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", whitelistedPerm, true, true),
                 new CommandData("addsyn", "TRBot.Commands.AddInputSynonymCommand", whitelistedPerm, true, true),
@@ -309,8 +312,6 @@ namespace TRBot.Data
                 new PermissionAbility(BET_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
                 new PermissionAbility(DUEL_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
                 new PermissionAbility(GROUP_BET_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
-                //new PermissionAbility(JUMP_ROPE_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
-                //new PermissionAbility(FEED_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
                 new PermissionAbility(INPUT_EXERCISE_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
                 new PermissionAbility(CALCULATE_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
                 new PermissionAbility(CHATBOT_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
@@ -325,6 +326,7 @@ namespace TRBot.Data
                 new PermissionAbility(ADD_INPUT_SYNONYM_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
                 new PermissionAbility(REMOVE_INPUT_SYNONYM_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
                 new PermissionAbility(STOP_ALL_INPUTS_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
+                new PermissionAbility(SIMULATE_ABILITY, PermissionLevels.User, PermissionLevels.Moderator),
 
                 new PermissionAbility(SET_GAME_MESSAGE_ABILITY, PermissionLevels.VIP, PermissionLevels.VIP),
 

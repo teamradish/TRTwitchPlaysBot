@@ -68,6 +68,11 @@ namespace TRBot.Data
         /// </summary>
         public bool IsIgnoringMemes => (Stats.IgnoreMemes > 0);
 
+        /// <summary>
+        /// Tells if the user is opted into simulate data.
+        /// </summary>
+        public bool IsOptedIntoSimulate => (Stats.OptedInSimulate > 0);
+
         public User()
         {
             
@@ -105,6 +110,15 @@ namespace TRBot.Data
         public void SetIgnoreMemes(in bool ignoreMemes)
         {
             Stats.IgnoreMemes = (ignoreMemes == true) ? 1L : 0L;
+        }
+
+        /// <summary>
+        /// Sets the user's status on being opted into simulate data.
+        /// </summary>
+        /// <param name="optIntoSimulate">Whether to opt into or out of simulate data.</param>
+        public void SetOptSimulate(in bool optIntoSimulate)
+        {
+            Stats.OptedInSimulate = (optIntoSimulate == true) ? 1L : 0L;
         }
 
         /// <summary>

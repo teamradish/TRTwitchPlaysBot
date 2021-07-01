@@ -97,8 +97,6 @@ namespace TRBot.Permissions
         public const string BET_ABILITY = "bet";
         public const string DUEL_ABILITY = "duel";
         public const string GROUP_BET_ABILITY = "groupbet";
-        public const string JUMP_ROPE_ABILITY = "jumprope";
-        public const string FEED_ABILITY = "feed";
         public const string INPUT_EXERCISE_ABILITY = "inputexercise";
         public const string CALCULATE_ABILITY = "calculate";
         public const string CHATBOT_ABILITY = "chatbot";
@@ -107,5 +105,6 @@ namespace TRBot.Permissions
         public const string SLOTS_ABILITY = "slots";
         public const string SET_TEAMS_MODE_ABILITY = "setteamsmode";
         public const string SET_TEAMS_MODE_MAX_PORT_ABILITY = "setteamsmodemaxport";
+        public const string SIMULATE_ABILITY = "simulate";
     }
 }
