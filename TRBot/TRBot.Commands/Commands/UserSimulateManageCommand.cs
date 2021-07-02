@@ -78,7 +78,12 @@ namespace TRBot.Commands
                 }
 
                 optedInSimulate = thisUser.IsOptedIntoSimulate;
-                simulateLength = thisUser.Stats.SimulateHistory.Length;
+
+                string simHistory = thisUser.Stats.SimulateHistory;
+                if (string.IsNullOrEmpty(simHistory) == false)
+                {
+                    simulateLength = thisUser.Stats.SimulateHistory.Length;
+                }
             }
 
             //No arguments - display information
