@@ -101,6 +101,8 @@ namespace TRBot.Data
         public const string GLOBAL_MID_INPUT_DELAY_TIME = "global_mid_input_delay_time";
 
         public const string MAX_USER_RECENT_INPUTS = "max_user_recent_inputs";
+        public const string MAX_USER_SIMULATE_STRING_LENGTH = "max_user_simulate_string_length";
+        public const string USER_SIMULATE_CREDIT_COST = "user_simulate_credit_cost";
 
         public const string DEMOCRACY_VOTE_TIME = "democracy_vote_time";
         public const string DEMOCRACY_RESOLUTION_MODE = "democracy_resolution_mode";

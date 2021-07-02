@@ -152,6 +152,11 @@ Determines if the user can remove an input synonym through the [`RemoveInputSyno
 
 Determines if the user can stop all ongoing inputs with the [`StopAllInputsCommand`](../TRBot/TRBot.Commands/Commands/StopAllInputsCommand.cs).
 
+### simulate
+**Default level: User (0)**
+
+Determines if the user can simulate themselves or others with the [`UserSimulateCommand`](../TRBot/TRBot.Commands/Commands/UserSimulateCommand.cs).
+
 ### setgamemessage
 **Default level: VIP (20)**
 

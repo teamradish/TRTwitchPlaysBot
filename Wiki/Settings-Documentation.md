@@ -63,6 +63,8 @@ Table of Contents
 * [global_mid_input_delay_enabled](#global_mid_input_delay_enabled)
 * [global_mid_input_delay_time](#global_mid_input_delay_time)
 * [max_user_recent_inputs](#max_user_recent_inputs)
+* [max_user_simulate_string_length](#max_user_simulate_string_length)
+* [user_simulate_credit_cost](#user_simulate_credit_cost)
 * [democracy_vote_time](#democracy_vote_time)
 * [democracy_resolution_mode](#democracy_resolution_mode)
 * [input_mode_vote_time](#input_mode_vote_time)
@@ -292,6 +294,12 @@ The global time, in milliseconds, of the blank inputs inserted between each inpu
 
 ### max_user_recent_inputs
 The max number of recent input sequences to store per user. If the user is opted out of stats, it won't store any inputs. This defaults to 5.
+
+### max_user_simulate_string_length
+The max length of the simulate string for each user. If new simulate data would exceed this string, it removes characters from the start of the string to maintain the limit. This defaults to 30,000 characters. Higher values will generate more accurate simulations at the cost of increased memory usage and longer generation times.
+
+### user_simulate_credit_cost
+The number of credits to charge per simulation. This defaults to 1000 credits.
 
 ### democracy_vote_time
 The duration of the voting period in the Democracy input mode, in milliseconds. See [input_mode](#input_mode) for more information. This defaults to 10000 milliseconds, or 10 seconds. Requires reloading to apply changes while the bot is running.

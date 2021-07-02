@@ -188,3 +188,10 @@ You will need to reload data or restart TRBot to apply any changes in the **Comm
 - [`LeaveGroupBetCommand`](../TRBot/TRBot.Commands/Commands/LeaveGroupBetCommand.cs) (default: "!exitgroupbet") - Leaves the group bet. If there are no longer enough participants for the group bet after leaving, the group bet will be cancelled.
 - [`IgnoreMemesCommand`](../TRBot/TRBot.Commands/Commands/LeaveGroupBetCommand.cs) (default: "!ignorememes") - Obtains your status for ignoring memes or sets it if an argument is provided. While ignoring memes, any phrases you say in chat will no longer trigger a message from the bot. For example, "hi" may be a meme that causes the bot to reply with "hello" when received in chat. Ignoring memes would cause no response from the bot.
   - Example: "!ignorememes true"
+- [`UserSimulateCommand`](../TRBot/TRBot.Commands/Commands/UserSimulateCommand.cs) (default: "!simulate") - Simulates a given user, including themselves, by generating random phrases using messages the user entered, provided the one using the command has sufficient privileges. This only works for users opted into both bot stats and simulate data. Each simulation costs credits based on the defined [simulate credit cost](./Settings-Documentation.md#user_simulate_credit_cost).
+  - Example: "!simulate"
+  - Example: "!simulate user1"
+- [`UserSimulateManageCommand`](../TRBot/TRBot.Commands/Commands/UserSimulateManageCommand.cs) (default: "!simulatemng") - Helps manage a user's simulate data. This encompasses opting in and out of simulate data and clearing simulate data. Only users opted into bot stats can manage their simulate data. Without any arguments, this displays information about the user's simulation data.
+  - Example: "!simulatemng" - Displays simulation opt-in status and simulation data length.
+  - Example: "!simulatemng true" - Opts into simulation data.
+  - Example: "!simulatemng clear" - Clears simulation data.

@@ -135,6 +135,21 @@ namespace TRBot.Commands
             return command;
         }
 
+        public bool GetCommand<T>(out string commandName) where T : BaseCommand
+        {
+            foreach (KeyValuePair<string, BaseCommand> kvPair in AllCommands)
+            {
+                if (kvPair.Value is T)
+                {
+                    commandName = kvPair.Key;
+                    return true;
+                }
+            }
+
+            commandName = string.Empty;
+            return false;
+        }
+
         public bool AddCommand(string commandName, string commandTypeName, string valueStr,
             in long level, in bool commandEnabled, in bool displayInHelp)
         {
