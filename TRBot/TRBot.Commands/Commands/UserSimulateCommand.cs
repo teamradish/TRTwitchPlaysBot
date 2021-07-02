@@ -50,13 +50,26 @@ namespace TRBot.Commands
 
         private string UsageMessage = "Usage: \"username (optional)\"";
 
+        private string ManageCmdName = null;
+        private string ManageCmdUsage = string.Empty;
+
         public UserSimulateCommand()
         {
             
         }
 
+        public override void CleanUp()
+        {
+            ManageCmdName = null;
+            ManageCmdUsage = string.Empty;
+
+            base.CleanUp();
+        }
+
         public override void ExecuteCommand(EvtChatCommandArgs args)
         {
+            CacheManageCommandMessage();
+
             List<string> arguments = args.Command.ArgumentsAsList;
 
             if (arguments.Count > 1)
@@ -73,6 +86,9 @@ namespace TRBot.Commands
                 simulatedUserName = arguments[0].ToLowerInvariant();
             }
 
+            //Check if the user has enough credits
+            long creditCost = DataHelper.GetSettingInt(SettingsConstants.USER_SIMULATE_CREDIT_COST, 1000L);
+
             long thisUserCredits = 0L;
 
             using (BotDBContext context = DatabaseManager.OpenContext())
@@ -85,9 +101,11 @@ namespace TRBot.Commands
                     return;
                 }
 
-                if (thisUser.IsOptedOut == true || thisUser.IsOptedIntoSimulate == false)
+                //It's possible to simulate other users while opted out of simulate data
+                //However, if simulate costs credits, the user can't use it if opted out of bot stats
+                if (creditCost > 0L && thisUser.IsOptedOut == true)
                 {
-                    QueueMessage("You're not opted into bot or simulate data, so you cannot use simulate!");
+                    QueueMessage("You're not opted into bot stats, so you cannot use simulate!");
                     return;
                 }
 
@@ -109,19 +127,16 @@ namespace TRBot.Commands
 
                 if (simulatedUser.IsOptedOut == true || simulatedUser.IsOptedIntoSimulate == false)
                 {
-                    QueueMessage($"\"{simulatedUserName}\" cannot be simulated because they're not opted into bot or simulate data!");
+                    QueueMessage($"\"{simulatedUserName}\" cannot be simulated because they're not opted into bot or simulate data! {ManageCmdUsage}");
                     return;
                 }
 
                 simulateData = simulatedUser.Stats.SimulateHistory;
             }
 
-            //Check if the user has enough credits
-            long creditCost = DataHelper.GetSettingInt(SettingsConstants.USER_SIMULATE_CREDIT_COST, 1000L);
-
             string creditsName = DataHelper.GetCreditsName();
 
-            if (creditCost > 0 && thisUserCredits < creditCost)
+            if (creditCost > 0L && thisUserCredits < creditCost)
             {
                 QueueMessage($"You need at least {creditCost} {creditsName.Pluralize(creditCost)} to use simulate!");
                 return;
@@ -134,7 +149,7 @@ namespace TRBot.Commands
 
             if (string.IsNullOrEmpty(simulateSentence) == true)
             {
-                QueueMessage("No simulation could be generated for this user. There may not be enough data available.");
+                QueueMessage("No simulation could be generated for this user. There may not be enough data available. Simply talk in chat to generate simulation data.");
                 return;
             }
 
@@ -226,18 +241,26 @@ namespace TRBot.Commands
                 strBuilder.Append(randSuffix).Append(' ');
 
                 //Get the new prefix
-                int spaceIndex = prefix.IndexOf(' ');
-                
-                //Somehow there's no space in the prefix - no choice but to back out
-                if (spaceIndex < 0)
+                if (PREFIX_COUNT > 1)
                 {
-                    break;
-                }
+                    int spaceIndex = prefix.IndexOf(' ');
 
-                //Exclude the first item in the prefix
-                //For example, if prefix = "The cat" and suffix = "is", the sentence would be "The cat is"
-                //The new prefix should then be "cat is"
-                prefix = prefix.Substring(spaceIndex + 1) + " " + randSuffix;
+                    //Somehow there's no space in the prefix - no choice but to back out
+                    if (spaceIndex < 0)
+                    {
+                        break;
+                    }
+
+                    //Exclude the first item in the prefix
+                    //For example, if prefix = "The cat" and suffix = "is", the sentence would be "The cat is"
+                    //The new prefix should then be "cat is"
+                    prefix = prefix.Substring(spaceIndex + 1) + " " + randSuffix;
+                }
+                //If there's only one prefix, set the suffix chosen as the new prefix
+                else
+                {
+                    prefix = randSuffix;
+                }
 
                 //TRBotLogger.Logger.Information($"NEW PREFIX = \"{prefix}\"");
             }
@@ -249,7 +272,7 @@ namespace TRBot.Commands
         {
             Dictionary<string, List<string>> chainDict = new Dictionary<string, List<string>>(simulateTerms.Length);
 
-            StringBuilder strBuilder = new StringBuilder(64);
+            StringBuilder strBuilder = new StringBuilder(PREFIX_COUNT * 16);
 
             for (int i = 0; i < simulateTerms.Length; i++)
             {
@@ -295,6 +318,26 @@ namespace TRBot.Commands
             }
 
             return chainDict;
+        }
+
+        private void CacheManageCommandMessage()
+        {
+            //Check specifically for null, which means the message hasn't been cached at all
+            //We can't do it in Initialize because the other command may not have been added to the command handler yet
+            if (ManageCmdName != null)
+            {
+                return;
+            }
+
+            //Get the name of the command that manages simulate data
+            if (CmdHandler.GetCommand<UserSimulateManageCommand>(out ManageCmdName) == false)
+            {
+                ManageCmdName = string.Empty;
+                return;
+            }
+
+            //Set the message to tell users how to opt in
+            ManageCmdUsage = $"To change your simulate opt status, use the \"{ManageCmdName}\" command.";
         }
     }
 }

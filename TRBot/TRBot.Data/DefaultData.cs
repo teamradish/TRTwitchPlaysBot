@@ -240,6 +240,7 @@ namespace TRBot.Data
                 new CommandData("usermaxinputdur", "TRBot.Commands.UserMaxInputDurCommand", userPerm, true, false),
                 new CommandData("listsilenced", "TRBot.Commands.ListSilencedUsersCommand", userPerm, true, true),
                 new CommandData("simulate", "TRBot.Commands.UserSimulateCommand", userPerm, true, true),
+                new CommandData("simulatemng", "TRBot.Commands.UserSimulateManageCommand", userPerm, true, true),
 
                 new CommandData("addlog", "TRBot.Commands.AddGameLogCommand", whitelistedPerm, true, true),
                 new CommandData("addsyn", "TRBot.Commands.AddInputSynonymCommand", whitelistedPerm, true, true),
