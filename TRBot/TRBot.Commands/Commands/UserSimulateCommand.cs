@@ -46,7 +46,7 @@ namespace TRBot.Commands
         /// </summary>
         private const int MIN_PREFIX_GEN_COUNT = 5;
 
-        private Random Rand = new Random();
+        private MarkovChainTextGenerator TextGenerator = new MarkovChainTextGenerator();
 
         private string UsageMessage = "Usage: \"username (optional)\"";
 
@@ -58,10 +58,21 @@ namespace TRBot.Commands
             
         }
 
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            TextGenerator = new MarkovChainTextGenerator();
+            TextGenerator.PrefixWordCount = PREFIX_COUNT;
+            TextGenerator.MinPrefixGenCount = MIN_PREFIX_GEN_COUNT;
+        }
+
         public override void CleanUp()
         {
             ManageCmdName = null;
             ManageCmdUsage = string.Empty;
+
+            TextGenerator = null;
 
             base.CleanUp();
         }
@@ -145,7 +156,9 @@ namespace TRBot.Commands
             //Generate a sentence no longer than the bot character limit
             int botCharLimit = (int)DataHelper.GetSettingInt(SettingsConstants.BOT_MSG_CHAR_LIMIT, 500L);
 
-            string simulateSentence = GenerateSimulation(simulateData, botCharLimit);
+            TextGenerator.CharacterLimit = botCharLimit;
+
+            string simulateSentence = TextGenerator.GenerateText(simulateData);
 
             if (string.IsNullOrEmpty(simulateSentence) == true)
             {
@@ -175,151 +188,7 @@ namespace TRBot.Commands
                 QueueMessage($"Spent {creditCost} {creditsName.Pluralize(creditCost)} to simulate! You now have {remainingCredits} {creditsName.Pluralize(remainingCredits)} remaining!");
             }
         }
-
-        private string GenerateSimulation(string simulateData, in int charLimit)
-        {
-            //Not enough data
-            if (string.IsNullOrEmpty(simulateData) == true)
-            {
-                return string.Empty;
-            }
-
-            //Split by space
-            string[] splitData = simulateData.Split(' ', StringSplitOptions.None);
-
-            //Not enough data
-            if (splitData.Length < (PREFIX_COUNT + 1))
-            {
-                return string.Empty;
-            }
-
-            //Fetch our markov chain
-            Dictionary<string, List<string>> markovChain = BuildDictionary(splitData);
-
-            //Too few prefixes
-            if (markovChain.Count < MIN_PREFIX_GEN_COUNT)
-            {
-                return string.Empty;
-            }
-
-            StringBuilder strBuilder = new StringBuilder(charLimit);
-
-            //Start with a random prefix
-            int randPrefixIndex = Rand.Next(0, markovChain.Count);
-
-            string prefix = markovChain.ElementAt(randPrefixIndex).Key;
-
-            //Go through, appending a random suffix belonging to the prefix
-            //Step one at a time, trimming the first word from the previous prefix
-            //Continue until there's no suffix or the string will go over the character limit
-            while (true)
-            {
-                //No chain here - break
-                if (markovChain.TryGetValue(prefix, out List<string> suffixes) == false)
-                {
-                    break;
-                }
-
-                //Append the first prefix
-                if (strBuilder.Length == 0)
-                {
-                    strBuilder.Append(prefix).Append(' ');
-                }
-
-                string randSuffix = suffixes[Rand.Next(0, suffixes.Count)];
-
-                //TRBotLogger.Logger.Information($"For prefix \"{prefix}\" chose suffix \"{randSuffix}\"");
-
-                int curTotalLength = strBuilder.Length + randSuffix.Length + 1;
-
-                //Too long - exit
-                if (curTotalLength > charLimit)
-                {
-                    break;
-                }
-
-                strBuilder.Append(randSuffix).Append(' ');
-
-                //Get the new prefix
-                if (PREFIX_COUNT > 1)
-                {
-                    int spaceIndex = prefix.IndexOf(' ');
-
-                    //Somehow there's no space in the prefix - no choice but to back out
-                    if (spaceIndex < 0)
-                    {
-                        break;
-                    }
-
-                    //Exclude the first item in the prefix
-                    //For example, if prefix = "The cat" and suffix = "is", the sentence would be "The cat is"
-                    //The new prefix should then be "cat is"
-                    prefix = prefix.Substring(spaceIndex + 1) + " " + randSuffix;
-                }
-                //If there's only one prefix, set the suffix chosen as the new prefix
-                else
-                {
-                    prefix = randSuffix;
-                }
-
-                //TRBotLogger.Logger.Information($"NEW PREFIX = \"{prefix}\"");
-            }
-
-            return strBuilder.ToString();
-        }
-
-        private Dictionary<string, List<string>> BuildDictionary(string[] simulateTerms)
-        {
-            Dictionary<string, List<string>> chainDict = new Dictionary<string, List<string>>(simulateTerms.Length);
-
-            StringBuilder strBuilder = new StringBuilder(PREFIX_COUNT * 16);
-
-            for (int i = 0; i < simulateTerms.Length; i++)
-            {
-                int suffixIndex = i + PREFIX_COUNT;
-
-                //No suffix available
-                if (suffixIndex >= simulateTerms.Length)
-                {
-                    break;
-                }
-
-                strBuilder.Clear();
-
-                //Get the prefix
-                strBuilder.Append(simulateTerms[i]);
-
-                for (int j = 1; j < PREFIX_COUNT; j++)
-                {
-                    strBuilder.Append(' ').Append(simulateTerms[i + j]);
-                }
-
-                string prefix = strBuilder.ToString();
-
-                //Get the suffix
-                string suffix = simulateTerms[i + PREFIX_COUNT];
-
-                //Check if the prefix is in the dictionary and add it if not
-                if (chainDict.TryGetValue(prefix, out List<string> suffixes) == false)
-                {
-                    suffixes = new List<string>();
-                    chainDict.Add(prefix, suffixes);
-                }
-                //else
-                //{
-                //    TRBotLogger.Logger.Information($"Found prefix \"{prefix}\" - adding suffix \"{suffix}\"");
-                //}
-                
-                //Don't add duplicate suffixes
-                if (suffixes.Contains(suffix) == false)
-                {
-                    suffixes.Add(suffix);
-                }
-            }
-
-            return chainDict;
-        }
-
+        
         private void CacheManageCommandMessage()
         {
             //Check specifically for null, which means the message hasn't been cached at all

@@ -35,16 +35,23 @@ namespace TRBot.Parsing
 
         public InputParserComponent(IList<string> inputList)
         {
+            const string startRegex = @"(?<" + INPUT_GROUP_NAME + @">(";
+            const string endRegex = @"))";
+            
+            //If there are no inputs, simply combine the start and end regex
+            if (inputList.Count == 0)
+            {
+                ComponentRegex = startRegex + endRegex;
+                return;
+            }
+
             IOrderedEnumerable<string> sorted = from str in inputList
                                                 orderby str.Length descending
                                                 select str;
 
-            const string startRegex = @"(?<" + INPUT_GROUP_NAME + @">(";
-            const string endRegex = @"))";
-            
             StringBuilder strBuilder = new StringBuilder(inputList.Count * 6);
             strBuilder.Append(startRegex);
-            
+
             int lastIndex = inputList.Count - 1;
             
             //Build the input regex

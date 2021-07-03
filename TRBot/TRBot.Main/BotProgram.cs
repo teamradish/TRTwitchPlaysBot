@@ -425,56 +425,73 @@ namespace TRBot.Main
                             MsgHandler.QueueMessage(meme.MemeValue);
                         }
                     }
-
-                    bool isCommand = e.UsrMessage.Message.StartsWith(DataConstants.COMMAND_IDENTIFIER);
-                    bool isNullOrWhitespace = string.IsNullOrWhiteSpace(e.UsrMessage.Message);
-
-                    //Handle simulate data for the user if the message doesn't start with a command
-                    //Also ensure the user is opted into both bot stats and simulate data
-                    if (isCommand == false && isNullOrWhitespace == false
-                        && user != null && user.IsOptedOut == false && user.IsOptedIntoSimulate == true)
-                    {
-                        string simulateHistory = user.Stats.SimulateHistory;
-
-                        string msgWhitespace = Helpers.ReplaceAllWhitespaceWithSpace(e.UsrMessage.Message);
-
-                        //No history - use this value
-                        if (string.IsNullOrEmpty(simulateHistory) == true)
-                        {
-                            user.Stats.SimulateHistory = msgWhitespace;
-                            context.SaveChanges();
-                        }
-                        //Has history
-                        else
-                        {
-                            int curLength = simulateHistory.Length;
-                            int msgLength = msgWhitespace.Length;
-
-                            int maxLength = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.MAX_USER_SIMULATE_STRING_LENGTH, context, 10000L);
-
-                            //Check if we're above the max simulate history length
-                            //Add 1 to account for the extra space we add between each entry
-                            int diff = (maxLength - (msgLength + curLength + 1));
-
-                            //Greater than max simulate history length - remove from the start
-                            if (diff < 0)
-                            {
-                                simulateHistory = simulateHistory.Remove(0, -diff);
-                            }
-
-                            //Append a space followed by the user's message
-                            simulateHistory += " " + msgWhitespace;
-
-                            //Set and save
-                            user.Stats.SimulateHistory = simulateHistory;
-
-                            context.SaveChanges();
-                        }
-                    }
                 }
             }
 
-            ProcessMsgAsInput(e);
+            bool isValidInput = ProcessMsgAsInput(e);
+
+            //Add only non-inputs to simulate data
+            if (isValidInput == true)
+            {
+                return;
+            }
+            
+            //Add the message to the user's simulate data
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                User user = DataHelper.GetUserNoOpen(userName, context);
+
+                if (user == null)
+                {
+                    return;
+                }
+
+                bool isCommand = e.UsrMessage.Message.StartsWith(DataConstants.COMMAND_IDENTIFIER);
+                bool isNullOrWhitespace = string.IsNullOrWhiteSpace(e.UsrMessage.Message);
+
+                //Handle simulate data for the user if the message doesn't start with a command
+                //Also ensure the user is opted into both bot stats and simulate data
+                if (isCommand == false && isNullOrWhitespace == false
+                    && user.IsOptedOut == false && user.IsOptedIntoSimulate == true)
+                {
+                    string simulateHistory = user.Stats.SimulateHistory;
+
+                    //Replace all whitespace with space (' ') for consistency
+                    string msgWhitespace = Helpers.ReplaceAllWhitespaceWithSpace(e.UsrMessage.Message);
+
+                    //No history - set to a default value
+                    if (string.IsNullOrEmpty(simulateHistory) == true)
+                    {
+                        simulateHistory = string.Empty;
+                    }
+
+                    int maxLength = (int)DataHelper.GetSettingIntNoOpen(SettingsConstants.MAX_USER_SIMULATE_STRING_LENGTH, context, 10000L);
+
+                    //Append a space followed by the user's message
+                    if (simulateHistory.Length > 0)
+                    {
+                        simulateHistory += " " + msgWhitespace;
+                    }
+                    //Ignore the space if the history is empty
+                    else
+                    {
+                        simulateHistory = msgWhitespace;
+                    }
+
+                    int diff = simulateHistory.Length - maxLength;
+
+                    //If we're over the max length, trim the difference from the start of the history
+                    if (diff > 0)
+                    {
+                        simulateHistory = simulateHistory.Remove(0, diff);
+                    }
+
+                    //Set and save
+                    user.Stats.SimulateHistory = simulateHistory;
+
+                    context.SaveChanges();
+                }
+            }
         }
 
         private void OnWhisperReceived(EvtWhisperMessageArgs e)
@@ -530,12 +547,12 @@ namespace TRBot.Main
             TRBotLogger.Logger.Warning("Bot disconnected! Please check your internet connection.");
         }
 
-        private void ProcessMsgAsInput(EvtUserMessageArgs e)
+        private bool ProcessMsgAsInput(EvtUserMessageArgs e)
         {
             //Ignore commands as inputs
             if (e.UsrMessage.Message.StartsWith(DataConstants.COMMAND_IDENTIFIER) == true)
             {
-                return;
+                return false;
             }
 
             GameConsole usedConsole = null;
@@ -558,7 +575,7 @@ namespace TRBot.Main
             if (usedConsole == null)
             {
                 MsgHandler.QueueMessage($"The current console does not point to valid data. Please set a different console to use, or if none are available, add one.");
-                return;
+                return false;
             }
 
             if (usedConsole.ConsoleInputs.Count == 0)
@@ -626,7 +643,7 @@ namespace TRBot.Main
                     MsgHandler.QueueMessage(inputSequence.Error);
                 }
 
-                return;
+                return false;
             }
 
             #region Parser Post-Process Validation
@@ -646,14 +663,14 @@ namespace TRBot.Main
                 //Check if the user is silenced and ignore the message if so
                 if (user != null && user.HasEnabledAbility(PermissionConstants.SILENCED_ABILITY) == true)
                 {
-                    return;
+                    return false;
                 }
             
                 //Ignore based on user level and permissions
                 if (user != null && user.Level < globalInputPermLevel)
                 {
                     MsgHandler.QueueMessage($"Inputs are restricted to levels {(PermissionLevels)globalInputPermLevel} and above.");
-                    return;
+                    return false;
                 }
 
                 if (user != null)
@@ -698,7 +715,7 @@ namespace TRBot.Main
                     {
                         MsgHandler.QueueMessage(validation.Message);
                     }
-                    return;
+                    return false;
                 }
 
                 //Check for invalid input combinations
@@ -711,7 +728,7 @@ namespace TRBot.Main
                     {
                         MsgHandler.QueueMessage(validation.Message);
                     }
-                    return;
+                    return false;
                 }
             }
 
@@ -724,7 +741,7 @@ namespace TRBot.Main
                 {
                     MsgHandler.QueueMessage(validation.Message, Serilog.Events.LogEventLevel.Warning);
                 }
-                return;
+                return false;
             }
 
             #endregion
@@ -734,7 +751,7 @@ namespace TRBot.Main
             {
                 //We can't process inputs because they're currently stopped
                 MsgHandler.QueueMessage("New inputs cannot be processed until all other inputs have stopped.", Serilog.Events.LogEventLevel.Warning);
-                return;
+                return true;
             }
 
             //Fetch these values ahead of time to avoid passing the database context through so many methods    
@@ -877,6 +894,8 @@ namespace TRBot.Main
 
                 InputHandler.CarryOutInput(inputSequence.Inputs, usedConsole, DataContainer.ControllerMngr);
             }
+
+            return true;
         }
 
 #endregion
