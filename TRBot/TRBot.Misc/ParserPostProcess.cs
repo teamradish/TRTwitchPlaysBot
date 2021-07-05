@@ -472,7 +472,7 @@ namespace TRBot.Misc
                 //Add a delay input in between
                 if (blankHasLongestDur == false && lastIndexBlankLongestDur == false)
                 {
-                    ParsedInput newDelayInput = new ParsedInput(firstBlankInput.Name, false, false, 100, midInputDelay, InputDurationTypes.Milliseconds, defaultPort, string.Empty);
+                    ParsedInput newDelayInput = new ParsedInput(firstBlankInput.Name, false, false, 100, midInputDelay, InputDurationTypes.Milliseconds, defaultPort);
                     
                     parsedInputs.Add(new List<ParsedInput>(1) { newDelayInput });
 

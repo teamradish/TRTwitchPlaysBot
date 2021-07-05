@@ -30,11 +30,9 @@ namespace TRBot.Tests
         [TestCase]
         public void TestEquality()
         {
-            ParsedInput a = new ParsedInput("test", false, false, 100d, 200, InputDurationTypes.Milliseconds,
-                0, string.Empty);
+            ParsedInput a = new ParsedInput("test", false, false, 100d, 200, InputDurationTypes.Milliseconds, 0);
 
-            ParsedInput b = new ParsedInput("test", false, false, 100d, 200, InputDurationTypes.Milliseconds,
-                0, string.Empty);
+            ParsedInput b = new ParsedInput("test", false, false, 100d, 200, InputDurationTypes.Milliseconds, 0);
 
             Assert.AreEqual(a == b, true);
         }
@@ -47,11 +45,9 @@ namespace TRBot.Tests
         [TestCase(76.23451332, 76.23483627)]
         public void TestPercentageEquality(double percentage1, double percentage2)
         {
-            ParsedInput a = new ParsedInput("test", false, false, percentage1, 200, InputDurationTypes.Milliseconds,
-                0, string.Empty);
+            ParsedInput a = new ParsedInput("test", false, false, percentage1, 200, InputDurationTypes.Milliseconds, 0);
 
-            ParsedInput b = new ParsedInput("test", false, false, percentage2, 200, InputDurationTypes.Milliseconds,
-                0, string.Empty);
+            ParsedInput b = new ParsedInput("test", false, false, percentage2, 200, InputDurationTypes.Milliseconds, 0);
 
             Assert.AreEqual(a == b, true);
         }
@@ -66,11 +62,9 @@ namespace TRBot.Tests
         [TestCase(33.333, 33.334)]
         public void TestPercentageInequality(double percentage1, double percentage2)
         {
-            ParsedInput a = new ParsedInput("test", false, false, percentage1, 200, InputDurationTypes.Milliseconds,
-                0, string.Empty);
+            ParsedInput a = new ParsedInput("test", false, false, percentage1, 200, InputDurationTypes.Milliseconds, 0);
 
-            ParsedInput b = new ParsedInput("test", false, false, percentage2, 200, InputDurationTypes.Milliseconds,
-                0, string.Empty);
+            ParsedInput b = new ParsedInput("test", false, false, percentage2, 200, InputDurationTypes.Milliseconds, 0);
 
             Assert.AreEqual(a == b, false);
         }

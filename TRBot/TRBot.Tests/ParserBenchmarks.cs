@@ -36,11 +36,8 @@ namespace TRBot.Tests
         private IEnumerable<InputSynonym> Synonyms = null;
         private string[] ValidInputs = null;
 
-        private string OldParserCachedMessage = string.Empty;
-        private string OldParserRegex = string.Empty;
-
-        private string NewParserCachedMessage = string.Empty;
-        private List<IParserComponent> NewParserComponents = null;
+        private string ParserCachedMessage = string.Empty;
+        private List<IParserComponent> ParserComponents = null;
 
         public ParserBenchmarks()
         {
@@ -59,10 +56,6 @@ namespace TRBot.Tests
 
             ValidInputs = new string[] { "a", "b", "r", "up", "#" };
 
-            Parser p = new Parser();
-            OldParserRegex = p.BuildInputRegex(ValidInputs);
-            OldParserCachedMessage = p.PrepParse(Message, Macros, Synonyms);
-
             List<IPreparser> Preparsers = new List<IPreparser>()
             {
                 new InputMacroPreparser(Macros),
@@ -71,14 +64,14 @@ namespace TRBot.Tests
                 new RemoveWhitespacePreparser()
             };
 
-            NewParserCachedMessage = Message;
+            ParserCachedMessage = Message;
 
             for (int i = 0; i < Preparsers.Count; i++)
             {
-                NewParserCachedMessage = Preparsers[i].Preparse(NewParserCachedMessage);
+                ParserCachedMessage = Preparsers[i].Preparse(ParserCachedMessage);
             }
 
-            NewParserComponents = new List<IParserComponent>()
+            ParserComponents = new List<IParserComponent>()
             {
                 new PortParserComponent(),
                 new HoldParserComponent(),
@@ -92,17 +85,7 @@ namespace TRBot.Tests
         }
 
         [Benchmark]
-        public void TestOldParser()
-        {
-            Parser p = new Parser();
-            string message = p.PrepParse(Message, Macros, Synonyms);
-            string inputRegex = p.BuildInputRegex(ValidInputs);
-
-            p.ParseInputs(message, inputRegex, new ParserOptions(0, 200, false, 60000));
-        }
-
-        [Benchmark]
-        public void TestNewParser()
+        public void TestParser()
         {
             List<IPreparser> preparsers = new List<IPreparser>()
             {
@@ -129,17 +112,10 @@ namespace TRBot.Tests
         }
 
         [Benchmark]
-        public void TestOldParserCached()
-        {
-            Parser p = new Parser();
-            p.ParseInputs(OldParserCachedMessage, OldParserRegex, new ParserOptions(0, 200, false, 60000));
-        }
-
-        [Benchmark]
         public void TestNewParserCached()
         {
-            StandardParser standardParser = new StandardParser(NewParserComponents, 0, 99, 200, 60000, false);
-            standardParser.ParseInputs(NewParserCachedMessage);
+            StandardParser standardParser = new StandardParser(ParserComponents, 0, 99, 200, 60000, false);
+            standardParser.ParseInputs(ParserCachedMessage);
         }
     }
 

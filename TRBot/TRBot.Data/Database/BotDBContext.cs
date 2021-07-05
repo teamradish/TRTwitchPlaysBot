@@ -136,7 +136,6 @@ namespace TRBot.Data
             {
                 entity.HasKey(e => e.ID);
                 entity.Property(e => e.Name).HasDefaultValue("GameConsole");
-                entity.Ignore(e => e.InputRegex);
                 entity.Ignore(e => e.ConsoleInputs);
                 entity.HasMany(e => e.InputList).WithOne(c => c.Console).HasForeignKey(c => c.ConsoleID).IsRequired().OnDelete(DeleteBehavior.Cascade);
                 entity.HasMany(e => e.InvalidCombos).WithOne().OnDelete(DeleteBehavior.Cascade);

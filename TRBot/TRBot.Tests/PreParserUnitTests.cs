@@ -84,7 +84,7 @@ namespace TRBot.Tests
 
             IQueryable<InputMacro> macros = BuildMacroList(macroNames, macroValues);
 
-            InputMacroPreparserNew imp = new InputMacroPreparserNew(macros.AsQueryable());
+            InputMacroPreparser imp = new InputMacroPreparser(macros.AsQueryable());
             string output = imp.Preparse(input);
 
             Assert.AreEqual(output, expectedOutput);
@@ -127,7 +127,7 @@ namespace TRBot.Tests
 
             IQueryable<InputMacro> macros = BuildMacroList(macroNames, macroValues);
 
-            InputMacroPreparserNew imp = new InputMacroPreparserNew(macros.AsQueryable());
+            InputMacroPreparser imp = new InputMacroPreparser(macros.AsQueryable());
             string output = imp.Preparse(input);
 
             Assert.AreEqual(output, expectedOutput);
@@ -145,7 +145,7 @@ namespace TRBot.Tests
 
             IQueryable<InputMacro> macros = BuildMacroList(macroNames, macroValues);
 
-            InputMacroPreparserNew imp = new InputMacroPreparserNew(macros.AsQueryable());
+            InputMacroPreparser imp = new InputMacroPreparser(macros.AsQueryable());
             string output = imp.Preparse(input);
 
             Assert.AreEqual(output, expectedOutput);
@@ -163,7 +163,7 @@ namespace TRBot.Tests
 
             IQueryable<InputMacro> macros = BuildMacroList(macroNames, macroValues);
 
-            InputMacroPreparserNew imp = new InputMacroPreparserNew(macros.AsQueryable(), maxRecursion);
+            InputMacroPreparser imp = new InputMacroPreparser(macros.AsQueryable(), maxRecursion);
             string output = imp.Preparse(input);
 
             Assert.AreEqual(output, expectedOutput);

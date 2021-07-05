@@ -49,17 +49,9 @@ namespace TRBot.Tests
         }
 
         [Benchmark]
-        public void TestOldMacroPreparser()
+        public void TestMacroPreparser()
         {
-            InputMacroPreparser macroPreparser = new InputMacroPreparser(Macros);
-            
-            macroPreparser.Preparse(Message);
-        }
-
-        [Benchmark]
-        public void TestNewMacroPreparser()
-        {
-            InputMacroPreparserNew newMacroPreparser = new InputMacroPreparserNew(Macros);
+            InputMacroPreparser newMacroPreparser = new InputMacroPreparser(Macros);
             
             newMacroPreparser.Preparse(Message);
         }

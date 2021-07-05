@@ -31,14 +31,13 @@ namespace TRBot.Parsing
         public int Duration;
         public InputDurationTypes DurationType;
         public int ControllerPort;
-        public string Error;
 
         /// <summary>
         /// Returns a default Input.
         /// </summary>
-        public static ParsedInput Default(in int defaultInputDur) => new ParsedInput(string.Empty, false, false, 100d, defaultInputDur, InputDurationTypes.Milliseconds, 0, string.Empty);
+        public static ParsedInput Default(in int defaultInputDur) => new ParsedInput(string.Empty, false, false, 100d, defaultInputDur, InputDurationTypes.Milliseconds, 0);
         
-        public ParsedInput(string nme, in bool hld, in bool relse, in double percnt, in int dur, InputDurationTypes durType, in int contPort, in string err)
+        public ParsedInput(string nme, in bool hld, in bool relse, in double percnt, in int dur, InputDurationTypes durType, in int contPort)
         {
             this.Name = nme;
             this.Hold = hld;
@@ -47,7 +46,6 @@ namespace TRBot.Parsing
             this.Duration = dur;
             this.DurationType = durType;
             this.ControllerPort = contPort;
-            this.Error = string.Empty;
         }
 
         public override bool Equals(object obj)
@@ -72,7 +70,6 @@ namespace TRBot.Parsing
                 hash = (hash * 37) + Duration.GetHashCode();
                 hash = (hash * 37) + DurationType.GetHashCode();
                 hash = (hash * 37) + ControllerPort.GetHashCode();
-                hash = (hash * 37) + ((Error == null) ? 0 : Error.GetHashCode());
                 return hash;
             }
         }
@@ -92,7 +89,7 @@ namespace TRBot.Parsing
 
         public override string ToString()
         {
-            return $"\"{Name}\" {Duration}{DurationType} | H:{Hold} | R:{Release} | P:{Percent} | CPort:{ControllerPort} | Err: \"{Error}\"";
+            return $"\"{Name}\" {Duration}{DurationType} | H:{Hold} | R:{Release} | P:{Percent} | CPort:{ControllerPort}";
         }
     }
 }

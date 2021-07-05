@@ -26,22 +26,60 @@ using System.Diagnostics;
 namespace TRBot.Parsing
 {
     /// <summary>
-    /// A pre-parser that populates macros based on given information.
+    /// A pre-parser that expands macros into their input values.
     /// </summary>
-    [Obsolete("This preparser is deprecated. Use InputMacroPreparserNew for a more performant and accurate macro preparser.", false)]
     public class InputMacroPreparser : IPreparser
     {
         public const string DEFAULT_MACRO_START = @"#";
+        
+        public const string MACRO_GROUP_NAME = "macro";
+        public const string MACRO_DYNAMIC_GROUP_NAME = "dynamic";
+        public const string MACRO_DYNAMIC_ARGS_GROUP_NAME = "args";
 
-        private static Comparison<DynamicMacroSub> SubCompare = SubComparison;
+        public const string MACRO_DYNAMIC_GENERIC_PLACEHOLDER = "*";
+        public const string MACRO_DYNAMIC_ARG_SEPARATOR = ",";
+        public const string MACRO_DYNAMIC_ARG_VARIABLE_START = "<";
+        public const string MACRO_DYNAMIC_ARG_VARIABLE_END = ">";
 
+        // Full Regex
+        // (?<macro>\#[^\#\(\s]+)(?<dynamic>\((?<args>([^,\(\)](\(.*\))?,?)+)\))?
+        public const string MACRO_REGEX = @"(?<"+ MACRO_GROUP_NAME + @">\" + DEFAULT_MACRO_START +
+            @"[^\" + DEFAULT_MACRO_START + @"\(\s]+)(?<"+ MACRO_DYNAMIC_GROUP_NAME +
+            @">\((?<"+ MACRO_DYNAMIC_ARGS_GROUP_NAME + @">([^" + MACRO_DYNAMIC_ARG_SEPARATOR + @"\(\)](\(.*\))?"
+            + MACRO_DYNAMIC_ARG_SEPARATOR + @"?)+)\))?";
+
+        /// <summary>
+        /// The macro data to use when parsing.
+        /// </summary>
         private IQueryable<InputMacro> MacroData = null;
 
-        private readonly string MacroRegex = DEFAULT_MACRO_START + @"[a-zA-Z0-9\(\,\.\+_\-&%!]*";
+        /// <summary>
+        /// The max depth to recurse when parsing macros.
+        /// This prevents infinite recursion for recursive macros.
+        /// </summary>
+        private int MaxRecursions = 10;
+
+        /// <summary>
+        /// Options to use when parsing dynamic macros.
+        /// </summary>
+        private DynamicMacroArgOptions DynamicMacroOptions = DynamicMacroArgOptions.FillArgs;
 
         public InputMacroPreparser(IQueryable<InputMacro> macroData)
         {
             MacroData = macroData;
+        }
+
+        public InputMacroPreparser(IQueryable<InputMacro> macroData, in int maxRecursions)
+            : this(macroData)
+        {
+            MaxRecursions = maxRecursions;
+        }
+
+        public InputMacroPreparser(IQueryable<InputMacro> macroData, in int maxRecursions,
+            in DynamicMacroArgOptions dynamicMacroOptions)
+            : this(macroData, maxRecursions)
+        {
+            DynamicMacroOptions = dynamicMacroOptions;
         }
 
         /// <summary>
@@ -51,200 +89,227 @@ namespace TRBot.Parsing
         /// <returns>A string containing the modified message.</returns>
         public string Preparse(string message)
         {
-            /* NOTE: There is a bug with this that we need to fix!
-             * For example, take a macro named "#b" with a value of "b300ms"
-             * A message of "# #b" will fail to parse since it expands out to "#b300ms" then keeps looping
-             * Finally, it will find "#b" as a macro again and will parse that out to "b300ms300ms", causing it to fail
-            */
-
             //There are no macros, so just return the original message
             if (MacroData == null || MacroData.Count() == 0)
             {
+                //Console.WriteLine("No macros available");
                 return message;
             }
 
+            //foreach (var thing in MacroData)
+            //{
+            //    Console.WriteLine($"MACRO = {thing.MacroName}");
+            //}
+
             const RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.IgnoreCase;
 
-            //Uncomment these stopwatch lines to time it
-            //Stopwatch sw = Stopwatch.StartNew();
+            //Start from the root message and recurse
+            string parsedMacroMsg = ParseMacros(message, regexOptions, 0);
 
-            const int MAX_RECURSION = 10;
-            int count = 0;
-            bool foundMacro = true;
-            Match macroArgs = null;
-            List<string> macroArgsList = null;
-            while (count < MAX_RECURSION && foundMacro == true)
+            return parsedMacroMsg;
+        }
+
+        private string ParseMacros(string message, in RegexOptions regexOptions, in int recursionDepth)
+        {
+            string parsedMsg = message;
+
+            //Console.WriteLine($"Recursion depth is {recursionDepth} for \"{parsedMsg}\""); 
+
+            //Stop parsing if the recursion is too deep or the message is invalid
+            if (recursionDepth >= MaxRecursions || string.IsNullOrEmpty(parsedMsg) == true)
             {
-                foundMacro = false;
-                MatchCollection macroMatches = Regex.Matches(message, MacroRegex, regexOptions);
+                //Console.WriteLine($"Recursed {MaxRecursions} times; exiting early");
+                return parsedMsg;
+            }
 
-                //Console.WriteLine($"Possible macros: {macroMatches} | {macroMatches.Count}");
+            MatchCollection matches = Regex.Matches(parsedMsg, MACRO_REGEX, regexOptions);
 
-                List<DynamicMacroSub> subs = null;
-                foreach (Match p in macroMatches)
+            //No matches, so return the original message
+            if (matches.Count == 0)
+            {
+                //Console.WriteLine($"No matches found in \"{parsedMsg}\".");
+                return parsedMsg;
+            }
+            
+            int origLength = parsedMsg.Length;
+            int curLength = parsedMsg.Length;
+
+            StringBuilder strBuilder = null;
+
+            foreach (Match match in matches)
+            {
+                if (match.Groups.TryGetValue(MACRO_GROUP_NAME, out Group matchGroup) == false
+                    || matchGroup.Success == false)
                 {
-                    //Console.WriteLine($"Match Value: {p.Value} | Index: {p.Index} | Len: {p.Length}");
+                    //Console.WriteLine($"No match with group \"{MACRO_GROUP_NAME}\" found.");
+                    continue;
+                }
 
-                    string macroName = Regex.Replace(message.Substring(p.Index, p.Length), @"\(.*\)", string.Empty, regexOptions);
+                string macroNameMatch = matchGroup.Value;
 
-                    //Console.WriteLine($"Macro name: {macroName}");
+                bool foundDynamic = match.Groups.TryGetValue(MACRO_DYNAMIC_GROUP_NAME, out Group dynamicGroup);
+                bool foundDynamicArgs = match.Groups.TryGetValue(MACRO_DYNAMIC_ARGS_GROUP_NAME, out Group dynamicArgsGroup);
 
-                    string macroNameGeneric = string.Empty;
-                    int argIndex = macroName.IndexOf("(");
+                bool isDynamic = (foundDynamic == true && dynamicGroup?.Success == true);
 
-                    if (argIndex != -1)
+                //Console.WriteLine($"Found \"{MACRO_GROUP_NAME}\" group with value \"{macroNameMatch}\"");
+                //Console.WriteLine($"Dynamic macro = {isDynamic}");
+
+                string macroValue = string.Empty;
+                string replaceName = string.Empty;
+
+                //Dynamic macro - find the match and replace arguments
+                if (isDynamic == true)
+                {
+                    if (foundDynamicArgs == false || dynamicArgsGroup.Success == false)
                     {
-                        //Console.WriteLine($"Arg Index: {argIndex} | P index: {p.Index} | P len: {p.Length} | message Len: {message.Length}");
-
-                        int maxIndex = p.Index + p.Length;
-
-                        //This doesn't parse correctly - there's a missing ')', so simply return
-                        if (maxIndex >= message.Length)
-                        {
-                            return message;
-                        }
-
-                        string sub = message.Substring(p.Index, p.Length + 1);
-
-                        //Console.WriteLine($"Sub: {sub}");
-
-                        macroArgs = Regex.Match(sub, @"\(.*\)", regexOptions);
-
-                        //Console.WriteLine($"Macro Arg match: {macroArgs.Value} | {macroArgs.Length}");
-
-                        if (macroArgs.Success == true)
-                        {
-                            int start = p.Index + macroArgs.Index + 1;
-                            string substr = message.Substring(start, macroArgs.Length - 2);
-                            macroArgsList = new List<string>(substr.Split(","));
-                            macroName += ")";
-                            macroNameGeneric = Regex.Replace(macroName, @"\(.*\)", string.Empty, regexOptions) + "(";
-
-                            int macroArgsCount = macroArgsList.Count;
-                            for (int i = 0; i < macroArgsCount; i++)
-                            {
-                                macroNameGeneric += "*,";
-                            }
-                            macroNameGeneric = macroNameGeneric.Substring(0, macroNameGeneric.Length - 1) + ")";
-                        }
-                    }
-                    else
-                    {
-                        macroArgsList = new List<string>();
-                        macroNameGeneric = macroName;
+                        //Console.WriteLine("Found a dynamic macro but no arguments! Invalid macro!");
+                        continue;
                     }
 
-                    //Console.WriteLine($"Macro name generic: \"{macroNameGeneric}\" | Len: {macroNameGeneric.Length}");
+                    string dynamicArgVal = dynamicArgsGroup.Value;
 
-                    string longest = string.Empty;
-                    int end = 0;
+                    //Console.WriteLine($"Starting dynamic arg val: {dynamicArgVal}");
 
-                    //Look through the parser macro list for performance
-                    //Handle no macro (Ex. "#" alone)
-                    if (macroNameGeneric.Length > 1)
+                    //Parse arguments to catch normal and dynamic macros inside them
+                    //If the macro fails to parse (Ex. doesn't exist, hits recursion limit) then this input won't be valid anyway
+                    string dynamicArgsParsed = ParseMacros(dynamicArgVal, regexOptions, recursionDepth + 1);
+
+                    string[] splitArgs = dynamicArgsParsed.Split(MACRO_DYNAMIC_ARG_SEPARATOR);
+
+                    //Get the generic form of the macro (Ex. generic form of "#mash(up,down)" is "#mash(*,*)")
+                    //The length of the string here is: macro name length + the split count + 3
+                    //The 3 comes from the two parenthesis and the additional match
+                    //NOTE: We might be able to use String.Create here or a stackalloc char for better performance + less memory
+                    StringBuilder dynamicMacroFull = new StringBuilder(macroNameMatch.Length + (splitArgs.Length + 1) + 2);
+                    dynamicMacroFull.Append(macroNameMatch);
+                    dynamicMacroFull.Append('(');
+
+                    int lastInd = splitArgs.Length - 1;
+
+                    //Build the generic form of the dynamic macro
+                    for (int i = 0; i < splitArgs.Length; i++)
                     {
-                        //Use string comparison for the first two characters
-                        //If the IQueryable is from a database such as SQLite, we can't do character comparisons in a Where clause
-                        //This may be a performance regression from the previous dictionary lookup,
-                        //but at the same time there may be indexing on the data; conduct tests to make sure and note it
-                        string startedWith = macroNameGeneric.Substring(0, 2);
-                        List<InputMacro> macroList = MacroData.Where((m) => m.MacroName.StartsWith(startedWith)).ToList();
+                        //Console.WriteLine($"Found argument \"{splitArgs[i]}\" in dynamic macro {macroNameMatch}");
 
-                        //Console.WriteLine($"Found {macroList.Count} macros starting with \"{startedWith}\"");
-
-                        //Go through each macro and find the longest match
-                        //This ensures it works with other inputs as well
-                        //For instance, if "#test" is a macro and the input is "#testa",
-                        //it should perform "#test" followed by "a" instead of stopping because it couldn't find "#testa"
-                        for (int i = 0; i < macroList.Count; i++)
+                        if (i < lastInd)
                         {
-                            string macro = macroList[i].MacroName;
-                    
-                            if (macroNameGeneric.Contains(macro) == true)
-                            {
-                                if (macro.Length > longest.Length) longest = macro;
-                            }
-                            end = p.Index + longest.Length;
-                        }
-                    }
-
-                    if (string.IsNullOrEmpty(longest) == false)
-                    {
-                        //Console.WriteLine($"Longest match found is \"{longest}\"");
-
-                        if (subs == null)
-                            subs = new List<DynamicMacroSub>(4);
-
-                        if (macroArgsList.Count > 0)
-                        {
-                            subs.Add(new DynamicMacroSub(longest, p.Index, p.Index + p.Length + 1, macroArgsList));
+                            dynamicMacroFull.Append(MACRO_DYNAMIC_GENERIC_PLACEHOLDER).Append(MACRO_DYNAMIC_ARG_SEPARATOR);
                         }
                         else
                         {
-                            subs.Add(new DynamicMacroSub(longest, p.Index, end, macroArgsList));
+                            dynamicMacroFull.Append(MACRO_DYNAMIC_GENERIC_PLACEHOLDER);
                         }
                     }
-                }
 
-                string str = string.Empty;
-                if (subs?.Count > 0)
-                {
-                    //Sort by start of the macro index
-                    subs.Sort(SubCompare);
+                    dynamicMacroFull.Append(')');
 
-                    foundMacro = true;
-                    str = message.Substring(0, subs[0].StartIndex);
-                    DynamicMacroSub def = default;
-                    DynamicMacroSub prev = default;
-                    foreach (var current in subs)
+                    string dynamicMacroGenericStr = dynamicMacroFull.ToString();
+
+                    //Console.WriteLine($"Dynamic macro generic form = \"{dynamicMacroGenericStr}\"");
+
+                    //Find a macro matching the generic form
+                    InputMacro bestMacroMatch = MacroData.FirstOrDefault(inpMacro => inpMacro.MacroName == dynamicMacroGenericStr);
+                    if (bestMacroMatch == null)
                     {
-                        InputMacro inpMacro = MacroData.FirstOrDefault((mac) => mac.MacroName == current.MacroName);
-
-                        //The collection must have been modified at some point in between parsing and now if this macro is null
-                        //There's nothing we can do here since there are no valid inputs mapped to the macro, so return
-                        if (inpMacro == null)
-                        {
-                            Console.WriteLine($"Error: Macro \"{current.MacroName}\" was removed while parsing - exiting macro parsing.");
-                            return message;
-                        }
-
-                        if (prev != def)
-                        {
-                            str += message.Substring(prev.EndIndex, current.StartIndex - prev.EndIndex);
-                        }
-
-                        string macroValue = MacroData.FirstOrDefault((mac) => mac.MacroName == current.MacroName).MacroValue;
-
-                        str += PopulateVariables(macroValue, current.Variables);
-                        prev = current;
+                        //Console.WriteLine($"Dynamic macro named \"{dynamicMacroGenericStr}\" not found!");
+                        continue;
                     }
-                    str += message.Substring(prev.EndIndex);
-                    message = str;
+
+                    //Console.WriteLine($"Found dynamic macro \"{bestMacroMatch.MacroName}\"");
+
+                    string dynamicMacroValue = bestMacroMatch.MacroValue;
+
+                    //Replace arguments only if the options are set to do so
+                    if (DynamicMacroOptions == DynamicMacroArgOptions.FillArgs)
+                    {
+                        //Now parse each argument separately
+                        for (int i = 0; i < splitArgs.Length; i++)
+                        {
+                            //Replace the instance in the string with this new value
+                            dynamicMacroValue = dynamicMacroValue.Replace(MACRO_DYNAMIC_ARG_VARIABLE_START + i + MACRO_DYNAMIC_ARG_VARIABLE_END, splitArgs[i]);
+                        }
+                    }
+
+                    //Console.WriteLine($"Dynamic macro value after arguments: \"{dynamicMacroValue}\"");
+
+                    macroValue = dynamicMacroValue;
+                    replaceName = match.Value;
                 }
-                count += 1;
+                else
+                {
+                    //Get the first character in the macro
+                    string macroStart = macroNameMatch.Substring(0, 2);
+
+                    //Find the longest macro with this name
+                    //Filter by macros equal or shorter in length than the picked up macro name, along with
+                    //macros that start with the first two characters found
+                    //Sort by macro length in descending order to find longer macros first
+                    IQueryable<InputMacro> matchingMacros = MacroData
+                    .Where(m => m.MacroName.Length <= macroNameMatch.Length && m.MacroName.StartsWith(macroStart))
+                    .OrderByDescending(inpMacro => inpMacro.MacroName.Length);
+
+                    //Console.WriteLine($"Looking for macro starting with: {macroStart}");
+
+                    InputMacro longestMacro = null;
+
+                    //Search for the longest macro that the match name starts with
+                    //For example, this would pick up "#hello" over "#he" in "#hello123" 
+                    foreach (InputMacro macro in matchingMacros)
+                    {
+                        //Console.WriteLine($"Looking at macro {macro.MacroName} for match");
+
+                        if (macroNameMatch.StartsWith(macro.MacroName, StringComparison.Ordinal) == true)
+                        {
+                            longestMacro = macro;
+                            break;
+                        }
+                    }
+
+                    //Macro not found
+                    if (longestMacro == null)
+                    {
+                        //Console.WriteLine($"Macro in name \"{macroNameMatch}\" not found!");
+                        continue;
+                    }
+
+                    //Console.WriteLine($"Found longest macro named \"{longestMacro.MacroName}\" with value \"{longestMacro.MacroValue}\"!");
+
+                    macroValue = longestMacro.MacroValue;
+                    replaceName = longestMacro.MacroName;
+                }
+
+                //Create StringBuilder if it doesn't exist - prevents allocations if we find no matches
+                if (strBuilder == null)
+                {
+                    strBuilder = new StringBuilder(parsedMsg);
+                }
+
+                //Check for the existence of other macros within the value
+                string parsedMacroVal = ParseMacros(macroValue, regexOptions, recursionDepth + 1);
+
+                int origStartIndex = match.Index;
+
+                //Adjust start index to account for replacements in the string
+                int adjustedStartIndex = origStartIndex - (origLength - curLength);
+
+                //Console.WriteLine($"Replacing {replaceName.Length} characters in {replaceName} with {parsedMacroVal} starting at index {adjustedStartIndex}"); 
+
+                strBuilder.Replace(replaceName, parsedMacroVal, adjustedStartIndex, replaceName.Length);
+
+                //Console.WriteLine($"Cur string: {strBuilder.ToString()}");
+ 
+                //Set new length
+                curLength = strBuilder.Length;
             }
 
-            //sw.Stop();
-            //Console.WriteLine($"SW MS for PopulateMacros: {sw.ElapsedMilliseconds}");
-
-            return message;
-        }
-
-        public string PopulateVariables(string macroContents, List<string> macroVariables)
-        {
-            int count = macroVariables.Count;
-            for (int i = 0; i < count; i++)
+            //Get the final message
+            if (strBuilder != null)
             {
-                string v = macroVariables[i];
-                macroContents = Regex.Replace(macroContents, "<" + i + ">", v);
-                //Console.WriteLine($"Macro Contents: {macroContents}");
+                parsedMsg = strBuilder.ToString();
             }
-            return macroContents;
-        }
 
-        private static int SubComparison(DynamicMacroSub val1, DynamicMacroSub val2)
-        {
-            return val1.StartIndex.CompareTo(val2.StartIndex);
+            return parsedMsg;
         }
     }
 }

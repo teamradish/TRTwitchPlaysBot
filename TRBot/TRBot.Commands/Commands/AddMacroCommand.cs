@@ -86,9 +86,9 @@ namespace TRBot.Commands
                 return;
             }
 
-            if (macroName.StartsWith(InputMacroPreparserNew.DEFAULT_MACRO_START) == false)
+            if (macroName.StartsWith(InputMacroPreparser.DEFAULT_MACRO_START) == false)
             {
-                QueueMessage($"Input macros must start with \"{InputMacroPreparserNew.DEFAULT_MACRO_START}\".");
+                QueueMessage($"Input macros must start with \"{InputMacroPreparser.DEFAULT_MACRO_START}\".");
                 return;
             }
 
@@ -135,15 +135,15 @@ namespace TRBot.Commands
             }
 
             //Validate the macro name
-            Match macroMatch = Regex.Match(macroName, InputMacroPreparserNew.MACRO_REGEX, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            Match macroMatch = Regex.Match(macroName, InputMacroPreparser.MACRO_REGEX, RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
             if (macroMatch.Success == false)
             {
-                QueueMessage($"Invalid input macro name! Input macros must start with \"{InputMacroPreparserNew.DEFAULT_MACRO_START}\".");
+                QueueMessage($"Invalid input macro name! Input macros must start with \"{InputMacroPreparser.DEFAULT_MACRO_START}\".");
                 return;
             }
 
-            bool isDynamic = macroMatch.Groups.TryGetValue(InputMacroPreparserNew.MACRO_DYNAMIC_GROUP_NAME,
+            bool isDynamic = macroMatch.Groups.TryGetValue(InputMacroPreparser.MACRO_DYNAMIC_GROUP_NAME,
                 out Group dynamicGroup) == true && dynamicGroup?.Success == true;
 
             //Validate the macro name
@@ -152,7 +152,7 @@ namespace TRBot.Commands
             //If it's dynamic, ensure it has arguments
             if (isDynamic == true)
             {
-                if (macroMatch.Groups.TryGetValue(InputMacroPreparserNew.MACRO_DYNAMIC_ARGS_GROUP_NAME,
+                if (macroMatch.Groups.TryGetValue(InputMacroPreparser.MACRO_DYNAMIC_ARGS_GROUP_NAME,
                     out Group dynamicArgsGroup) == false || dynamicArgsGroup.Success == false)
                 {
                     QueueMessage("Dynamic input macros must have arguments! Specify them in generic form, such as \"#mash(*)\".");
@@ -168,7 +168,7 @@ namespace TRBot.Commands
             //Run it through the preparser to ensure it returns the same value as the macro value specified
             //Do this by specifying a max recursion of 1 and not filling dynamic macro arguments
             //This is a simple and effective way to validate the macro 
-            InputMacroPreparserNew macroPreparser = new InputMacroPreparserNew(tempMacroData, 1, DynamicMacroArgOptions.DontFillArgs);
+            InputMacroPreparser macroPreparser = new InputMacroPreparser(tempMacroData, 1, DynamicMacroArgOptions.DontFillArgs);
 
             string preparsed = macroPreparser.Preparse(tempMacroName);
 

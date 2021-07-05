@@ -475,7 +475,7 @@ namespace TRBot.Parsing
             {
                 new RemoveWhitespacePreparser(),
                 new LowercasePreparser(),
-                new InputMacroPreparserNew(macros),
+                new InputMacroPreparser(macros),
                 new InputSynonymPreparser(synonyms),
                 new ExpandPreparser(),
                 new RemoveWhitespacePreparser(),

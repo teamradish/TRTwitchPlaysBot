@@ -60,13 +60,6 @@ namespace TRBot.Consoles
         /// </summary>
         public virtual List<InvalidCombo> InvalidCombos { get; set; } = null;
 
-        /// <summary>
-        /// The input regex for the console.
-        /// Update this with <see cref="UpdateInputRegex"/> to warm the regex expression for the parser.
-        /// </summary>
-        [Obsolete("GameConsoles are no longer responsible for generating the input regex. See the InputParserComponent.", false)]
-        public string InputRegex { get; private set; } = string.Empty;
-
         #endregion
 
         public GameConsole()
@@ -318,28 +311,6 @@ namespace TRBot.Consoles
         public string[] GetInputNames()
         {
             return ConsoleInputs.Keys.ToArray();
-        }
-
-        /// <summary>
-        /// Updates the input regex for the console. This excludes disabled inputs.
-        /// </summary>
-        [Obsolete("GameConsoles are no longer responsible for generating the input regex. See the InputParserComponent.", false)]
-        public void UpdateInputRegex()
-        {
-            List<string> validInputs = new List<string>(ConsoleInputs.Count);
-
-            foreach (KeyValuePair<string, InputData> kvPair in ConsoleInputs)
-            {
-                //Don't add if disabled
-                if (kvPair.Value.Enabled == 0)
-                {
-                    continue;
-                }
-
-                validInputs.Add(kvPair.Key);
-            }
-
-            InputRegex = Parser.BuildInputRegex(Parser.DEFAULT_PARSE_REGEX_START, Parser.DEFAULT_PARSE_REGEX_END, validInputs);
         }
 
         #endregion
