@@ -504,5 +504,20 @@ namespace TRBot.Utilities
             //Replace all whitespace with a simple space to remove tabs and such
             return Regex.Replace(originalStr, @"\s+", " ", RegexOptions.Compiled);
         }
+
+        /// <summary>
+        /// Tells if a double is approximately equal to another one.
+        /// </summary>
+        /// <param name="value">The value to check.</param>
+        /// <param name="comparison">The value to compare to.</param>
+        /// <param name="error">The threshold of error to account for.</param>
+        /// <returns>true if (<paramref name="value"/> - <paramref name="comparison"/>) is within <paramref name="error"/>.</returns>
+        public static bool IsApproximate(in double value, in double comparison, in double error)
+        {
+            double check = Math.Abs(value - comparison);
+            double absError = Math.Abs(error);
+
+            return (check <= absError);
+        }
     }
 }

@@ -40,7 +40,7 @@ namespace TRBot.Commands
         /// </summary>
         public const int MAX_INPUT_NAME_LENGTH = 20;
 
-        private string UsageMessage = $"Usage - \"console name\", \"input name\", \"buttonVal (int)\", \"axisVal (int)\" \"inputType (int: 0 = Blank, 1 = Button, 2 = Axis, 3 = Button+Axis)\" \"minAxis (-1 to 1)\" \"maxAxis (-1 to 1)\" \"maxAxis % (0 to 100)\"";
+        private string UsageMessage = $"Usage - \"console name\", \"input name\", \"buttonVal (int)\", \"axisVal (int)\" \"inputType (int: 0 = Blank, 1 = Button, 2 = Axis, 3 = Button+Axis)\" \"minAxis (-1 to 1)\" \"maxAxis (-1 to 1)\" \"maxAxis % (0.000 to 100.000)\"";
 
         public AddInputCommand()
         {
@@ -119,9 +119,17 @@ namespace TRBot.Commands
                 return;
             }
 
-            if (GetInt(maxAxisPercentStr, out int maxAxisPercent) == false || maxAxisPercent < 0 || maxAxisPercent > 100)
+            if (GetDouble(maxAxisPercentStr, out double maxAxisPercent) == false || maxAxisPercent < 0d || maxAxisPercent > 100d)
             {
                 QueueMessage("Invalid maximum axis percent.");
+                return;
+            }
+
+            //Ensure that the percentage at most 3 decimal points
+            double numDecimals = maxAxisPercent * 1000d;
+            if (((int)numDecimals) != numDecimals)
+            {
+                QueueMessage("Maximum axis percent has more than 3 decimal points.");
                 return;
             }
 
@@ -170,6 +178,11 @@ namespace TRBot.Commands
         private bool GetInt(string value, out int num)
         {
             return int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out num);
+        }
+
+        private bool GetDouble(string value, out double num)
+        {
+            return double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out num);
         }
     }
 }

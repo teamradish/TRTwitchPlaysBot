@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TRBot.Utilities;
 
 namespace TRBot.Consoles
 {
@@ -89,7 +90,7 @@ namespace TRBot.Consoles
         /// <para>This is useful only for axes and buttons with shared names. 
         /// For example, the GameCube's "L" and "R" inputs function both as axes and buttons.</para>
         /// </summary>
-        public int MaxAxisPercent { get; set; } = 100;
+        public double MaxAxisPercent { get; set; } = 100d;
 
         /// <summary>
         /// Whether the input is enabled.
@@ -113,7 +114,7 @@ namespace TRBot.Consoles
         }
 
         public InputData(string name, in int buttonValue, in int axisValue, in InputTypes inputType,
-            in int minAxisVal, in int maxAxisVal, in int maxAxisPercent)
+            in int minAxisVal, in int maxAxisVal, in double maxAxisPercent)
         {
             Name = name;
             ButtonValue = buttonValue;
@@ -121,11 +122,11 @@ namespace TRBot.Consoles
             InputType = inputType;
             MinAxisVal = Math.Clamp(minAxisVal, -1, 1);
             MaxAxisVal = Math.Clamp(maxAxisVal, -1, 1);
-            MaxAxisPercent = Math.Clamp(maxAxisPercent, 0, 100);
+            MaxAxisPercent = Math.Clamp(maxAxisPercent, 0d, 100d);
         }
 
         public InputData(string name, in int buttonValue, in int axisValue, in InputTypes inputType,
-            in int minAxisVal, in int maxAxisVal, in int maxAxisPercent, in long inputLevel)
+            in int minAxisVal, in int maxAxisVal, in double maxAxisPercent, in long inputLevel)
             : this(name, buttonValue, axisValue, inputType, minAxisVal, maxAxisVal, maxAxisPercent)
         {
             Level = inputLevel;
@@ -174,12 +175,12 @@ namespace TRBot.Consoles
             btnData.InputType = InputTypes.Axis;
             btnData.MinAxisVal = Math.Clamp(minAxisVal, -1, 1);
             btnData.MaxAxisVal = Math.Clamp(maxAxisVal, -1, 1);
-            btnData.MaxAxisPercent = 100;
+            btnData.MaxAxisPercent = 100d;
 
             return btnData;
         }
 
-        public static InputData CreateAxis(string name, in int axisValue, in int minAxisVal, in int maxAxisVal, in int maxAxisPercent)
+        public static InputData CreateAxis(string name, in int axisValue, in int minAxisVal, in int maxAxisVal, in double maxAxisPercent)
         {
             InputData btnData = new InputData();
             btnData.Name = name;
@@ -187,7 +188,7 @@ namespace TRBot.Consoles
             btnData.InputType = InputTypes.Axis;
             btnData.MinAxisVal = Math.Clamp(minAxisVal, -1, 1);
             btnData.MaxAxisVal = Math.Clamp(maxAxisVal, -1, 1);
-            btnData.MaxAxisPercent = Math.Clamp(maxAxisPercent, 0, 100);
+            btnData.MaxAxisPercent = Math.Clamp(maxAxisPercent, 0d, 100d);
 
             return btnData;
         }
@@ -218,7 +219,7 @@ namespace TRBot.Consoles
         /// <para>This is useful only for axes and buttons with shared names. 
         /// For example, the GameCube's "L" and "R" inputs function both as axes and buttons.</para>
         /// </summary>
-        public int MaxPercentPressed;
+        public double MaxPercentPressed;
 
         /// <summary>
         /// Constructs an input axis.
@@ -241,12 +242,12 @@ namespace TRBot.Consoles
         /// <param name="minAxisVal">The normalized minimum value of the axis. This is clamped from -1 to 1.</param>
         /// <param name="maxAxisVal">The normalized maximum value of the axis. This is clamped from -1 to 1.</param>
         /// <param name="maxPercentPressed">The maximum percent the axis can be pressed. This is clamped from 0 to 100.</param>
-        public InputAxis(in int axisVal, in double minAxisVal, in double maxAxisVal, in int maxPercentPressed)
+        public InputAxis(in int axisVal, in double minAxisVal, in double maxAxisVal, in double maxPercentPressed)
         {
             AxisVal = axisVal;
             MinAxisVal = Math.Clamp(minAxisVal, -1d, 1d);
             MaxAxisVal = Math.Clamp(maxAxisVal, -1d, 1d);
-            MaxPercentPressed = Math.Clamp(maxPercentPressed, 0, 100);
+            MaxPercentPressed = Math.Clamp(maxPercentPressed, 0d, 100d);
         }
 
         public override bool Equals(object obj)
@@ -275,7 +276,7 @@ namespace TRBot.Consoles
         public static bool operator==(InputAxis a, InputAxis b)
         {
             return (a.AxisVal == b.AxisVal && a.MinAxisVal == b.MinAxisVal && a.MaxAxisVal == b.MaxAxisVal
-                && a.MaxPercentPressed == b.MaxPercentPressed);
+                && Helpers.IsApproximate(a.MaxPercentPressed, b.MaxPercentPressed, 0.0009d));
         }
 
         public static bool operator!=(InputAxis a, InputAxis b)

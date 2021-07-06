@@ -10,12 +10,12 @@ We'll use TRBot's [`AddConsoleCommand`](../TRBot/TRBot.Commands/Commands/AddCons
 
 Type the following without quotes: "!addconsole newconsole"
 
-Now, we should have a new game console named "newconsole". We can verify this through the [`GetSetConsoleCommand`](../TRBot/TRBot.Commands/Commands/GetSetConsoleCommand.cs) ("!console" by default), which will list all available consoles. Simply type "!console" without quotes and we can see that "newconsole" is in list. Type "!console newconsole" to switch the active console to our new console.
+Now, we should have a new game console named "newconsole". We can verify this through the [`GetSetConsoleCommand`](../TRBot/TRBot.Commands/Commands/GetSetConsoleCommand.cs) ("!console" by default), which will list all available consoles. Simply type "!console" without quotes and we can see that "newconsole" is in the list. Type "!console newconsole" to switch the active console to our new console.
 
 After switching, use the [`InputInfoCommand`](../TRBot/TRBot.Commands/Commands/GetSetConsoleCommand.cs) ("!inputs" by default) without any arguments to see...uh oh, there are no inputs! Newly created consoles do not come with any inputs - think of a game console without a controller. We now have to define the buttons on the controller so we can actually play the console.
 
 ## Adding new inputs
-Let's add some inputs to the "newconsole" console through the [`AddInputCommand`](../TRBot/TRBot.Commands/Commands/AddInputCommand.cs) ("!addinput" by default). It's possible to add new inputs directly through the database, but this command greatly simplifies the process by automatically linking the input to the console (adding directly to the database requires looking up the console ID and specifying it in the record in the **Inputs** table).
+Let's add inputs to the "newconsole" console through the [`AddInputCommand`](../TRBot/TRBot.Commands/Commands/AddInputCommand.cs) ("!addinput" by default). It's possible to add new inputs directly through the database, but this command greatly simplifies the process by automatically linking the input to the console (adding directly to the database requires looking up the console ID and specifying it in the record in the **Inputs** table).
 
 The `AddInputCommand` takes the following arguments:
 
@@ -25,8 +25,8 @@ The `AddInputCommand` takes the following arguments:
 4. **axisVal** - An integer representing the axis value of the input on the virtual controller.
 5. **inputType** - An integer representing the type of the input. 0 = Blank input, 1 = Button (Ex. "a" button), 2 = Axis (Ex. analog stick on the N64 controller), 3 = Button+Axis (Ex. "l" and "r" triggers on GameCube controllers, which function as both)
 6. **minAxis** - An integer from -1 to 1 representing the minimum axis range if the input is an axis. 0 indicates the center of the analog stick. This will often be 0.
-7. **maxAxis** - An integer from -1 to 1 representing the maximum axis range if the input is an axis. 1 indicates the center of the analog stick. This will often be -1 (up/left on the analog stick) or 1 (down/right on the analog stick).
-8. **maxAxis percent** - An integer from 0 to 100 representing the maximum percent the axis can be pressed - any value afterwards is considered a button press. As an example, the GameCube's "l" and "r" triggers would have this at 99 since they function as axes until they're pressed down 100%, after which they're the L and R buttons.
+7. **maxAxis** - An integer from -1 to 1 representing the maximum axis range if the input is an axis. 0 indicates the center of the analog stick. This will often be -1 (up/left on the analog stick) or 1 (down/right on the analog stick).
+8. **maxAxis percent** - A double from 0 to 100 representing the maximum percent the axis can be pressed - any value afterwards is considered a button press. As an example, the GameCube's "l" and "r" triggers would have this at 99.999 since they function as axes until they're pressed down 100%, after which they're the L and R buttons. This supports up to 3 decimal places for decimal percentages.
 
 That was a lot to absorb, so let's jump right into adding a simple "a" button with a button value of 1 to "newconsole".
 
@@ -50,10 +50,10 @@ Now let's add a full analog stick to this console. The X axis will be axis value
 
 If you noticed, the only difference between the opposing directions on each axis is the maximum axis value. If a user inputs "up50%", the normalized value will be -0.5 (halfway up), whereas "down75%" will have a normalized value of 0.75 (3/4 down). You don't have to strictly follow this model for defining axes, but it's highly recommended, as most game controllers work this way.
 
-Similarly to the "a" button, we don't need to care about the button value since the input type is Axis and won't use it. If the max axis percent is less than 100, then we should care since the axis can act as a button above that threshold, and we don't want it to interfere with an existing button with a button value of 0. 
+In a similar vein to the "a" button, we don't need to care about the button value since the input type is Axis and won't use it. If the max axis percent is less than 100, then we should care, since the axis can act as a button above that threshold; we wouldn't want it to interfere with an existing button with a button value of 0. 
 
 ## Removing inputs
-Our "newconsole" is coming along! It's got an "a" button and a full analog stick with "up", "down", "left", and "right" inputs available. However, what if we no longer want the "a" button so we can replace it with something else?
+Our "newconsole" is coming along! It's got an "a" button and a full analog stick with "up", "down", "left", and "right" inputs available. However, what if we no longer want the "a" button since we decided on a different set of buttons?
 
 Simply use the [`RemoveInputCommand`](../TRBot/TRBot.Commands/Commands/RemoveInputCommand.cs) ("!removeinput" by default).
 
@@ -66,5 +66,5 @@ There are many uses for custom consoles and inputs:
 
 * Add a new console TRBot doesn't come with out of the box.
 * Create buttons for hotkeys, such as a "toggleaudio" input that mutes/unmutes audio on an emulator.
-* Implement a "split" input, used in a script through software such as JoyToKey, that activates the next split in software such as LiveSplit.
+* Implement a "split" input, used in a script through software such as QJoyPad or JoyToKey, that activates the next split in software such as LiveSplit.
 * ...and much more! Keep exploring and share your findings!
