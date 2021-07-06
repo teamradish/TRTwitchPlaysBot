@@ -27,6 +27,7 @@ using TRBot.Consoles;
 using TRBot.Parsing;
 using TRBot.Data;
 using TRBot.Permissions;
+using Microsoft.EntityFrameworkCore;
 
 namespace TRBot.Commands
 {
@@ -52,7 +53,7 @@ namespace TRBot.Commands
                 return;
             }
 
-            List<string> userNames = null;
+            int userCount = 0;
 
             using (BotDBContext context = DatabaseManager.OpenContext())
             {
@@ -68,31 +69,56 @@ namespace TRBot.Commands
                     return;
                 }
 
-                //Initialize list
-                userNames = new List<string>(context.Users.Count());
+                //Get count
+                userCount = context.Users.Count();
+            }
 
-                foreach (User user in context.Users)
+            QueueMessage($"Starting update of {userCount} users' abilities...");
+
+            System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+
+            //Update everyone's abilities
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                //Use eager loading to include all user abilities beforehand for a slight performance boost
+                var allUsers = context.Users.Include(e => e.UserAbilities);
+
+                foreach (User user in allUsers)
                 {
-                    //Prohibit updating abilities for higher levels
-                    if (thisUser.Level < user.Level)
+                    long originalLevel = user.Level;
+                    PermissionLevels origPermLvl = (PermissionLevels)originalLevel;
+
+                    //First, disable all auto grant abilities the user has
+                    //Don't disable abilities that were given by a higher level
+                    //This prevents users from removing constraints imposed by moderators and such
+                    IEnumerable<UserAbility> abilities = user.UserAbilities.Where(p => p.PermAbility.AutoGrantOnLevel >= PermissionLevels.User
+                            && p.GrantedByLevel <= originalLevel);
+
+                    foreach (UserAbility ability in abilities)
                     {
-                        continue;
+                        ability.SetEnabledState(false);
+                        ability.Expiration = null;
+                        ability.GrantedByLevel = -1;
                     }
 
-                    //Add their name to the list
-                    userNames.Add(user.Name);
+                    //Get all auto grant abilities up to the user's level
+                    IEnumerable<PermissionAbility> permAbilities =
+                        context.PermAbilities.Where(p => p.AutoGrantOnLevel >= PermissionLevels.User
+                            && p.AutoGrantOnLevel <= origPermLvl);
+
+                    //Enable all of those abilities
+                    foreach (PermissionAbility permAbility in permAbilities)
+                    {
+                        user.EnableAbility(permAbility);
+                    }
                 }
+
+                context.SaveChanges();
             }
 
-            QueueMessage($"Starting update of {userNames.Count} users' abilities...");
+            sw.Stop();
 
-            //Fully update everyone's abilities
-            for (int i = 0; i < userNames.Count; i++)
-            {
-                DataHelper.UpdateUserAutoGrantAbilities(userNames[i]);
-            }
-
-            QueueMessage($"Finished updating {userNames.Count} users' abilities!");
+            QueueMessage($"Finished updating {userCount} users' abilities in {sw.ElapsedMilliseconds}ms!");
         }
     }
 }
