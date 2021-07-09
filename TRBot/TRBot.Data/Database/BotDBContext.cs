@@ -47,6 +47,7 @@ namespace TRBot.Data
         public DbSet<GameConsole> Consoles { get; set; } = null;
         public DbSet<User> Users { get; set; } = null;
         public DbSet<PermissionAbility> PermAbilities { get; set; } = null;
+        public DbSet<CustomInputCode> CustomInputCodes { get; set; } = null;
 
         private string Datasource = string.Empty;
 
@@ -212,6 +213,13 @@ namespace TRBot.Data
             {
                 entity.HasKey(e => e.ID);
                 entity.HasIndex(e => e.UserID);
+            });
+
+            modelBuilder.Entity<CustomInputCode>().ToTable("CustomInputCodes", "custominputcodes");
+            modelBuilder.Entity<CustomInputCode>(entity =>
+            {
+                entity.HasKey(e => e.ID);
+                entity.HasIndex(e => new { e.ConsoleID, e.ControllerPort, e.InputName }).IsUnique(); 
             });
 
             base.OnModelCreating(modelBuilder);
