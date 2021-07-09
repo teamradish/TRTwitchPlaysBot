@@ -3,7 +3,11 @@
 2. [Install the .NET 5.0 SDK and Runtime](https://dotnet.microsoft.com/download/dotnet/5.0)
   * Before installing, set the `DOTNET_CLI_TELEMETRY_OPTOUT` environment variable to 1 if you don't want dotnet CLI commands sending telemetry.
 
-Once you have all the requirements, you can build TRBot using the provided .sln or through the CLI (instructions below). You can also use any code editor or IDE supporting .NET Core, such as VSCode/VSCodium, Visual Studio, or JetBrains Rider.
+Once you have all the requirements, you can build TRBot using the provided .sln or through the CLI (instructions below). You can also use any code editor or IDE supporting .NET 5, such as VSCode/VSCodium, Visual Studio, or JetBrains Rider.
+
+Provided in the root of the repository are build scripts that compile versions of the TRBot.Main and TRBotDataMigrationTool projects for both GNU/Linux and Windows. Run **build.sh** on GNU/Linux and **build.bat** on Windows. On Windows, make sure dotnet is installed in your `PATH` before running the script.
+
+For manual builds, follow the instructions below.
 
 Command line:
 * Main directory: `cd TRBot.Main`
