@@ -37,8 +37,8 @@ namespace TRBot.Data
         public const string GROUP_BET_MIN_PARTICIPANTS = "group_bet_min_participants";
 
         public const string CHATBOT_ENABLED = "chatbot_enabled";
-        public const string CHATBOT_SOCKET_PATH = "chatbot_socket_path";
-        public const string CHATBOT_SOCKET_PATH_IS_RELATIVE = "chatbot_socket_path_is_relative";
+        public const string CHATBOT_SOCKET_HOSTNAME = "chatbot_socket_hostname";
+        public const string CHATBOT_SOCKET_PORT = "chatbot_socket_port";
 
         public const string BINGO_ENABLED = "bingo_enabled";
         public const string BINGO_PIPE_PATH = "bingo_pipe_path";

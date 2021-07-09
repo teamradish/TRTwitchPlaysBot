@@ -11,8 +11,8 @@ Table of Contents
 * [group_bet_total_time](#group_bet_total_time)
 * [group_bet_min_participants](#group_bet_min_participants)
 * [chatbot_enabled](#chatbot_enabled)
-* [chatbot_socket_path](#chatbot_socket_path)
-* [chatbot_socket_path_is_relative](#chatbot_socket_path_is_relative)
+* [chatbot_socket_hostname](#chatbot_socket_hostname)
+* [chatbot_socket_port](#chatbot_socket_port)
 * [bingo_enabled](#bingo_enabled)
 * [bingo_pipe_path](#bingo_pipe_path)
 * [bingo_pipe_path_is_relative](#bingo_pipe_path_is_relative)
@@ -103,11 +103,11 @@ The minimum number of participants to start a group bet.
 ### chatbot_enabled
 Whether users can talk with a chatbot instance, such as [ChatterBot](../Supplementary/ChatterBot.py).
 
-### chatbot_socket_path
-The path to the socket for the chatbot, which TRBot uses to communicate.
+### chatbot_socket_hostname
+The host address to connect to the chatbot on. The default is localhost, 127.0.0.1.
 
-### chatbot_socket_path_is_relative
-If 1, [chatbot_socket_path](#chatbot_socket_path) is a path relative to the TRBot executable, otherwise it's an absolute path.
+### chatbot_socket_port
+The port to connect to the chatbot on. The default is 7444.
 
 ### bingo_enabled
 Whether users can participate in bingo through an external application, such as [TRBotBingo](https://codeberg.org/kimimaru/TRBotBingo).

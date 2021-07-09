@@ -22,6 +22,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.IO.Pipes;
+using System.Net.Sockets;
 using TRBot.Connection;
 using TRBot.Permissions;
 using TRBot.Data;
@@ -78,60 +79,49 @@ namespace TRBot.Commands
                 return;
             }
 
-            long chatbotPipePathIsRelative = DataHelper.GetSettingInt(SettingsConstants.CHATBOT_SOCKET_PATH_IS_RELATIVE, 1L);
-
-            string fileName = DataHelper.GetSettingString(SettingsConstants.CHATBOT_SOCKET_PATH, string.Empty);
-
+            string chatbotHostName = DataHelper.GetSettingString(SettingsConstants.CHATBOT_SOCKET_HOSTNAME, "127.0.0.1");
+            int chatbotPort = (int)DataHelper.GetSettingInt(SettingsConstants.CHATBOT_SOCKET_PORT, 7444);
+            
             try
             {
-                string chatbotPipePath = fileName;
+                TRBotLogger.Logger.Debug($"Full chatbot address: {chatbotHostName}:{chatbotPort}");
 
-                //Get relative path if we should
-                if (chatbotPipePathIsRelative == 1)
+                //Set up the stream by connecting over TCP
+                using (TcpClient client = new TcpClient(chatbotHostName, chatbotPort))
                 {
-                    chatbotPipePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
-                }
-
-                TRBotLogger.Logger.Debug($"Full chatbot path: {chatbotPipePath}");
-
-                //Set up the pipe stream
-                using (NamedPipeClientStream chatterBotClient = new NamedPipeClientStream(".", chatbotPipePath, PipeDirection.InOut))
-                {
-                    //Connect to the pipe or wait until it's available, with a timeout
-                    TRBotLogger.Logger.Debug("Attempting to connect to chatbot socket...");
-                    
-                    chatterBotClient.Connect(RESPONSE_TIMEOUT);
-
-                    //Send the input to ChatterBot
-                    using (BinaryWriter promptWriter = new BinaryWriter(chatterBotClient))
+                    using (NetworkStream nStream = client.GetStream())
                     {
-                        using (BinaryReader responseReader = new BinaryReader(chatterBotClient))
+                        //Send the input to ChatterBot
+                        using (BinaryWriter promptWriter = new BinaryWriter(nStream ))
                         {
-                            //Get a byte array
-                            byte[] byteBuffer = System.Text.Encoding.ASCII.GetBytes(question);
-                            
-                            //Send the data to the socket
-                            promptWriter.Write((uint)byteBuffer.Length);
-                            promptWriter.Write(byteBuffer);
-                            
-                            //Get the data back from the socket
-                            uint responseLength = responseReader.ReadUInt32();
-                            
-                            TRBotLogger.Logger.Debug($"Response length: {responseLength}");
-                            
-                            string response = new string(responseReader.ReadChars((int)responseLength));
-                            
-                            TRBotLogger.Logger.Debug($"Received response: {response}");
-                            
-                            //Output the response
-                            QueueMessage(response);
+                            using (BinaryReader responseReader = new BinaryReader(nStream))
+                            {
+                                //Get a byte array
+                                byte[] byteBuffer = System.Text.Encoding.ASCII.GetBytes(question);
+
+                                //Send the data to the socket
+                                promptWriter.Write((uint)byteBuffer.Length);
+                                promptWriter.Write(byteBuffer);
+
+                                //Get the data back from the socket
+                                uint responseLength = responseReader.ReadUInt32();
+
+                                TRBotLogger.Logger.Debug($"Response length: {responseLength}");
+
+                                string response = new string(responseReader.ReadChars((int)responseLength));
+
+                                TRBotLogger.Logger.Debug($"Received response: {response}");
+
+                                //Output the response
+                                QueueMessage(response);
+                            }
                         }
                     }
                 }
             }
             catch (Exception exc)
             {
-                QueueMessage($"Error with sending chatbot reply: {exc.Message} - Please check the \"{SettingsConstants.CHATBOT_SOCKET_PATH}\" and \"{SettingsConstants.CHATBOT_SOCKET_PATH_IS_RELATIVE}\" settings in the database. Also ensure your ChatterBot instance is running!", Serilog.Events.LogEventLevel.Warning);
+                QueueMessage($"Error with sending chatbot reply. {exc.Message} - Please check the \"{SettingsConstants.CHATBOT_SOCKET_HOSTNAME}\" and \"{SettingsConstants.CHATBOT_SOCKET_PORT}\" settings in the database. Also ensure your ChatterBot instance is running!", Serilog.Events.LogEventLevel.Warning);
             }
         }
     }

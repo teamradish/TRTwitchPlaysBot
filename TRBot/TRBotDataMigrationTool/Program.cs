@@ -531,8 +531,9 @@ namespace TRBotDataMigrationTool
 
             /* Chatbot Settings */
             AddSettingIntHelper(SettingsConstants.CHATBOT_ENABLED, (oldBotSettings.UseChatBot == true) ? 1L : 0L);
-            AddSettingIntHelper(SettingsConstants.CHATBOT_SOCKET_PATH_IS_RELATIVE, 1L);
-            AddSettingStrHelper(SettingsConstants.CHATBOT_SOCKET_PATH, oldBotSettings.ChatBotSocketFilename);
+            //Since the chatbot connects over the network now, we can't use the filename anymore
+            AddSettingStrHelper(SettingsConstants.CHATBOT_SOCKET_HOSTNAME, "127.0.0.1");
+            AddSettingIntHelper(SettingsConstants.CHATBOT_SOCKET_PORT, 7444);
 
             Console.WriteLine("Finished importing all bot settings!");
         }
