@@ -1,10 +1,10 @@
 # This is a Python source file to run a local ChatterBot for chatbot conversations on your stream
-# Run this program separately with "python ChatterBot.py"
+# Run this program separately with "python ChatterBot.py" or "python3 ChatterBot.py" depending on the platform
 # It's recommended to run this in the TRBot Data folder at first
 # You will need to install Python and ChatterBot as prerequisites (https://chatterbot.readthedocs.io/en/stable/setup.html)
 
-# Overview: This opens a socket with a file used for the data
-# After a client sends data through the socket, it feeds that into the bot as a prompt and sends back a response
+# Overview: This opens a socket over the network; the default is localhost, but it can be any address of your choice
+# After a client sends data through the socket, it feeds that data into the bot as a prompt and sends back a response
 # This essentially lets users talk with a bot
 
 # Don't hesitate to change any of this to get your desired chatbot behavior - this is just a sample setup
@@ -21,16 +21,14 @@ import socket
 import struct
 import traceback
 
-# This is the root path to the file
-# Change this to the TRBot data folder where you want to store the bot's files
-# This allows running this program anywhere
-# Keep it as "." if you want to run the bot in the data folder
-BaseDir = "."
-
 SleepTime = 1
-FileName = "ChatterBotSocket"
 
-SocketPath = os.path.join(BaseDir, FileName)
+# Here are the host and port to put the socket on
+# The default runs it on localhost (127.0.0.1) on port 7444
+# These are also the default values in TRBot
+# If you change these values in either TRBot or here, make sure both this script and TRBot have matching settings!
+SocketHost = "127.0.0.1"
+SocketPort = 7444
 
 chatbot = ChatBot(
         "ChatBot",
@@ -80,16 +78,10 @@ print("\nChatBot trained! Setting up socket and listening for responses...")
 BufferSize = 4
 
 # Setup socket
-with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as chatterBotSocket:
-
-    # Try to replace the socket file if this was run before
-    try:
-        os.remove(SocketPath)
-    except OSError:
-        pass
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as chatterBotSocket:
 
     # Bind socket to address and start listening to accept connections
-    chatterBotSocket.bind(SocketPath)
+    chatterBotSocket.bind((SocketHost, SocketPort))
     chatterBotSocket.listen()
 
     # Keep listening for changes
