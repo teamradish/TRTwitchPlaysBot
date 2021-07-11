@@ -246,25 +246,6 @@ namespace TRBot.Routines
             return true;
         }
 
-        //public void RemoveRoutine(in int index)
-        //{
-        //    if (index < 0 || index >= BotRoutines.Count)
-        //    {
-        //        TRBotLogger.Logger.Information($"Index {index} is out of the routine count of 0 through {BotRoutines.Count}."); 
-        //        return;
-        //    }
-        //
-        //    //Clean up and remove the routine
-        //    BaseRoutine routine = BotRoutines[index];
-        //
-        //    if (routine != null)
-        //    {
-        //        routine.CleanUp();
-        //    }
-        //
-        //    BotRoutines.RemoveAt(index);
-        //}
-
         public void RemoveRoutine(string routineName)
         {
             bool removed = BotRoutines.Remove(routineName, out BaseRoutine routine);
@@ -314,10 +295,5 @@ namespace TRBot.Routines
 
             return null;
         }
-
-        //public BaseRoutine FindRoutine(Predicate<BaseRoutine> predicate)
-        //{
-        //    return BotRoutines.Find(predicate);
-        //}
     }
 }
