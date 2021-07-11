@@ -95,6 +95,7 @@ namespace TRBot.Main
             RoutineHandler?.CleanUp();
             CmdHandler?.CleanUp();
             DataReloader?.CleanUp();
+            DataContainer?.ArbitraryCodeMngr?.CleanUp();
 
             if (ClientService?.IsConnected == true)
                 ClientService.Disconnect();
@@ -252,6 +253,9 @@ namespace TRBot.Main
 
             DataReloader.HardDataReloadedEvent -= OnHardReload;
             DataReloader.HardDataReloadedEvent += OnHardReload;
+
+            DataContainer.SetArbitraryCodeManager(new ArbitraryCodeManager());
+            DataContainer.ArbitraryCodeMngr.SetVControllerManager(DataContainer.ControllerMngr);
 
             //Initialize routines
             InitRoutines();
@@ -1178,6 +1182,8 @@ namespace TRBot.Main
             DataContainer.ControllerMngr.Dispose();
             DataContainer.ControllerMngr.Initialize();
             int acquiredCount = DataContainer.ControllerMngr.InitControllers(newJoystickCount);
+
+            DataContainer.ArbitraryCodeMngr.SetVControllerManager(DataContainer.ControllerMngr);
 
             //Resume inputs
             InputHandler.ResumeRunningInputs();

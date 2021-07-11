@@ -20,11 +20,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Linq;
-using TRBot.Misc;
 using TRBot.Utilities;
 using TRBot.VirtualControllers;
 
-namespace TRBot.Data
+namespace TRBot.Misc
 {
     /// <summary>
     /// A container for common data.
@@ -41,6 +40,8 @@ namespace TRBot.Data
         //The sole purpose of this is to compare this value with the new virtual controller type
         //This allows us to change the virtual controller if the value in the database changed
         public VirtualControllerTypes CurVControllerType { get; private set; } = VirtualControllerTypes.Dummy;
+
+        public ArbitraryCodeManager ArbitraryCodeMngr { get; private set; } = null;
 
         public DataContainer()
         {
@@ -65,6 +66,11 @@ namespace TRBot.Data
         public void SetCurVControllerType(in VirtualControllerTypes curVControllerType)
         {
             CurVControllerType = curVControllerType;
+        }
+
+        public void SetArbitraryCodeManager(ArbitraryCodeManager arbitraryCodeManager)
+        {
+            ArbitraryCodeMngr = arbitraryCodeManager;
         }
     }
 }

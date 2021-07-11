@@ -18,7 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using TRBot.Data;
+using TRBot.Misc;
 using TRBot.Logging;
 
 namespace TRBot.Routines

@@ -20,7 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TRBot.Data;
+using TRBot.Misc;
 
 namespace TRBot.Routines
 {

@@ -36,12 +36,22 @@ namespace TRBot.Misc
     public class ArbitraryCodeManager
     {
         private IVirtualControllerManager VControllerMngr = null;
+        private int VControllerCount = 0;
 
+        //Record all delegates so it's possible to unsubscribe from them later
         private Dictionary<int, OnInputPressed> InputPressedDelegates = new Dictionary<int, OnInputPressed>(4);
         private Dictionary<int, OnInputReleased> InputReleasedDelegates = new Dictionary<int, OnInputReleased>(4);
         private Dictionary<int, OnControllerUpdated> ControllerUpdatedDelegates = new Dictionary<int, OnControllerUpdated>(4);
 
-        private Dictionary<string, bool> InputsPressed = new Dictionary<string, bool>(16);
+        /// <summary>
+        /// Records the currently pressed inputs on each virtual controller.
+        /// The key is the controller port and the value is a dictionary of input names.  
+        /// </summary>
+        /// <remarks>
+        /// A dictionary is used as the value for a faster lookup time.
+        /// Since this will be running on the same thread as the <see cref="InputHandler" />, it needs to be as fast as possible.
+        /// </remarks>
+        private Dictionary<int, Dictionary<string, bool>> InputsPressed = new Dictionary<int, Dictionary<string, bool>>(16);
 
         public ArbitraryCodeManager()
         {
@@ -56,6 +66,7 @@ namespace TRBot.Misc
                 return;
             }
 
+            //Unsubscribe from all delegates
             for (int i = 0; i < VControllerMngr.ControllerCount; i++)
             {
                 IVirtualController controller = VControllerMngr.GetController(i);
@@ -81,8 +92,8 @@ namespace TRBot.Misc
 
         public void SetVControllerManager(IVirtualControllerManager vControllerMngr)
         {
-            //Don't do anything if the values are equal
-            if (VControllerMngr == vControllerMngr)
+            //Don't do anything if the reference and controller counts are the same
+            if (VControllerMngr == vControllerMngr && VControllerCount == vControllerMngr.ControllerCount)
             {
                 return;
             }
@@ -90,6 +101,7 @@ namespace TRBot.Misc
             CleanUp();
 
             VControllerMngr = vControllerMngr;
+            VControllerCount = VControllerMngr.ControllerCount;
 
             for (int i = 0; i < VControllerMngr.ControllerCount; i++)
             {
@@ -98,7 +110,7 @@ namespace TRBot.Misc
                 int port = i;
 
                 //Store all the events in dictionaries so we can unsubscribe from them later
-                //We have to use lambdas to 
+                //We have to use lambdas to set the correct ports
                 OnInputPressed pressedDelegate = (in string inputName) => VControllerInputPressed(inputName, port);
                 InputPressedDelegates.Add(port, pressedDelegate);
 
@@ -112,17 +124,42 @@ namespace TRBot.Misc
 
         private void VControllerInputPressed(in string inputName, in int controllerPort)
         {
+            //Add if not present
+            if (InputsPressed.TryGetValue(controllerPort, out Dictionary<string, bool> inputDict) == false)
+            {
+                inputDict = new Dictionary<string, bool>(8);
+                InputsPressed.Add(controllerPort, inputDict);
+            }
 
+            inputDict[inputName] = true;
         }
 
         private void VControllerInputReleased(in string inputName, in int controllerPort)
         {
-
+            if (InputsPressed.TryGetValue(controllerPort, out Dictionary<string, bool> inputDict) == true)
+            {
+                //Remove this so iteration is faster when executing the code
+                inputDict.Remove(inputName);
+            }
         }
 
         private void VControllerUpdated(in int controllerPort)
         {
+            if (InputsPressed.TryGetValue(controllerPort, out Dictionary<string, bool> inputDict) == false)
+            {
+                return;
+            }
+
+            //Get all pressed inputs
+            string[] allInputs = inputDict.Keys.ToArray();
+
+            //See which inputs have custom code
             
+            //(Filter by input names here)
+
+            //Check if the file for the custom code on each input exists
+
+            //Invoke the async method to run the code
         }
 
         private void ClearDictionaries()
