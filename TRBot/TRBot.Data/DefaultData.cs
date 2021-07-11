@@ -363,6 +363,22 @@ namespace TRBot.Data
             return defaultPermissions;
         }
 
+        /// <summary>
+        /// Returns a list of RoutineData objects containing recommended default values.
+        /// </summary>
+        /// <returns>A list of RoutineData objects with their default values.</returns>
+        public static List<RoutineData> GetDefaultRoutines()
+        {
+            List<RoutineData> defaultRoutines = new List<RoutineData>()
+            {
+                new RoutineData("creditsgive", "TRBot.Routines.CreditsGiveRoutine", true, false),
+                new RoutineData("reconnect", "TRBot.Routines.ReconnectRoutine", true, false),
+                new RoutineData("periodicmessage", "TRBot.Routines.PeriodicMessageRoutine", true, false),
+            };
+
+            return defaultRoutines;
+        }
+
         #endregion
     }
 }

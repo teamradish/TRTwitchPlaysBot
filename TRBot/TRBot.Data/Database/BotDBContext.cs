@@ -47,6 +47,7 @@ namespace TRBot.Data
         public DbSet<GameConsole> Consoles { get; set; } = null;
         public DbSet<User> Users { get; set; } = null;
         public DbSet<PermissionAbility> PermAbilities { get; set; } = null;
+        public DbSet<RoutineData> Routines { get; set; } = null;
 
         private string Datasource = string.Empty;
 
@@ -212,6 +213,18 @@ namespace TRBot.Data
             {
                 entity.HasKey(e => e.ID);
                 entity.HasIndex(e => e.UserID);
+            });
+
+            modelBuilder.Entity<RoutineData>().ToTable("RoutineData", "routinedata");
+            modelBuilder.Entity<RoutineData>(entity =>
+            {
+                entity.HasKey(e => e.ID);
+                entity.Property(e => e.Name).HasDefaultValue(string.Empty);
+                entity.Property(e => e.ClassName).HasDefaultValue(string.Empty);
+                entity.Property(e => e.Enabled).HasDefaultValue(1L);
+                entity.Property(e => e.ResetOnReload).HasDefaultValue(0L);
+                entity.Property(e => e.ValueStr).HasDefaultValue(string.Empty);
+                entity.HasIndex(e => e.Name).IsUnique();
             });
 
             base.OnModelCreating(modelBuilder);

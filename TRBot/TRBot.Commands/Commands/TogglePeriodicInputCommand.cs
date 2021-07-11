@@ -111,15 +111,15 @@ namespace TRBot.Commands
             //Now add or remove the routine if we should
             if (oldState == true && newState == false)
             {
-                RoutineHandler.RemoveRoutine(RoutineConstants.PERIODIC_INPUT_ROUTINE_ID);
+                RoutineHandler.RemoveRoutine(RoutineConstants.PERIODIC_INPUT_ROUTINE_NAME);
             }
             //Add the routine
             else if (oldState == false && newState == true)
             {
-                BaseRoutine routine = RoutineHandler.FindRoutine(RoutineConstants.PERIODIC_INPUT_ROUTINE_ID, out int indexFound);
+                BaseRoutine routine = RoutineHandler.FindRoutine(RoutineConstants.PERIODIC_INPUT_ROUTINE_NAME);
                 if (routine == null)
                 {
-                    RoutineHandler.AddRoutine(new PeriodicInputRoutine());
+                    RoutineHandler.AddRoutine(RoutineConstants.PERIODIC_INPUT_ROUTINE_NAME, new PeriodicInputRoutine());
                 }
                 else
                 {

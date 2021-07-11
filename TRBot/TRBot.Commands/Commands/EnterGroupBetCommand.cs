@@ -33,6 +33,8 @@ namespace TRBot.Commands
     /// </summary>
     public class EnterGroupBetCommand : BaseCommand
     {
+        private string GroupBetRoutineName = string.Empty;
+
         public EnterGroupBetCommand()
         {
 
@@ -40,8 +42,11 @@ namespace TRBot.Commands
 
         public override void CleanUp()
         {
-            //Remove the group bet routine if it's active
-            RoutineHandler.RemoveRoutine(RoutineConstants.GROUP_BET_ROUTINE_ID);
+            if (string.IsNullOrEmpty(GroupBetRoutineName) == false)
+            {
+                //Remove the group bet routine if it's active
+                RoutineHandler.RemoveRoutine(GroupBetRoutineName);
+            }
 
             base.CleanUp();
         }
@@ -103,14 +108,13 @@ namespace TRBot.Commands
             long groupBetTime = DataHelper.GetSettingInt(SettingsConstants.GROUP_BET_TOTAL_TIME, 120000L);
             int groupBetMinUsers = (int)DataHelper.GetSettingInt(SettingsConstants.GROUP_BET_MIN_PARTICIPANTS, 3L);
 
-            //Get the routine
-            GroupBetRoutine groupBetRoutine = RoutineHandler.FindRoutine<GroupBetRoutine>();
+            GroupBetRoutine groupBetRoutine = RoutineHandler.FindRoutine(RoutineConstants.GROUP_BET_ROUTINE_NAME) as GroupBetRoutine;
 
             //We haven't started the group bet, so start it up
             if (groupBetRoutine == null)
             {
-                groupBetRoutine = new GroupBetRoutine(groupBetTime, groupBetMinUsers);
-                RoutineHandler.AddRoutine(groupBetRoutine);
+                groupBetRoutine = new GroupBetRoutine(RoutineConstants.GROUP_BET_ROUTINE_NAME, groupBetTime, groupBetMinUsers);
+                RoutineHandler.AddRoutine(RoutineConstants.GROUP_BET_ROUTINE_NAME, groupBetRoutine);
             }
 
             //Note: From hereon, use the routine's total time and min participant values

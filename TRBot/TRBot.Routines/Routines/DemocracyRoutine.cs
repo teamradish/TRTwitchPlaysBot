@@ -51,7 +51,6 @@ namespace TRBot.Routines
 
         public DemocracyRoutine(in long votingDuration)
         {
-            Identifier = RoutineConstants.DEMOCRACY_ROUTINE_ID;
             SetVoteDuration(votingDuration);
         }
 

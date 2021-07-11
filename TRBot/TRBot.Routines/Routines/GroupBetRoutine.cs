@@ -40,6 +40,8 @@ namespace TRBot.Routines
         private TimeSpan TotalTime = TimeSpan.Zero;
         private Random Rand = new Random();
 
+        private string RoutineName = string.Empty;
+
         private Dictionary<string, long> Participants = new Dictionary<string, long>(4);
 
         /// <summary>
@@ -47,10 +49,9 @@ namespace TRBot.Routines
         /// </summary>
         public int ParticipantCount => Participants.Count;
 
-        public GroupBetRoutine(in long millisecondsForBet, in int minParticipants)
+        public GroupBetRoutine(string routineName, in long millisecondsForBet, in int minParticipants)
         {
-            Identifier = RoutineConstants.GROUP_BET_ROUTINE_ID;
-
+            RoutineName = routineName;
             MillisecondsForBet = millisecondsForBet;
             MinParticipants = minParticipants;
 
@@ -273,7 +274,7 @@ namespace TRBot.Routines
 
         private void RemoveGroupBet()
         {
-            RoutineHandler.RemoveRoutine(Identifier);
+            RoutineHandler.RemoveRoutine(RoutineName);
         }
 
         /// <summary>

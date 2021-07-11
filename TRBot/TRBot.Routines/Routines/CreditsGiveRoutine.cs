@@ -36,7 +36,7 @@ namespace TRBot.Routines
 
         public CreditsGiveRoutine()
         {
-            Identifier = RoutineConstants.CREDITS_GIVE_ROUTINE_ID;
+
         }
 
         public override void Initialize()

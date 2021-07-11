@@ -40,7 +40,7 @@ namespace TRBot.Routines
 
         public PeriodicMessageRoutine()
         {
-            Identifier = RoutineConstants.PERIODIC_MSG_ROUTINE_ID;
+            
         }
 
         public override void Initialize()

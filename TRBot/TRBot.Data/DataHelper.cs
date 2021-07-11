@@ -641,7 +641,7 @@ namespace TRBot.Data
                             entriesAdded++;
                         }
                     }
-                 }
+                }
 
                 List<PermissionAbility> permAbilities = DefaultData.GetDefaultPermAbilities();
                 for (int i = 0; i < permAbilities.Count; i++)
@@ -657,6 +657,28 @@ namespace TRBot.Data
                         {
                             //Default permission ability does not exist, so add it
                             context.PermAbilities.Add(permAbility);
+
+                            context.SaveChanges();
+
+                            entriesAdded++;
+                        }
+                    }
+                }
+
+                List<RoutineData> routData = DefaultData.GetDefaultRoutines();
+                for (int i = 0; i < routData.Count; i++)
+                {
+                    RoutineData routineData = routData[i];
+                        
+                    using (BotDBContext context = DatabaseManager.OpenContext())
+                    {
+                        //See if the command data exists
+                        RoutineData foundRoutine = context.Routines.FirstOrDefault((rout) => rout.Name == routineData.Name);
+
+                        if (foundRoutine == null)
+                        {
+                            //Default command does not exist, so add it
+                            context.Routines.Add(routineData);
 
                             context.SaveChanges();
 

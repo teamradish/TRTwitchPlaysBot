@@ -17,7 +17,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Collections.Concurrent;
+using System.Reflection;
+using System.Linq;
 using TRBot.Data;
 using TRBot.Logging;
 
@@ -28,109 +30,282 @@ namespace TRBot.Routines
     /// </summary>
     public class BotRoutineHandler
     {
-        private readonly List<BaseRoutine> BotRoutines = new List<BaseRoutine>(8);
+        private readonly ConcurrentDictionary<string, BaseRoutine> BotRoutines = new ConcurrentDictionary<string, BaseRoutine>(Environment.ProcessorCount * 2, 8);
 
         private DataContainer DataContainer = null;
+
+        /// <summary>
+        /// Additional assemblies to look in when adding routines.
+        /// This is useful if the routine's Type is outside this assembly.
+        /// </summary>
+        private Assembly[] AdditionalAssemblies = Array.Empty<Assembly>();
 
         public BotRoutineHandler()
         {
 
         }
 
-        public void SetDataContainer(DataContainer dataContainer)
+        public BotRoutineHandler(Assembly[] additionalAssemblies)
+        {
+            AdditionalAssemblies = additionalAssemblies;
+        }
+
+        public void Initialize(DataContainer dataContainer)
         {
             DataContainer = dataContainer;
+
+            DataContainer.DataReloader.SoftDataReloadedEvent -= OnDataReloadedSoft;
+            DataContainer.DataReloader.SoftDataReloadedEvent += OnDataReloadedSoft;
+
+            DataContainer.DataReloader.HardDataReloadedEvent -= OnDataReloadedHard;
+            DataContainer.DataReloader.HardDataReloadedEvent += OnDataReloadedHard;
+
+            PopulateRoutinesFromDB();
         }
 
         public void CleanUp()
         {
-            for (int i = 0; i < BotRoutines.Count; i++)
+            DataContainer.DataReloader.SoftDataReloadedEvent -= OnDataReloadedSoft;
+            DataContainer.DataReloader.HardDataReloadedEvent -= OnDataReloadedHard;
+
+            DataContainer = null;
+
+            CleanUpRoutines();
+        }
+
+        private void CleanUpRoutines()
+        {
+            foreach (KeyValuePair<string, BaseRoutine> routine in BotRoutines)
             {
-                BotRoutines[i].CleanUp();
+                routine.Value.CleanUp();
+            }
+        }
+
+        private void PopulateRoutinesFromDB()
+        {
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                foreach (RoutineData routineData in context.Routines)
+                {
+                    AddRoutine(routineData.Name, routineData.ClassName, routineData.ValueStr, routineData.Enabled > 0, routineData.ResetOnReload > 0);
+                }
+            }
+        }
+
+        private void OnDataReloadedSoft()
+        {
+            UpdateRoutinesFromDB();
+        }
+
+        private void OnDataReloadedHard()
+        {
+            //Clean up routines only if they hard reload
+            KeyValuePair<string, BaseRoutine>[] allRoutines = BotRoutines.ToArray();
+            
+            for (int i = 0; i < allRoutines.Length; i++)
+            {
+                KeyValuePair<string, BaseRoutine> keyValue = allRoutines[i];
+                BaseRoutine baseRoutine = keyValue.Value;
+
+                if (baseRoutine == null || baseRoutine.ResetOnReload == false)
+                {
+                    continue;
+                }
+
+                RemoveRoutine(keyValue.Key);
+            }
+
+            UpdateRoutinesFromDB();
+        }
+
+        private void UpdateRoutinesFromDB()
+        {
+            using (BotDBContext context = DatabaseManager.OpenContext())
+            {
+                List<string> encounteredRoutines = new List<string>(context.Routines.Count());
+
+                foreach (RoutineData routineData in context.Routines)
+                {
+                    string routineName = routineData.Name;
+                    if (BotRoutines.TryGetValue(routineName, out BaseRoutine baseRoutine) == true)
+                    {
+                        //Remove this routine if the type name is different so we can reconstruct it
+                        if (baseRoutine.GetType().FullName != routineData.ClassName)
+                        {
+                            RemoveRoutine(routineName);
+                        }
+
+                        baseRoutine = null;
+                    }
+
+                    //Add this routine if it doesn't exist and should
+                    if (baseRoutine == null)
+                    {
+                        //Add this routine
+                        AddRoutine(routineName, routineData.ClassName, routineData.ValueStr,
+                            routineData.Enabled > 0, routineData.ResetOnReload > 0 );
+                    }
+                    else
+                    {
+                        baseRoutine.Enabled = routineData.Enabled > 0;
+                        baseRoutine.ResetOnReload = routineData.ResetOnReload > 0;
+                        baseRoutine.ValueStr = routineData.ValueStr;
+                    }
+
+                    encounteredRoutines.Add(routineName);
+                }
+
+                //Remove routines that are no longer in the database
+                foreach (string routine in BotRoutines.Keys)
+                {
+                    if (encounteredRoutines.Contains(routine) == false)
+                    {
+                        RemoveRoutine(routine);
+                    }
+                }
             }
         }
 
         public void Update(in DateTime nowUTC)
         {
             //Update routines
-            for (int i = 0; i < BotRoutines.Count; i++)
+            foreach (BaseRoutine routine in BotRoutines.Values)
             {
-                if (BotRoutines[i] == null)
+                if (routine == null || routine.Enabled == false)
                 {
                     continue;
                 }
 
-                BotRoutines[i].UpdateRoutine(nowUTC);
+                routine.UpdateRoutine(nowUTC);
             }
         }
 
-        public void AddRoutine(BaseRoutine routine)
+        public bool AddRoutine(string routineName, string routineTypeName, string valueStr,
+            in bool routineEnabled, in bool resetOnReload)
         {
+            Type routineType = Type.GetType(routineTypeName, false, true);
+            if (routineType == null && AdditionalAssemblies?.Length > 0)
+            {
+                //Look for the type in our other assemblies
+                for (int i = 0; i < AdditionalAssemblies.Length; i++)
+                {
+                    Assembly asm = AdditionalAssemblies[i];
+
+                    routineType = asm.GetType(routineTypeName, false, true);
+                    
+                    if (routineType != null)
+                    {
+                        TRBotLogger.Logger.Debug($"Found \"{routineTypeName}\" in assembly \"{asm.GetName()}\"!");
+                        break;
+                    }
+                }                
+            }
+
+            if (routineType == null)
+            {
+                DataContainer.MessageHandler.QueueMessage($"Cannot find routine type \"{routineTypeName}\" for routine \"{routineName}\" in all provided assemblies.");
+                return false;
+            }
+
+            BaseRoutine routine = null;
+
+            //Try to create an instance
+            try
+            {
+                routine = (BaseRoutine)Activator.CreateInstance(routineType, Array.Empty<object>());
+                routine.Enabled = routineEnabled;
+                routine.ResetOnReload = resetOnReload;
+                routine.ValueStr = valueStr;
+            }
+            catch (Exception e)
+            {
+                DataContainer.MessageHandler.QueueMessage($"Unable to add routine \"{routineName}\": \"{e.Message}\"");
+            }
+
+            return AddRoutine(routineName, routine);
+        }
+
+        public bool AddRoutine(string routineName, BaseRoutine routine)
+        {
+            if (routine == null)
+            {
+                TRBotLogger.Logger.Warning("Cannot add null routine.");
+                return false;
+            }
+
+            //Clean up the existing routine before overwriting it with the new value
+            if (BotRoutines.TryGetValue(routineName, out BaseRoutine existingRoutine) == true)
+            {
+                existingRoutine.CleanUp();
+            }
+
+            BotRoutines[routineName] = routine;
             routine.SetRequiredData(this, DataContainer);
             routine.Initialize();
-            BotRoutines.Add(routine);
+
+            return true;
         }
 
-        public void RemoveRoutine(in int index)
+        //public void RemoveRoutine(in int index)
+        //{
+        //    if (index < 0 || index >= BotRoutines.Count)
+        //    {
+        //        TRBotLogger.Logger.Information($"Index {index} is out of the routine count of 0 through {BotRoutines.Count}."); 
+        //        return;
+        //    }
+        //
+        //    //Clean up and remove the routine
+        //    BaseRoutine routine = BotRoutines[index];
+        //
+        //    if (routine != null)
+        //    {
+        //        routine.CleanUp();
+        //    }
+        //
+        //    BotRoutines.RemoveAt(index);
+        //}
+
+        public void RemoveRoutine(string routineName)
         {
-            if (index < 0 || index >= BotRoutines.Count)
-            {
-                TRBotLogger.Logger.Information($"Index {index} is out of the routine count of 0 through {BotRoutines.Count}."); 
-                return;
-            }
+            bool removed = BotRoutines.Remove(routineName, out BaseRoutine routine);
 
-            //Clean up and remove the routine
-            BaseRoutine routine = BotRoutines[index];
-
-            if (routine != null)
-            {
-                routine.CleanUp();
-            }
-
-            BotRoutines.RemoveAt(index);
-        }
-
-        public void RemoveRoutine(string identifier)
-        {
-            BaseRoutine routine = FindRoutine(identifier, out int index);
-            if (index >= 0)
-            {
-                if (routine != null)
-                {
-                    routine.CleanUp();
-                }
-                BotRoutines.RemoveAt(index);
-            }
+            routine?.CleanUp();
         }
 
         public void RemoveRoutine(BaseRoutine routine)
         {
-            routine.CleanUp();
-            BotRoutines.Remove(routine);
-        }
+            string routineName = string.Empty;
+            bool found = false;
 
-        public BaseRoutine FindRoutine(string identifier, out int indexFound)
-        {
-            for (int i = 0; i < BotRoutines.Count; i++)
+            //Look for the reference
+            foreach (KeyValuePair<string, BaseRoutine> kvPair in BotRoutines)
             {
-                BaseRoutine routine = BotRoutines[i];
-                if (routine.Identifier == identifier)
+                if (kvPair.Value == routine)
                 {
-                    indexFound = i;
-                    return routine;
+                    routineName = kvPair.Key;
+                    found = true;
+                    break;
                 }
             }
 
-            indexFound = -1;
-            return null;
+            //The routine was found, so remove it
+            if (found == true)
+            {
+                RemoveRoutine(routineName);
+            }
+        }
+
+        public BaseRoutine FindRoutine(string name)
+        {
+            BotRoutines.TryGetValue(name, out BaseRoutine routine);
+            
+            return routine;
         }
 
         public T FindRoutine<T>() where T : BaseRoutine
         {
-            for (int i = 0; i < BotRoutines.Count; i++)
+            foreach (BaseRoutine routine in BotRoutines.Values)
             {
-                BaseRoutine routine = BotRoutines[i];
-
                 if (routine is T typeRoutine)
                 {
                     return typeRoutine;
@@ -140,9 +315,9 @@ namespace TRBot.Routines
             return null;
         }
 
-        public BaseRoutine FindRoutine(Predicate<BaseRoutine> predicate)
-        {
-            return BotRoutines.Find(predicate);
-        }
+        //public BaseRoutine FindRoutine(Predicate<BaseRoutine> predicate)
+        //{
+        //    return BotRoutines.Find(predicate);
+        //}
     }
 }

@@ -39,7 +39,7 @@ namespace TRBot.Commands
         public override void CleanUp()
         {
             //Remove the group bet routine if it's active
-            RoutineHandler.RemoveRoutine(RoutineConstants.GROUP_BET_ROUTINE_ID);
+            RoutineHandler.RemoveRoutine(RoutineConstants.GROUP_BET_ROUTINE_NAME);
 
             base.CleanUp();
         }
@@ -48,7 +48,7 @@ namespace TRBot.Commands
         {
             string username = args.Command.ChatMessage.Username.ToLowerInvariant();
 
-            GroupBetRoutine groupBetRoutine = RoutineHandler.FindRoutine<GroupBetRoutine>();
+            GroupBetRoutine groupBetRoutine = RoutineHandler.FindRoutine(RoutineConstants.GROUP_BET_ROUTINE_NAME) as GroupBetRoutine;
 
             if (groupBetRoutine == null 
                 || groupBetRoutine.TryGetParticipant(username, out GroupBetRoutine.ParticipantData participantData) == false)
@@ -72,7 +72,7 @@ namespace TRBot.Commands
                 //If no one is in the group bet, end it entirely
                 if (participantCount == 0)
                 {
-                    RoutineHandler.RemoveRoutine(groupBetRoutine);
+                    RoutineHandler.RemoveRoutine(RoutineConstants.GROUP_BET_ROUTINE_NAME);
                 }
 
                 QueueMessage($"Oh no! The group bet has ended since there are no longer enough participants. {minParticipants - participantCount} more is/are required to start it up again!");

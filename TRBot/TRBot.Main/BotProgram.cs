@@ -336,17 +336,13 @@ namespace TRBot.Main
 
         private void InitRoutines()
         {
-            RoutineHandler.SetDataContainer(DataContainer);
-
-            RoutineHandler.AddRoutine(new CreditsGiveRoutine());
-            RoutineHandler.AddRoutine(new PeriodicMessageRoutine());
-            RoutineHandler.AddRoutine(new ReconnectRoutine());
+            RoutineHandler.Initialize(DataContainer);
 
             //Add the periodic input routine if it's enabled
             long periodicInputEnabled = DataHelper.GetSettingInt(SettingsConstants.PERIODIC_INPUT_ENABLED, 0L);
             if (periodicInputEnabled > 0L)
             {
-                RoutineHandler.AddRoutine(new PeriodicInputRoutine());
+                RoutineHandler.AddRoutine(RoutineConstants.PERIODIC_INPUT_ROUTINE_NAME, new PeriodicInputRoutine());
             }
         }
 
@@ -868,7 +864,7 @@ namespace TRBot.Main
             if (inputMode == InputModes.Democracy)
             {
                 //Set up the routine if it doesn't exist
-                BaseRoutine foundRoutine = RoutineHandler.FindRoutine(RoutineConstants.DEMOCRACY_ROUTINE_ID, out int indexFound);
+                BaseRoutine foundRoutine = RoutineHandler.FindRoutine(RoutineConstants.DEMOCRACY_ROUTINE_NAME);
                 DemocracyRoutine democracyRoutine = null;
 
                 if (foundRoutine == null)
@@ -876,7 +872,7 @@ namespace TRBot.Main
                     long voteTime = DataHelper.GetSettingInt(SettingsConstants.DEMOCRACY_VOTE_TIME, 10000L);
 
                     democracyRoutine = new DemocracyRoutine(voteTime);
-                    RoutineHandler.AddRoutine(democracyRoutine);
+                    RoutineHandler.AddRoutine(RoutineConstants.DEMOCRACY_ROUTINE_NAME, democracyRoutine);
                 }
                 else
                 {
@@ -1000,22 +996,17 @@ namespace TRBot.Main
             long periodicEnabled = DataHelper.GetSettingInt(SettingsConstants.PERIODIC_INPUT_ENABLED, 0L);
             if (periodicEnabled == 0)
             {
-                RoutineHandler.FindRoutine(RoutineConstants.PERIODIC_INPUT_ROUTINE_ID, out int rIndex);
-
-                //Remove the routine if it exists
-                if (rIndex >= 0)
-                {
-                    RoutineHandler.RemoveRoutine(rIndex);
-                }
+                //Remove the routine
+                RoutineHandler.RemoveRoutine(RoutineConstants.PERIODIC_INPUT_ROUTINE_NAME);
             }
             else
             {
-                RoutineHandler.FindRoutine(RoutineConstants.PERIODIC_INPUT_ROUTINE_ID, out int rIndex);
+                BaseRoutine periodicInputRoutine = RoutineHandler.FindRoutine(RoutineConstants.PERIODIC_INPUT_ROUTINE_NAME);
 
                 //Add the routine if it doesn't exist
-                if (rIndex < 0)
+                if (periodicInputRoutine == null)
                 {
-                    RoutineHandler.AddRoutine(new PeriodicInputRoutine()); 
+                    RoutineHandler.AddRoutine(RoutineConstants.PERIODIC_INPUT_ROUTINE_NAME, new PeriodicInputRoutine()); 
                 }
             }
 
