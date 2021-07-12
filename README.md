@@ -28,7 +28,7 @@ The core application, `TRBot.Main`, connects all the projects of TRBot together 
 - Twitch Plays quality-of-life enhancements - macros, game logs, user silencing (without timeout/ban), stop all ongoing inputs, and switch consoles readily.
 - Pluggable virtual controller architecture - add your own virtual controller implementation to support more platforms.
 - Modular - TRBot is separated into parts, allowing those parts to be used as libraries.
-- Commands - Interact with and manipulate TRBot through commands entered as text. [Add your own commands](./Wiki/Custom-Commands.md) to extend TRBot's capabilities, even **while** it's running!
+- Commands - Interact with and manipulate TRBot through commands entered as text. [Add your own commands](./Wiki/Custom-Commands.md) and [your own routines](./Wiki/Custom-Routines.md) to extend TRBot's capabilities, even **while** it's running!
 - SQLite database to manage access levels, commands, virtual controllers, and more. Data changes are immediately reflected in TRBot.
 - Moderation features - control access to commands, inputs, and other features independent of platform.
 - Additional goodies and games - duel for credits, create memes, calculate expressions, and [talk to a chatbot](./Wiki/Setup-Chatterbot.md).
