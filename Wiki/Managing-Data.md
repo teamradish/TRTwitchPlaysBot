@@ -29,6 +29,7 @@ The tables you see in the database are, in short, the categories of data TRBot s
 - **PermissionAbilities** - Contains all available abilities that can be granted or revoked to users. Typically, this does not change much over time.
 - **RecentInputs** - Contains a specific number of recent inputs made by each player if opted into bot stats.
 - **RestrictedInputs** - References inputs that each user is restricted from performing.
+- **RoutineData** - Holds all data on bot routines, such as routine names, enabled states, and the actual code they link to.
 - **Settings** - Contains a myriad of bot settings.
 - **UserAbilities** - Contains all granted abilities and which users they belong to.
 - **UserStats** - Contains all user-specific stats, such as valid input and message count.
@@ -67,6 +68,9 @@ TRBot comes with a [`ReloadCommand`](../TRBot/TRBot.Commands/Commands/ReloadComm
 
 ## CommandData
 All commands require code to function and thus are stored in memory as separate objects using information from the CommandData table. If TRBot is running, you will need to reload to apply any changes made directly to the CommandData table.
+
+## RoutineData
+Like with commands, all routines are stored as separate objects using information from the RoutineData table. The same reload rules apply.
 
 ## client_service_type
 The change in the client service used requires a full restart of TRBot to apply. This may be changed in future versions.
