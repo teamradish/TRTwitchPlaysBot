@@ -23,7 +23,7 @@ Right now the database has a "testcmd" command that will execute custom code fro
 
 Open up that file and input the following lines:
 
-```
+```cs
 DataContainer.MessageHandler.QueueMessage("This is a test cmd!");
 
 using (BotDBContext context = DatabaseManager.OpenContext())
@@ -52,7 +52,7 @@ If things didn't go so well, you should see a descriptive error message in your 
 
 ## Important things to note
 - Custom commands have access to the following global fields:
- - `ThisCmd` - The command instance being executed. From here you can access the `Level`, `Enabled` fields, and more of the command.
+ - `ThisCmd` - The command instance being executed. From here you can access fields such as `Level`, `Enabled`, and more.
  - `CmdHandler` - The command handler that all commands have access to.
  - `DataContainer` - The data container instance all commands have access to. From here you can access the message handler, virtual controller manager, and more.
  - `RoutineHandler` - The bot routine handler.

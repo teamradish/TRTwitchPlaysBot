@@ -132,7 +132,7 @@ namespace TRBot.Commands
             //Newly added since they were not previously there
             if (prevParticipant == false)
             {
-                message = $"{userName} entered the group bet with {betAmount} {creditsName.Pluralize(betAmount)}!";
+                message = $"{userName} entered the group bet with {betAmount} {creditsName.Pluralize(betAmount)}! You now have a chance to be chosen as the winner of the group bet.";
                 
                 int participantCount = groupBetRoutine.ParticipantCount;
                 
@@ -149,7 +149,7 @@ namespace TRBot.Commands
                 {
                     TimeSpan timeSpan = TimeSpan.FromMilliseconds(groupBetRoutine.MillisecondsForBet);
 
-                    QueueMessage($"The group bet has enough participants and will start in {timeSpan.Minutes} minute(s) and {timeSpan.Seconds} second(s), so join before then if you want in!");
+                    QueueMessage($"The group bet has enough participants and will start in {timeSpan.Minutes} minute(s) and {timeSpan.Seconds} second(s), so join before then if you want in! A random winner will be chosen from the participants.");
                 }
             }
             else

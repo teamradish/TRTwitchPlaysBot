@@ -1,5 +1,5 @@
 # Custom Routines
-TRBot's custom routine support is handled through the [`ExecFromRoutineCommand`](../TRBot/TRBot.Routines/Routines/ExecFromFileRoutine.cs). Like [custom commands](./Custom-Commands.md), if you provide a path to a C# source file as the `ValueStr` of a routine with this class, it'll read the text as code and execute it. This supports both absolute paths and files relative to the **Data** folder.
+TRBot's custom routine support is handled through the [`ExecFromFileRoutine`](../TRBot/TRBot.Routines/Routines/ExecFromFileRoutine.cs). Like [custom commands](./Custom-Commands.md), if you provide a path to a C# source file as the `ValueStr` of a routine with this class, it'll read the text as code and execute it. This supports both absolute paths and files relative to the **Data** folder.
 
 Custom routines are run every update loop, which is defined by the [`main_thread_sleep`](./Settings-Documentation.md#user-content-main_thread_sleep) setting in the database. If the value of `main_thread_sleep` is 500 milliseconds for instance, then a custom routine will run every 500 milliseconds.
 
@@ -22,7 +22,7 @@ The database currently has a "printmsg" routine that executes custom code from a
 
 Open up that file and input the following lines:
 
-```
+```cs
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
