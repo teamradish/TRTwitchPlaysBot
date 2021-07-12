@@ -33,6 +33,8 @@ namespace TRBot.Commands
     /// </summary>
     public class EnterGroupBetCommand : BaseCommand
     {
+        private string GroupBetRoutineName = string.Empty;
+
         public EnterGroupBetCommand()
         {
 
@@ -40,8 +42,11 @@ namespace TRBot.Commands
 
         public override void CleanUp()
         {
-            //Remove the group bet routine if it's active
-            RoutineHandler.RemoveRoutine(RoutineConstants.GROUP_BET_ROUTINE_ID);
+            if (string.IsNullOrEmpty(GroupBetRoutineName) == false)
+            {
+                //Remove the group bet routine if it's active
+                RoutineHandler.RemoveRoutine(GroupBetRoutineName);
+            }
 
             base.CleanUp();
         }
@@ -103,14 +108,13 @@ namespace TRBot.Commands
             long groupBetTime = DataHelper.GetSettingInt(SettingsConstants.GROUP_BET_TOTAL_TIME, 120000L);
             int groupBetMinUsers = (int)DataHelper.GetSettingInt(SettingsConstants.GROUP_BET_MIN_PARTICIPANTS, 3L);
 
-            //Get the routine
-            GroupBetRoutine groupBetRoutine = RoutineHandler.FindRoutine<GroupBetRoutine>();
+            GroupBetRoutine groupBetRoutine = RoutineHandler.FindRoutine(RoutineConstants.GROUP_BET_ROUTINE_NAME) as GroupBetRoutine;
 
             //We haven't started the group bet, so start it up
             if (groupBetRoutine == null)
             {
-                groupBetRoutine = new GroupBetRoutine(groupBetTime, groupBetMinUsers);
-                RoutineHandler.AddRoutine(groupBetRoutine);
+                groupBetRoutine = new GroupBetRoutine(RoutineConstants.GROUP_BET_ROUTINE_NAME, groupBetTime, groupBetMinUsers);
+                RoutineHandler.AddRoutine(RoutineConstants.GROUP_BET_ROUTINE_NAME, groupBetRoutine);
             }
 
             //Note: From hereon, use the routine's total time and min participant values
@@ -128,7 +132,7 @@ namespace TRBot.Commands
             //Newly added since they were not previously there
             if (prevParticipant == false)
             {
-                message = $"{userName} entered the group bet with {betAmount} {creditsName.Pluralize(betAmount)}!";
+                message = $"{userName} entered the group bet with {betAmount} {creditsName.Pluralize(betAmount)}! You now have a chance to be chosen as the winner of the group bet.";
                 
                 int participantCount = groupBetRoutine.ParticipantCount;
                 
@@ -145,7 +149,7 @@ namespace TRBot.Commands
                 {
                     TimeSpan timeSpan = TimeSpan.FromMilliseconds(groupBetRoutine.MillisecondsForBet);
 
-                    QueueMessage($"The group bet has enough participants and will start in {timeSpan.Minutes} minute(s) and {timeSpan.Seconds} second(s), so join before then if you want in!");
+                    QueueMessage($"The group bet has enough participants and will start in {timeSpan.Minutes} minute(s) and {timeSpan.Seconds} second(s), so join before then if you want in! A random winner will be chosen from the participants.");
                 }
             }
             else

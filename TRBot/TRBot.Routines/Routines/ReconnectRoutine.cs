@@ -46,7 +46,7 @@ namespace TRBot.Routines
 
         public ReconnectRoutine()
         {
-            Identifier = RoutineConstants.RECONNECT_ROUTINE_ID;
+            
         }
 
         public override void Initialize()

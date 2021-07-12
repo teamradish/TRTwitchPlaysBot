@@ -29,10 +29,9 @@ namespace TRBot.Routines
     /// </summary>
     public abstract class BaseRoutine
     {
-        /// <summary>
-        /// The routine's identifier.
-        /// </summary>
-        public string Identifier = string.Empty;
+        public bool Enabled = true;
+        public bool ResetOnReload = false;
+        public string ValueStr = string.Empty;
 
         protected BotRoutineHandler RoutineHandler = null;
         protected DataContainer DataContainer = null; 

@@ -55,10 +55,11 @@ namespace TRBot.Routines
         
         public bool TallyingCommenced { get; private set; } = false;
 
-        public InputModeVoteRoutine(in long votingDuration)
+        private string RoutineName = string.Empty;
+
+        public InputModeVoteRoutine(string routineName, in long votingDuration)
         {
-            Identifier = RoutineConstants.INPUT_MODE_VOTE_ROUTINE_ID;
-            
+            RoutineName = routineName;
             VotingDuration = votingDuration;
         }
 
@@ -187,23 +188,19 @@ namespace TRBot.Routines
                 //If we set it to Anarchy, check if the Democracy routine is active and remove it if so
                 if (chosenMode == InputModes.Anarchy)
                 {
-                    BaseRoutine democracyRoutine = RoutineHandler.FindRoutine(RoutineConstants.DEMOCRACY_ROUTINE_ID, out int indexFound);
-                    if (democracyRoutine != null)
-                    {
-                        RoutineHandler.RemoveRoutine(indexFound);
-                    }
+                    RoutineHandler.RemoveRoutine(RoutineConstants.DEMOCRACY_ROUTINE_NAME);
                 }
                 //If we set it to Democracy, add the routine if it's not already active
                 else if (chosenMode == InputModes.Democracy)
                 {
-                    DemocracyRoutine democracyRoutine = RoutineHandler.FindRoutine<DemocracyRoutine>();
+                    DemocracyRoutine democracyRoutine = RoutineHandler.FindRoutine(RoutineConstants.DEMOCRACY_ROUTINE_NAME) as DemocracyRoutine;
 
                     if (democracyRoutine == null)
                     {
                         long votingTime = DataHelper.GetSettingInt(SettingsConstants.DEMOCRACY_VOTE_TIME, 10000L);
 
                         democracyRoutine = new DemocracyRoutine(votingTime);
-                        RoutineHandler.AddRoutine(democracyRoutine);
+                        RoutineHandler.AddRoutine(RoutineConstants.DEMOCRACY_ROUTINE_NAME, democracyRoutine);
                     }
                 }
             }
@@ -228,7 +225,7 @@ namespace TRBot.Routines
             VotesPerMode.Clear();
 
             //Remove the routine
-            RoutineHandler.RemoveRoutine(Identifier);
+            RoutineHandler.RemoveRoutine(RoutineName);
         }
     }
 }

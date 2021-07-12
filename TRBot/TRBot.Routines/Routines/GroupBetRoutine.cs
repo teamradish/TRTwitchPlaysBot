@@ -40,6 +40,8 @@ namespace TRBot.Routines
         private TimeSpan TotalTime = TimeSpan.Zero;
         private Random Rand = new Random();
 
+        private string RoutineName = string.Empty;
+
         private Dictionary<string, long> Participants = new Dictionary<string, long>(4);
 
         /// <summary>
@@ -47,10 +49,9 @@ namespace TRBot.Routines
         /// </summary>
         public int ParticipantCount => Participants.Count;
 
-        public GroupBetRoutine(in long millisecondsForBet, in int minParticipants)
+        public GroupBetRoutine(string routineName, in long millisecondsForBet, in int minParticipants)
         {
-            Identifier = RoutineConstants.GROUP_BET_ROUTINE_ID;
-
+            RoutineName = routineName;
             MillisecondsForBet = millisecondsForBet;
             MinParticipants = minParticipants;
 
@@ -257,7 +258,7 @@ namespace TRBot.Routines
                 //If there's more than one minimum participants and no one else had enough credits, mention the disappointment
                 if (participants.Count == 1 && MinParticipants > 1)
                 {
-                    DataContainer.MessageHandler.QueueMessage("What a bummer! Everyone else was disqualified from the group bet, so the winner won only their bet!");
+                    DataContainer.MessageHandler.QueueMessage("What a bummer! Everyone else was disqualified from the group bet for not having enough credits as their bets, so the winner won only their own bet!");
                 }
             }
 
@@ -273,7 +274,7 @@ namespace TRBot.Routines
 
         private void RemoveGroupBet()
         {
-            RoutineHandler.RemoveRoutine(Identifier);
+            RoutineHandler.RemoveRoutine(RoutineName);
         }
 
         /// <summary>

@@ -319,7 +319,7 @@ namespace TRBot.Commands
         private List<ReelWeight> GetReel1Weights()
         {
             List<ReelWeight> reel1 = new List<ReelWeight>(7);
-            reel1.Add(new ReelWeight(SlotInternalNames.Blank, 8));
+            reel1.Add(new ReelWeight(SlotInternalNames.Blank, 2));
             reel1.Add(new ReelWeight(SlotInternalNames.Cherry, 5));
             reel1.Add(new ReelWeight(SlotInternalNames.Plum, 6));
             reel1.Add(new ReelWeight(SlotInternalNames.Watermelon, 6));
@@ -332,7 +332,7 @@ namespace TRBot.Commands
         private List<ReelWeight> GetReel2Weights()
         {
             List<ReelWeight> reel2 = new List<ReelWeight>(7);
-            reel2.Add(new ReelWeight(SlotInternalNames.Blank, 10));
+            reel2.Add(new ReelWeight(SlotInternalNames.Blank, 5));
             reel2.Add(new ReelWeight(SlotInternalNames.Cherry, 4));
             reel2.Add(new ReelWeight(SlotInternalNames.Plum, 4));
             reel2.Add(new ReelWeight(SlotInternalNames.Watermelon, 5));
@@ -345,7 +345,7 @@ namespace TRBot.Commands
         private List<ReelWeight> GetReel3Weights()
         {
             List<ReelWeight> reel3 = new List<ReelWeight>(7);
-            reel3.Add(new ReelWeight(SlotInternalNames.Blank, 12));
+            reel3.Add(new ReelWeight(SlotInternalNames.Blank, 6));
             reel3.Add(new ReelWeight(SlotInternalNames.Cherry, 2));
             reel3.Add(new ReelWeight(SlotInternalNames.Plum, 3));
             reel3.Add(new ReelWeight(SlotInternalNames.Watermelon, 4));

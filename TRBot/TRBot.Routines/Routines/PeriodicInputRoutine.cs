@@ -39,7 +39,7 @@ namespace TRBot.Routines
 
         public PeriodicInputRoutine()
         {
-            Identifier = RoutineConstants.PERIODIC_INPUT_ROUTINE_ID;
+
         }
 
         public override void Initialize()

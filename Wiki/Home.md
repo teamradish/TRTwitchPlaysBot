@@ -16,6 +16,7 @@ Welcome to the TRBot wiki! Choose the relevant section for your needs.
 * [Chatbot Guide](./Setup-Chatterbot.md) - A quick guide to setting up your own chatbot for viewers to talk to.
 * [Supplementary Info](Setup-Misc.md) - Tools to enhance TRBot and your stream.
 * [Custom commands](./Custom-Commands.md) - Create your own custom commands to tackle tasks and problems on the fly.
+* [Custom routines](./Custom-Routines.md) - Create your own bot routines that run periodically.
 
 ## Players/Moderation
 * [Syntax Walkthrough](./Syntax-Walkthrough.md) - A beginner-friendly guide to TRBot's input syntax, with visuals.

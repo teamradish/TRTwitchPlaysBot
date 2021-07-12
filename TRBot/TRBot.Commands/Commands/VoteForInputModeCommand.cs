@@ -167,8 +167,8 @@ namespace TRBot.Commands
                 }
 
                 long voteDur = DataHelper.GetSettingInt(SettingsConstants.INPUT_MODE_VOTE_TIME, 60000L);
-                inputModeVoteRoutine = new InputModeVoteRoutine(voteDur);
-                RoutineHandler.AddRoutine(inputModeVoteRoutine);
+                inputModeVoteRoutine = new InputModeVoteRoutine(RoutineConstants.INPUT_MODE_VOTE_ROUTINE_NAME, voteDur);
+                RoutineHandler.AddRoutine(RoutineConstants.INPUT_MODE_VOTE_ROUTINE_NAME, inputModeVoteRoutine);
 
                 commencedNewVote = true;
             }

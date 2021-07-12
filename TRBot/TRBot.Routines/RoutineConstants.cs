@@ -28,12 +28,11 @@ namespace TRBot.Routines
     /// </summary>
     public static class RoutineConstants
     {
-        public const string CREDITS_GIVE_ROUTINE_ID = "creditsgive";
-        public const string GROUP_BET_ROUTINE_ID = "groupbet";
-        public const string PERIODIC_MSG_ROUTINE_ID = "periodicmessage";
-        public const string RECONNECT_ROUTINE_ID = "reconnect";
-        public const string PERIODIC_INPUT_ROUTINE_ID = "periodicinput";
-        public const string DEMOCRACY_ROUTINE_ID = "democracy";
-        public const string INPUT_MODE_VOTE_ROUTINE_ID = "inputmodevote";
+        //These routine names are for routines that are commonly added at runtime
+        public const string GROUP_BET_ROUTINE_NAME = "groupbet";
+        public const string RECONNECT_ROUTINE_NAME = "reconnect";
+        public const string PERIODIC_INPUT_ROUTINE_NAME = "periodicinput";
+        public const string DEMOCRACY_ROUTINE_NAME = "democracy";
+        public const string INPUT_MODE_VOTE_ROUTINE_NAME = "inputmodevote";
     }
 }
