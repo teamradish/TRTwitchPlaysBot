@@ -294,7 +294,8 @@ namespace TRBot.Data
                 new GenesisConsole(),
                 new N64Console(), new GBCConsole(),
                 new PS2Console(), new GCConsole(), new GBAConsole(),
-                new WiiConsole(), new PS4Console(),
+                new WiiConsole(), new Xbox360Console(),
+                new PS4Console(),
                 new SwitchConsole(),
                 new PCConsole(),
             };

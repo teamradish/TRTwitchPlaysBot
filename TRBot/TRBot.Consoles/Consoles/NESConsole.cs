@@ -37,28 +37,28 @@ namespace TRBot.Consoles
 
         private void Initialize()
         {
-            SetConsoleInputs(new Dictionary<string, InputData>(21)
+            SetConsoleInputs(new Dictionary<string, InputData>(22)
             {
                 { "left",       InputData.CreateButton("left", (int)GlobalButtonVals.BTN1) },
                 { "right",      InputData.CreateButton("right", (int)GlobalButtonVals.BTN2) },
                 { "up",         InputData.CreateButton("up", (int)GlobalButtonVals.BTN3) },
                 { "down",       InputData.CreateButton("down", (int)GlobalButtonVals.BTN4) },
-                { "a",          InputData.CreateButton("a", (int)GlobalButtonVals.BTN5) },
-                { "b",          InputData.CreateButton("b", (int)GlobalButtonVals.BTN6) },
-                { "select",     InputData.CreateButton("select", (int)GlobalButtonVals.BTN7) },
-                { "start",      InputData.CreateButton("start", (int)GlobalButtonVals.BTN8) },
-                { "ss1",        InputData.CreateButton("ss1", (int)GlobalButtonVals.BTN19) },
-                { "ss2",        InputData.CreateButton("ss2", (int)GlobalButtonVals.BTN20) },
-                { "ss3",        InputData.CreateButton("ss3", (int)GlobalButtonVals.BTN21) },
-                { "ss4",        InputData.CreateButton("ss4", (int)GlobalButtonVals.BTN22) },
-                { "ss5",        InputData.CreateButton("ss5", (int)GlobalButtonVals.BTN23) },
-                { "ss6",        InputData.CreateButton("ss6", (int)GlobalButtonVals.BTN24) },
-                { "ls1",        InputData.CreateButton("ls1", (int)GlobalButtonVals.BTN25) },
-                { "ls2",        InputData.CreateButton("ls2", (int)GlobalButtonVals.BTN26) },
-                { "ls3",        InputData.CreateButton("ls3", (int)GlobalButtonVals.BTN27) },
-                { "ls4",        InputData.CreateButton("ls4", (int)GlobalButtonVals.BTN28) },
-                { "ls5",        InputData.CreateButton("ls5", (int)GlobalButtonVals.BTN29) },
-                { "ls6",        InputData.CreateButton("ls6", (int)GlobalButtonVals.BTN30) },
+                { "a",          InputData.CreateButton("a", (int)GlobalButtonVals.BTN9) },
+                { "b",          InputData.CreateButton("b", (int)GlobalButtonVals.BTN10) },
+                { "select",     InputData.CreateButton("select", (int)GlobalButtonVals.BTN13) },
+                { "start",      InputData.CreateButton("start", (int)GlobalButtonVals.BTN14) },
+                { "ss1",        InputData.CreateButton("ss1", (int)GlobalButtonVals.BTN21) },
+                { "ss2",        InputData.CreateButton("ss2", (int)GlobalButtonVals.BTN22) },
+                { "ss3",        InputData.CreateButton("ss3", (int)GlobalButtonVals.BTN23) },
+                { "ss4",        InputData.CreateButton("ss4", (int)GlobalButtonVals.BTN24) },
+                { "ss5",        InputData.CreateButton("ss5", (int)GlobalButtonVals.BTN25) },
+                { "ss6",        InputData.CreateButton("ss6", (int)GlobalButtonVals.BTN26) },
+                { "ls1",        InputData.CreateButton("ls1", (int)GlobalButtonVals.BTN27) },
+                { "ls2",        InputData.CreateButton("ls2", (int)GlobalButtonVals.BTN28) },
+                { "ls3",        InputData.CreateButton("ls3", (int)GlobalButtonVals.BTN29) },
+                { "ls4",        InputData.CreateButton("ls4", (int)GlobalButtonVals.BTN30) },
+                { "ls5",        InputData.CreateButton("ls5", (int)GlobalButtonVals.BTN31) },
+                { "ls6",        InputData.CreateButton("ls6", (int)GlobalButtonVals.BTN32) },
                 { "#",          InputData.CreateBlank("#") },
                 { ".",          InputData.CreateBlank(".") }
             });

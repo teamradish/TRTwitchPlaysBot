@@ -37,7 +37,7 @@ namespace TRBot.Consoles
 
         private void Initialize()
         {
-            SetConsoleInputs(new Dictionary<string, InputData>(33)
+            SetConsoleInputs(new Dictionary<string, InputData>(38)
             {
                 { "left",       InputData.CreateAxis("left", (int)GlobalAxisVals.AXIS_X, 0, -1) },
                 { "right",      InputData.CreateAxis("right", (int)GlobalAxisVals.AXIS_X, 0, 1) },
@@ -48,6 +48,10 @@ namespace TRBot.Consoles
                 { "rup",        InputData.CreateAxis("rup", (int)GlobalAxisVals.AXIS_RY, 0, -1) },
                 { "rdown",      InputData.CreateAxis("rdown", (int)GlobalAxisVals.AXIS_RY, 0, 1) },
 
+                { "dleft",      InputData.CreateButton("dleft", (int)GlobalButtonVals.BTN1) },
+                { "dright",     InputData.CreateButton("dright", (int)GlobalButtonVals.BTN2) },
+                { "dup",        InputData.CreateButton("dup", (int)GlobalButtonVals.BTN3) },
+                { "ddown",      InputData.CreateButton("ddown", (int)GlobalButtonVals.BTN4) },
                 { "square",     InputData.CreateButton("square", (int)GlobalButtonVals.BTN9) },
                 { "triangle",   InputData.CreateButton("triangle", (int)GlobalButtonVals.BTN10) },
                 { "circle",     InputData.CreateButton("circle", (int)GlobalButtonVals.BTN11) },
@@ -60,18 +64,18 @@ namespace TRBot.Consoles
                 { "r2",         InputData.CreateButton("r2", (int)GlobalButtonVals.BTN18) },
                 { "l3",         InputData.CreateButton("l3", (int)GlobalButtonVals.BTN19) },
                 { "r3",         InputData.CreateButton("r3", (int)GlobalButtonVals.BTN20) },
-                { "dup",        InputData.CreateButton("dup", (int)GlobalButtonVals.BTN21) },
-                { "ddown",      InputData.CreateButton("ddown", (int)GlobalButtonVals.BTN22) },
-                { "dleft",      InputData.CreateButton("dleft", (int)GlobalButtonVals.BTN23) },
-                { "dright",     InputData.CreateButton("dright", (int)GlobalButtonVals.BTN24) },
-                { "ss1",        InputData.CreateButton("ss1", (int)GlobalButtonVals.BTN25) },
-                { "ss2",        InputData.CreateButton("ss2", (int)GlobalButtonVals.BTN26) },
-                { "ss3",        InputData.CreateButton("ss3", (int)GlobalButtonVals.BTN27) },
-                { "ss4",        InputData.CreateButton("ss4", (int)GlobalButtonVals.BTN28) },
-                { "ls1",        InputData.CreateButton("ls1", (int)GlobalButtonVals.BTN29) },
-                { "ls2",        InputData.CreateButton("ls2", (int)GlobalButtonVals.BTN30) },
-                { "ls3",        InputData.CreateButton("ls3", (int)GlobalButtonVals.BTN31) },
-                { "ls4",        InputData.CreateButton("ls4", (int)GlobalButtonVals.BTN32) },
+                { "ss1",        InputData.CreateButton("ss1", (int)GlobalButtonVals.BTN21) },
+                { "ss2",        InputData.CreateButton("ss2", (int)GlobalButtonVals.BTN22) },
+                { "ss3",        InputData.CreateButton("ss3", (int)GlobalButtonVals.BTN23) },
+                { "ss4",        InputData.CreateButton("ss4", (int)GlobalButtonVals.BTN24) },
+                { "ss5",        InputData.CreateButton("ss5", (int)GlobalButtonVals.BTN25) },
+                { "ss6",        InputData.CreateButton("ss6", (int)GlobalButtonVals.BTN26) },
+                { "ls1",        InputData.CreateButton("ls1", (int)GlobalButtonVals.BTN27) },
+                { "ls2",        InputData.CreateButton("ls2", (int)GlobalButtonVals.BTN28) },
+                { "ls3",        InputData.CreateButton("ls3", (int)GlobalButtonVals.BTN29) },
+                { "ls4",        InputData.CreateButton("ls4", (int)GlobalButtonVals.BTN30) },
+                { "ls5",        InputData.CreateButton("ls5", (int)GlobalButtonVals.BTN31) },
+                { "ls6",        InputData.CreateButton("ls6", (int)GlobalButtonVals.BTN32) },
                 { "#",          InputData.CreateBlank("#") },
                 { ".",          InputData.CreateBlank(".") }
             });

@@ -1,1 +1,1 @@
-03000000780300000300000002000000,TRBot Joypad 0,a:b14,b:b13,x:b11,y:b12,back:b15,start:b16,leftstick:b21,rightstick:b22,leftshoulder:b17,rightshoulder:b18,dpup:b23,dpdown:b24,dpleft:b25,dpright:b26,leftx:a0,lefty:a1,rightx:a3,righty:a4,lefttrigger:b19,righttrigger:b20,platform:Linux
+03000000780300000300000002000000,TRBot Joypad 0,a:b14,b:b13,x:b11,y:b12,back:b15,start:b16,leftstick:b21,rightstick:b22,leftshoulder:b17,rightshoulder:b18,dpup:b23,dpdown:b24,dpleft:b25,dpright:b26,leftx:a0,lefty:a1,rightx:a3,righty:a4,lefttrigger:b19,righttrigger:b20,platform:Linux,

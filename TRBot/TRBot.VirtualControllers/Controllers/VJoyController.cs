@@ -257,7 +257,7 @@ namespace TRBot.VirtualControllers
             int finalVal = (int)Helpers.RemapNum(pressAmount, minAxisVal, maxAxisVal,
                 minAxisVal * axisVals.Item1, maxAxisVal * axisVals.Item2);
 
-            //TRBotLogger.Logger.Information($"%: {percent} | Min/Max: {minAxisVal}/{maxAxisVal} | pressAmount: {pressAmount} | finalVal: {finalVal}");
+            //TRBotLogger.Logger.Information($"PRESS AXIS {axis}, {(HID_USAGES)vJoyAxis} - %: {percent} | Min/Max: {minAxisVal}/{maxAxisVal} | Gamepad Min/Max: {axisVals.Item1}/{axisVals.Item2} | pressAmount: {pressAmount} | finalVal: {finalVal}");
 
             SetAxisEfficient(vJoyAxis, finalVal);
 
@@ -280,6 +280,8 @@ namespace TRBot.VirtualControllers
             //Neutral is halfway between the min and max axes
             long half = (axisVals.Item2 - axisVals.Item1) / 2L;
             int val = (int)(axisVals.Item1 + half);
+
+            //TRBotLogger.Logger.Information($"RELEASE AXIS {axis}, {(HID_USAGES)vJoyAxis} - Half: {half} | Gamepad Min/Max: {axisVals.Item1}/{axisVals.Item2} | val: {val}");
 
             SetAxisEfficient(vJoyAxis, val);
 
