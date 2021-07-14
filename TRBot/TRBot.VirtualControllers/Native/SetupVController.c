@@ -51,7 +51,7 @@ void UpdateJoystick(int fd)
 {
     if (Emit(fd, EV_SYN, SYN_REPORT, 0) < 0)
     {
-        printf("Error: UpdateJoystick()");
+        printf("Error: UpdateJoystick() of descriptor %d", fd);
     }
 }
 
@@ -136,45 +136,45 @@ int CreateController(int index)
     uidev.id.vendor  = 0x378 * (index + 1);
     uidev.id.product = 0x3;
     uidev.id.version = 2;
-    uidev.absmax[ABS_X] = 32767; //Parameters of thumbsticks
-    uidev.absmin[ABS_X] = -32767;
-    uidev.absfuzz[ABS_X] = 0;
-    uidev.absflat[ABS_X] = 15;
+    uidev.absmax[ABS_X] = MAX_AXIS_VAL; //Parameters of thumbsticks
+    uidev.absmin[ABS_X] = MIN_AXIS_VAL;
+    uidev.absfuzz[ABS_X] = AXIS_FUZZ;
+    uidev.absflat[ABS_X] = AXIS_FLAT;
     
-    uidev.absmax[ABS_Y] = 32767; 
-    uidev.absmin[ABS_Y] = -32767;
-    uidev.absfuzz[ABS_Y] = 0;
-    uidev.absflat[ABS_Y] = 15;
+    uidev.absmax[ABS_Y] = MAX_AXIS_VAL; 
+    uidev.absmin[ABS_Y] = MIN_AXIS_VAL;
+    uidev.absfuzz[ABS_Y] = AXIS_FUZZ;
+    uidev.absflat[ABS_Y] = AXIS_FLAT;
     
-    uidev.absmax[ABS_Z] = 32767; 
-    uidev.absmin[ABS_Z] = -32767;
-    uidev.absfuzz[ABS_Z] = 0;
-    uidev.absflat[ABS_Z] = 15;
+    uidev.absmax[ABS_Z] = MAX_AXIS_VAL; 
+    uidev.absmin[ABS_Z] = MIN_AXIS_VAL;
+    uidev.absfuzz[ABS_Z] = AXIS_FUZZ;
+    uidev.absflat[ABS_Z] = AXIS_FLAT;
     
-    uidev.absmax[ABS_RX] = 32767;
-    uidev.absmin[ABS_RX] = -32767;
-    uidev.absfuzz[ABS_RX] = 0;
-    uidev.absflat[ABS_RX] = 16;
+    uidev.absmax[ABS_RX] = MAX_AXIS_VAL;
+    uidev.absmin[ABS_RX] = MIN_AXIS_VAL;
+    uidev.absfuzz[ABS_RX] = AXIS_FUZZ;
+    uidev.absflat[ABS_RX] = AXIS_FLAT;
     
-    uidev.absmax[ABS_RY] = 32767;
-    uidev.absmin[ABS_RY] = -32767;
-    uidev.absfuzz[ABS_RY] = 0;
-    uidev.absflat[ABS_RY] = 16;
+    uidev.absmax[ABS_RY] = MAX_AXIS_VAL;
+    uidev.absmin[ABS_RY] = MIN_AXIS_VAL;
+    uidev.absfuzz[ABS_RY] = AXIS_FUZZ;
+    uidev.absflat[ABS_RY] = AXIS_FLAT;
     
-    uidev.absmax[ABS_RZ] = 32767; 
-    uidev.absmin[ABS_RZ] = -32767;
-    uidev.absfuzz[ABS_RZ] = 0;
-    uidev.absflat[ABS_RZ] = 16;
+    uidev.absmax[ABS_RZ] = MAX_AXIS_VAL; 
+    uidev.absmin[ABS_RZ] = MIN_AXIS_VAL;
+    uidev.absfuzz[ABS_RZ] = AXIS_FUZZ;
+    uidev.absflat[ABS_RZ] = AXIS_FLAT;
     
-    uidev.absmax[ABS_HAT0X] = 32767; 
-    uidev.absmin[ABS_HAT0X] = -32767;
-    uidev.absfuzz[ABS_HAT0X] = 0;
-    uidev.absflat[ABS_HAT0X] = 16;
+    uidev.absmax[ABS_HAT0X] = MAX_AXIS_VAL; 
+    uidev.absmin[ABS_HAT0X] = MIN_AXIS_VAL;
+    uidev.absfuzz[ABS_HAT0X] = AXIS_FUZZ;
+    uidev.absflat[ABS_HAT0X] = AXIS_FLAT;
     
-    uidev.absmax[ABS_HAT0Y] = 32767; 
-    uidev.absmin[ABS_HAT0Y] = -32767;
-    uidev.absfuzz[ABS_HAT0Y] = 0;
-    uidev.absflat[ABS_HAT0Y] = 16;
+    uidev.absmax[ABS_HAT0Y] = MAX_AXIS_VAL; 
+    uidev.absmin[ABS_HAT0Y] = MIN_AXIS_VAL;
+    uidev.absfuzz[ABS_HAT0Y] = AXIS_FUZZ;
+    uidev.absflat[ABS_HAT0Y] = AXIS_FLAT;
     
     if(write(fd, &uidev, sizeof(uidev)) < 0) //writing settings
     {

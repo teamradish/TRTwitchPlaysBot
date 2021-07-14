@@ -307,7 +307,7 @@ namespace TRBot.VirtualControllers
             int finalVal = (int)Helpers.RemapNum(pressAmount, minAxisVal, maxAxisVal,
                 minAxisVal * axisVals.Item1, maxAxisVal * axisVals.Item2);
 
-            //TRBotLogger.Logger.Information($"%: {percent} | Min/Max: {minAxisVal}/{maxAxisVal} | pressAmount: {pressAmount} | finalVal: {finalVal}");
+            //TRBotLogger.Logger.Information($"PRESS AXIS {axis} - %: {percent} | Min/Max: {minAxisVal}/{maxAxisVal} | Gamepad Min/Max: {axisVals.Item1}/{axisVals.Item2} | pressAmount: {pressAmount} | finalVal: {finalVal}");
 
             SetAxis(uinputAxis, finalVal);
 
@@ -326,6 +326,8 @@ namespace TRBot.VirtualControllers
             {
                 return;
             }
+
+            //TRBotLogger.Logger.Information($"RELEASE AXIS {axis} - Gamepad Min/Max: {axisVals.Item1}/{axisVals.Item2} | val: 0");
 
             //Set the axis to 0
             SetAxis(uinputAxis, 0);
