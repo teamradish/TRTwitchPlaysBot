@@ -40,7 +40,7 @@ namespace TRBot.Commands
         /// </summary>
         public const int MAX_INPUT_NAME_LENGTH = 20;
 
-        private string UsageMessage = $"Usage - \"console name\", \"input name\", \"buttonVal (int)\", \"axisVal (int)\" \"inputType (int: 0 = Blank, 1 = Button, 2 = Axis, 3 = Button+Axis)\" \"minAxis (-1 to 1)\" \"maxAxis (-1 to 1)\" \"maxAxis % (0.000 to 100.000)\"";
+        private string UsageMessage = $"Usage - \"console name\", \"input name\", \"buttonVal (int)\", \"axisVal (int)\" \"inputType (int: 0 = Blank, 1 = Button, 2 = Axis, 3 = Button+Axis)\" \"minAxis (-1.0 to 1.0)\" \"maxAxis (-1.0 to 1.0)\" \"maxAxis % (0.000 to 100.000)\"";
 
         public AddInputCommand()
         {
@@ -107,15 +107,31 @@ namespace TRBot.Commands
                 return;
             }
 
-            if (GetInt(minAxisStr, out int minAxisVal) == false || minAxisVal < -1 || minAxisVal > 1)
+            if (GetDouble(minAxisStr, out double minAxisVal) == false || minAxisVal < -1d || minAxisVal > 1d)
             {
                 QueueMessage("Invalid minimum axis value.");
                 return;
             }
 
-            if (GetInt(maxAxisStr, out int maxAxisVal) == false || maxAxisVal < -1 || maxAxisVal > 1)
+            //Ensure that the minimum axis value has at most 1 decimal point
+            double minAxisDecimals = minAxisVal * 10d;
+            if (((int)minAxisDecimals) != minAxisDecimals)
+            {
+                QueueMessage("Minimum axis value has more than 1 decimal point.");
+                return;
+            }
+
+            if (GetDouble(maxAxisStr, out double maxAxisVal) == false || maxAxisVal < -1d || maxAxisVal > 1d)
             {
                 QueueMessage("Invalid maximum axis value.");
+                return;
+            }
+
+            //Ensure that the maximum axis value has at most 1 decimal point
+            double maxAxisDecimals = maxAxisVal * 10d;
+            if (((int)maxAxisDecimals) != maxAxisDecimals)
+            {
+                QueueMessage("Maximum axis value has more than 1 decimal point.");
                 return;
             }
 
@@ -125,7 +141,7 @@ namespace TRBot.Commands
                 return;
             }
 
-            //Ensure that the percentage at most 3 decimal points
+            //Ensure that the max axis percent has at most 3 decimal points
             double numDecimals = maxAxisPercent * 1000d;
             if (((int)numDecimals) != numDecimals)
             {

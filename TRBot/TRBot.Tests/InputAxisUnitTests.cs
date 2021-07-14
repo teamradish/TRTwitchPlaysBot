@@ -28,8 +28,8 @@ namespace TRBot.Tests
     public class InputAxisUnitTests
     {
         [TestCase(
-            0, 0d, 1d, 100d,
-            0, 0d, 1d, 100d
+            0, 0d, .9001d, 100d,
+            0, 0d, .9d, 100d
         )]
         [TestCase(
             2, 0d, 2d, 99.999d,

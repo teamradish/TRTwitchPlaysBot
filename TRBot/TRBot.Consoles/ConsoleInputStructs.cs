@@ -75,14 +75,14 @@ namespace TRBot.Consoles
         public InputTypes InputType { get; set; } = InputTypes.Blank;
 
         /// <summary>
-        /// The minimum value of the axis, normalized from -1 to 1.
+        /// The minimum value of the axis, normalized from -1.0 to 1.0.
         /// </summary>
-        public int MinAxisVal { get; set; } = 0;
+        public double MinAxisVal { get; set; } = 0d;
 
         /// <summary>
-        /// The maximum value of the axis, normalized from -1 to 1.
+        /// The maximum value of the axis, normalized from -1.0 to 1.0.
         /// </summary>
-        public int MaxAxisVal { get; set; } = 1;
+        public double MaxAxisVal { get; set; } = 1d;
 
         /// <summary>
         /// The maximum percent the axis for this input can be pressed.
@@ -114,19 +114,19 @@ namespace TRBot.Consoles
         }
 
         public InputData(string name, in int buttonValue, in int axisValue, in InputTypes inputType,
-            in int minAxisVal, in int maxAxisVal, in double maxAxisPercent)
+            in double minAxisVal, in double maxAxisVal, in double maxAxisPercent)
         {
             Name = name;
             ButtonValue = buttonValue;
             AxisValue = axisValue;
             InputType = inputType;
-            MinAxisVal = Math.Clamp(minAxisVal, -1, 1);
-            MaxAxisVal = Math.Clamp(maxAxisVal, -1, 1);
+            MinAxisVal = Math.Clamp(minAxisVal, -1d, 1d);
+            MaxAxisVal = Math.Clamp(maxAxisVal, -1d, 1d);
             MaxAxisPercent = Math.Clamp(maxAxisPercent, 0d, 100d);
         }
 
         public InputData(string name, in int buttonValue, in int axisValue, in InputTypes inputType,
-            in int minAxisVal, in int maxAxisVal, in double maxAxisPercent, in long inputLevel)
+            in double minAxisVal, in double maxAxisVal, in double maxAxisPercent, in long inputLevel)
             : this(name, buttonValue, axisValue, inputType, minAxisVal, maxAxisVal, maxAxisPercent)
         {
             Level = inputLevel;
@@ -167,27 +167,27 @@ namespace TRBot.Consoles
             return btnData;
         }
 
-        public static InputData CreateAxis(string name, in int axisValue, in int minAxisVal, in int maxAxisVal)
+        public static InputData CreateAxis(string name, in int axisValue, in double minAxisVal, in double maxAxisVal)
         {
             InputData btnData = new InputData();
             btnData.Name = name;
             btnData.AxisValue = axisValue;
             btnData.InputType = InputTypes.Axis;
-            btnData.MinAxisVal = Math.Clamp(minAxisVal, -1, 1);
-            btnData.MaxAxisVal = Math.Clamp(maxAxisVal, -1, 1);
+            btnData.MinAxisVal = Math.Clamp(minAxisVal, -1d, 1d);
+            btnData.MaxAxisVal = Math.Clamp(maxAxisVal, -1d, 1d);
             btnData.MaxAxisPercent = 100d;
 
             return btnData;
         }
 
-        public static InputData CreateAxis(string name, in int axisValue, in int minAxisVal, in int maxAxisVal, in double maxAxisPercent)
+        public static InputData CreateAxis(string name, in int axisValue, in double minAxisVal, in double maxAxisVal, in double maxAxisPercent)
         {
             InputData btnData = new InputData();
             btnData.Name = name;
             btnData.AxisValue = axisValue;
             btnData.InputType = InputTypes.Axis;
-            btnData.MinAxisVal = Math.Clamp(minAxisVal, -1, 1);
-            btnData.MaxAxisVal = Math.Clamp(maxAxisVal, -1, 1);
+            btnData.MinAxisVal = Math.Clamp(minAxisVal, -1d, 1d);
+            btnData.MaxAxisVal = Math.Clamp(maxAxisVal, -1d, 1d);
             btnData.MaxAxisPercent = Math.Clamp(maxAxisPercent, 0d, 100d);
 
             return btnData;
@@ -225,14 +225,14 @@ namespace TRBot.Consoles
         /// Constructs an input axis.
         /// </summary>
         /// <param name="axisVal">The value of the input axis.</param>
-        /// <param name="minAxisVal">The normalized minimum value of the axis. This is clamped from -1 to 1.</param>
-        /// <param name="maxAxisVal">The normalized maximum value of the axis. This is clamped from -1 to 1.</param>
+        /// <param name="minAxisVal">The normalized minimum value of the axis. This is clamped from -1.0 to 1.0.</param>
+        /// <param name="maxAxisVal">The normalized maximum value of the axis. This is clamped from -1.0 to 1.0.</param>
         public InputAxis(in int axisVal, in double minAxisVal, in double maxAxisVal)
         {
             AxisVal = axisVal;
             MinAxisVal = Math.Clamp(minAxisVal, -1d, 1d);
             MaxAxisVal = Math.Clamp(maxAxisVal, -1d, 1d);
-            MaxPercentPressed = 100;
+            MaxPercentPressed = 100d;
         }
 
         /// <summary>
@@ -275,7 +275,9 @@ namespace TRBot.Consoles
 
         public static bool operator==(InputAxis a, InputAxis b)
         {
-            return (a.AxisVal == b.AxisVal && a.MinAxisVal == b.MinAxisVal && a.MaxAxisVal == b.MaxAxisVal
+            return (a.AxisVal == b.AxisVal
+                && Helpers.IsApproximate(a.MinAxisVal, b.MinAxisVal, 0.0009d)
+                && Helpers.IsApproximate(a.MaxAxisVal, b.MaxAxisVal, 0.0009d)
                 && Helpers.IsApproximate(a.MaxPercentPressed, b.MaxPercentPressed, 0.0009d));
         }
 
