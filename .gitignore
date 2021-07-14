@@ -334,3 +334,6 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+
+# Omnisharp crashes
+mono_crash.*
