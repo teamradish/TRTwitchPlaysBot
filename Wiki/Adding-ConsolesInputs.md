@@ -24,8 +24,8 @@ The `AddInputCommand` takes the following arguments:
 3. **buttonVal** - An integer representing the button value of the input on the virtual controller.
 4. **axisVal** - An integer representing the axis value of the input on the virtual controller.
 5. **inputType** - An integer representing the type of the input. 0 = Blank input, 1 = Button (Ex. "a" button), 2 = Axis (Ex. analog stick on the N64 controller), 3 = Button+Axis (Ex. "l" and "r" triggers on GameCube controllers, which function as both)
-6. **minAxis** - A double from -1.0 to 1.0 representing the minimum axis range if the input is an axis. For joysticks that have negative values, 0 indicates the center of the analog stick, otherwise 0.5 does. This will often be 0 on `uinput` and 0.5 on `vJoy`.
-7. **maxAxis** - A double from -1.0 to 1.0 representing the maximum axis range if the input is an axis. For joysticks with negative values, 0 indicates the center of the analog stick, otherwise 0.5 does. This will often be -1 (up/left on the analog stick) or 1 (down/right on the analog stick) on `uinput` and 0 or 1, respectively, on `vJoy`.
+6. **minAxis** - A double from -1.0 to 1.0 representing the minimum axis range if the input is an axis. For joysticks that have negative values, 0 indicates the center of the analog stick, otherwise 0.5 does. This will often be 0.
+7. **maxAxis** - A double from -1.0 to 1.0 representing the maximum axis range if the input is an axis. For joysticks with negative values, 0 indicates the center of the analog stick, otherwise 0.5 does. This will often be -1 (up/left on the analog stick) or 1 (down/right on the analog stick).
 8. **maxAxis percent** - A double from 0 to 100 representing the maximum percent the axis can be pressed - any value afterwards is considered a button press. As an example, the GameCube's "l" and "r" triggers would have this at 99.999 since they function as axes until they're pressed down 100%, after which they're the L and R buttons. This supports up to 3 decimal places for decimal percentages.
 
 That was a lot to absorb, so let's jump right into adding a simple "a" button with a button value of 1 to "newconsole".
@@ -50,9 +50,7 @@ Now let's add a full analog stick to this console. The X axis will be axis value
 
 If you noticed, the only difference between the opposing directions on each axis is the maximum axis value. If a user inputs "up50%", the normalized value will be -0.5 (halfway up), whereas "down75%" will have a normalized value of 0.75 (3/4 down). You don't have to strictly follow this model for defining axes, but it's highly recommended, as most game controllers work this way.
 
-In a similar vein to the "a" button, we don't need to care about the button value since the input type is Axis and won't use it. If the max axis percent is less than 100, then we should care, since the axis can act as a button above that threshold; we wouldn't want it to interfere with an existing button with a button value of 0. 
-
-**NOTE:** On `vJoy` the controller axis values typically range from 0 to 32767, contrasting to -32767 to 32767 on `uinput`. As such, the min axis value for left, right, up and down should be 0.5. The max axis value should be 0 for left and up; 1 for right and down.
+In a similar vein to the "a" button, we don't need to care about the button value since the input type is Axis and won't use it. If the max axis percent is less than 100, then we should care, since the axis can act as a button above that threshold; we wouldn't want it to interfere with an existing button with a button value of 0.
 
 ## Removing inputs
 Our "newconsole" is coming along! It's got an "a" button and a full analog stick with "up", "down", "left", and "right" inputs available. However, what if we no longer want the "a" button since we decided on a different set of buttons?
