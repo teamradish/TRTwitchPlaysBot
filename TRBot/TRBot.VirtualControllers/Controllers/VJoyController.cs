@@ -104,6 +104,8 @@ namespace TRBot.VirtualControllers
 
         private Dictionary<int, (long AxisMin, long AxisMax)> MinMaxAxes = new Dictionary<int, (long, long)>(8);
 
+        private Dictionary<int, int> AxesDefaultValues = new Dictionary<int, int>(8);
+
         public event OnInputPressed InputPressedEvent = null;
         public event OnInputReleased InputReleasedEvent = null;
 
@@ -169,7 +171,12 @@ namespace TRBot.VirtualControllers
 
         public void Init()
         {
-            Reset();
+            bool reset = VJoyInstance.ResetVJD(ControllerID);
+
+            if (reset == false)
+            {
+                TRBotLogger.Logger.Information($"Failed to completely reset vJoy controller ID {ControllerID}!");
+            }
 
             //Initialize axes
             //Use the global axes values, which will be converted to vJoy ones when needing to carry out the inputs
@@ -194,8 +201,15 @@ namespace TRBot.VirtualControllers
                     VJoyInstance.GetVJDAxisMax(ControllerID, vJoyAxis, ref max);
 
                     MinMaxAxes.Add(globalAxisVal, (min, max));
+
+                    int defaultAxisValue = GetAxisValue(axisVal);
+                    AxesDefaultValues.Add(globalAxisVal, defaultAxisValue);
+
+                    //TRBotLogger.Logger.Information($"Default value for axis: {globalAxisVal}, {vJoyAxis} = {defaultAxisValue}");
                 }
             }
+
+            Reset();
 
             InputTracker = new VControllerInputTracker(this);
         }
@@ -209,14 +223,7 @@ namespace TRBot.VirtualControllers
 
             foreach (KeyValuePair<int, (long, long)> val in MinMaxAxes)
             {
-                if (val.Key == (int)GlobalAxisVals.AXIS_Z || val.Key == (int)GlobalAxisVals.AXIS_RZ)
-                {
-                    ReleaseAbsoluteAxis(val.Key);
-                }
-                else
-                {
-                    ReleaseAxis(val.Key);
-                }
+                ReleaseAxis(val.Key);
             }
 
             UpdateController();
@@ -259,7 +266,7 @@ namespace TRBot.VirtualControllers
 
             //TRBotLogger.Logger.Information($"PRESS AXIS {axis}, {(HID_USAGES)vJoyAxis} - %: {percent} | Min/Max: {minAxisVal}/{maxAxisVal} | Gamepad Min/Max: {axisVals.Item1}/{axisVals.Item2} | pressAmount: {pressAmount} | finalVal: {finalVal}");
 
-            SetAxisEfficient(vJoyAxis, finalVal);
+            SetAxisValue(vJoyAxis, finalVal);
 
             AxisPressedEvent?.Invoke(axis, percent);
         }
@@ -272,26 +279,7 @@ namespace TRBot.VirtualControllers
                 return;
             }
 
-            if (MinMaxAxes.TryGetValue(axis, out (long, long) axisVals) == false)
-            {
-                return;
-            }
-
-            //Neutral is halfway between the min and max axes
-            long half = (axisVals.Item2 - axisVals.Item1) / 2L;
-            int val = (int)(axisVals.Item1 + half);
-
-            //TRBotLogger.Logger.Information($"RELEASE AXIS {axis}, {(HID_USAGES)vJoyAxis} - Half: {half} | Gamepad Min/Max: {axisVals.Item1}/{axisVals.Item2} | val: {val}");
-
-            SetAxisEfficient(vJoyAxis, val);
-
-            AxisReleasedEvent?.Invoke(axis);
-        }
-
-        public void PressAbsoluteAxis(in int axis, in int percent)
-        {
-            //Not a valid axis - defaulting to 0 results in the wrong axis being set
-            if (AxisCodeMap.TryGetValue(axis, out int vJoyAxis) == false)
+            if (AxesDefaultValues.TryGetValue(axis, out int defaultAxisVal) == false)
             {
                 return;
             }
@@ -301,27 +289,10 @@ namespace TRBot.VirtualControllers
                 return;
             }
 
-            int val = (int)(axisVals.Item2 * (percent / 100f));
+            //TRBotLogger.Logger.Information($"RELEASE AXIS {axis}, {(HID_USAGES)vJoyAxis} - Gamepad Min/Max: {axisVals.Item1}/{axisVals.Item2} | Default Value: {defaultAxisVal}");
 
-            SetAxisEfficient(vJoyAxis, val);
-
-            AxisPressedEvent?.Invoke(axis, percent);
-        }
-
-        public void ReleaseAbsoluteAxis(in int axis)
-        {
-            //Not a valid axis - defaulting to 0 results in the wrong axis being set
-            if (AxisCodeMap.TryGetValue(axis, out int vJoyAxis) == false)
-            {
-                return;
-            }
-
-            if (MinMaxAxes.ContainsKey(axis) == false)
-            {
-                return;
-            }
-
-            SetAxisEfficient(vJoyAxis, 0);
+            //Set to the default value for this axis
+            SetAxisValue(vJoyAxis, defaultAxisVal);
 
             AxisReleasedEvent?.Invoke(axis);
         }
@@ -401,7 +372,7 @@ namespace TRBot.VirtualControllers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void SetAxisEfficient(in int axis, in int value)
+        private void SetAxisValue(in int axis, in int value)
         {
             switch (axis)
             {
@@ -411,6 +382,27 @@ namespace TRBot.VirtualControllers
                 case (int)HID_USAGES.HID_USAGE_RX: JSState.AxisXRot = value; break;
                 case (int)HID_USAGES.HID_USAGE_RY: JSState.AxisYRot = value; break;
                 case (int)HID_USAGES.HID_USAGE_RZ: JSState.AxisZRot = value; break;
+                case (int)HID_USAGES.HID_USAGE_SL0: JSState.Slider = value; break;
+                case (int)HID_USAGES.HID_USAGE_SL1: JSState.Dial = value; break;
+                case (int)HID_USAGES.HID_USAGE_WHL: JSState.Wheel = value; break;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int GetAxisValue(in int axis)
+        {
+            switch (axis)
+            {
+                case (int)HID_USAGES.HID_USAGE_X: return JSState.AxisX;
+                case (int)HID_USAGES.HID_USAGE_Y: return JSState.AxisY;
+                case (int)HID_USAGES.HID_USAGE_Z: return JSState.AxisZ;
+                case (int)HID_USAGES.HID_USAGE_RX: return JSState.AxisXRot;
+                case (int)HID_USAGES.HID_USAGE_RY: return JSState.AxisYRot;
+                case (int)HID_USAGES.HID_USAGE_RZ: return JSState.AxisZRot;
+                case (int)HID_USAGES.HID_USAGE_SL0: return JSState.Slider;
+                case (int)HID_USAGES.HID_USAGE_SL1: return JSState.Dial;
+                case (int)HID_USAGES.HID_USAGE_WHL: return JSState.Wheel;
+                default: return 0;
             }
         }
     }
