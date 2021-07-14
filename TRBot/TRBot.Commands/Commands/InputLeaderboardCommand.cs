@@ -26,14 +26,14 @@ using TRBot.Permissions;
 namespace TRBot.Commands
 {
     /// <summary>
-    /// Views the highest credits count among users.
+    /// Views the highest valid input count among users.
     /// </summary>
-    public sealed class CreditLeaderboardCommand : BaseCommand
+    public sealed class InputLeaderboardCommand : BaseCommand
     {
         private const int SURROUNDING_COUNT = 19;
         private string UsageMessage = "Usage: \"username (optional)\"";
 
-        public CreditLeaderboardCommand()
+        public InputLeaderboardCommand()
         {
 
         }
@@ -55,7 +55,7 @@ namespace TRBot.Commands
             {
                 using (BotDBContext context = DatabaseManager.OpenContext())
                 {
-                    User topUser = context.Users.Where(u => u.Stats.OptedOut <= 0).OrderByDescending(u => u.Stats.Credits).FirstOrDefault();
+                    User topUser = context.Users.Where(u => u.Stats.OptedOut <= 0).OrderByDescending(u => u.Stats.ValidInputCount).FirstOrDefault();
                     
                     //The only way this user can be null is if there are none in the database
                     if (topUser == null)
@@ -92,7 +92,7 @@ namespace TRBot.Commands
                 }
             }
 
-            SortedDictionary<int, (long, string)> leaderboardDict = LeaderboardHelper.GetCreditLeaderboardSubset(userName, SURROUNDING_COUNT);
+            SortedDictionary<int, (long, string)> leaderboardDict = LeaderboardHelper.GetInputLeaderboardSubset(userName, SURROUNDING_COUNT);
 
             if (leaderboardDict == null || leaderboardDict.Count == 0)
             {

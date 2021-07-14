@@ -251,7 +251,7 @@ namespace TRBot.Routines
                     context.SaveChanges();
                 }
                 
-                (int, int) leaderBoard = CreditsHelper.GetPositionOnLeaderboard(winnerName);
+                (int, int) leaderBoard = LeaderboardHelper.GetPositionOnCreditLeaderboard(winnerName);
 
                 DataContainer.MessageHandler.QueueMessage($"{winnerName} won the group bet and {total} {creditsName.Pluralize(total)} and is now rank {leaderBoard.Item1}/{leaderBoard.Item2} on the leaderboard PogChamp! Nice!");
 

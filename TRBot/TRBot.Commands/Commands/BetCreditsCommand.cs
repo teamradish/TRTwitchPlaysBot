@@ -116,7 +116,7 @@ namespace TRBot.Commands
                 context.SaveChanges();
             }
 
-            (int, int) leaderBoard = CreditsHelper.GetPositionOnLeaderboard(userName);
+            (int, int) leaderBoard = LeaderboardHelper.GetPositionOnCreditLeaderboard(userName);
 
             message += $" and is rank {leaderBoard.Item1}/{leaderBoard.Item2} on the leaderboard!";
 
