@@ -114,7 +114,7 @@ namespace TRBot.Connection
     {
         public int Months { get; protected set; } = 0;
 
-        public EvtReSubscriptionData(string userId, string displayName, string channel, in int months)
+        public EvtReSubscriptionData(string userId, string displayName, string channel, int months)
             : base(userId, displayName, channel)
         {
             Months = months;
