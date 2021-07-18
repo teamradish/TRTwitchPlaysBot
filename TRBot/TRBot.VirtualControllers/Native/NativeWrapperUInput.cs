@@ -42,19 +42,19 @@ namespace TRBot.VirtualControllers
         private static extern int GetMaxAxisVal();
 
         [DllImport(LIB_NAME)]
-        private static extern void UpdateJoystick(int fd);
+        private static extern void UpdateJoystick(IntPtr ptr);
 
         [DllImport(LIB_NAME)]
-        private static extern void PressReleaseButton(int fd, int button, int press);
+        private static extern void PressReleaseButton(IntPtr ptr, int button, int press);
 
         [DllImport(LIB_NAME)]
-        private static extern void PressAxis(int fd, int axis, int value);
+        private static extern void PressAxis(IntPtr ptr, int axis, int value);
 
         [DllImport(LIB_NAME)]
-        private static extern int CreateController(int index);
+        private static extern IntPtr CreateController(int index);
 
         [DllImport(LIB_NAME)]
-        private static extern void CloseController(int fd);
+        private static extern void CloseController(IntPtr ptr);
 
         /// <summary>
         /// Retrieves the minimum number of controllers allowed.
@@ -97,9 +97,9 @@ namespace TRBot.VirtualControllers
         /// </summary>
         /// <param name="fd">The controller description value.</param>
         /// <param name="button">The button to press.</param>
-        public static void PressButton(in int fd, in int button)
+        public static void PressButton(IntPtr ptr, in int button)
         {
-            PressReleaseButton(fd, button, 1);
+            PressReleaseButton(ptr, button, 1);
         }
 
         /// <summary>
@@ -107,9 +107,9 @@ namespace TRBot.VirtualControllers
         /// </summary>
         /// <param name="fd">The controller description value.</param>
         /// <param name="button">The button to release.</param>
-        public static void ReleaseButton(in int fd, in int button)
+        public static void ReleaseButton(IntPtr ptr, in int button)
         {
-            PressReleaseButton(fd, button, 0);
+            PressReleaseButton(ptr, button, 0);
         }
 
         /// <summary>
@@ -118,18 +118,18 @@ namespace TRBot.VirtualControllers
         /// <param name="fd">The controller description value.</param>
         /// <param name="axis">The axis to set the value for.</param>
         /// <param name="value">The value to set the axis to.</param>
-        public static void SetAxis(in int fd, in int axis, in int value)
+        public static void SetAxis(IntPtr ptr, in int axis, in int value)
         {
-            PressAxis(fd, axis, value);
+            PressAxis(ptr, axis, value);
         }
 
         /// <summary>
         /// Updates the controller driver and applies all input changes.
         /// </summary>
         /// <param name="fd">The controller description value.</param>
-        public static void UpdateController(in int fd)
+        public static void UpdateController(IntPtr ptr)
         {
-            UpdateJoystick(fd);
+            UpdateJoystick(ptr);
         }
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace TRBot.VirtualControllers
         /// </summary>
         /// <param name="index">The index to create the new virtual controller at.</param>
         /// <returns>An integer representing the controller description value. -1 if one failed to be created.</returns>
-        public static int CreateVirtualController(in int index)
+        public static IntPtr CreateVirtualController(in int index)
         {
             return CreateController(index);
         }
@@ -147,9 +147,9 @@ namespace TRBot.VirtualControllers
         /// Closes and destroys the virtual controller at the specified controller description number.
         /// </summary>
         /// <param name="fd">The controller description value.</param>
-        public static void Close(in int fd)
+        public static void Close(IntPtr ptr)
         {
-            CloseController(fd);
+            CloseController(ptr);
         }
     }
 }

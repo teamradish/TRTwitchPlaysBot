@@ -29,11 +29,6 @@ namespace TRBot.VirtualControllers
     public class UInputController : IVirtualController
     {
         /// <summary>
-        /// The value for an invalid controller.
-        /// </summary>
-        public const int INVALID_CONTROLLER = -1;
-
-        /// <summary>
         /// The button codes that are used on uinput virtual controllers.
         /// </summary>
         private enum ButtonCodes
@@ -147,9 +142,9 @@ namespace TRBot.VirtualControllers
         public uint ControllerID { get; private set; } = 0;
 
         /// <summary>
-        /// The native descriptor value for the device.
+        /// The native pointer for the device.
         /// </summary>
-        public int ControllerDescriptor { get; private set; } = 0;
+        public IntPtr ControllerPtr { get; private set; } = IntPtr.Zero;
 
         public int ControllerIndex { get; private set; } = 0;
 
@@ -175,7 +170,6 @@ namespace TRBot.VirtualControllers
 
         public event OnControllerClosed ControllerClosedEvent = null;
 
-        //Kimimaru: Ideally we get the input's state from the driver, but this should work well enough, for now at least
         private VControllerInputTracker InputTracker = null;
 
         public UInputController(in int controllerIndex)
@@ -210,24 +204,23 @@ namespace TRBot.VirtualControllers
 
         public void Acquire()
         {
-            ControllerDescriptor = NativeWrapperUInput.CreateVirtualController(ControllerIndex);
-            ControllerID = 0;
+            ControllerPtr = NativeWrapperUInput.CreateVirtualController(ControllerIndex);
+            ControllerID = (uint)ControllerIndex;
 
             //Check for valid controller
-            if (ControllerDescriptor > INVALID_CONTROLLER)
+            if (ControllerPtr != IntPtr.Zero)
             {
                 IsAcquired = true;
-                ControllerID = (uint)ControllerDescriptor;
             }
         }
 
         public void Close()
         {
-            NativeWrapperUInput.Close(ControllerDescriptor);
-            IsAcquired = false;
-            
-            ControllerDescriptor = INVALID_CONTROLLER;
+            NativeWrapperUInput.Close(ControllerPtr);
+            ControllerPtr = IntPtr.Zero;
             ControllerID = 0;
+
+            IsAcquired = false;
 
             ControllerClosedEvent?.Invoke();
         }
@@ -343,7 +336,7 @@ namespace TRBot.VirtualControllers
                 return;
             }
 
-            NativeWrapperUInput.PressButton(ControllerDescriptor, button);
+            NativeWrapperUInput.PressButton(ControllerPtr, button);
 
             ButtonPressedEvent?.Invoke(buttonVal);
         }
@@ -356,7 +349,7 @@ namespace TRBot.VirtualControllers
                 return;
             }
 
-            NativeWrapperUInput.ReleaseButton(ControllerDescriptor, button);
+            NativeWrapperUInput.ReleaseButton(ControllerPtr, button);
 
             ButtonReleasedEvent?.Invoke(buttonVal);
         }
@@ -378,7 +371,7 @@ namespace TRBot.VirtualControllers
 
         public void UpdateController()
         {
-            NativeWrapperUInput.UpdateController(ControllerDescriptor);
+            NativeWrapperUInput.UpdateController(ControllerPtr);
 
             ControllerUpdatedEvent?.Invoke();
         }
@@ -386,7 +379,7 @@ namespace TRBot.VirtualControllers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void SetAxis(in int axis, in int value)
         {
-            NativeWrapperUInput.SetAxis(ControllerDescriptor, axis, value);
+            NativeWrapperUInput.SetAxis(ControllerPtr, axis, value);
         }
     }
 }

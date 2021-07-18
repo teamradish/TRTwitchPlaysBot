@@ -120,7 +120,6 @@ namespace TRBot.VirtualControllers
 
         public event OnControllerClosed ControllerClosedEvent = null;
 
-        //Kimimaru: Ideally we get the input's state from the driver, but this should work well enough, for now at least
         private VControllerInputTracker InputTracker = null;
 
         private vJoy VJoyInstance = null;

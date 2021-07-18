@@ -116,7 +116,7 @@ namespace TRBot.VirtualControllers
                 }
 
                 acquiredCount++;
-                TRBotLogger.Logger.Information($"Acquired uinput device ID {joystick.ControllerID} at index {joystick.ControllerIndex} with descriptor {joystick.ControllerDescriptor}!");
+                TRBotLogger.Logger.Information($"Acquired uinput device ID {joystick.ControllerID} at index {joystick.ControllerIndex}!");
 
                 //Initialize the joystick
                 joystick.Init();

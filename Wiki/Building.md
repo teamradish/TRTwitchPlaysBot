@@ -28,7 +28,23 @@ Some virtual controllers require native code. These will be in the ["Native" fol
 Note: The pre-built uinput virtual controllers were compiled on **Debian** and may not work out of the box with your distribution.
 
 ### uinput
-To compile the uinput virtual controller implementation, compile `SetupVController.c` with **gcc** as a shared library (`gcc -fPIC -shared SetupVController.c -o SetupVController.so`). Use the newly compiled file in place of the old one.
+The uinput virtual controller is implemented via [libevdev](https://www.freedesktop.org/wiki/Software/libevdev/). As a result, libevdev will need to be installed on your system before you can compile the code.
+
+Prerequisite packages:
+-libevdev-dev
+-libudev-dev
+
+Example installation for Debian-based systems:
+```
+sudo apt update
+sudo apt install libevdev-dev libudev-dev
+```
+
+These names may be slightly different depending on your distribution.
+
+After installing libevdev, the uinput virtual controller code, `SetupVController.c`, can be compiled with **gcc** as a shared library (`gcc -fPIC -shared SetupVController.c $(pkg-config --cflags --libs libevdev) -o ../SetupVController.so`). Use the newly compiled file in place of the old one.
+
+The `pkg-config` section is very important, so be sure to include it. If it's absent, it won't include all the libevdev dependencies, causing the code to fail during compilation or runtime.
 
 ### vJoy Wrapper
 The vJoy C# wrapper code can be found on the [most up-to-date repository](https://github.com/jshafer817/vJoy/tree/master/apps/common/vJoyInterfaceCS/vJoyInterfaceWrap). While unconfirmed, you should be able to compile it with `make`.

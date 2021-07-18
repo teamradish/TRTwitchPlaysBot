@@ -23,10 +23,12 @@
 #include <errno.h>
 #include <linux/input.h>
 #include <linux/uinput.h>
+#include <libevdev/libevdev.h>
+#include <libevdev/libevdev-uinput.h>
 
 #define MIN_CONTROLLERS 1
 #define MAX_CONTROLLERS 16
-#define INVALID_CONTROLLER -1
+#define INVALID_CONTROLLER NULL
 
 #define MIN_AXIS_VAL -32767
 #define MAX_AXIS_VAL 32767
@@ -39,20 +41,25 @@
 //Axis "flat" is essentially the deadzone
 #define AXIS_FLAT 0
 
+//This struct serves to store both pointers so they can be freed later
+struct libholder
+{
+    struct libevdev* dev;
+    struct libevdev_uinput* uidev;
+};
+
 int GetMinControllers();
 int GetMaxControllers();
 
 int GetMinAxisVal();
 int GetMaxAxisVal();
 
-int Emit(int fd, int eventType, int eventCode, int eventValue);
+void UpdateJoystick(struct libholder* libholder);
 
-void UpdateJoystick(int fd);
+void PressReleaseButton(struct libholder* libholder, int button, int press);
 
-void PressReleaseButton(int fd, int button, int press);
+void PressAxis(struct libholder* libholder, int axis, int value);
 
-void PressAxis(int fd, int axis, int value);
+struct libholder* CreateController(int index);
 
-int CreateController(int index);
-
-void CloseController(int fd);
+void CloseController(struct libholder* libholder);
